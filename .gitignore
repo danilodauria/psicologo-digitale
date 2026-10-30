@@ -1,0 +1,7 @@
+node_modules/
+.ref/
+.venv/
+dist/
+pubblica/
+*.log
+.DS_Store

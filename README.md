@@ -1,0 +1,236 @@
+# Psicologo Digitale · La stanza d'ascolto
+
+**Pre-analisi guidata, colloquio con Neura, sei questionari, un percorso in otto tappe e una relazione PDF da consegnare al professionista.** Tutto in italiano, senza account, senza pubblicità e funzionante anche offline.
+
+**Ideato, scritto e sviluppato da [Danilo D'Auria](https://github.com/danilodauria)** — un progetto **FeniceOS**.
+
+[**Apri l'applicazione**](https://danilodauria.github.io/psicologo-digitale/) · [Codice su GitHub](https://github.com/danilodauria/psicologo-digitale)
+
+> Questo programma **non è una terapia e non sostituisce** uno psicologo, uno psicoterapeuta o un medico.
+> È uno strumento di psicoeducazione e orientamento: serve a preparare un colloquio, non a evitarlo.
+
+---
+
+## Perché esiste
+
+La maggior parte delle persone che arriva a un primo colloquio psicologico ha due problemi: non sa **da dove iniziare** e non sa **cosa dire**. Il risultato è che i primi venti minuti si spendono a ricostruire informazioni che potrebbero essere già ordinate, e alcune cose importanti — durata dei sintomi, sonno, sostanze, salute, rischio — emergono tardi o non emergono.
+
+Psicologo Digitale nasce per colmare quel vuoto:
+
+- un **colloquio preliminare adattivo** che mette in ordine motivo, storia, funzionamento e sicurezza;
+- **sei questionari** su aree diverse, con punteggi, fasce e spiegazioni oneste;
+- un **percorso in otto tappe** con obiettivi, pratiche e indicatori di progresso;
+- **protocolli di seduta** con tempi e contenuti, per capire cosa aspettarsi;
+- una **relazione in PDF** stampabile, pensata per essere consegnata a chi può valutare davvero.
+
+Il programma non prova a "fare lo psicologo". Prova a fare bene una cosa diversa: **l'apripista**.
+
+## Che cosa contiene
+
+| Sezione | Contenuto |
+|---|---|
+| **Colloquio** | Percorso adattivo in otto fasi: accoglienza, motivo, approfondimento per area, storia, funzionamento, sicurezza, risorse, restituzione. Le domande cambiano in base alle risposte. |
+| **Valutazione** | Sei questionari: umore e piacere, ansia e preoccupazione, stress percepito, sonno e recupero, esaurimento legato al lavoro, benessere generale. Punteggi, fasce, lettura clinica e cosa portare al professionista. |
+| **Percorso** | Otto tappe (16 settimane circa): orientarsi, corpo, attivazione, pensieri, emozioni, relazioni, valori, mantenimento. Con pratica settimanale e indicatori. |
+| **Sedute** | Sette protocolli clinici: primo colloquio, formulazione condivisa, psicoeducazione, pensieri e comportamenti, esposizione, regolazione emotiva, chiusura. Agenda minuto per minuto. |
+| **Esercizi** | Dodici pratiche guidate: respiro 4-6, ancoraggio 5-4-3-2-1, attivazione comportamentale, scheda del pensiero, finestra della preoccupazione, igiene del sonno, autocompassione, DESC, bussola dei valori, rilassamento muscolare, camminata consapevole, piano di mantenimento. |
+| **Diario** | Umore, ansia, sonno, energia e nota giornaliera; scheda del pensiero integrata. Tutto locale, incluso nella relazione. |
+| **Relazione** | Documento A4 con dati, aree emerse, storia, funzionamento, punteggi, segnali di sicurezza, obiettivi, diario, domande per il clinico, firme. PDF generato sul dispositivo. |
+| **Neura** | Assistente locale: spiega, cerca, propone esercizi, orienta e riconosce le situazioni di rischio. Legge le risposte ad alta voce (sintesi vocale del dispositivo) e accetta la dettatura, se il browser la supporta. |
+| **Manuale** | Dodici capitoli: primo colloquio, scelta del professionista, ansia, umore, sonno, stress e burnout, emozioni, pensieri, relazioni, trauma e lutto, corpo e sostanze, etica e limiti dell'IA. |
+| **Palestra della mente** | 36 domande divulgative in sei aree, con spiegazioni: miti da smontare, evidenze, linguaggio corretto. |
+| **Glossario** | 48 voci di psicologia clinica, metodo e terapia, con ricerca istantanea. |
+| **Sicurezza** | 112, Telefono Amico, Samaritans, Telefono Azzurro, 1522, 114. Segnali d'allarme, cosa fare subito, indicazioni per minori e violenza. |
+| **Licenze** | Attribuzione, licenze, privacy, backup, cancellazione dati, FAQ e fonti. |
+
+## Neura, il consulente digitale
+
+Neura **non è un modello linguistico generativo** e non chiama servizi esterni. È un motore di conoscenza locale composto da:
+
+- un riconoscimento degli intenti (spiegazione, esercizio, orientamento, professione, privacy, sicurezza);
+- un indice sui capitoli del manuale, sul glossario e sugli esercizi;
+- regole esplicite per il rischio: pensieri di morte, autolesionismo, violenza;
+- risposte costruite da contenuti verificati, con collegamenti alle sezioni.
+
+Quando non trova una risposta affidabile, **lo dice**. È una scelta di progetto: meglio un assistente che ammette i limiti che una macchina che sembra sapere tutto.
+
+La voce usa `speechSynthesis` del dispositivo: nessun audio lascia il computer. Il pulsante dell'altoparlante in alto attiva o disattiva la lettura; `Esc` o **Stop** la interrompono.
+
+## Il colloquio, in dettaglio
+
+1. **Accoglienza** — consenso informato, nome facoltativo, fascia d'età, per chi si sta facendo il percorso, da dove si vuole iniziare. Se minorenne, compare un avviso specifico.
+2. **Motivo** — aree che pesano (fino a tre), durata, impatto 0-10, fattori che peggiorano.
+3. **Approfondimento** — domande solo per le aree scelte: umore, ansia, sonno, lavoro, relazioni, lutto, autostima, corpo, sostanze, trauma, genitorialità, solitudine, rabbia.
+4. **Storia** — percorsi precedenti, farmaci, salute, sostanze, eventi degli ultimi dodici mesi, familiarità, infanzia (con opzione "preferisco non rispondere").
+5. **Funzionamento** — energia, sonno, concentrazione, supporto percepito, attività quotidiane.
+6. **Sicurezza** — domande dirette su pensieri di morte, sicurezza percepita, autolesionismo, violenza. Se emerge un rischio, compare subito un blocco con i numeri utili, e la relazione lo segnala in apertura.
+7. **Risorse e obiettivi** — rete, punti di forza, obiettivo dichiarato, tipo di aiuto cercato, disponibilità, urgenza.
+8. **Restituzione** — aree emerse con intensità, sintesi, segnali di rischio, domande da portare al clinico e passi successivi.
+
+Si può interrompere e riprendere: lo stato è salvato nel browser. "Rivedi le risposte" permette di correggere senza ricominciare.
+
+## I questionari
+
+| Strumento | Area | Item | Punteggio | Costrutto di riferimento |
+|---|---|---|---|---|
+| UMS-9 | Umore, interesse, piacere | 9 | 0-27 | PHQ-9 (Kroenke et al., 2001) |
+| ANS-7 | Ansia, tensione, preoccupazione | 7 | 0-21 | GAD-7 (Spitzer et al., 2006) |
+| STR-10 | Stress percepito | 10 (4 inversi) | 0-40 | PSS-10 (Cohen et al., 1983) |
+| SON-7 | Sonno e recupero | 7 | 0-28 | ISI e criteri clinici dell'insonnia |
+| ESA-8 | Esaurimento e carico | 8 | 0-32 | Burnout (ICD-11 QD85) e MBI |
+| BEN-5 | Benessere generale | 5 | 0-25 → 0-100 | WHO-5 (Topp et al., 2015) |
+
+Gli item sono **formulati in italiano per questo progetto** e si ispirano ai costrutti degli strumenti citati: non sono la versione ufficiale e non ne rivendicano la validazione psicometrica. I punteggi sono indicatori di intensità, **non diagnosi**. Il nono item dell'UMS-9 esplora i pensieri di morte e attiva un avviso immediato.
+
+## La relazione
+
+La relazione raccoglie:
+
+- dati del colloquio (nome facoltativo, fascia d'età, durata, impatto, urgenza);
+- aree emerse con intensità percepita e lettura;
+- storia, salute, sostanze, eventi;
+- funzionamento quotidiano;
+- punteggi dei questionari con fasce e interpretazione;
+- segnali di sicurezza, in evidenza;
+- obiettivi, disponibilità, rete e risorse;
+- diario recente e schede del pensiero;
+- domande suggerite per il clinico, generate in base ai dati;
+- spazio per le note della persona e del professionista;
+- firme e avvertenze.
+
+Si scarica in **PDF** (generato sul dispositivo, senza librerie) oppure si stampa con il comando del browser. Contiene dati sensibili: va conservata e condivisa con cura.
+
+## Sicurezza e deontologia
+
+- Il programma è **educativo**: non diagnostica, non prescrive, non cura.
+- Le domande sul rischio sono dirette, rispettose e non giudicanti; la formazione sul rischio è parte della competenza clinica, non un tabù.
+- In caso di pericolo: **112**. Ascolto: **Telefono Amico 02 2327 2327**, **Samaritans 06 77208977**, **Telefono Azzurro 19696**, **1522** antiviolenza, **114** emergenza infanzia.
+- Per i minori la valutazione va condivisa con un adulto responsabile e con un professionista.
+- La violenza non è un conflitto di coppia: è un reato. Il 1522 è gratuito e riservato.
+- Il programma **non è un dispositivo medico** ai sensi del Regolamento UE 2017/745.
+
+## Privacy
+
+- Nessun account, nessun server, nessuna telemetria, nessuna pubblicità.
+- Risposte, questionari, diario, note e chat restano nel `localStorage` del browser.
+- Il PDF è costruito sul dispositivo e non viene inviato.
+- Il service worker salva l'applicazione nella cache per l'uso offline.
+- Backup e cancellazione sono nella pagina **Licenze e progetto**.
+
+## Struttura del progetto
+
+```
+index.html                  # shell dell'applicazione
+manifest.webmanifest        # PWA
+sw.js                       # cache offline
+assets/
+  css/styles.css            # design system completo, tema chiaro/scuro, stampa
+  img/icon.svg              # marchio vettoriale
+  img/icon-192.png          # icona PWA
+  img/icon-512.png          # icona PWA / maskable
+  js/
+    data-scales.js          # sei questionari e fasce
+    data-intake.js          # colloquio adattivo (oltre 50 domande)
+    data-course.js          # percorso, sette sedute, dodici esercizi
+    data-manual.js          # capitoli 1-6
+    data-manual2.js         # capitoli 7-12
+    data-extra.js           # glossario, sicurezza, fonti, FAQ
+    data-quiz.js            # 36 domande della Palestra
+    neura.js                # motore locale (intenti, recupero, sicurezza)
+    app.js                  # nucleo, stato, punteggi, routing, home
+    app-intake.js           # colloquio: interfaccia e restituzione
+    app-scales.js           # questionari e Palestra
+    app-course.js           # percorso, sedute, esercizi
+    app-neura.js            # chat, voce, dettatura
+    app-views.js            # manuale, glossario, sicurezza, diario, licenze
+    app-report.js           # relazione e generatore PDF 1.4
+    app-init.js             # avvio, tema, menu, service worker
+scripts/make_icons.py       # rigenera le icone PNG (senza dipendenze)
+tests/verify.cjs            # integrità dati, collegamenti, Neura
+tests/dom-test.cjs          # interfaccia con jsdom
+.github/workflows/pages.yml # pubblicazione su GitHub Pages
+```
+
+Architettura: **PWA statica**, nessuna dipendenza a runtime, nessun build step. I dati sono file JavaScript; il routing è a hash; lo stato è in `localStorage` con prefisso `psicologo-digitale:v1:`.
+
+## Sviluppo e test
+
+Serve Node 20+ solo per i test.
+
+```bash
+npm install
+npm test                  # verify + dom
+npm run test:data         # solo integrità
+npm run test:dom          # solo interfaccia
+python3 -m http.server 3000 --bind 0.0.0.0   # anteprima con service worker
+```
+
+Rigenerare le icone:
+
+```bash
+python3 scripts/make_icons.py
+```
+
+Quando si aggiornano i contenuti, incrementare `VERSION` in `sw.js` (per esempio `psd-v1.1.0`): il service worker elimina la cache vecchia.
+
+## Pubblicazione
+
+- **Applicazione:** https://danilodauria.github.io/psicologo-digitale/
+- **Repository:** https://github.com/danilodauria/psicologo-digitale
+
+Il sito è un *project site* di GitHub Pages: l'applicazione vive in una sottocartella, quindi tutti i percorsi sono relativi e il manifest usa `./` come `start_url` e `scope`. La PWA resta confinata al progetto e non interferisce con gli altri siti FeniceOS pubblicati sullo stesso dominio.
+
+### Come avviene la pubblicazione
+
+1. Un push su `main` avvia `.github/workflows/pages.yml`.
+2. Il job `test` installa le dipendenze con `npm ci` ed esegue `npm test`: se una verifica fallisce, la pubblicazione si ferma.
+3. Il job `deploy` toglie dipendenze e test dall'artefatto, carica la cartella e pubblica con `actions/deploy-pages`.
+4. Una sola volta, nel repository: **Settings → Pages → Source: GitHub Actions**.
+
+`.nojekyll` è presente, quindi Jekyll non interferisce con i file del progetto.
+
+### Aggiornare il sito
+
+```bash
+git add -A
+git commit -m "Descrizione della modifica"
+git push origin main
+```
+
+Se cambiano file presenti nella cache, incrementare `VERSION` in `sw.js` (per esempio `psd-v1.1.0`).
+
+### Anteprima locale identica al sito
+
+```bash
+python3 -m http.server 3000 --bind 0.0.0.0
+```
+
+Aprire `http://localhost:3000/`: percorsi relativi, hash routing e service worker si comportano come in produzione.
+
+## Limitazioni note
+
+- Non è una terapia e non sostituisce una visita.
+- I questionari non sono strumenti diagnostici validati: sono indicatori divulgativi ispirati a costrutti noti.
+- Neura è un motore di regole e recupero, non un'IA generativa: non risponde fuori dal corpus e non apprende.
+- Il programma non raccoglie dati, quindi non sincronizza tra dispositivi: il backup JSON serve a questo.
+- La sintesi vocale dipende dalle voci installate sul dispositivo; la dettatura dipende dal browser.
+- Il PDF è volutamente essenziale: testo, tabelle e firme. Non è un documento con valore medico-legale.
+- I protocolli di seduta sono un modello didattico, non un manuale di condotta clinica.
+- I contenuti non sostituiscono formazione, supervisione e responsabilità professionale.
+
+## Licenze e attribuzione
+
+- **Codice** (HTML, CSS, JavaScript, service worker, script, test): **MIT** — vedi [LICENSE](LICENSE).
+- **Contenuti** (capitoli, questionari, esercizi, protocolli, glossario, grafica, personaggio di Neura): **CC BY-NC-SA 4.0** — vedi [LICENSE-CONTENT.md](LICENSE-CONTENT.md).
+
+Citazione consigliata:
+
+> «Psicologo Digitale — La stanza d'ascolto» di Danilo D'Auria — un progetto FeniceOS — licenza CC BY-NC-SA 4.0.
+
+Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D'Auria e appartengono allo stesso ecosistema dei progetti [*Professore Digitale*](https://danilodauria.github.io/professore-digitale/), [*Consulente Digitale*](https://danilodauria.github.io/consulente-digitale/) e [*Naturopata Digitale*](https://danilodauria.github.io/naturopata-digitale/).
+
+## Crediti
+
+Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
+
+Versione **1.0.0** · ottobre 2026.

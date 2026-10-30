@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Psicologo Digitale · Neura, la stanza d'ascolto</title>
+  <meta name="description" content="Pre-analisi guidata, colloquio con Neura, sei questionari di autovalutazione, un percorso in otto tappe e una relazione stampabile per il professionista. Statico, riservato, anche offline.">
+  <meta name="author" content="Danilo D'Auria">
+  <meta name="theme-color" content="#22345c">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:title" content="Psicologo Digitale · Neura, la stanza d'ascolto">
+  <meta property="og:description" content="Un colloquio preliminare, sei questionari, un percorso in otto tappe e una relazione da consegnare al professionista. Nulla esce dal tuo dispositivo.">
+  <meta property="og:site_name" content="Psicologo Digitale">
+  <meta property="og:url" content="https://danilodauria.github.io/psicologo-digitale/">
+  <meta property="og:image" content="https://danilodauria.github.io/psicologo-digitale/assets/img/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://danilodauria.github.io/psicologo-digitale/">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("psicologo-digitale:v1:theme");
+        if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Vai al contenuto</a>
+
+  <header class="site-header" id="siteHeader">
+    <div class="wrap header-inner">
+      <a class="brand" href="#/" aria-label="Psicologo Digitale, pagina iniziale">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img" focusable="false">
+            <path d="M27 5.5c-8.3 0-14.5 5.7-14.5 13.4 0 4.2 1.9 7.5 4.8 9.6v6.2a3 3 0 0 0 3 3h3.2v3.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M31.5 9.4C37 11.4 40 16.2 40 22c0 5.2-2.9 9.4-7.2 11.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".5"/>
+            <path d="M27 13.5a6 6 0 1 0 3.4 10.9" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+            <circle cx="27" cy="19.5" r="2.3" fill="currentColor"/>
+            <circle cx="36.5" cy="8" r="2.2" fill="currentColor" opacity=".75"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <strong>Psicologo</strong>
+          <em>Digitale</em>
+        </span>
+      </a>
+
+      <nav class="main-nav" id="mainNav" aria-label="Navigazione principale">
+        <a href="#/colloquio" data-nav="colloquio">Colloquio</a>
+        <a href="#/valutazione" data-nav="valutazione">Valutazione</a>
+        <a href="#/percorso" data-nav="percorso">Percorso</a>
+        <a href="#/diario" data-nav="diario">Diario</a>
+        <a href="#/neura" data-nav="neura" class="nav-neura">
+          <span class="nav-dot" aria-hidden="true"></span>Neura
+        </a>
+        <div class="nav-more">
+          <button class="nav-more-btn" id="moreBtn" type="button" aria-expanded="false" aria-controls="moreMenu">Altro</button>
+          <div class="nav-more-menu" id="moreMenu" hidden>
+            <a href="#/sedute" data-nav="sedute">Sedute e tempi</a>
+            <a href="#/esercizi" data-nav="esercizi">Esercizi guidati</a>
+            <a href="#/manuale" data-nav="manuale">Manuale</a>
+            <a href="#/palestra" data-nav="palestra">Palestra della mente</a>
+            <a href="#/glossario" data-nav="glossario">Glossario</a>
+            <a href="#/sicurezza" data-nav="sicurezza">Sicurezza e numeri utili</a>
+            <a href="#/relazione" data-nav="relazione">Relazione per il professionista</a>
+            <a href="#/licenze" data-nav="licenze">Licenze e progetto</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="voiceBtn" type="button" aria-pressed="true" title="Voce di Neura: attiva o disattiva" aria-label="Voce di Neura attiva">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path class="wave" d="M15.5 8.5a5 5 0 0 1 0 7"/><path class="wave" d="M18.5 6a9 9 0 0 1 0 12"/></svg>
+        </button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Cambia tema chiaro o scuro" title="Tema chiaro / scuro">
+          <svg class="ico-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.6M12 19.4V22M2 12h2.6M19.4 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>
+          <svg class="ico-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mainNav">
+          <span class="menu-lines" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="menu-label">Menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <div id="app" class="app">
+      <div class="wrap loading-shell" id="loadingShell">
+        <div class="loading-pulse" aria-hidden="true"></div>
+        <p>Sto preparando la stanza d'ascolto…</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <p class="footer-title">Psicologo Digitale</p>
+        <p class="footer-sub">Una stanza d'ascolto preliminare, sul tuo dispositivo.</p>
+        <p class="footer-badge"><span class="dot"></span> Gratuito · Senza account · Anche offline</p>
+        <p class="footer-credit">Ideato, scritto e sviluppato da <strong>Danilo D'Auria</strong><br>un progetto <strong>FeniceOS</strong></p>
+      </div>
+      <div>
+        <h2 class="footer-h">Percorso</h2>
+        <ul class="footer-links">
+          <li><a href="#/colloquio">Colloquio preliminare</a></li>
+          <li><a href="#/valutazione">Questionari</a></li>
+          <li><a href="#/percorso">Percorso in otto tappe</a></li>
+          <li><a href="#/sedute">Sedute e tempi</a></li>
+          <li><a href="#/esercizi">Esercizi guidati</a></li>
+          <li><a href="#/relazione">Relazione in PDF</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="footer-h">Conoscenza</h2>
+        <ul class="footer-links">
+          <li><a href="#/manuale">Manuale</a></li>
+          <li><a href="#/palestra">Palestra della mente</a></li>
+          <li><a href="#/glossario">Glossario</a></li>
+          <li><a href="#/sicurezza">Sicurezza e numeri utili</a></li>
+          <li><a href="#/licenze">Licenze e progetto</a></li>
+        </ul>
+      </div>
+      <div class="footer-note">
+        <p class="footer-h">Avvertenza</p>
+        <p>Questo programma è <strong>educativo e di orientamento</strong>. Non formula diagnosi, non prescrive terapie e non sostituisce il parere di uno psicologo, di uno psicoterapeuta o di un medico. In caso di emergenza chiama il <strong>112</strong>.</p>
+        <p class="footer-license">Codice MIT · Contenuti CC BY-NC-SA 4.0 · «Psicologo Digitale» e «Neura» di Danilo D'Auria.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/js/data-scales.js"></script>
+  <script src="assets/js/data-intake.js"></script>
+  <script src="assets/js/data-course.js"></script>
+  <script src="assets/js/data-manual.js"></script>
+  <script src="assets/js/data-manual2.js"></script>
+  <script src="assets/js/data-extra.js"></script>
+  <script src="assets/js/data-quiz.js"></script>
+  <script src="assets/js/neura.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/app-intake.js"></script>
+  <script src="assets/js/app-scales.js"></script>
+  <script src="assets/js/app-course.js"></script>
+  <script src="assets/js/app-neura.js"></script>
+  <script src="assets/js/app-views.js"></script>
+  <script src="assets/js/app-report.js"></script>
+  <script src="assets/js/app-init.js"></script>
+</body>
+</html>

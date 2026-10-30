@@ -1,0 +1,33 @@
+{
+  "name": "psicologo-digitale",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": "https://danilodauria.github.io/psicologo-digitale/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danilodauria/psicologo-digitale.git"
+  },
+  "description": "Pre-analisi guidata, colloquio con Neura, sei questionari di autovalutazione, percorso in otto tappe ed esercizi, relazione PDF per il professionista. PWA statica in italiano, anche offline.",
+  "author": "Danilo D'Auria",
+  "license": "MIT",
+  "keywords": [
+    "psicologia",
+    "salute mentale",
+    "pre-analisi",
+    "autovalutazione",
+    "psicoeducazione",
+    "PWA",
+    "offline"
+  ],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "serve": "python3 -m http.server 3000 --bind 0.0.0.0",
+    "icons": "python3 scripts/make_icons.py",
+    "test": "node tests/verify.cjs && node tests/dom-test.cjs",
+    "test:data": "node tests/verify.cjs",
+    "test:dom": "node tests/dom-test.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}
