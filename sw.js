@@ -3,7 +3,7 @@
    Licenza del codice: MIT · Danilo D'Auria
    ========================================================================== */
 
-const VERSION = "psd-v1.0.0";
+const VERSION = "psd-v1.1.0";
 
 const ASSETS = [
   "./",
@@ -20,6 +20,8 @@ const ASSETS = [
   "assets/js/data-manual2.js",
   "assets/js/data-extra.js",
   "assets/js/data-quiz.js",
+  "assets/js/data-nutrizione.js",
+  "assets/js/data-ai.js",
   "assets/js/neura.js",
   "assets/js/app.js",
   "assets/js/app-intake.js",
@@ -27,6 +29,8 @@ const ASSETS = [
   "assets/js/app-course.js",
   "assets/js/app-neura.js",
   "assets/js/app-views.js",
+  "assets/js/app-nutrizione.js",
+  "assets/js/app-installa.js",
   "assets/js/app-report.js",
   "assets/js/app-init.js"
 ];

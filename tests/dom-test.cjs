@@ -44,6 +44,8 @@ const scripts = [
   "assets/js/data-manual2.js",
   "assets/js/data-extra.js",
   "assets/js/data-quiz.js",
+  "assets/js/data-nutrizione.js",
+  "assets/js/data-ai.js",
   "assets/js/neura.js",
   "assets/js/app.js",
   "assets/js/app-intake.js",
@@ -51,6 +53,8 @@ const scripts = [
   "assets/js/app-course.js",
   "assets/js/app-neura.js",
   "assets/js/app-views.js",
+  "assets/js/app-nutrizione.js",
+  "assets/js/app-installa.js",
   "assets/js/app-report.js",
   "assets/js/app-init.js"
 ];
@@ -240,6 +244,17 @@ setTimeout(function () {
   ok(document.body.textContent.indexOf("Danilo D'Auria") >= 0, "la pagina licenze attribuisce l'opera");
   ok(document.body.textContent.indexOf("CC BY-NC-SA 4.0") >= 0, "la pagina licenze cita la licenza dei contenuti");
   ok(document.getElementById("backupBtn"), "è disponibile l'esportazione del backup");
+
+  /* Nutrizione e installazione -------------------------------------------- */
+
+  navigate("#/nutrizione");
+  ok(document.body.textContent.indexOf("Dietista") >= 0, "la sezione nutrizione spiega chi è il dietista");
+  ok(document.body.textContent.indexOf("112") >= 0, "la sezione nutrizione indica il 112");
+  ok(document.querySelectorAll(".card").length >= 8, "la sezione nutrizione compone le schede");
+
+  navigate("#/installa");
+  ok(!!document.getElementById("ollamaCheck"), "la pagina installa offre la verifica di Ollama");
+  ok(document.body.textContent.indexOf("Ollama") >= 0, "la pagina installa descrive il modello locale");
 
   /* Tema ------------------------------------------------------------------ */
 

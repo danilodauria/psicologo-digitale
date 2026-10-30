@@ -303,7 +303,7 @@ NP.app = (function () {
     return { name: parts[0] || "home", params: parts.slice(1) };
   }
 
-  const MORE_ROUTES = ["sedute", "esercizi", "manuale", "palestra", "glossario", "sicurezza", "relazione", "licenze"];
+  const MORE_ROUTES = ["sedute", "esercizi", "nutrizione", "manuale", "palestra", "glossario", "sicurezza", "relazione", "licenze", "installa"];
 
   function updateNav(name) {
     document.querySelectorAll("[data-nav]").forEach(function (a) {
@@ -402,6 +402,11 @@ NP.app = (function () {
       "</div></section>" +
 
       '<section class="section"><blockquote class="quote">Un programma non può sostituire una persona. Può però aiutarti ad arrivare preparato, con parole più precise e domande migliori.<footer>Il progetto · Psicologo Digitale</footer></blockquote></section>' +
+
+      '<section class="section"><div class="grid grid-2">' +
+        '<a class="card card-link" href="#/nutrizione"><div class="card-icon">' + icon("heart") + "</div><h3>Nutrizione e umore</h3><p>Come cibo, sonno ed energia si parlano, cosa chiedere a dietista o dietologo e quali segnali non vale la pena aspettare.</p><span class=\"go\">Apri la sezione " + icon("arrow") + "</span></a>" +
+        '<a class="card card-link" href="#/installa"><div class="card-icon">' + icon("download") + "</div><h3>Portala con te</h3><p>Installa l'app sul telefono o sul computer, usala senza connessione e, se vuoi, aggiungi un modello locale con Ollama.</p><span class=\"go\">Installa " + icon("arrow") + "</span></a>" +
+      "</div></section>" +
 
       '<section class="section"><div class="card"><h3>Prima di cominciare, tre cose da sapere</h3><ul class="list-check">' +
         "<li>I dati restano nel browser del tuo dispositivo. Non c'è un server, non c'è un account.</li>" +

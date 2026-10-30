@@ -41,6 +41,8 @@ Il programma non prova a "fare lo psicologo". Prova a fare bene una cosa diversa
 | **Palestra della mente** | 36 domande divulgative in sei aree, con spiegazioni: miti da smontare, evidenze, linguaggio corretto. |
 | **Glossario** | 48 voci di psicologia clinica, metodo e terapia, con ricerca istantanea. |
 | **Sicurezza** | 112, Telefono Amico, Samaritans, Telefono Azzurro, 1522, 114. Segnali d'allarme, cosa fare subito, indicazioni per minori e violenza. |
+| **Nutrizione** | Alimentazione e umore: cinque principi, un piatto di riferimento, ritmo dei pasti, differenze tra dietista, dietologo e biologo nutrizionista, segnali dei disturbi alimentari, domande per il professionista. Nessuna dieta e nessuna prescrizione. |
+| **Installa** | Installazione come app su Android, iPhone e computer, uso offline e guida facoltativa a **Ollama**: riconosce sistema e memoria dichiarata dal browser, indica il pacchetto giusto e il modello adatto, verifica il collegamento locale. |
 | **Licenze** | Attribuzione, licenze, privacy, backup, cancellazione dati, FAQ e fonti. |
 
 ## Neura, il consulente digitale
@@ -55,6 +57,12 @@ Neura **non è un modello linguistico generativo** e non chiama servizi esterni.
 Quando non trova una risposta affidabile, **lo dice**. È una scelta di progetto: meglio un assistente che ammette i limiti che una macchina che sembra sapere tutto.
 
 La voce usa `speechSynthesis` del dispositivo: nessun audio lascia il computer. Il pulsante dell'altoparlante in alto attiva o disattiva la lettura; `Esc` o **Stop** la interrompono.
+
+### Ollama, se lo vuoi
+
+La sezione **Installa** offre anche una via facoltativa: un modello generativo che gira sul tuo computer con [Ollama](https://ollama.com). La pagina legge sistema operativo, core, memoria dichiarata e scheda grafica dal browser, propone il pacchetto corretto e il modello che quella memoria regge, mostra i comandi `ollama pull` e `ollama run` pronti da copiare e verifica il collegamento su `127.0.0.1:11434`.
+
+Resta un extra dichiarato: Neura non lo usa, non gli passa i tuoi dati e le risposte verificate restano quelle del programma. Un modello generico non conosce il manuale e può sbagliare con sicurezza; la pagina lo dice prima di ogni risposta. Se il browser blocca la chiamata locale, basta autorizzare l'origine una volta con `OLLAMA_ORIGINS`: il comando esatto è indicato nella pagina, per ogni sistema.
 
 ## Il colloquio, in dettaglio
 

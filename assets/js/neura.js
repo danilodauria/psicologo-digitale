@@ -234,6 +234,24 @@ NP.neura = (function () {
       };
     }
 
+    if (/(ollama|ia locale|intelligenza artificiale locale|modello locale|installare|installo|scaricare l app|installazione|senza connessione|offline)/.test(t)) {
+      return {
+        html: "<p>L'app si installa dal browser: su Android scegli «Installa app» dal menu, su iPhone «Condividi» e poi «Aggiungi alla schermata Home». Sul computer, con Chrome o Edge, l'icona di installazione compare nella barra degli indirizzi. Dopo la prima apertura funziona anche senza connessione.</p>" +
+          "<p>Se poi ti va, puoi aggiungere <strong>Ollama</strong>: è un modello generativo gratuito che gira sul tuo computer, senza mandare nulla in rete. Nella pagina dedicata trovo il sistema che stai usando e ti dico quale versione scaricare e quanto pesa il modello adatto alla tua memoria. Non è obbligatorio: io funziono lo stesso, e resto la voce che conosce davvero i contenuti del programma.</p>" +
+          '<p class="mini">' + link("installa", "Installa l'app e l'IA locale") + "</p>",
+        suggest: ["Come installo l'app sul telefono?", "Che modello scelgo per il mio computer?", "Funziona senza internet?"]
+      };
+    }
+
+    if (/(dieta|dietolog|dietista|nutrizion|alimentaz|mangiare|cibo|peso|corpo|colazione|pranzo|cena|spuntino)/.test(t)) {
+      return {
+        html: "<p>Il cibo e l'umore si muovono insieme: pasti regolari, fibra, sonno e luce del mattino contano più di qualsiasi «superfood». Non esiste un alimento che curi l'ansia o la depressione, e non esiste una dieta valida per tutti.</p>" +
+          "<p>Nella sezione dedicata trovo cosa dicono le indicazioni italiane, un'immagine pratica del piatto, i segnali da non aspettare e la differenza tra <strong>dietista</strong>, <strong>dietologo</strong> e <strong>biologo nutrizionista</strong>. Non ti prescrivo diete: non è il mio ruolo e non sarebbe sicuro.</p>" +
+          '<p class="mini">' + link("nutrizione", "Nutrizione e umore") + " · " + link("diario", "Diario") + "</p>",
+        suggest: ["Cosa mangio per dormire meglio?", "Chi devo consultare?", "Il cibo può curare l'ansia?"]
+      };
+    }
+
     if (/(esercizio|cosa posso fare (adesso|subito|ora)|tecnica|calmarmi|respirare|respir)/.test(t)) {
       const ex = findExercise(t, ws) || esercizi.filter(function (e) { return e.id === "respiro-4-6"; })[0];
       return { html: exerciseHTML(ex), suggest: ["Un esercizio per l'ansia", "Un esercizio per dormire", "Tutti gli esercizi"] };

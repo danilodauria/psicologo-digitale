@@ -35,6 +35,8 @@ const dataFiles = [
   "assets/js/data-manual2.js",
   "assets/js/data-extra.js",
   "assets/js/data-quiz.js",
+  "assets/js/data-nutrizione.js",
+  "assets/js/data-ai.js",
   "assets/js/neura.js"
 ];
 
@@ -235,6 +237,38 @@ ok(/respiro|ancoraggio/i.test(esercizio.html), "Neura propone un esercizio perti
 
 const privacy = ask("dove finiscono i miei dati?");
 ok(/localStorage|dispositivo/i.test(privacy.html), "Neura spiega dove restano i dati");
+
+/* Nutrizione e IA locale --------------------------------------------------- */
+
+const nut = NP.data.nutrizione;
+ok(!!nut, "esiste la sezione nutrizione");
+ok(nut.principi.length >= 4, "la nutrizione espone i principi guida");
+ok(nut.professionisti.length >= 4, "la nutrizione distingue le professioni");
+ok(nut.professionisti.some((p) => /Dietista/.test(p.ruolo)), "è spiegato il ruolo del dietista");
+ok(nut.professionisti.some((p) => /Dietologo/.test(p.ruolo)), "è spiegato il ruolo del dietologo");
+ok(nut.professionisti.some((p) => /Biologo/.test(p.ruolo)), "è spiegato il ruolo del biologo nutrizionista");
+ok(nut.segnali.length >= 6, "la nutrizione elenca i segnali d'allarme");
+ok(/112/.test(nut.segnaliNota), "i segnali rinviano al 112");
+ok(nut.limiti.length >= 4, "la nutrizione dichiara i propri limiti");
+ok(nut.fonti.length >= 5, "la nutrizione cita fonti istituzionali");
+ok(nut.avviso && /non sostituisce|professionista/i.test(nut.avviso + nut.limiti.join(" ")), "la nutrizione dichiara di non sostituire i professionisti");
+ok(!/devi mangiare|prescrivo|segui questa dieta|leetcode/i.test(JSON.stringify(nut)), "la nutrizione non contiene prescrizioni");
+
+const ai = NP.data.ai;
+ok(ai.build.windows && ai.build.mac && ai.build.linux, "il catalogo IA copre i tre sistemi");
+ok(ai.modelli.length >= 3, "il catalogo IA elenca più modelli");
+ai.modelli.forEach((m) => ok(m.id && m.ramMin > 0 && m.uso, "il modello " + m.id + " è descritto"));
+ok(/^https:\/\/ollama\.com\//.test(ai.build.windows.url), "il download punta al sito ufficiale di Ollama");
+ok(ai.avvertenze.length >= 3, "l'IA locale ha avvertenze d'uso");
+ok(/OLLAMA_ORIGINS/.test(ai.comandi.windows), "è indicato il permesso d'origine richiesto da Ollama");
+
+ok(/#\/nutrizione/.test(html), "index.html collega la sezione nutrizione");
+ok(/#\/installa/.test(html), "index.html collega la pagina di installazione");
+
+const nutrizioneRisposta = ask("cosa devo mangiare per l'ansia?");
+ok(/nutrizione/i.test(nutrizioneRisposta.html), "Neura rimanda alla sezione nutrizione");
+const installaRisposta = ask("come installo ollama?");
+ok(/Ollama/.test(installaRisposta.html), "Neura spiega come installare Ollama");
 
 /* Relazione e PDF --------------------------------------------------------- */
 
