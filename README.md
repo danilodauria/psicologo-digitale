@@ -104,7 +104,12 @@ Oltre alla PWA il repository produce i pacchetti desktop per Windows, Linux e ma
 | macOS Intel | `Psicologo-Digitale-Mac-x64.dmg` | |
 | macOS Apple Silicon | `Psicologo-Digitale-Mac-arm64.dmg` | |
 
-I download stanno nella [pagina delle release](https://github.com/danilodauria/psicologo-digitale/releases/latest). I pacchetti non sono firmati con un certificato commerciale: al primo avvio Windows può chiedere conferma (*Altro informazioni* → *Esegui comunque*) e macOS può richiedere il tasto destro → *Apri*. Le impronte SHA-256 permettono di verificare che il file scaricato sia quello pubblicato.
+I download stanno nella [pagina delle release](https://github.com/danilodauria/psicologo-digitale/releases/latest) e i link diretti sono questi:
+
+- [Windows x64](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Windows-x64.exe) · [portatile ZIP](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Windows-portatile.zip)
+- [Linux .deb](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Linux-amd64.deb) · [AppImage](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Linux-x86_64.AppImage)
+- [macOS Apple Silicon](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Mac-arm64.dmg) · [macOS Intel](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Mac-x64.dmg)
+ I pacchetti non sono firmati con un certificato commerciale: al primo avvio Windows può chiedere conferma (*Altro informazioni* → *Esegui comunque*) e macOS può richiedere il tasto destro → *Apri*. Le impronte SHA-256 permettono di verificare che il file scaricato sia quello pubblicato.
 
 ### Come si costruiscono
 

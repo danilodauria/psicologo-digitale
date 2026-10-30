@@ -12,6 +12,12 @@
   const AI = NP.data.ai;
   const HOST = "http://127.0.0.1:11434";
   const SCARICA = "https://github.com/danilodauria/psicologo-digitale/releases/latest";
+  const PACCHETTI = {
+    windows: SCARICA + "/download/Psicologo-Digitale-Windows-x64.exe",
+    linux: SCARICA + "/download/Psicologo-Digitale-Linux-amd64.deb",
+    mac: SCARICA + "/download/Psicologo-Digitale-Mac-arm64.dmg",
+    macIntel: SCARICA + "/download/Psicologo-Digitale-Mac-x64.dmg"
+  };
 
   let promptEvent = null;
   if (window.addEventListener) {
@@ -244,7 +250,13 @@
           "<li><strong>Linux</strong> — pacchetto <code>.deb</code> per Debian, Ubuntu e derivate, oppure <code>.AppImage</code> da rendere eseguibile senza installare nulla.</li>" +
           "<li><strong>macOS</strong> — <code>.dmg</code> per Intel e per Apple Silicon.</li>" +
         "</ul>" +
-        '<div class="btn-row mt-1"><a class="btn btn-primary btn-sm" href="' + SCARICA + '" target="_blank" rel="noopener">' + A.icon("download") + "Apri i download</a>" +
+        '<div class="btn-row mt-1">' +
+          '<a class="btn btn-soft btn-sm" href="' + PACCHETTI.windows + '">' + A.icon("download") + "Windows .exe</a>" +
+          '<a class="btn btn-soft btn-sm" href="' + PACCHETTI.linux + '">' + A.icon("download") + "Linux .deb</a>" +
+          '<a class="btn btn-soft btn-sm" href="' + PACCHETTI.mac + '">' + A.icon("download") + "macOS Apple Silicon</a>" +
+          '<a class="btn btn-ghost btn-sm" href="' + PACCHETTI.macIntel + '">macOS Intel</a>' +
+        "</div>" +
+        '<div class="btn-row mt-1"><a class="btn btn-ghost btn-sm" href="' + SCARICA + '" target="_blank" rel="noopener">Tutti i file della versione</a>' +
           '<a class="btn btn-ghost btn-sm" href="https://github.com/danilodauria/psicologo-digitale#programmi-installabili" target="_blank" rel="noopener">Come si installano</a></div>' +
         '<p class="text-small muted mt-2">I pacchetti non sono firmati con un certificato commerciale: al primo avvio Windows può chiedere conferma (<em>Altro informazioni</em>, <em>Esegui comunque</em>) e macOS può richiedere il tasto destro, <em>Apri</em>. Nella pagina della versione trovi anche <code>SHA256SUMS.txt</code> per controllare i file scaricati.</p></div>' +
 
