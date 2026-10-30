@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    tags: ["v*"]
+    tags: ["v*", "psd-v*"]
 
 permissions:
   contents: write
@@ -17,7 +17,7 @@ jobs:
   build:
     name: ${{ matrix.os }}
     # Le build servono per i tag; su main gira solo il job delle impronte.
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/psd-v') || github.event_name == 'workflow_dispatch'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -97,7 +97,7 @@ jobs:
     needs: build
     if: >-
       always() && !cancelled() &&
-      (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
+      (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/psd-v') || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - name: Individua la release
@@ -126,7 +126,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.rel.outputs.tag }}
-          DA_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          DA_TAG: ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/psd-v') }}
         run: |
           set -euo pipefail
           # GitHub calcola il digest SHA-256 di ogni allegato al caricamento:
