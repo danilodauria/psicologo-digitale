@@ -10,3 +10,8 @@ artifacts/
 
 # Python
 __pycache__/
+
+# Desktop
+desktop/app/
+desktop/dist/
+desktop/node_modules/

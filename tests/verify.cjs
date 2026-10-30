@@ -305,6 +305,31 @@ ok(/vademecum-clinico-psicologo-digitale\.pdf/.test(html), "il footer collega la
 ok(exists("scripts/build_vademecum_clinico.py") && /limiti dichiarati/i.test(read("scripts/build_vademecum_clinico.py")), "il generatore della guida dichiara i limiti");
 ok(/clinico/.test(read("scripts/export-data.cjs")), "l'esportazione include i dati per la guida del clinico");
 
+/* Programmi installabili e benvenuto --------------------------------------- */
+
+ok(exists("desktop/package.json"), "esiste la configurazione dei pacchetti desktop");
+const desk = exists("desktop/package.json") ? read("desktop/package.json") : "";
+ok(/it\.feniceos\.psicologodigitale/.test(desk), "l'app desktop ha un identificativo proprio");
+ok(/nsis/.test(desk) && /dmg/.test(desk) && /"deb"/.test(desk), "i pacchetti coprono Windows, macOS e Linux");
+ok(/electron-builder/.test(desk), "i pacchetti sono costruiti con electron-builder");
+ok(exists("desktop/main.cjs") && /127\.0\.0\.1:11434/.test(read("desktop/main.cjs")), "il contenitore desktop parla con Ollama");
+ok(/ipcMain\.handle\("ollama:tags"/.test(read("desktop/main.cjs")), "il processo principale espone i modelli installati");
+ok(exists("desktop/preload.cjs") && /contextBridge/.test(read("desktop/preload.cjs")), "il preload espone un ponte isolato");
+ok(exists("scripts/prepare-desktop.cjs") && /desktop/.test(read("scripts/prepare-desktop.cjs")), "lo script prepara il contenuto desktop");
+ok(exists("desktop/build/icon.png"), "l'icona dei pacchetti è nel progetto");
+
+ok(/app-welcome\.js/.test(html), "index.html carica il benvenuto di Neura");
+const welcome = exists("assets/js/app-welcome.js") ? read("assets/js/app-welcome.js") : "";
+ok(/Sono Neura/.test(welcome), "Neura si presenta all'apertura");
+ok(/speechSynthesis|NP\.neuraUI\.speak/.test(welcome), "il benvenuto usa la voce del dispositivo");
+ok(/welcome-hidden/.test(welcome), "il benvenuto si può nascondere");
+
+const inst = read("assets/js/app-installa.js");
+ok(/api\/tags/.test(inst), "la pagina installa legge i modelli presenti");
+ok(/Installato sul tuo computer/.test(inst), "il modello installato viene evidenziato");
+ok(/releases\/latest/.test(inst), "la pagina installa rimanda ai pacchetti desktop");
+ok(/npDesktop/.test(inst), "la pagina usa il ponte desktop quando è disponibile");
+
 /* Relazione e PDF --------------------------------------------------------- */
 
 ok(/buildPdf|NP\.reportPdf/.test(read("assets/js/app-report.js")), "il generatore PDF è presente");

@@ -1669,3 +1669,48 @@ html[data-theme="dark"] .emergency-box h2, html[data-theme="dark"] .emergency-bo
 
   .card, .callout, .quiz-card, .intake-card { break-inside: avoid; box-shadow: none !important; }
 }
+
+/* Benvenuto di Neura -------------------------------------------------------- */
+
+.welcome-panel {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 70;
+  width: min(380px, calc(100vw - 24px));
+  background: var(--carta, #fffdf8);
+  border: 1px solid var(--bordo, #e4dfd4);
+  border-radius: var(--radius, 18px);
+  box-shadow: var(--ombra-alta, 0 30px 60px -30px rgba(27, 35, 51, .42));
+  padding: 14px 16px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.welcome-panel.is-open { opacity: 1; transform: none; }
+
+.welcome-head { display: flex; align-items: center; gap: 10px; }
+.welcome-head strong { display: block; font-family: var(--serif, Georgia, serif); font-size: 1.02rem; color: var(--indaco-700, #22345c); }
+.welcome-role { display: block; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--inchiostro-faint, #6d7688); }
+.welcome-orb {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #8fa6cf, #22345c 68%);
+  box-shadow: 0 0 0 4px rgba(61, 91, 150, .12);
+}
+.welcome-x { margin-left: auto; background: none; border: 0; cursor: pointer; padding: 0 2px; font-size: 1.4rem; line-height: 1; color: var(--inchiostro-faint, #6d7688); }
+.welcome-body { margin-top: 8px; font-size: .9rem; line-height: 1.5; color: var(--inchiostro, #1b2333); }
+.welcome-body p { margin: 0 0 .5rem; }
+.welcome-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.welcome-actions .btn { font-size: .8rem; }
+
+@media (max-width: 640px) {
+  .welcome-panel { left: 12px; right: 12px; bottom: 12px; width: auto; }
+}
+
+@media print {
+  .welcome-panel { display: none !important; }
+}

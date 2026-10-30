@@ -1,0 +1,76 @@
+{
+  "name": "psicologo-digitale",
+  "version": "1.2.0",
+  "private": true,
+  "description": "Psicologo Digitale per Windows, Linux e macOS: colloquio guidato, questionari, percorso, relazione e guida, anche offline.",
+  "author": "Danilo D'Auria",
+  "homepage": "https://danilodauria.github.io/psicologo-digitale/",
+  "license": "MIT",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --publish never",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:linux": "electron-builder --linux --publish never",
+    "dist:mac": "electron-builder --mac --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "it.feniceos.psicologodigitale",
+    "productName": "Psicologo Digitale",
+    "copyright": "Copyright © 2026 Danilo D'Auria · FeniceOS",
+    "artifactName": "Psicologo-Digitale-${version}-${os}-${arch}.${ext}",
+    "publish": null,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "app/**/*"
+    ],
+    "extraMetadata": {
+      "main": "main.cjs"
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "artifactName": "Psicologo-Digitale-Windows-${arch}.${ext}",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Psicologo Digitale",
+      "uninstallDisplayName": "Psicologo Digitale"
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.healthcare-fitness",
+      "artifactName": "Psicologo-Digitale-Mac-${arch}.${ext}",
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] }
+      ]
+    },
+    "dmg": {
+      "title": "Psicologo Digitale"
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "artifactName": "Psicologo-Digitale-Linux-${arch}.${ext}",
+      "category": "Education",
+      "packageCategory": "education",
+      "maintainer": "Danilo D'Auria",
+      "synopsis": "Colloquio guidato, questionari e relazione, offline",
+      "description": "Psicologo Digitale raccoglie un colloquio preliminare guidato con Neura, sei questionari di autovalutazione, un percorso in otto tappe, esercizi, una guida al professionista e la relazione in PDF. Funziona senza Internet, senza account e senza inviare dati.",
+      "target": ["deb", "AppImage"]
+    }
+  }
+}

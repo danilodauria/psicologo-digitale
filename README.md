@@ -92,6 +92,31 @@ node scripts/export-data.cjs
 
 `scripts/export-data.cjs` estrae i dati dall'app (questionari, fasi, esercizi, sicurezza, nutrizione, fonti) in `assets/data/vademecum.json`; `scripts/build_vademecum.py` impagina A5 e A4 con `reportlab` e impone il libricino con `pymupdf`; `scripts/build_vademecum_clinico.py` riusa gli stessi stili per la guida del professionista. I PDF sono artefatti versionati: il sito li serve come file statici e non li genera a runtime.
 
+## Programmi installabili
+
+Oltre alla PWA il repository produce i pacchetti desktop per Windows, Linux e macOS: stessa app, finestra propria, icona nel menu avvio, nessun browser di mezzo. Li costruisce GitHub Actions (`.github/workflows/desktop.yml`) quando si pubblica un tag `v*`, e li allega alla release insieme a `SHA256SUMS.txt`.
+
+| Sistema | File | Note |
+|---|---|---|
+| Windows | `Psicologo-Digitale-Windows-x64.exe` | installatore NSIS, cartella a scelta e collegamento sul desktop; c'è anche la versione portatile in ZIP |
+| Linux | `Psicologo-Digitale-Linux-amd64.deb` | Debian, Ubuntu e derivate |
+| Linux | `Psicologo-Digitale-Linux-x86_64.AppImage` | nessuna installazione: `chmod +x` e avvio |
+| macOS Intel | `Psicologo-Digitale-Mac-x64.dmg` | |
+| macOS Apple Silicon | `Psicologo-Digitale-Mac-arm64.dmg` | |
+
+I download stanno nella [pagina delle release](https://github.com/danilodauria/psicologo-digitale/releases/latest). I pacchetti non sono firmati con un certificato commerciale: al primo avvio Windows può chiedere conferma (*Altro informazioni* → *Esegui comunque*) e macOS può richiedere il tasto destro → *Apri*. Le impronte SHA-256 permettono di verificare che il file scaricato sia quello pubblicato.
+
+### Come si costruiscono
+
+```bash
+node scripts/prepare-desktop.cjs
+cd desktop
+npm ci
+npm run dist:linux   # oppure dist:win / dist:mac
+```
+
+`scripts/prepare-desktop.cjs` copia il sito in `desktop/app` (che resta fuori dal versionamento); `desktop/main.cjs` apre quella cartella con Electron e fa da ponte verso Ollama, così la versione desktop non ha bisogno di `OLLAMA_ORIGINS`. La stessa finestra è un normale Chromium isolato: `contextIsolation`, `sandbox` e nessun accesso a Node dalla pagina.
+
 ## Il colloquio, in dettaglio
 
 1. **Accoglienza** — consenso informato, nome facoltativo, fascia d'età, per chi si sta facendo il percorso, da dove si vuole iniziare. Se minorenne, compare un avviso specifico.

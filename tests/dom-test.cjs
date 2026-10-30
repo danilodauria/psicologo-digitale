@@ -56,7 +56,8 @@ const scripts = [
   "assets/js/app-nutrizione.js",
   "assets/js/app-installa.js",
   "assets/js/app-report.js",
-  "assets/js/app-init.js"
+  "assets/js/app-init.js",
+  "assets/js/app-welcome.js"
 ];
 
 let loadError = null;
