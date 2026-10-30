@@ -148,7 +148,6 @@ assets/
 scripts/make_icons.py       # rigenera le icone PNG (senza dipendenze)
 tests/verify.cjs            # integrità dati, collegamenti, Neura
 tests/dom-test.cjs          # interfaccia con jsdom
-.github/workflows/pages.yml # pubblicazione su GitHub Pages
 ```
 
 Architettura: **PWA statica**, nessuna dipendenza a runtime, nessun build step. I dati sono file JavaScript; il routing è a hash; lo stato è in `localStorage` con prefisso `psicologo-digitale:v1:`.
@@ -182,12 +181,11 @@ Il sito è un *project site* di GitHub Pages: l'applicazione vive in una sottoca
 
 ### Come avviene la pubblicazione
 
-1. Un push su `main` avvia `.github/workflows/pages.yml`.
-2. Il job `test` installa le dipendenze con `npm ci` ed esegue `npm test`: se una verifica fallisce, la pubblicazione si ferma.
-3. Il job `deploy` toglie dipendenze e test dall'artefatto, carica la cartella e pubblica con `actions/deploy-pages`.
-4. Una sola volta, nel repository: **Settings → Pages → Source: GitHub Actions**.
+Pages è impostato su **Deploy from a branch**: ramo `main`, cartella `/`. Ogni push su `main` rigenera il sito in meno di un minuto, senza build e senza dipendenze: il progetto è statico e viene servito così com'è.
 
-`.nojekyll` è presente, quindi Jekyll non interferisce con i file del progetto.
+`.nojekyll` è presente, quindi Jekyll non interferisce con i file del progetto; i percorsi restano relativi e l'app funziona anche nella sottocartella.
+
+Per pubblicare soltanto dopo i test si può aggiungere un workflow GitHub Actions, ma serve lo scope `workflow` sul token: senza di esso GitHub rifiuta il push dei file in `.github/workflows/`.
 
 ### Aggiornare il sito
 
