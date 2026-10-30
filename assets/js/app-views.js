@@ -301,6 +301,13 @@
         "</div>" +
         '<p class="text-small muted mt-2">Il libricino A4 contiene le stesse pagine in formato A5 già impostate: si stampa fronte-retro, si piega in due e diventa un opuscolo da quattro fogli. Codice MIT, contenuti CC BY-NC-SA 4.0.</p></div>' +
 
+      '<div class="card mt-2"><h3>Guida per il professionista</h3>' +
+        '<p>Un secondo documento, scritto per chi riceve la relazione: che cosa contiene il PDF, come si leggono i punteggi dei sei questionari fascia per fascia e quali sono i limiti dichiarati del programma.</p>' +
+        '<div class="btn-row mt-2">' +
+          '<a class="btn btn-soft btn-sm" href="assets/pdf/vademecum-clinico-psicologo-digitale.pdf" download>' + A.icon("download") + "Guida per il clinico · A4</a>" +
+        "</div>" +
+        '<p class="text-small muted mt-2">Serve a rendere il primo colloquio più preciso, non a sostituirlo: il documento resta un\'autovalutazione, non un test validato.</p></div>' +
+
       '<div class="card mt-2"><h3>Domande frequenti</h3>' +
         NP.data.faq.map(function (f) {
           return '<details style="border-top:1px solid var(--line);padding:.7rem 0"><summary style="cursor:pointer;font-weight:600">' + esc(f.d) + '</summary><p class="text-small mt-1">' + esc(f.r) + "</p></details>";
@@ -311,7 +318,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.1.0 · ottobre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria.</p>'
+      '<p class="text-small muted mt-3">Versione 1.1.1 · ottobre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria.</p>'
     );
 
     const backup = document.getElementById("backupBtn");

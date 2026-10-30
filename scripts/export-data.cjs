@@ -84,6 +84,35 @@ const dati = {
   fonti: d.fonti.map((f) => ({ t: f.t, u: f.u }))
 };
 
+/* Dati per la guida del clinico: struttura degli strumenti, item e fasce. */
+dati.clinico = {
+  scales: d.scales.map((s) => ({
+    id: s.id,
+    sigla: s.sigla,
+    titolo: s.titolo,
+    area: s.area,
+    tempo: s.tempo,
+    istruzioni: s.istruzioni,
+    perche: s.perche,
+    opzioni: s.opzioni,
+    item: s.items.length,
+    tipo: s.punteggio.tipo || "somma",
+    min: s.punteggio.min,
+    max: s.punteggio.max,
+    bande: s.punteggio.bande.map((b) => ({
+      fino: b.fino,
+      livello: b.livello,
+      label: b.label,
+      testo: b.testo
+    })),
+    inversi: s.items.filter((i) => i.inverso).length,
+    itemRischio: s.items.filter((i) => i.rischio).map((i) => i.k),
+    notaClinica: s.notaClinica,
+    cosaPortare: s.cosaPortare,
+    riferimenti: s.riferimenti
+  }))
+};
+
 const outDir = path.join(root, "assets", "data");
 fs.mkdirSync(outDir, { recursive: true });
 const outFile = path.join(outDir, "vademecum.json");

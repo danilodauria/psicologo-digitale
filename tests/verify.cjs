@@ -290,6 +290,21 @@ ok(/vademecum-psicologo-digitale\.pdf/.test(read("assets/js/app-views.js")), "la
 ok(/vademecum-psicologo-digitale\.pdf/.test(html), "il footer di index.html collega il vademecum");
 ok(exists("scripts/export-data.cjs") && /reportlab/.test(read("scripts/build_vademecum.py")), "il generatore del vademecum è nel progetto");
 
+/* Guida per il professionista --------------------------------------------- */
+
+const clinico = "assets/pdf/vademecum-clinico-psicologo-digitale.pdf";
+ok(exists(clinico), "esiste la guida per il professionista " + clinico);
+const cb = fs.readFileSync(path.join(root, clinico));
+ok(cb.slice(0, 5).toString("latin1") === "%PDF-", "la guida per il professionista è un PDF");
+const ct = cb.toString("latin1");
+ok(/%%EOF/.test(ct), "la guida per il professionista è chiusa correttamente");
+const cpages = (ct.match(/\/Type\s*\/Page[^s]/g) || []).length;
+ok(cpages >= 10, "la guida per il professionista ha almeno dieci pagine (" + cpages + ")");
+ok(/vademecum-clinico-psicologo-digitale\.pdf/.test(read("assets/js/app-views.js")), "la pagina licenze collega la guida per il professionista");
+ok(/vademecum-clinico-psicologo-digitale\.pdf/.test(html), "il footer collega la guida per il professionista");
+ok(exists("scripts/build_vademecum_clinico.py") && /limiti dichiarati/i.test(read("scripts/build_vademecum_clinico.py")), "il generatore della guida dichiara i limiti");
+ok(/clinico/.test(read("scripts/export-data.cjs")), "l'esportazione include i dati per la guida del clinico");
+
 /* Relazione e PDF --------------------------------------------------------- */
 
 ok(/buildPdf|NP\.reportPdf/.test(read("assets/js/app-report.js")), "il generatore PDF è presente");

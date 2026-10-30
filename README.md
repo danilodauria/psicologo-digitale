@@ -73,19 +73,24 @@ La guida tascabile è generata in tre versioni, tutte scaricabili dalla pagina *
 | `vademecum-psicologo-digitale.pdf` | A5, 15 pagine | Lettura su schermo e stampa tascabile |
 | `vademecum-psicologo-digitale-a4.pdf` | A4, 12 pagine | Stampa domestica con margini comodi |
 | `vademecum-psicologo-digitale-libricino-a4.pdf` | A4 orizzontale, 8 facciate | Libricino A5 già imposto: quattro fogli, fronte-retro |
+| `vademecum-clinico-psicologo-digitale.pdf` | A4, 16 pagine | Guida per lo psicologo che riceve la relazione |
 
 Contengono l'avvertenza, le otto fasi del colloquio, i sei questionari con la loro finalità, il percorso e gli esercizi, i segnali d'allarme con i numeri utili, la sezione sulla nutrizione, l'installazione e la checklist da portare al professionista. L'indice riporta i numeri di pagina reali.
+
+La quarta versione è un documento diverso, scritto per il clinico: descrive che cosa arriva in mano a chi riceve la relazione, come si legge ciascuno dei sei punteggi fascia per fascia (con la nota su che cosa non dice), gli errori frequenti, i limiti dichiarati in sedici punti, ciò che il programma non può sapere, i segnali che cambiano la priorità e dieci domande per il primo incontro. Chiude con una scheda di sintesi da tenere accanto alla relazione.
 
 ### Come si rigenera
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install reportlab pymupdf
-.venv/bin/python scripts/export-data.cjs
-.venv/bin/python scripts/build_vademecum.py   # oppure: npm run vademecum
+node scripts/export-data.cjs
+.venv/bin/python scripts/build_vademecum.py           # A5, A4 e libricino
+.venv/bin/python scripts/build_vademecum_clinico.py   # guida per il professionista
+# oppure, entrambi: npm run vademecum
 ```
 
-`scripts/export-data.cjs` estrae i dati dall'app (questionari, fasi, esercizi, sicurezza, nutrizione, fonti) in `assets/data/vademecum.json`; `scripts/build_vademecum.py` impagina A5 e A4 con `reportlab` e impone il libricino con `pymupdf`. I PDF sono artefatti versionati: il sito li serve come file statici e non li genera a runtime.
+`scripts/export-data.cjs` estrae i dati dall'app (questionari, fasi, esercizi, sicurezza, nutrizione, fonti) in `assets/data/vademecum.json`; `scripts/build_vademecum.py` impagina A5 e A4 con `reportlab` e impone il libricino con `pymupdf`; `scripts/build_vademecum_clinico.py` riusa gli stessi stili per la guida del professionista. I PDF sono artefatti versionati: il sito li serve come file statici e non li genera a runtime.
 
 ## Il colloquio, in dettaglio
 
@@ -179,6 +184,7 @@ assets/
 scripts/make_icons.py       # rigenera le icone PNG
 scripts/export-data.cjs     # esporta i dati dell'app per il Vademecum
 scripts/build_vademecum.py  # genera il Vademecum in PDF
+scripts/build_vademecum_clinico.py  # genera la guida per il professionista
 assets/pdf/                 # Vademecum A5, A4 e libricino imposto (senza dipendenze)
 tests/verify.cjs            # integrità dati, collegamenti, Neura
 tests/dom-test.cjs          # interfaccia con jsdom

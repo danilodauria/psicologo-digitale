@@ -7,3 +7,6 @@ pubblica/
 .DS_Store
 assets/data/
 artifacts/
+
+# Python
+__pycache__/

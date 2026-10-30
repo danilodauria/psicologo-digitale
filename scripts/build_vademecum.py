@@ -76,9 +76,9 @@ class Guida(BaseDocTemplate):
             rightMargin=self.margine,
             topMargin=self.margine + 6 * mm,
             bottomMargin=self.margine + 8 * mm,
-            title="Vademecum · Psicologo Digitale",
+            title=kw.get("titolo", "Vademecum · Psicologo Digitale"),
             author="Danilo D'Auria",
-            subject="Guida tascabile alla stanza d'ascolto",
+            subject=kw.get("soggetto", "Guida tascabile alla stanza d'ascolto"),
             keywords="psicologia, autovalutazione, PWA, vademecum, FeniceOS",
         )
         frame = Frame(
@@ -94,6 +94,7 @@ class Guida(BaseDocTemplate):
         )
         self.addPageTemplates([PageTemplate(id="pagina", frames=[frame], onPage=self.decoro)])
         self.versione = kw.get("versione", "")
+        self.etichetta = kw.get("etichetta", "Vademecum")
 
     def decoro(self, canvas, doc):
         larghezza, altezza = self.pagesize
@@ -108,7 +109,7 @@ class Guida(BaseDocTemplate):
         canvas.drawString(self.margine, altezza - self.margine + 4.2 * mm, "PSICOLOGO DIGITALE · LA STANZA D'ASCOLTO")
         if doc.page > 1:
             canvas.drawRightString(
-                larghezza - self.margine, altezza - self.margine + 4.2 * mm, "Vademecum · versione " + self.versione
+                larghezza - self.margine, altezza - self.margine + 4.2 * mm, self.etichetta + " · versione " + self.versione
             )
             canvas.drawCentredString(larghezza / 2, self.margine - 3 * mm, str(doc.page))
         canvas.restoreState()
