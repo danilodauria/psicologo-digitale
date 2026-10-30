@@ -1,0 +1,163 @@
+name: Pacchetti desktop
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "desktop-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    # Le build servono per i tag; su main gira solo il job delle impronte.
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            script: dist:linux
+            artifact: linux
+          - os: windows-latest
+            script: dist:win
+            artifact: windows
+          # Runner Intel: da lì si compilano entrambe le architetture macOS.
+          - os: macos-15-intel
+            script: dist:mac
+            artifact: macos
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Prepara il contenuto dell'app
+        run: node scripts/prepare-desktop.cjs
+
+      - name: Installa Electron
+        working-directory: desktop
+        run: npm ci --no-audit --no-fund
+
+      - name: Genera i pacchetti
+        working-directory: desktop
+        shell: bash
+        # Su macOS hdiutil a volte non riesce a smontare l'immagine appena
+        # creata (Exit code 16): un secondo tentativo risolve il problema.
+        run: |
+          npm run ${{ matrix.script }} || npm run ${{ matrix.script }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Crea la versione portatile (ZIP)
+        if: matrix.artifact == 'windows'
+        shell: pwsh
+        run: Compress-Archive -Path desktop/dist/win-unpacked/* -DestinationPath "desktop/dist/Psicologo-Digitale-Windows-portatile.zip"
+
+      - name: Carica gli artefatti
+        uses: actions/upload-artifact@v4
+        with:
+          name: psicologo-digitale-${{ matrix.artifact }}
+          path: |
+            desktop/dist/*.exe
+            desktop/dist/*.zip
+            desktop/dist/*.deb
+            desktop/dist/*.AppImage
+            desktop/dist/*.dmg
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Pubblica nella release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            desktop/dist/*.exe
+            desktop/dist/*.zip
+            desktop/dist/*.deb
+            desktop/dist/*.AppImage
+            desktop/dist/*.dmg
+          overwrite_files: true
+          generate_release_notes: true
+
+  checksums:
+    name: Impronte SHA-256
+    needs: build
+    if: >-
+      always() && !cancelled() &&
+      (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Individua la release
+        id: rel
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+          else
+            tag="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq '.tagName' 2>/dev/null || true)"
+          fi
+          if [[ -z "$tag" ]]; then
+            echo "::notice::Nessuna release pubblicata, niente impronte da calcolare."
+            echo "pronta=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "pronta=1" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Release di riferimento: $tag"
+
+      - name: Genera SHA256SUMS.txt
+        id: somme
+        if: steps.rel.outputs.pronta == '1'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.rel.outputs.tag }}
+          DA_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          set -euo pipefail
+          # GitHub calcola il digest SHA-256 di ogni allegato al caricamento:
+          # leggerlo dall'API evita di riscaricare centinaia di megabyte.
+          for tentativo in $(seq 1 10); do
+            gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '
+              .assets[]
+              | select(.name | startswith("Psicologo-Digitale-"))
+              | select(.digest != null and (.digest | startswith("sha256:")))
+              | "\(.digest | sub("^sha256:"; ""))  \(.name)"' 2>/dev/null | sort -k2 > SHA256SUMS.txt || true
+            righe="$(wc -l < SHA256SUMS.txt)"
+            echo "Impronte disponibili: $righe"
+            if [[ "$righe" -ge 5 ]]; then
+              echo "pronte=1" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            sleep 30
+          done
+          cat SHA256SUMS.txt
+          if [[ "$(wc -l < SHA256SUMS.txt)" -lt 5 ]]; then
+            if [[ "$DA_TAG" == "true" ]]; then
+              echo "::warning::Meno di cinque pacchetti con impronta nella release $TAG."
+            fi
+            echo "pronte=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Allega SHA256SUMS.txt
+        if: steps.somme.outputs.pronte == '1'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.rel.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
