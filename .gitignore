@@ -5,3 +5,5 @@ dist/
 pubblica/
 *.log
 .DS_Store
+assets/data/
+artifacts/

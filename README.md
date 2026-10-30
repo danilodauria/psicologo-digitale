@@ -64,6 +64,29 @@ La sezione **Installa** offre anche una via facoltativa: un modello generativo c
 
 Resta un extra dichiarato: Neura non lo usa, non gli passa i tuoi dati e le risposte verificate restano quelle del programma. Un modello generico non conosce il manuale e può sbagliare con sicurezza; la pagina lo dice prima di ogni risposta. Se il browser blocca la chiamata locale, basta autorizzare l'origine una volta con `OLLAMA_ORIGINS`: il comando esatto è indicato nella pagina, per ogni sistema.
 
+## Vademecum in PDF
+
+La guida tascabile è generata in tre versioni, tutte scaricabili dalla pagina **Licenze** e dal footer:
+
+| File | Formato | Uso |
+|---|---|---|
+| `vademecum-psicologo-digitale.pdf` | A5, 15 pagine | Lettura su schermo e stampa tascabile |
+| `vademecum-psicologo-digitale-a4.pdf` | A4, 12 pagine | Stampa domestica con margini comodi |
+| `vademecum-psicologo-digitale-libricino-a4.pdf` | A4 orizzontale, 8 facciate | Libricino A5 già imposto: quattro fogli, fronte-retro |
+
+Contengono l'avvertenza, le otto fasi del colloquio, i sei questionari con la loro finalità, il percorso e gli esercizi, i segnali d'allarme con i numeri utili, la sezione sulla nutrizione, l'installazione e la checklist da portare al professionista. L'indice riporta i numeri di pagina reali.
+
+### Come si rigenera
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install reportlab pymupdf
+.venv/bin/python scripts/export-data.cjs
+.venv/bin/python scripts/build_vademecum.py   # oppure: npm run vademecum
+```
+
+`scripts/export-data.cjs` estrae i dati dall'app (questionari, fasi, esercizi, sicurezza, nutrizione, fonti) in `assets/data/vademecum.json`; `scripts/build_vademecum.py` impagina A5 e A4 con `reportlab` e impone il libricino con `pymupdf`. I PDF sono artefatti versionati: il sito li serve come file statici e non li genera a runtime.
+
 ## Il colloquio, in dettaglio
 
 1. **Accoglienza** — consenso informato, nome facoltativo, fascia d'età, per chi si sta facendo il percorso, da dove si vuole iniziare. Se minorenne, compare un avviso specifico.
@@ -153,7 +176,10 @@ assets/
     app-views.js            # manuale, glossario, sicurezza, diario, licenze
     app-report.js           # relazione e generatore PDF 1.4
     app-init.js             # avvio, tema, menu, service worker
-scripts/make_icons.py       # rigenera le icone PNG (senza dipendenze)
+scripts/make_icons.py       # rigenera le icone PNG
+scripts/export-data.cjs     # esporta i dati dell'app per il Vademecum
+scripts/build_vademecum.py  # genera il Vademecum in PDF
+assets/pdf/                 # Vademecum A5, A4 e libricino imposto (senza dipendenze)
 tests/verify.cjs            # integrità dati, collegamenti, Neura
 tests/dom-test.cjs          # interfaccia con jsdom
 .github/workflows/pages.yml # test e pubblicazione automatica

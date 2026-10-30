@@ -270,6 +270,26 @@ ok(/nutrizione/i.test(nutrizioneRisposta.html), "Neura rimanda alla sezione nutr
 const installaRisposta = ask("come installo ollama?");
 ok(/Ollama/.test(installaRisposta.html), "Neura spiega come installare Ollama");
 
+/* Vademecum --------------------------------------------------------------- */
+
+const pdfFiles = [
+  "assets/pdf/vademecum-psicologo-digitale.pdf",
+  "assets/pdf/vademecum-psicologo-digitale-a4.pdf",
+  "assets/pdf/vademecum-psicologo-digitale-libricino-a4.pdf"
+];
+pdfFiles.forEach((f) => {
+  ok(exists(f), "esiste il vademecum " + f);
+  const bytes = fs.readFileSync(path.join(root, f));
+  ok(bytes.slice(0, 5).toString("latin1") === "%PDF-", "il file " + f + " è un PDF");
+  const testo = bytes.toString("latin1");
+  ok(/%%EOF/.test(testo), "il PDF " + f + " è chiuso correttamente");
+  const pagine = (testo.match(/\/Type\s*\/Page[^s]/g) || []).length;
+  ok(pagine >= 8, "il vademecum " + f + " ha almeno otto pagine (" + pagine + ")");
+});
+ok(/vademecum-psicologo-digitale\.pdf/.test(read("assets/js/app-views.js")), "la pagina licenze collega il vademecum");
+ok(/vademecum-psicologo-digitale\.pdf/.test(html), "il footer di index.html collega il vademecum");
+ok(exists("scripts/export-data.cjs") && /reportlab/.test(read("scripts/build_vademecum.py")), "il generatore del vademecum è nel progetto");
+
 /* Relazione e PDF --------------------------------------------------------- */
 
 ok(/buildPdf|NP\.reportPdf/.test(read("assets/js/app-report.js")), "il generatore PDF è presente");

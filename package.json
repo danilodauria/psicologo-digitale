@@ -23,6 +23,7 @@
   "scripts": {
     "serve": "python3 -m http.server 3000 --bind 0.0.0.0",
     "icons": "python3 scripts/make_icons.py",
+    "vademecum": "node scripts/export-data.cjs && python3 scripts/build_vademecum.py",
     "test": "node tests/verify.cjs && node tests/dom-test.cjs",
     "test:data": "node tests/verify.cjs",
     "test:dom": "node tests/dom-test.cjs"

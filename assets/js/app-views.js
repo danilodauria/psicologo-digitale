@@ -292,6 +292,15 @@
         "<li>I contenuti sono divulgativi e non sostituiscono la formazione e la responsabilità di un professionista.</li>" +
       "</ul></div>" +
 
+      '<div class="card mt-2"><h3>Vademecum in PDF</h3>' +
+        '<p>La guida tascabile raccoglie colloquio, questionari, percorso, sicurezza, nutrizione e installazione: si legge sul telefono o si stampa e si tiene accanto al computer.</p>' +
+        '<div class="btn-row mt-2">' +
+          '<a class="btn btn-soft btn-sm" href="assets/pdf/vademecum-psicologo-digitale.pdf" download>' + A.icon("download") + "A5 · da leggere</a>" +
+          '<a class="btn btn-ghost btn-sm" href="assets/pdf/vademecum-psicologo-digitale-a4.pdf" download>' + A.icon("print") + "A4 · da stampare</a>" +
+          '<a class="btn btn-ghost btn-sm" href="assets/pdf/vademecum-psicologo-digitale-libricino-a4.pdf" download>' + A.icon("layers") + "Libricino A4</a>" +
+        "</div>" +
+        '<p class="text-small muted mt-2">Il libricino A4 contiene le stesse pagine in formato A5 già impostate: si stampa fronte-retro, si piega in due e diventa un opuscolo da quattro fogli. Codice MIT, contenuti CC BY-NC-SA 4.0.</p></div>' +
+
       '<div class="card mt-2"><h3>Domande frequenti</h3>' +
         NP.data.faq.map(function (f) {
           return '<details style="border-top:1px solid var(--line);padding:.7rem 0"><summary style="cursor:pointer;font-weight:600">' + esc(f.d) + '</summary><p class="text-small mt-1">' + esc(f.r) + "</p></details>";
