@@ -56,15 +56,65 @@ jobs:
         # Su macOS hdiutil a volte non riesce a smontare l'immagine appena
         # creata (Exit code 16): un secondo tentativo risolve il problema.
         run: |
-          npm run ${{ matrix.script }} || npm run ${{ matrix.script }}
+          # La notarizzazione si attiva solo quando le credenziali Apple ci sono:
+          # senza secret la build resta possibile e il log lo dichiara.
+          extra=""
+          if [[ -n "${APPLE_API_KEY}" || -n "${APPLE_ID}" ]]; then
+            extra="-c.mac.notarize=true"
+          fi
+          npm run ${{ matrix.script }} -- $extra || npm run ${{ matrix.script }} -- $extra
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Firma: i secret si aggiungono in Settings → Secrets and variables →
+          # Actions. Se mancano, il pacchetto esce non firmato e la build passa.
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ matrix.artifact == 'macos' && 'true' || 'false' }}
+          CSC_LINK: ${{ matrix.artifact == 'macos' && secrets.MAC_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ matrix.artifact == 'macos' && secrets.MAC_CSC_KEY_PASSWORD || '' }}
+          WIN_CSC_LINK: ${{ matrix.artifact == 'windows' && secrets.WIN_CSC_LINK || '' }}
+          WIN_CSC_KEY_PASSWORD: ${{ matrix.artifact == 'windows' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ matrix.artifact == 'macos' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.artifact == 'macos' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ matrix.artifact == 'macos' && secrets.APPLE_TEAM_ID || '' }}
+          APPLE_API_KEY: ${{ matrix.artifact == 'macos' && secrets.APPLE_API_KEY || '' }}
+          APPLE_API_KEY_ID: ${{ matrix.artifact == 'macos' && secrets.APPLE_API_KEY_ID || '' }}
+          APPLE_API_ISSUER: ${{ matrix.artifact == 'macos' && secrets.APPLE_API_ISSUER || '' }}
 
       - name: Crea la versione portatile (ZIP)
         if: matrix.artifact == 'windows'
         shell: pwsh
         run: Compress-Archive -Path desktop/dist/win-unpacked/* -DestinationPath "desktop/dist/Psicologo-Digitale-Windows-portatile.zip"
+
+      # Se la firma è configurata, un pacchetto non firmato è un errore, non un
+      # dettaglio: meglio una build rossa che un .exe che spaventa chi lo apre.
+      - name: Verifica la firma Windows
+        if: matrix.artifact == 'windows'
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem desktop/dist/*.exe | Select-Object -First 1
+          $firma = Get-AuthenticodeSignature $exe.FullName
+          if ($env:WIN_CSC_LINK) {
+            if ($firma.Status -ne "Valid") { throw "Firma non valida: $($firma.Status)" }
+            Write-Host "Firma valida: $($firma.SignerCertificate.Subject)"
+          } else {
+            Write-Host "::notice::Firma Windows non configurata: il pacchetto esce non firmato."
+          }
+        env:
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+
+      - name: Verifica la firma macOS
+        if: matrix.artifact == 'macos'
+        shell: bash
+        run: |
+          if [[ -z "${APPLE_API_KEY}" && -z "${APPLE_ID}" ]]; then
+            echo "::notice::Firma macOS non configurata: i pacchetti escono non firmati."
+            exit 0
+          fi
+          app="$(ls -d desktop/dist/mac*/*.app | head -1)"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          xcrun stapler validate "$app"
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
 
       - name: Carica gli artefatti
         uses: actions/upload-artifact@v4
