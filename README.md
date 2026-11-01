@@ -316,6 +316,10 @@ Pages è impostato su **GitHub Actions**. A ogni push su `main` il workflow `.gi
 
 Per far girare i test senza pubblicare basta lanciare il workflow a mano da **Actions → Test e pubblicazione → Run workflow**.
 
+### Controllo del sito pubblicato
+
+Dopo la pubblicazione parte il job **Il sito serve la versione giusta**. Scarica `sw.js` e verifica che dichiari la versione di `package.json`: un service worker vecchio in cache non dà errori, resta lì finché qualcuno non apre la pagina. Poi scarica i quattro PDF e ne confronta l'impronta SHA-256 con quella dei file del repository, così un PDF non copiato nell'artefatto si vede subito. I tentativi si ripetono per qualche minuto, perché Pages non è aggiornato nell'istante in cui il deploy finisce; se la versione resta sbagliata la build diventa rossa e il problema si vede senza aprire il browser.
+
 ### Aggiornare il sito
 
 ```bash

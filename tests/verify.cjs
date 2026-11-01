@@ -339,6 +339,13 @@ ok(/Get-AuthenticodeSignature/.test(wf) && /stapler validate/.test(wf), "la firm
 ok(/hardenedRuntime/.test(desk), "il pacchetto macOS è pronto per l'hardened runtime");
 ok(/Firma dei pacchetti/.test(read("README.md")), "il README spiega come firmare i pacchetti");
 ok(/Controllo che la release sia completa/.test(wf), "il workflow controlla che la release non perda pezzi");
+
+// Dopo la pubblicazione il sito deve servire davvero la versione appena uscita:
+// un service worker vecchio in cache non si vede finché qualcuno non apre la pagina.
+const pagine = exists(".github/workflows/pages.yml") ? read(".github/workflows/pages.yml") : "";
+ok(/Il sito serve la versione giusta/.test(pagine), "il controllo del sito ha un nome riconoscibile");
+ok(/needs: deploy/.test(pagine) && /sw\.js/.test(pagine), "dopo la pubblicazione si controlla il service worker servito");
+ok(/sha256sum/.test(pagine) && /vademecum-clinico-psicologo-digitale\.pdf/.test(pagine), "il controllo confronta le impronte dei PDF pubblicati");
 // I certificati restano facoltativi: le istruzioni per consentire l'avvio dal
 // sistema operativo devono restare sia nel README sia nella pagina di installazione.
 const readme = read("README.md");
