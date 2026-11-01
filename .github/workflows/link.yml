@@ -1,0 +1,85 @@
+name: Link di download
+
+on:
+  # Ogni giorno, e subito dopo una pubblicazione: un link rotto si scopre qui,
+  # non dalla persona che stava scaricando.
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Pacchetti desktop"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: "link-download"
+  cancel-in-progress: false
+
+jobs:
+  link:
+    name: Ogni link della release risponde
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # continue-on-error: il guasto non deve fermare lo script prima della
+      # segnalazione, che è la parte utile quando qualcosa è rotto.
+      - name: Apri i link e confronta le impronte
+        id: controllo
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT: ${{ runner.temp }}/link-report.md
+        run: node scripts/check-links.cjs
+
+      - name: Apri o aggiorna la segnalazione
+        if: steps.controllo.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT: ${{ runner.temp }}/link-report.md
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          {
+            cat "$REPORT"
+            echo ""
+            echo "Dettaglio del controllo: $RUN_URL"
+          } > report-finale.md
+          esistente="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search 'Link di download non raggiungibili in:title' \
+            --json number --jq '.[0].number // empty')"
+          if [ -n "$esistente" ]; then
+            gh issue comment "$esistente" --repo "$GITHUB_REPOSITORY" --body-file report-finale.md
+            echo "::error::Link ancora rotti: aggiornata la segnalazione #$esistente."
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" \
+              --title "Link di download non raggiungibili" \
+              --body-file report-finale.md
+            echo "::error::Almeno un link della release non risponde: aperta la segnalazione."
+          fi
+
+      - name: Chiudi la segnalazione se è tutto a posto
+        if: steps.controllo.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          esistente="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search 'Link di download non raggiungibili in:title' \
+            --json number --jq '.[0].number // empty')"
+          if [ -n "$esistente" ]; then
+            gh issue close "$esistente" --repo "$GITHUB_REPOSITORY" \
+              --comment "Riscontro a posto: tutti i link della release rispondono e le impronte combaciano."
+            echo "::notice::Segnalazione #$esistente chiusa: i link funzionano."
+          else
+            echo "::notice::Nessuna segnalazione aperta e nessun link rotto."
+          fi
