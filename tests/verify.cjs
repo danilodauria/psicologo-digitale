@@ -419,6 +419,16 @@ ok(/come-installare\.html/.test(sw), "il service worker tiene la pagina disponib
 ok(/come-installare\.html/.test(html), "il piè di pagina del sito collega la pagina");
 ok(/come-installare\.html/.test(installaJs) && /come-installare\.html/.test(statoJs), "il programma rimanda alla pagina pubblica");
 ok(/Come si installa/.test(readmeTxt), "il README cita la pagina");
+ok(/id="domande-frequenti"/.test(paginaComeInstallare), "la pagina ha una sezione Domande frequenti");
+ok(/href="#domande-frequenti"/.test(paginaComeInstallare), "le domande si raggiungono dall'inizio della pagina");
+const domande = (paginaComeInstallare.match(/<h3>/g) || []).length;
+ok(domande >= 10, "le domande frequenti sono almeno dieci (" + domande + ")");
+ok(/danneggiata/.test(paginaComeInstallare) && /architettura sbagliata/.test(paginaComeInstallare), "spiega il file «danneggiato» su macOS");
+ok(/dopo un tentativo di apertura andato a vuoto/.test(paginaComeInstallare), "dice perché il pulsante Apri comunque non compare");
+ok(/ripristinalo dalla cronologia dell'antivirus/.test(paginaComeInstallare), "spiega la quarantena dell'antivirus su Windows");
+ok(/esporta prima il backup JSON/.test(paginaComeInstallare), "avverte di salvare il backup prima di disinstallare");
+ok(/Nessun modello locale trovato/.test(paginaComeInstallare) && /Aggiungi a schermata Home/.test(paginaComeInstallare), "chiarisce che Ollama non serve e che su iPhone c'è la PWA");
+ok(/Domande frequenti/.test(readmeTxt), "il README descrive le domande frequenti");
 ok(/firma ad-hoc/i.test(readmeTxt), "il README spiega la firma ad-hoc");
 ok(/non può essere notarizzato/i.test(readmeTxt), "il README dice che la notarizzazione non è disponibile senza abbonamento");
 ok(/Homebrew/.test(readmeTxt), "il README spiega perché una cask Homebrew non risolve");

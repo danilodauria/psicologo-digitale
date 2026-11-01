@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.13";
+  const VERSIONE = "1.3.14";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.14",
+      data: "1 novembre 2026",
+      titolo: "Le domande frequenti dell'installazione",
+      punti: [
+        "Dieci domande prese dai punti in cui l'installazione si blocca davvero: il file dichiarato «danneggiato» su macOS, il pulsante Apri comunque che non compare, il collegamento Esegui comunque assente su Windows.",
+        "Risposte brevi, con il percorso esatto dei menu, dalla finestra bianca al microfono bloccato, dal download che non parte al backup da salvare prima di disinstallare.",
+        "Ricorda anche che Ollama non è obbligatorio e che su iPhone e tablet si usa la PWA, non un pacchetto desktop."
+      ]
+    },
     {
       v: "1.3.13",
       data: "1 novembre 2026",

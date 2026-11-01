@@ -361,6 +361,8 @@ L'elenco vive in `assets/js/app-versioni.js`, in due punti: la costante `VERSION
 
 `come-installare.html` è una pagina del sito, non una schermata del programma: si apre nel browser senza avviare nulla, e serve soprattutto a chi il programma non ce l'ha ancora o non riesce ad aprirlo. Contiene il file giusto per ogni sistema, i passaggi del primo avvio con le parole esatte degli avvisi di Windows e macOS, la verifica dell'impronta SHA-256 con il comando adatto a ciascun sistema, e il rimando al backup dei sorgenti.
 
+La pagina si chiude con una sezione **Domande frequenti**: dieci domande che non sono un elenco di cortesia, ma i punti in cui l'installazione si blocca davvero — il file dichiarato «danneggiato» su macOS, il pulsante *Apri comunque* che non compare, il collegamento *Esegui comunque* assente su Windows, la finestra bianca dopo un aggiornamento, il microfono che non parte, Ollama che sembra obbligatorio e non lo è. Ogni risposta dice il percorso esatto dei menu e che cosa fare se l'impronta non corrisponde, e l'ultima dice cosa salvare prima di disinstallare.
+
 È raggiungibile in tre modi: dal piè di pagina del sito, dalla pagina *Installa l'app*, e dal pannello della barra di stato quando il sistema chiede conferma all'avvio. È nella cache del service worker, quindi resta consultabile anche offline, e non ha bisogno di JavaScript per essere letta: chi ha un browser bloccato o vecchio la vede lo stesso.
 
 ## Backup completo nella release
