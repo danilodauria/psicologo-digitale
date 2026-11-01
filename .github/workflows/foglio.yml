@@ -1,0 +1,66 @@
+name: Foglio di installazione
+
+# Il foglio di installazione in PDF vive nel repository, quindi è già sul sito.
+# Qui si allega alla versione, così chi deve mandare le istruzioni per email le
+# trova dove trova i programmi, senza dover passare dalla pagina.
+on:
+  push:
+    tags: ["v*", "psd-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "foglio-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  allega:
+    name: Allega il foglio alla release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Un foglio vecchio è peggio di un foglio mancante: direbbe di scaricare
+      # file che non esistono più. La versione sta nel piè di pagina del PDF.
+      - name: Controlla che il foglio sia di questa versione
+        run: |
+          set -euo pipefail
+          foglio="assets/pdf/Psicologo-Digitale-Come-si-installa.pdf"
+          test -s "$foglio" || { echo "::error::Manca $foglio."; exit 1; }
+          versione="$(node -p "require('./package.json').version")"
+          if ! grep -aq "versione=$versione" "$foglio"; then
+            echo "::error::Il foglio dichiara una versione diversa da $versione: rigeneralo con scripts/build_come_installare_pdf.py."
+            exit 1
+          fi
+          echo "Foglio allineato alla versione $versione."
+
+      - name: Allega il PDF
+        uses: softprops/action-gh-release@v2
+        with:
+          files: assets/pdf/Psicologo-Digitale-Come-si-installa.pdf
+          overwrite_files: true
+
+      - name: Verifica che sia nella versione
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          for tentativo in $(seq 1 10); do
+            if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
+              --jq '.assets[].name' 2>/dev/null | grep -qxF "Psicologo-Digitale-Come-si-installa.pdf"; then
+              echo "Foglio allegato alla versione $TAG."
+              exit 0
+            fi
+            sleep 6
+          done
+          echo "::error::Il foglio non risulta allegato alla versione $TAG."
+          exit 1
