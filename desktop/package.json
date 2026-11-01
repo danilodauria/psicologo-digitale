@@ -38,6 +38,7 @@
       "output": "dist",
       "buildResources": "build"
     },
+    "afterPack": "after-pack.cjs",
     "files": [
       "main.cjs",
       "preload.cjs",
