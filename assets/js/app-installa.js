@@ -258,7 +258,13 @@
         "</div>" +
         '<div class="btn-row mt-1"><a class="btn btn-ghost btn-sm" href="' + SCARICA + '" target="_blank" rel="noopener">Tutti i file della versione</a>' +
           '<a class="btn btn-ghost btn-sm" href="https://github.com/danilodauria/psicologo-digitale#programmi-installabili" target="_blank" rel="noopener">Come si installano</a></div>' +
-        '<p class="text-small muted mt-2">I pacchetti non sono firmati con un certificato commerciale: al primo avvio Windows può chiedere conferma (<em>Altro informazioni</em>, <em>Esegui comunque</em>) e macOS può richiedere il tasto destro, <em>Apri</em>. Nella pagina della versione trovi anche <code>SHA256SUMS.txt</code> per controllare i file scaricati.</p></div>' +
+        '<p class="text-small muted mt-2">I pacchetti non hanno un certificato commerciale, quindi il sistema chiede conferma una volta sola. Non è un errore e non serve rinunciare: basta consentire l\'avvio.</p>' +
+        '<ul class="text-small muted">' +
+          "<li><strong>Windows</strong> — se compare <em>Windows ha protetto il PC</em>: <em>Altro informazioni</em> → <em>Esegui comunque</em>. Se il file resta bloccato, tasto destro → <em>Proprietà</em> → <em>Sblocca</em> → <em>OK</em>.</li>" +
+          "<li><strong>macOS</strong> — <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em>, oppure tasto destro sull'app → <em>Apri</em>.</li>" +
+          "<li><strong>Linux</strong> — <code>.deb</code>: doppio clic e installa; <code>.AppImage</code>: <code>chmod +x</code> oppure <em>Proprietà</em> → <em>Consenti l'esecuzione</em>.</li>" +
+        "</ul>" +
+        '<p class="text-small muted">Nella pagina della versione trovi <code>SHA256SUMS.txt</code>: se l\'impronta del file scaricato coincide, il programma è esattamente quello pubblicato.</p></div>' +
 
       '<div class="section-head mt-3"><p class="eyebrow">Facoltativo</p><h2>Un modello locale, se ti va</h2>' +
         '<p>Neura non ha bisogno di nulla: è un motore di conoscenza che legge i contenuti del programma e non inventa. Se però ti interessa un modello generativo che gira sul tuo computer, si chiama <strong>Ollama</strong>: gratuito, open source, senza account.</p></div>' +

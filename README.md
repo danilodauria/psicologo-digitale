@@ -124,7 +124,21 @@ I download stanno nella [pagina delle release](https://github.com/danilodauria/p
 - [Windows x64](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Windows-x64.exe) · [portatile ZIP](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Windows-portatile.zip)
 - [Linux .deb](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Linux-amd64.deb) · [AppImage](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Linux-x86_64.AppImage)
 - [macOS Apple Silicon](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Mac-arm64.dmg) · [macOS Intel](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Mac-x64.dmg)
-Oggi i pacchetti escono **senza firma**: al primo avvio Windows mostra SmartScreen (*Altro informazioni* → *Esegui comunque*) e macOS blocca il doppio clic, chiedendo *Apri* dal menu contestuale. La pipeline è però già pronta: appena aggiungi i certificati, le build dei tag firmano da sole, senza toccare il codice — vedi [Firma dei pacchetti](#firma-dei-pacchetti). Le impronte SHA-256 permettono di verificare che il file scaricato sia quello pubblicato.
+Oggi i pacchetti escono **senza firma**: Windows mostra SmartScreen e macOS blocca il doppio clic. Non è un difetto da aggirare in fretta, è solo un passaggio in più: vedi [Consentire l'avvio](#consentire-lavvio) per le istruzioni, che restano nel README finché i pacchetti sono non firmati. La pipeline è però già pronta: appena aggiungi i certificati, le build dei tag firmano da sole, senza toccare il codice — vedi [Firma dei pacchetti](#firma-dei-pacchetti). Le impronte SHA-256 permettono di verificare che il file scaricato sia quello pubblicato.
+
+### Consentire l'avvio
+
+I certificati costano e restano facoltativi: finché i pacchetti escono non firmati, ogni sistema chiede conferma una volta sola. Il programma funziona normalmente dopo il consenso, e l'impronta in `SHA256SUMS.txt` dimostra che il file è quello pubblicato. Queste istruzioni accompagnano ogni release: non vanno tolte.
+
+**Windows.** Se compare *Windows ha protetto il PC*, scegli **Altro informazioni** → **Esegui comunque**. Se il browser ha segnato il file scaricato, tasto destro sul file → **Proprietà** → in fondo **Sblocca** → **OK**.
+
+**macOS.** Doppio clic sull'app: il sistema dice che non può verificarla. Allora **Impostazioni di Sistema** → **Privacy e sicurezza**, scorri fino al messaggio su *Psicologo Digitale* → **Apri comunque**. In alternativa tasto destro (o Ctrl+clic) sull'app → **Apri**. Se l'app è già in *Applicazioni* e resta bloccata, da Terminale:
+
+```bash
+sudo xattr -dr com.apple.quarantine "/Applications/Psicologo Digitale.app"
+```
+
+**Linux.** Il `.deb` si installa con doppio clic oppure `sudo apt install ./Psicologo-Digitale-Linux-amd64.deb`. Per l'`AppImage`: `chmod +x Psicologo-Digitale-Linux-x86_64.AppImage`, oppure tasto destro → **Proprietà** → **Consenti l'esecuzione**; se manca FUSE, `./Psicologo-Digitale-Linux-x86_64.AppImage --appimage-extract-and-run`.
 
 ### Firma dei pacchetti
 

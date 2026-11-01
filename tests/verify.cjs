@@ -338,6 +338,14 @@ ok(/CSC_IDENTITY_AUTO_DISCOVERY: \$\{\{ matrix\.artifact == 'macos'/.test(wf), "
 ok(/Get-AuthenticodeSignature/.test(wf) && /stapler validate/.test(wf), "la firma viene verificata dopo la build");
 ok(/hardenedRuntime/.test(desk), "il pacchetto macOS è pronto per l'hardened runtime");
 ok(/Firma dei pacchetti/.test(read("README.md")), "il README spiega come firmare i pacchetti");
+// I certificati restano facoltativi: le istruzioni per consentire l'avvio dal
+// sistema operativo devono restare sia nel README sia nella pagina di installazione.
+const readme = read("README.md");
+ok(/Consentire l'avvio/.test(readme) && /Esegui comunque/.test(readme), "il README spiega come consentire l'avvio su Windows");
+ok(/Privacy e sicurezza/.test(readme) && /com\.apple\.quarantine/.test(readme), "il README spiega come consentire l'avvio su macOS");
+ok(/Consenti l'esecuzione/.test(readme), "il README spiega come consentire l'avvio su Linux");
+const paginaInstalla = read("assets/js/app-installa.js");
+ok(/Esegui comunque/.test(paginaInstalla) && /Privacy e sicurezza/.test(paginaInstalla), "la pagina di installazione lascia le istruzioni per consentire l'avvio");
 ok(/nsis/.test(desk) && /dmg/.test(desk) && /"deb"/.test(desk), "i pacchetti coprono Windows, macOS e Linux");
 ok(/electron-builder/.test(desk), "i pacchetti sono costruiti con electron-builder");
 ok(exists("desktop/main.cjs") && /127\.0\.0\.1:11434/.test(read("desktop/main.cjs")), "il contenitore desktop parla con Ollama");
