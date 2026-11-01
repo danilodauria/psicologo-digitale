@@ -18,6 +18,20 @@ contextBridge.exposeInMainWorld("npDesktop", {
   sistema: {
     impostazioniVoce: () => ipcRenderer.invoke("sistema:impostazioniVoce")
   },
+  // Voce naturale facoltativa: si scarica una volta dal processo principale,
+  // che poi genera l'audio sul computer. La pagina riceve solo lo stato, il
+  // WAV già pronto e l'avanzamento del download.
+  voceNaturale: {
+    stato: () => ipcRenderer.invoke("voceNaturale:stato"),
+    scarica: () => ipcRenderer.invoke("voceNaturale:scarica"),
+    pronuncia: (testo) => ipcRenderer.invoke("voceNaturale:pronuncia", testo),
+    rimuovi: () => ipcRenderer.invoke("voceNaturale:rimuovi"),
+    onProgresso: (fn) => {
+      const ascolta = (_evento, stato) => fn(stato);
+      ipcRenderer.on("voceNaturale:progresso", ascolta);
+      return () => ipcRenderer.removeListener("voceNaturale:progresso", ascolta);
+    }
+  },
   // Aggiornamenti: la pagina può leggerne lo stato, chiedere un controllo e
   // riavviare il programma quando la nuova versione è pronta.
   aggiornamenti: {

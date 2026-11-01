@@ -8,6 +8,9 @@
 
 const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
+const { spawn } = require("child_process");
 
 const HOME = path.join(__dirname, "app", "index.html");
 const OLLAMA = "http://127.0.0.1:11434";
@@ -80,6 +83,224 @@ ipcMain.handle("sistema:impostazioniVoce", async () => {
     return { ok: true };
   } catch (err) {
     return { ok: false, motivo: "errore", errore: String((err && err.message) || err) };
+  }
+});
+
+/* Voce naturale (facoltativa) ---------------------------------------------- */
+
+// Il programma parla con le voci del sistema. Per averne una davvero naturale
+// senza mandare il testo a nessuno si aggiunge un motore neurale che gira qui:
+// non sta nel pacchetto (86 MB), si scarica una volta dal pannello Voce e
+// resta nella cartella dei dati dell'utente. Ogni file ha un'impronta fissata
+// qui sotto e viene controllato prima di essere usato.
+const VOCE_MOTORE = {
+  win32: {
+    url: "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip",
+    sha256: "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea",
+    byte: 22477236
+  }
+};
+
+const VOCE_FILE = [
+  {
+    nome: "it_IT-paola-medium.onnx",
+    url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx",
+    sha256: "6fc918b5a0ea6137382833dddfa567bffbe6a5060c02043c87192ee59c04210c",
+    byte: 63511038
+  },
+  {
+    nome: "it_IT-paola-medium.onnx.json",
+    url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json",
+    sha256: "aea19c0a7fce29fbc359b93f10e7902854401e4c95ae2ea328ae516b15d296cf",
+    byte: 7099
+  }
+];
+
+const VOCE_NOME = "Paola";
+
+function cartellaVoce() {
+  return path.join(app.getPath("userData"), "voce-naturale");
+}
+
+function percorsiVoce() {
+  const cartella = cartellaVoce();
+  return {
+    cartella: cartella,
+    exe: path.join(cartella, "piper", process.platform === "win32" ? "piper.exe" : "piper"),
+    modello: path.join(cartella, VOCE_FILE[0].nome),
+    config: path.join(cartella, VOCE_FILE[1].nome)
+  };
+}
+
+function voceInstallata() {
+  const dove = percorsiVoce();
+  return fs.existsSync(dove.exe) && fs.existsSync(dove.modello) && fs.existsSync(dove.config);
+}
+
+function statoVoce() {
+  const motore = VOCE_MOTORE[process.platform];
+  if (!motore) {
+    return { ok: true, disponibile: false, installata: false, motivo: process.platform };
+  }
+  const peso = Math.round((motore.byte + VOCE_FILE.reduce((s, f) => s + f.byte, 0)) / 1048576);
+  return { ok: true, disponibile: true, installata: voceInstallata(), voce: VOCE_NOME, peso: peso };
+}
+
+// Download con avanzamento e verifica: se manca un byte o l'impronta non
+// torna, il file non viene usato e l'installazione si ferma.
+async function scaricaFile(destinazione, file, onProgresso) {
+  const res = await fetch(file.url, { redirect: "follow" });
+  if (!res.ok) throw new Error("download non riuscito (HTTP " + res.status + ")");
+  const atteso = Number(res.headers.get("content-length")) || file.byte;
+  const pezzi = [];
+  let letti = 0;
+  if (res.body && typeof res.body.getReader === "function") {
+    const lettore = res.body.getReader();
+    for (;;) {
+      const passo = await lettore.read();
+      if (passo.done) break;
+      pezzi.push(Buffer.from(passo.value));
+      letti += passo.value.length;
+      if (onProgresso) onProgresso(letti, atteso);
+    }
+  } else {
+    const tutto = Buffer.from(await res.arrayBuffer());
+    pezzi.push(tutto);
+    letti = tutto.length;
+    if (onProgresso) onProgresso(letti, atteso);
+  }
+  const contenuto = Buffer.concat(pezzi);
+  if (file.byte && contenuto.length !== file.byte) {
+    throw new Error("file incompleto: " + contenuto.length + " byte invece di " + file.byte);
+  }
+  const impronta = crypto.createHash("sha256").update(contenuto).digest("hex");
+  if (impronta !== file.sha256) throw new Error("impronta SHA-256 diversa da quella prevista");
+  await fs.promises.mkdir(path.dirname(destinazione), { recursive: true });
+  await fs.promises.writeFile(destinazione, contenuto);
+  return contenuto;
+}
+
+// Il motore arriva come archivio ZIP: si scompatta dentro il programma, così
+// non serve né unzip né Powershell né il permesso di amministratore.
+function scompattaMotore(archivio, dove) {
+  const { unzipSync } = require("fflate");
+  const dentro = unzipSync(new Uint8Array(archivio));
+  const radice = path.join(dove, "piper") + path.sep;
+  Object.keys(dentro).forEach((nome) => {
+    if (!nome.startsWith("piper/") || nome.endsWith("/")) return;
+    const relativo = nome.slice("piper/".length);
+    if (!relativo) return;
+    const destinazione = path.join(dove, "piper", relativo);
+    // Nessun file può finire fuori dalla cartella della voce.
+    if (!destinazione.startsWith(radice)) return;
+    fs.mkdirSync(path.dirname(destinazione), { recursive: true });
+    fs.writeFileSync(destinazione, Buffer.from(dentro[nome]));
+  });
+}
+
+let scaricamentoVoce = null;
+
+ipcMain.handle("voceNaturale:stato", () => statoVoce());
+
+ipcMain.handle("voceNaturale:scarica", async (evento) => {
+  const motore = VOCE_MOTORE[process.platform];
+  if (!motore) return { ok: false, disponibile: false, motivo: process.platform };
+  if (voceInstallata()) return statoVoce();
+  if (scaricamentoVoce) return scaricamentoVoce;
+
+  const manda = (dati) => {
+    const mittente = evento && evento.sender;
+    if (mittente && !mittente.isDestroyed()) mittente.send("voceNaturale:progresso", dati);
+  };
+  const cartella = cartellaVoce();
+  const archivio = path.join(cartella, "motore.zip");
+  const pesoTotale = motore.byte + VOCE_FILE.reduce((s, f) => s + f.byte, 0);
+  let fatto = 0;
+
+  scaricamentoVoce = (async () => {
+    await fs.promises.mkdir(cartella, { recursive: true });
+    manda({ fase: "motore", percentuale: 0 });
+    await scaricaFile(archivio, motore, (letti) => manda({ fase: "motore", percentuale: Math.round((letti / pesoTotale) * 100) }));
+    fatto += motore.byte;
+    scompattaMotore(await fs.promises.readFile(archivio), cartella);
+    await fs.promises.unlink(archivio).catch(() => {});
+
+    for (const file of VOCE_FILE) {
+      const prima = fatto;
+      await scaricaFile(path.join(cartella, file.nome), file, (letti) => manda({
+        fase: "voce",
+        percentuale: Math.round(((prima + letti) / pesoTotale) * 100)
+      }));
+      fatto += file.byte;
+    }
+    manda({ fase: "pronta", percentuale: 100 });
+    return statoVoce();
+  })()
+    .catch((err) => ({ ok: false, errore: String((err && err.message) || err) }))
+    .finally(() => { scaricamentoVoce = null; });
+
+  return scaricamentoVoce;
+});
+
+// La voce si genera qui, in un processo separato, e torna alla pagina come
+// WAV: l'audio non passa da nessun server e non resta sul disco.
+ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo) => {
+  const pulito = String(testo || "").replace(/\s+/g, " ").trim().slice(0, 800);
+  if (!pulito) return { ok: false, errore: "testo vuoto" };
+  if (!voceInstallata()) return { ok: false, errore: "la voce naturale non è installata" };
+  const dove = percorsiVoce();
+  const wav = path.join(app.getPath("temp"), "psicologo-digitale-voce-" + process.pid + ".wav");
+
+  return new Promise((risolvi) => {
+    let finito = false;
+    let errori = "";
+    const chiudi = (risposta) => {
+      if (finito) return;
+      finito = true;
+      fs.promises.unlink(wav).catch(() => {});
+      risolvi(risposta);
+    };
+
+    let figlio;
+    try {
+      figlio = spawn(dove.exe, ["--model", dove.modello, "--config", dove.config, "--output_file", wav], { windowsHide: true });
+    } catch (err) {
+      chiudi({ ok: false, errore: String((err && err.message) || err) });
+      return;
+    }
+
+    const scadenza = setTimeout(() => {
+      try { figlio.kill(); } catch (e) { /* già finito */ }
+      chiudi({ ok: false, errore: "la voce non ha risposto in tempo" });
+    }, 20000);
+
+    if (figlio.stderr) figlio.stderr.on("data", (d) => { errori = (errori + String(d)).slice(-300); });
+    figlio.on("error", (err) => {
+      clearTimeout(scadenza);
+      chiudi({ ok: false, errore: String((err && err.message) || err) });
+    });
+    figlio.on("close", (codice) => {
+      clearTimeout(scadenza);
+      if (codice !== 0) {
+        chiudi({ ok: false, errore: "motore vocale: " + (errori.trim() || "codice " + codice) });
+        return;
+      }
+      fs.promises.readFile(wav)
+        .then((dati) => chiudi({ ok: true, wav: dati }))
+        .catch((err) => chiudi({ ok: false, errore: String((err && err.message) || err) }));
+    });
+
+    // Piper legge il testo dall'ingresso standard: una riga, un file audio.
+    try { figlio.stdin.end(pulito + "\n"); } catch (e) { /* il processo è già uscito */ }
+  });
+});
+
+ipcMain.handle("voceNaturale:rimuovi", async () => {
+  try {
+    await fs.promises.rm(cartellaVoce(), { recursive: true, force: true });
+    return statoVoce();
+  } catch (err) {
+    return { ok: false, errore: String((err && err.message) || err) };
   }
 });
 

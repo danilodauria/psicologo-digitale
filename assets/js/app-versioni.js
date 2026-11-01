@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.19";
+  const VERSIONE = "1.3.20";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.20",
+      data: "1 novembre 2026",
+      titolo: "Una voce naturale, scaricata una volta",
+      punti: [
+        "Nel pannello Voce c'è «Installa la voce naturale»: scarica una volta sola (circa 86 MB) una voce italiana che suona come una persona e la tiene nel computer.",
+        "La voce è generata dal programma, non da un server: il testo letto non esce da qui e dopo il primo scaricamento funziona anche senza Internet.",
+        "Se la voce naturale non parte, la lettura torna da sola alle voci del sistema; «Rimuovi la voce naturale» libera lo spazio quando non serve più."
+      ]
+    },
     {
       v: "1.3.19",
       data: "1 novembre 2026",

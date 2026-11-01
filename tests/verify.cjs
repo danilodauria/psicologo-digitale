@@ -553,6 +553,19 @@ const preloadC = read("desktop/preload.cjs");
 ok(/sistema:/ .test(preloadC) && /impostazioniVoce/.test(preloadC), "il ponte desktop espone il pannello delle voci");
 const mainC = read("desktop/main.cjs");
 ok(/sistema:impostazioniVoce/.test(mainC) && /ms-settings:speech/.test(mainC) && /universalaccess\?SpokenContent/.test(mainC), "il processo principale apre il pannello voce giusto per Windows e macOS");
+
+/* Voce naturale (facoltativa) --------------------------------------------- */
+
+ok(/voceNaturale/.test(preloadC) && /voceNaturale:scarica/.test(preloadC) && /pronuncia/.test(preloadC), "il ponte desktop espone download e lettura della voce naturale");
+ok(/voceNaturale:scarica/.test(mainC) && /voceNaturale:pronuncia/.test(mainC) && /voceNaturale:rimuovi/.test(mainC), "il processo principale scarica, legge e rimuove la voce naturale");
+ok(/piper_windows_amd64\.zip/.test(mainC) && /it_IT-paola-medium\.onnx/.test(mainC), "motore e voce naturale sono fissati a una versione precisa");
+ok((mainC.match(/sha256: "[0-9a-f]{64}"/g) || []).length === 3, "i tre file scaricati hanno un'impronta SHA-256 fissata");
+ok(/createHash\("sha256"\)/.test(mainC) && /impronta SHA-256 diversa/.test(mainC), "i file scaricati sono verificati prima di essere usati");
+ok(/require\("fflate"\)/.test(mainC) && /unzipSync/.test(mainC), "l'archivio del motore si scompatta nel programma, senza strumenti esterni");
+ok(/\["--model", dove\.modello, "--config", dove\.config/.test(mainC) && /stdin\.end\(pulito/.test(mainC), "la voce legge il testo dall'ingresso standard e restituisce un WAV");
+ok(/voiceNaturaleInstalla/.test(neuraUI) && /voiceNaturaleRimuovi/.test(neuraUI), "la scheda Voce installa e rimuove la voce naturale");
+ok(/"__naturale__"/.test(neuraUI) && /function parlaNaturale/.test(neuraUI), "la voce naturale entra nell'elenco e nella lettura");
+ok(/parlaConSistema\(testo\)/.test(neuraUI) && /se la voce naturale non parte/i.test(neuraUI), "se la voce naturale non parte si torna alla voce del sistema");
 ok(/stopListening/.test(neuraUI), "la dettatura si può interrompere");
 
 const inst = read("assets/js/app-installa.js");

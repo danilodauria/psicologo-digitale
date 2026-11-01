@@ -1,6 +1,6 @@
 {
   "name": "psicologo-digitale",
-  "version": "1.3.19",
+  "version": "1.3.20",
   "private": true,
   "description": "Psicologo Digitale per Windows, Linux e macOS: colloquio guidato, questionari, percorso, relazione e guida, anche offline.",
   "author": "Danilo D'Auria",
@@ -15,7 +15,8 @@
     "dist:mac": "electron-builder --mac --publish never"
   },
   "dependencies": {
-    "electron-updater": "^6.3.9"
+    "electron-updater": "^6.3.9",
+    "fflate": "^0.8.3"
   },
   "devDependencies": {
     "electron": "^33.2.0",
@@ -51,7 +52,12 @@
       "icon": "build/icon.png",
       "artifactName": "Psicologo-Digitale-Windows-${arch}.${ext}",
       "target": [
-        { "target": "nsis", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "nsis": {
@@ -67,7 +73,13 @@
       "category": "public.app-category.healthcare-fitness",
       "artifactName": "Psicologo-Digitale-Mac-${arch}.${ext}",
       "target": [
-        { "target": "dmg", "arch": ["x64", "arm64"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ]
     },
     "dmg": {
@@ -81,7 +93,10 @@
       "maintainer": "Danilo D'Auria",
       "synopsis": "Colloquio guidato, questionari e relazione, offline",
       "description": "Psicologo Digitale raccoglie un colloquio preliminare guidato con Neura, sei questionari di autovalutazione, un percorso in otto tappe, esercizi, una guida al professionista e la relazione in PDF. Funziona senza Internet, senza account e senza inviare dati.",
-      "target": ["deb", "AppImage"]
+      "target": [
+        "deb",
+        "AppImage"
+      ]
     }
   }
 }

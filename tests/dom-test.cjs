@@ -258,7 +258,7 @@ const form = document.getElementById("chatForm");
 input.value = "che cos'è l'ansia?";
 form.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
 
-setTimeout(function () {
+setTimeout(async function () {
   const log = document.getElementById("chatLog");
   ok(log.textContent.indexOf("ansia") >= 0, "Neura risponde nella chat");
   ok(log.textContent.indexOf("In pratica") >= 0, "la risposta include passi pratici");
@@ -314,6 +314,64 @@ setTimeout(function () {
   document.getElementById("themeBtn").click();
   const after = document.documentElement.getAttribute("data-theme");
   ok(before !== after, "il pulsante cambia tema");
+
+  /* Voce naturale (solo nel programma installato) ------------------------- */
+
+  const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0 };
+  const audioRiprodotti = [];
+  window.Audio = function (src) {
+    this.src = src;
+    this.play = function () { audioRiprodotti.push(src); return Promise.resolve(); };
+    this.pause = function () {};
+  };
+  if (window.URL) {
+    window.URL.createObjectURL = function () { return "blob:voce"; };
+    window.URL.revokeObjectURL = function () {};
+  }
+  window.npDesktop = {
+    platform: "win32",
+    sistema: { impostazioniVoce: function () { return Promise.resolve({ ok: true }); } },
+    voceNaturale: {
+      stato: function () { return Promise.resolve({ ok: true, disponibile: true, installata: false, voce: "Paola", peso: 86 }); },
+      scarica: function () {
+        chiamateVoce.scarica++;
+        return Promise.resolve({ ok: true, disponibile: true, installata: true, voce: "Paola", peso: 86 });
+      },
+      pronuncia: function () {
+        chiamateVoce.pronuncia++;
+        return Promise.resolve({ ok: true, wav: [82, 73, 70, 70] });
+      },
+      rimuovi: function () {
+        chiamateVoce.rimuovi++;
+        return Promise.resolve({ ok: true, disponibile: true, installata: false, voce: "Paola" });
+      },
+      onProgresso: function () {}
+    }
+  };
+
+  navigate("#/neura");
+  await new Promise(function (r) { setTimeout(r, 30); });
+  ok(!!document.getElementById("voiceNaturale"), "nel programma la scheda Voce propone la voce naturale");
+  ok(/facoltativa/.test(document.getElementById("voiceNaturaleNota").textContent), "la nota dice che è facoltativa");
+  ok(/86 MB/.test(document.getElementById("voiceNaturaleNota").textContent), "la nota dice quanto pesa, una volta sola");
+
+  document.getElementById("voiceNaturaleInstalla").click();
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(chiamateVoce.scarica === 1, "il pulsante scarica la voce naturale");
+  ok(!!document.querySelector('#voiceSelect option[value="__naturale__"]'), "la voce installata entra nell'elenco");
+  ok(/Paola/.test(document.getElementById("voiceNaturaleNota").textContent), "la scheda conferma quale voce è pronta");
+  ok(document.getElementById("voiceNaturaleInstalla").hidden === true, "dopo l'installazione il pulsante di download sparisce");
+
+  NP.neuraUI.speak("<p>Ecco come suono con la voce naturale.</p>");
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(chiamateVoce.pronuncia >= 1, "la lettura passa dalla voce naturale");
+  ok(audioRiprodotti.length >= 1, "l'audio prodotto viene riprodotto");
+  NP.neuraUI.stop();
+
+  document.getElementById("voiceNaturaleRimuovi").click();
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(chiamateVoce.rimuovi === 1, "la voce naturale si può togliere");
+  ok(!document.querySelector('#voiceSelect option[value="__naturale__"]'), "tolta la voce, l'elenco torna alle voci del sistema");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
