@@ -303,7 +303,7 @@ NP.app = (function () {
     return { name: parts[0] || "home", params: parts.slice(1) };
   }
 
-  const MORE_ROUTES = ["sedute", "esercizi", "nutrizione", "manuale", "palestra", "glossario", "sicurezza", "relazione", "licenze", "installa"];
+  const MORE_ROUTES = ["sedute", "esercizi", "nutrizione", "manuale", "palestra", "glossario", "sicurezza", "relazione", "licenze", "installa", "versioni"];
 
   function updateNav(name) {
     document.querySelectorAll("[data-nav]").forEach(function (a) {

@@ -350,6 +350,12 @@ python3 -m http.server 3000 --bind 0.0.0.0
 
 Aprire `http://localhost:3000/`: percorsi relativi, hash routing e service worker si comportano come in produzione.
 
+## Versioni e novità
+
+La pagina **Versioni e novità** (`#/versioni`, nel menu *Altro*) elenca le release pubblicate e che cosa ha portato ciascuna, con il segno **in uso** sulla versione che si sta guardando. Ci si arriva anche dal pannello degli aggiornamenti nella barra di stato e dal piè di pagina di *Licenze e progetto*.
+
+L'elenco vive in `assets/js/app-versioni.js`, in due punti: la costante `VERSIONE`, che deve coincidere con `package.json`, e l'array `NOVITA`, da aggiornare a ogni release. I test confrontano la costante con il campo `version` di `package.json`: se resta indietro, la build diventa rossa prima di pubblicare una pagina che annuncia la versione sbagliata.
+
 ## Limitazioni note
 
 - Non è una terapia e non sostituisce una visita.

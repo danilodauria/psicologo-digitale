@@ -272,7 +272,8 @@
         '<div class="status-actions"><button type="button" class="btn btn-soft btn-sm" data-update-check>Controlla adesso</button></div>';
     }
 
-    html += '<p class="text-small muted mb-0">Il programma scarica la nuova versione dalle release GitHub e la installa da solo. Su Windows e Linux AppImage funziona senza intervento; su macOS serve un pacchetto firmato, altrimenti il download resta manuale.</p>';
+    html += '<p class="text-small muted mb-0">Il programma scarica la nuova versione dalle release GitHub e la installa da solo. Su Windows e Linux AppImage funziona senza intervento; su macOS serve un pacchetto firmato, altrimenti il download resta manuale.</p>' +
+      '<div class="status-actions"><a class="btn btn-ghost btn-sm" href="#/versioni" data-status-close>Cosa è cambiato in ogni versione</a></div>';
     return html;
   }
 

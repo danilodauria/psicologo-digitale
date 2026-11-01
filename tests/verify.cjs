@@ -360,6 +360,20 @@ ok(/statusUpdate/.test(read("assets/js/app-status.js")) && /data-update-install/
 ok(/latest\*\.yml/.test(wf), "il workflow allega alla release i file di aggiornamento");
 ok(/Aggiornamenti automatici/.test(read("README.md")), "il README spiega l'aggiornamento automatico");
 
+/* Pagina delle versioni ---------------------------------------------------- */
+
+const versioni = read("assets/js/app-versioni.js");
+ok(/app-versioni\.js/.test(html), "index.html carica la pagina delle versioni");
+ok(/#\/versioni/.test(html), "il menu Altro collega la pagina delle versioni");
+ok(/"versioni"/.test(read("assets/js/app.js")), "la pagina delle versioni resta nel menu Altro anche da altre sezioni");
+ok(/app-versioni\.js/.test(sw), "il service worker tiene la pagina delle versioni in cache");
+ok(/views\.versioni = function/.test(versioni), "la pagina delle versioni è una vista dell'app");
+const vUso = (versioni.match(/const VERSIONE = "([0-9.]+)"/) || [])[1];
+ok(!!vUso && vUso === JSON.parse(read("package.json")).version, "la cronologia dichiara la stessa versione di package.json (" + vUso + ")");
+ok(!!vUso && versioni.indexOf('v: "' + vUso + '"') > 0, "la versione in uso compare nella cronologia");
+ok(versioni.indexOf('v: "1.2.0"') > 0, "la cronologia risale fino alla prima versione installabile");
+ok(/in uso/i.test(versioni), "la cronologia segnala la versione installata");
+
 // I certificati restano facoltativi: le istruzioni per consentire l'avvio dal
 // sistema operativo devono restare sia nel README sia nella pagina di installazione.
 const readme = read("README.md");
