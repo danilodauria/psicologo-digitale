@@ -3,12 +3,13 @@
    Licenza del codice: MIT · Danilo D'Auria
    ========================================================================== */
 
-const VERSION = "psd-v1.3.17";
+const VERSION = "psd-v1.3.18";
 
 const ASSETS = [
   "./",
   "index.html",
   "come-installare.html",
+  "scheda-rapida.html",
   "manifest.webmanifest",
   "assets/css/styles.css",
   "assets/img/icon.svg",

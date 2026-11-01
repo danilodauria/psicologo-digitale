@@ -1904,3 +1904,49 @@ html[data-theme="dark"] .status-num b { color: #dce6fb; }
     padding-top: .4rem;
   }
 }
+
+/* Scheda rapida: una pagina, tre sistemi ----------------------------------- */
+
+.scheda-sistemi {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.scheda-sistemi .card { margin-bottom: 0; }
+.scheda-sistemi .text-small { margin-bottom: .45rem; }
+
+.scheda-piede {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line, #e4dfd4);
+}
+
+@media (max-width: 860px) {
+  .scheda-sistemi { grid-template-columns: 1fr; }
+}
+
+/* Sulla carta la scheda deve stare in un foglio solo: caratteri più piccoli,
+   colonne strette, niente riquadri larghi che spingono il resto a capo. */
+@media print {
+  .pagina-scheda h1 { font-size: 15pt; }
+  .pagina-scheda .page-head .lead { display: block !important; font-size: 8.4pt; margin-bottom: 2mm; }
+  .pagina-scheda .scheda-sistemi {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3mm;
+    margin-top: 0 !important;
+  }
+  .pagina-scheda .scheda-sistemi .card {
+    padding: 2.6mm 2.6mm !important;
+    margin-bottom: 0 !important;
+  }
+  .pagina-scheda .scheda-sistemi h3 { font-size: 9.6pt; margin-bottom: 1mm; }
+  .pagina-scheda .scheda-sistemi .text-small,
+  .pagina-scheda .scheda-sistemi li { font-size: 7.5pt; line-height: 1.33; }
+  .pagina-scheda .scheda-sistemi ol { padding-left: 4mm; margin: 0; }
+  .pagina-scheda .scheda-piede { font-size: 7.5pt; margin-top: 3mm; page-break-inside: avoid; }
+  .pagina-scheda .scheda-piede p { margin-bottom: .6mm; }
+}

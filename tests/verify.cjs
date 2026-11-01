@@ -315,7 +315,8 @@ const pdfVersione = [
   "assets/pdf/vademecum-psicologo-digitale-a4.pdf",
   "assets/pdf/vademecum-psicologo-digitale-libricino-a4.pdf",
   "assets/pdf/vademecum-clinico-psicologo-digitale.pdf",
-  "assets/pdf/Psicologo-Digitale-Come-si-installa.pdf"
+  "assets/pdf/Psicologo-Digitale-Come-si-installa.pdf",
+  "assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf"
 ];
 pdfVersione.forEach((f) => {
   const testo = fs.readFileSync(path.join(root, f)).toString("latin1");
@@ -345,6 +346,32 @@ ok(exists("scripts/build_come_installare_pdf.py"), "il generatore del foglio è 
 const generatore = read("scripts/build_come_installare_pdf.py");
 ok(/come-installare\.html/.test(generatore), "il generatore legge la pagina pubblica");
 ok(!/danneggiata|Aggiungi a schermata Home|Nessun modello locale/.test(generatore), "il generatore non contiene una seconda copia delle risposte");
+
+/* Scheda rapida, una pagina sola ------------------------------------------ */
+
+// La scheda esiste per essere stampata e appesa: se occupa due pagine ha
+// perso il suo senso, quindi il numero di pagine è un controllo, non un dato.
+const schedaHtml = read("scheda-rapida.html");
+const schedaPdf = "assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf";
+ok(exists("scheda-rapida.html"), "esiste la scheda rapida come pagina del sito");
+ok(/class="[^"]*pagina-scheda/.test(schedaHtml), "la scheda è marcata per le regole di stampa");
+["Windows", "macOS", "Linux"].forEach((sistema) => {
+  ok(schedaHtml.indexOf(">" + sistema + "<h3>") !== -1 || new RegExp("<h3>" + sistema + "</h3>").test(schedaHtml), "la scheda ha il blocco " + sistema);
+});
+ok((schedaHtml.match(/<li>/g) || []).length >= 12, "la scheda ha i passaggi essenziali dei tre sistemi");
+ok(/112/.test(schedaHtml), "la scheda porta con sé il numero di emergenza");
+ok(exists(schedaPdf), "esiste il PDF della scheda " + schedaPdf);
+const sb = fs.readFileSync(path.join(root, schedaPdf));
+ok(sb.slice(0, 5).toString("latin1") === "%PDF-", "la scheda è un PDF");
+const st = sb.toString("latin1");
+ok(/%%EOF/.test(st), "la scheda è chiusa correttamente");
+const spagine = (st.match(/\/Type\s*\/Page[^s]/g) || []).length;
+ok(spagine === 1, "la scheda sta in una pagina sola (" + spagine + ")");
+ok(/Psicologo-Digitale-Scheda-rapida\.pdf/.test(schedaHtml), "la scheda collega il proprio PDF");
+ok(/scheda-rapida\.html/.test(read("come-installare.html")), "la pagina lunga rimanda alla scheda");
+ok(/scheda rapida/i.test(read("README.md")), "il README parla della scheda");
+ok(exists("scripts/build_scheda_rapida_pdf.py") && /build_come_installare_pdf/.test(read("scripts/build_scheda_rapida_pdf.py")), "la scheda riusa l'impaginatore del foglio lungo");
+ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il service worker tiene offline");
 
 /* Programmi installabili e benvenuto --------------------------------------- */
 

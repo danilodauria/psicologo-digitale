@@ -201,8 +201,17 @@ class Estrattore(HTMLParser):
 class Foglio(BaseDocTemplate):
     """A4 con intestazione, numero di pagina e versione nel piè di pagina."""
 
-    def __init__(self, path, ver, **kw):
+    def __init__(
+        self,
+        path,
+        ver,
+        titolo="Psicologo Digitale · Come si installa",
+        url="danilodauria.github.io/psicologo-digitale/come-installare.html",
+        **kw
+    ):
         self.ver = ver
+        self.titolo = titolo
+        self.url = url
         BaseDocTemplate.__init__(
             self,
             path,
@@ -211,7 +220,7 @@ class Foglio(BaseDocTemplate):
             rightMargin=18 * mm,
             topMargin=22 * mm,
             bottomMargin=18 * mm,
-            title="Psicologo Digitale · Come si installa",
+            title=titolo,
             author="Danilo D'Auria",
             subject="Istruzioni di installazione per Windows, macOS e Linux",
             creator="scripts/build_come_installare_pdf.py",
@@ -237,12 +246,12 @@ class Foglio(BaseDocTemplate):
         larghezza = self.pagesize[0]
         canvas.setFont("Helvetica", 7.6)
         canvas.setFillColor(GRIGIO)
-        canvas.drawString(self.leftMargin, self.pagesize[1] - 14 * mm, "Psicologo Digitale · Come si installa")
+        canvas.drawString(self.leftMargin, self.pagesize[1] - 14 * mm, self.titolo)
         canvas.drawRightString(larghezza - self.rightMargin, self.pagesize[1] - 14 * mm, "versione=" + self.ver)
         canvas.setStrokeColor(LINEA)
         canvas.setLineWidth(0.5)
         canvas.line(self.leftMargin, self.pagesize[1] - 16 * mm, larghezza - self.rightMargin, self.pagesize[1] - 16 * mm)
-        canvas.drawString(self.leftMargin, 11 * mm, "danilodauria.github.io/psicologo-digitale/come-installare.html")
+        canvas.drawString(self.leftMargin, 11 * mm, self.url)
         canvas.drawRightString(larghezza - self.rightMargin, 11 * mm, "pagina %d" % doc.page)
         canvas.restoreState()
 
@@ -296,9 +305,9 @@ def stili():
     }
 
 
-def riquadro(contenuto, sfondo, s):
+def riquadro(contenuto, sfondo, s, larghezza=None):
     """Un riquadro con bordo leggero: è la card della pagina, senza ombra."""
-    tabella = Table([[contenuto]], colWidths=[None])
+    tabella = Table([[contenuto]], colWidths=[larghezza])
     tabella.setStyle(
         TableStyle(
             [
@@ -315,6 +324,25 @@ def riquadro(contenuto, sfondo, s):
     return tabella
 
 
+def colonne(schede):
+    """Affianca i riquadri della scheda: tre sistemi, una riga sola."""
+    disponibile = A4[0] - 36 * mm
+    larghezza = disponibile / max(1, len(schede))
+    tabella = Table([[[scheda] for scheda in schede]], colWidths=[larghezza] * len(schede))
+    tabella.setStyle(
+        TableStyle(
+            [
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                ("TOPPADDING", (0, 0), (-1, -1), 0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+            ]
+        )
+    )
+    return tabella
+
+
 def impagina(figli, s, annidato=False, elenco=None):
     """Converte blocchi e riquadri in elementi di reportlab."""
     fuori = []
@@ -324,10 +352,23 @@ def impagina(figli, s, annidato=False, elenco=None):
             if figlio.classi in ("__ol", "__ul"):
                 fuori.extend(impagina(figlio.figli, s, annidato=True, elenco=figlio.classi))
                 continue
+            classi = figlio.classi.split()
+            if "scheda-sistemi" in classi:
+                # La scheda rapida mette i tre sistemi affiancati anche sul
+                # foglio: è il senso di una scheda, vederli tutti insieme.
+                schede = []
+                for sotto in figlio.figli:
+                    if isinstance(sotto, Nodo) and "card" in sotto.classi.split():
+                        dentro = impagina(sotto.figli, s, annidato=True)
+                        if dentro:
+                            schede.append(riquadro(dentro, colors.white, s))
+                if schede:
+                    fuori.append(colonne(schede))
+                    fuori.append(Spacer(1, 4))
+                continue
             interno = impagina(figlio.figli, s, annidato=True)
             if not interno:
                 continue
-            classi = figlio.classi.split()
             if "card" in classi or "callout" in classi:
                 sfondo = CARTA if "callout" in classi else colors.white
                 contenuto = []
@@ -365,9 +406,20 @@ def impagina(figli, s, annidato=False, elenco=None):
     return fuori
 
 
-def main():
+def main(
+    pagina=PAGINA,
+    uscita=USCITA,
+    titolo="Psicologo Digitale · Come si installa",
+    url="danilodauria.github.io/psicologo-digitale/come-installare.html",
+    chiusura=True,
+):
+    """Impagina una pagina del sito in PDF.
+
+    La scheda rapida usa lo stesso impaginatore del foglio lungo, passando la
+    sua pagina e spegnendo la chiusura: l'avvertenza ce l'ha già in fondo.
+    """
     ver = versione()
-    with open(PAGINA, "r", encoding="utf-8") as fh:
+    with open(pagina, "r", encoding="utf-8") as fh:
         html = fh.read()
 
     estrattore = Estrattore()
@@ -377,30 +429,31 @@ def main():
     s = stili()
     storia = impagina(estrattore.radice.figli, s)
 
-    # In coda, ciò che sulla carta conta ma a schermo sta nel piè di pagina.
-    storia.append(Spacer(1, 8))
-    storia.append(
-        Paragraph(
-            "<b>Avvertenza.</b> Il programma è educativo e di orientamento: non formula diagnosi, "
-            "non prescrive terapie e non sostituisce il parere di uno psicologo, di uno psicoterapeuta "
-            "o di un medico. In caso di emergenza chiama il <b>112</b>.",
-            s["p_small"],
+    if chiusura:
+        # In coda, ciò che sulla carta conta ma a schermo sta nel piè di pagina.
+        storia.append(Spacer(1, 8))
+        storia.append(
+            Paragraph(
+                "<b>Avvertenza.</b> Il programma è educativo e di orientamento: non formula diagnosi, "
+                "non prescrive terapie e non sostituisce il parere di uno psicologo, di uno psicoterapeuta "
+                "o di un medico. In caso di emergenza chiama il <b>112</b>.",
+                s["p_small"],
+            )
         )
-    )
-    storia.append(
-        Paragraph(
-            "Le impronte dei file stanno in <font face=\"Courier\" size=\"8.6\">SHA256SUMS.txt</font>, "
-            "nella pagina della versione: <font face=\"Courier\" size=\"8.6\">"
-            "github.com/danilodauria/psicologo-digitale/releases/latest</font>.",
-            s["p_small"],
+        storia.append(
+            Paragraph(
+                "Le impronte dei file stanno in <font face=\"Courier\" size=\"8.6\">SHA256SUMS.txt</font>, "
+                "nella pagina della versione: <font face=\"Courier\" size=\"8.6\">"
+                "github.com/danilodauria/psicologo-digitale/releases/latest</font>.",
+                s["p_small"],
+            )
         )
-    )
 
-    os.makedirs(os.path.dirname(USCITA), exist_ok=True)
-    documento = Foglio(USCITA, ver)
+    os.makedirs(os.path.dirname(uscita), exist_ok=True)
+    documento = Foglio(uscita, ver, titolo, url)
     documento.build(storia)
-    peso = os.path.getsize(USCITA)
-    print("PDF scritto: %s (%d byte, versione %s)" % (os.path.relpath(USCITA, BASE), peso, ver))
+    peso = os.path.getsize(uscita)
+    print("PDF scritto: %s (%d byte, versione %s)" % (os.path.relpath(uscita, BASE), peso, ver))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,334 @@
+%PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document (opensource)
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 6 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+>>
+endobj
+5 0 obj
+<<
+/BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding /Name /F4 /Subtype /Type1 /Type /Font
+>>
+endobj
+6 0 obj
+<<
+/BaseFont /Symbol /Name /F5 /Subtype /Type1 /Type /Font
+>>
+endobj
+7 0 obj
+<<
+/Contents 11 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+8 0 obj
+<<
+/PageMode /UseNone /Pages 10 0 R /Type /Catalog
+>>
+endobj
+9 0 obj
+<<
+/Author (Danilo D'Auria) /CreationDate (D:20261101155706+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261101155706+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (Istruzioni di installazione per Windows, macOS e Linux) /Title (Psicologo Digitale \267 Scheda rapida) /Trapped /False
+>>
+endobj
+10 0 obj
+<<
+/Count 1 /Kids [ 7 0 R ] /Type /Pages
+>>
+endobj
+11 0 obj
+<<
+/Length 8285
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+BT /F1 7.6 Tf 9.12 TL ET
+.356863 .392157 .447059 rg
+BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Scheda rapida) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.18) Tj T* ET
+.788235 .768627 .721569 RG
+.5 w
+n 51.02362 796.5354 m 544.252 796.5354 l S
+BT 1 0 0 1 51.02362 31.1811 Tm (danilodauria.github.io/psicologo-digitale/scheda-rapida.html) Tj T* ET
+BT 1 0 0 1 515.0984 31.1811 Tm (pagina 1) Tj T* ET
+Q
+q
+1 0 0 1 57.02362 748.5276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 4 Tm /F2 21 Tf 25 TL (Scheda rapida) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 715.3276 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 17.3 Tm /F1 9.9 Tf 13.6 TL .29324 Tw (I passaggi che servono davvero, quattro per sistema. Stampa questa pagina e tienila accanto al computer: le) Tj T* 0 Tw (istruzioni complete e le domande frequenti restano in Come si installa.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.02362 447.3276 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 0 25.2 cm
+q
+1 1 1 rg
+n 0 239.8 160.4094 -239.8 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 220.6 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Windows) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 179.8 cm
+q
+BT 1 0 0 1 2 28.6 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (1.) Tj ET
+BT 1 0 0 1 11 28.6 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Scarica ) Tj /F3 8.6 Tf (Psicologo-Digitale) Tj  T* -4.1928 0 Td (-Windows-x64.exe) Tj /F1 9.2 Tf (, oppure lo) Tj T* (ZIP portatile.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 126.9 cm
+q
+BT 1 0 0 1 2 41.2 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (2.) Tj ET
+BT 1 0 0 1 11 41.2 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Doppio clic. Se compare) Tj T* -4.1928 0 Td /F4 9.2 Tf (Windows ha protetto il PC) Tj /F1 9.2 Tf (: ) Tj /F2 9.2 Tf (Altro) Tj T* (informazioni) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (Esegui) Tj T* (comunque) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 86.6 cm
+q
+BT 1 0 0 1 2 28.6 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (3.) Tj ET
+BT 1 0 0 1 11 28.6 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Se il file resta fermo prima di) Tj T* -4.1928 0 Td (partire: tasto destro ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (Propriet\340) Tj /F1 9.2 Tf  T* /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( in fondo ) Tj /F2 9.2 Tf (Sblocca) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (OK) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 58.9 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (4.) Tj ET
+0 0 0 rg
+BT 1 0 0 1 11 16 Tm /F1 9.2 Tf 12.6 TL 4.1928 0 Td (Completa l'installazione: da l\354 si) Tj T* -4.1928 0 Td (apre dal menu avvio.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 41.2 Tm /F1 9.2 Tf 12.6 TL (L'avviso pu\362 tornare a ogni) Tj T* (versione nuova: non \350 un errore. Lo) Tj T* (ZIP portatile non installa nulla, si) Tj T* (scompatta e si avvia.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 239.8 m 160.4094 239.8 l S
+n 0 0 m 160.4094 0 l S
+n 0 0 m 0 239.8 l S
+n 160.4094 0 m 160.4094 239.8 l S
+Q
+Q
+Q
+q
+1 0 0 1 164.4094 12.6 cm
+q
+1 1 1 rg
+n 0 252.4 160.4094 -252.4 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 233.2 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (macOS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 192.4 cm
+q
+BT 1 0 0 1 2 28.6 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (1.) Tj ET
+BT 1 0 0 1 11 28.6 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Scarica il ) Tj /F3 8.6 Tf (.dmg) Tj /F1 9.2 Tf ( giusto:) Tj T* -4.1928 0 Td /F4 9.2 Tf (Mac-arm64) Tj /F1 9.2 Tf ( per Apple Silicon,) Tj T* /F4 9.2 Tf (Mac-x64) Tj /F1 9.2 Tf ( per Intel.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 152.1 cm
+q
+BT 1 0 0 1 2 28.6 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (2.) Tj ET
+BT 1 0 0 1 11 28.6 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Apri il ) Tj /F3 8.6 Tf (.dmg) Tj /F1 9.2 Tf ( e trascina) Tj T* -4.1928 0 Td /F2 9.2 Tf (Psicologo Digitale) Tj /F1 9.2 Tf ( in) Tj T* /F4 9.2 Tf (Applicazioni) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 124.4 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (3.) Tj ET
+BT 1 0 0 1 11 16 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Doppio clic sull'app, premi ) Tj /F2 9.2 Tf (Fine) Tj /F1 9.2 Tf  T* -4.1928 0 Td (\(non ) Tj /F4 9.2 Tf (Sposta nel cestino) Tj /F1 9.2 Tf (\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 58.9 cm
+q
+BT 1 0 0 1 2 53.8 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (4.) Tj ET
+BT 1 0 0 1 11 53.8 Tm 4.1928 0 Td 12.6 TL /F2 9.2 Tf 0 0 0 rg (Impostazioni di Sistema) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL T* -4.1928 0 Td /F2 9.2 Tf (Privacy e sicurezza) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( in fondo,) Tj T* (sotto ) Tj /F2 9.2 Tf (Sicurezza) Tj /F1 9.2 Tf (, ) Tj /F2 9.2 Tf (Apri) Tj T* -0.116338 Tw (comunque) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( password o Touch) Tj T* 0 Tw (ID.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 41.2 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Se ) Tj /F4 9.2 Tf (Apri comunque) Tj /F1 9.2 Tf ( non c'\350, riapri) Tj T* (l'app e torna l\354: la voce compare) Tj T* (solo dopo un tentativo bloccato, e) Tj T* (resta circa un'ora.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 252.4 m 160.4094 252.4 l S
+n 0 0 m 160.4094 0 l S
+n 0 0 m 0 252.4 l S
+n 160.4094 0 m 160.4094 252.4 l S
+Q
+Q
+Q
+q
+1 0 0 1 328.8189 0 cm
+q
+1 1 1 rg
+n 0 265 160.4094 -265 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 245.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Linux) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 205 cm
+q
+BT 1 0 0 1 2 28.6 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (1.) Tj ET
+BT 1 0 0 1 11 28.6 Tm 4.1928 0 Td 12.6 TL /F3 8.6 Tf 0 0 0 rg (.deb) Tj /F1 9.2 Tf (: doppio clic, oppure ) Tj /F3 8.6 Tf (sudo) Tj T* -4.1928 0 Td (apt install ./Psicologo-Di) Tj  T* (gitale-Linux-amd64.deb) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 139.5 cm
+q
+BT 1 0 0 1 2 53.8 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (2.) Tj ET
+BT 1 0 0 1 11 53.8 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (AppImage: ) Tj /F3 8.6 Tf (chmod +x Psicolo) Tj  T* -4.1928 0 Td (go-Digitale-Linux-x86_64.A) Tj T* (ppImage) Tj /F1 9.2 Tf (, poi doppio clic \(o tasto) Tj T* (destro ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F4 9.2 Tf (Propriet\340) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( consenti) Tj T* (l'esecuzione\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 99.2 cm
+q
+BT 1 0 0 1 2 28.6 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (3.) Tj ET
+BT 1 0 0 1 11 28.6 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Se manca FUSE: ) Tj /F3 8.6 Tf (--appimage-) Tj  T* -4.1928 0 Td (extract-and-run) Tj /F1 9.2 Tf ( dopo il nome) Tj T* (del file.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 58.9 cm
+q
+BT 1 0 0 1 2 28.6 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (4.) Tj ET
+0 0 0 rg
+BT 1 0 0 1 11 28.6 Tm /F1 9.2 Tf 12.6 TL 4.1928 0 Td (Nessun avviso di sicurezza da) Tj T* -4.1928 0 Td (superare: il pacchetto funziona) Tj T* (cos\354 com'\350.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 41.2 Tm /F1 9.2 Tf 12.6 TL -0.048536 Tw (Su tutte e tre le strade il programma) Tj T* 0 Tw (pu\362 essere usato anche senza) Tj T* (installare niente, dal browser: apri il) Tj T* (programma.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 265 m 160.4094 265 l S
+n 0 0 m 160.4094 0 l S
+n 0 0 m 0 265 l S
+n 160.4094 0 m 160.4094 265 l S
+Q
+Q
+Q
+q
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 443.3276 cm
+Q
+q
+1 0 0 1 57.02362 418.1276 cm
+q
+BT 1 0 0 1 0 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (La connessione serve solo per scaricare.) Tj /F1 9.2 Tf ( Dopo, il programma funziona offline e i dati restano sul dispositivo:) Tj T* (nessun server li riceve. Se un passaggio non torna, le risposte sono nelle domande frequenti.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 390.9276 cm
+q
+BT 1 0 0 1 0 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Avvertenza.) Tj /F1 9.2 Tf ( \310 uno strumento educativo e di orientamento: non formula diagnosi, non prescrive terapie e non) Tj T* (sostituisce il parere di uno psicologo, di uno psicoterapeuta o di un medico. In caso di emergenza chiama il ) Tj /F2 9.2 Tf (112) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 363.7276 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (versione 1.3.18 \267 danilodauria.github.io/psicologo-digitale/scheda-rapida.html \267 Codice MIT \267 Contenuti CC BY-NC-SA) Tj T* (4.0 \267 \251 Danilo D'Auria) Tj T* ET
+Q
+Q
+ 
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000061 00000 n 
+0000000132 00000 n 
+0000000239 00000 n 
+0000000351 00000 n 
+0000000456 00000 n 
+0000000571 00000 n 
+0000000648 00000 n 
+0000000853 00000 n 
+0000000922 00000 n 
+0000001287 00000 n 
+0000001347 00000 n 
+trailer
+<<
+/ID 
+[<7d1abcea4baa94b8065ba425c1818196><7d1abcea4baa94b8065ba425c1818196>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 9 0 R
+/Root 8 0 R
+/Size 12
+>>
+startxref
+9684
+%%EOF

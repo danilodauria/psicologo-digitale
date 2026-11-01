@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Scheda rapida · Psicologo Digitale</title>
+  <meta name="description" content="Una pagina sola con i passaggi essenziali per installare Psicologo Digitale su Windows, macOS e Linux: da stampare e tenere accanto al computer.">
+  <meta name="author" content="Danilo D'Auria">
+  <meta name="theme-color" content="#22345c">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:title" content="Scheda rapida · Psicologo Digitale">
+  <meta property="og:description" content="Quattro passaggi per sistema, una pagina da stampare. Le istruzioni complete stanno in Come si installa.">
+  <meta property="og:site_name" content="Psicologo Digitale">
+  <meta property="og:url" content="https://danilodauria.github.io/psicologo-digitale/scheda-rapida.html">
+  <meta property="og:image" content="https://danilodauria.github.io/psicologo-digitale/assets/img/icon-512.png">
+  <link rel="canonical" href="https://danilodauria.github.io/psicologo-digitale/scheda-rapida.html">
+  <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+  <script>
+    // Il tema si legge come nel resto del programma, così la pagina non
+    // lampeggia in chiaro a chi tiene il sistema scuro.
+    (function () {
+      try {
+        var t = localStorage.getItem("psicologo-digitale:v1:theme");
+        if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="pagina-installa pagina-scheda">
+  <a class="skip-link" href="#main">Vai al contenuto</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="./" aria-label="Psicologo Digitale, pagina iniziale">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img" focusable="false">
+            <path d="M27 5.5c-8.3 0-14.5 5.7-14.5 13.4 0 4.2 1.9 7.5 4.8 9.6v6.2a3 3 0 0 0 3 3h3.2v3.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="27" cy="19.5" r="2.3" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <strong>Psicologo</strong>
+          <em>Digitale</em>
+        </span>
+      </a>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm" href="./">Apri il programma</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="app" tabindex="-1">
+    <div class="wrap page">
+
+      <div class="page-head">
+        <p class="crumbs"><a href="./">Pagina iniziale</a><span>›</span><a href="come-installare.html">Come si installa</a><span>›</span>Scheda rapida</p>
+        <h1>Scheda rapida</h1>
+        <p class="lead">I passaggi che servono davvero, quattro per sistema. Stampa questa pagina e tienila accanto al computer: le istruzioni complete e le domande frequenti restano in <a href="come-installare.html">Come si installa</a>.</p>
+        <div class="btn-row mt-2 no-print">
+          <button type="button" class="btn btn-primary" id="stampaScheda" data-stampa>Stampa la scheda</button>
+          <a class="btn btn-soft" href="assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf" download>Scarica il PDF</a>
+          <a class="btn btn-ghost" href="come-installare.html">Istruzioni complete</a>
+        </div>
+      </div>
+
+      <div class="grid scheda-sistemi mt-2">
+        <div class="card">
+          <h3>Windows</h3>
+          <ol class="text-small">
+            <li>Scarica <code>Psicologo-Digitale-Windows-x64.exe</code>, oppure lo ZIP portatile.</li>
+            <li>Doppio clic. Se compare <em>Windows ha protetto il PC</em>: <strong>Altro informazioni</strong> → <strong>Esegui comunque</strong>.</li>
+            <li>Se il file resta fermo prima di partire: tasto destro → <strong>Proprietà</strong> → in fondo <strong>Sblocca</strong> → <strong>OK</strong>.</li>
+            <li>Completa l'installazione: da lì si apre dal menu avvio.</li>
+          </ol>
+          <p class="text-small muted mb-0">L'avviso può tornare a ogni versione nuova: non è un errore. Lo ZIP portatile non installa nulla, si scompatta e si avvia.</p>
+        </div>
+
+        <div class="card">
+          <h3>macOS</h3>
+          <ol class="text-small">
+            <li>Scarica il <code>.dmg</code> giusto: <em>Mac-arm64</em> per Apple Silicon, <em>Mac-x64</em> per Intel.</li>
+            <li>Apri il <code>.dmg</code> e trascina <strong>Psicologo Digitale</strong> in <em>Applicazioni</em>.</li>
+            <li>Doppio clic sull'app, premi <strong>Fine</strong> (non <em>Sposta nel cestino</em>).</li>
+            <li><strong>Impostazioni di Sistema</strong> → <strong>Privacy e sicurezza</strong> → in fondo, sotto <strong>Sicurezza</strong>, <strong>Apri comunque</strong> → password o Touch ID.</li>
+          </ol>
+          <p class="text-small muted mb-0">Se <em>Apri comunque</em> non c'è, riapri l'app e torna lì: la voce compare solo dopo un tentativo bloccato, e resta circa un'ora.</p>
+        </div>
+
+        <div class="card">
+          <h3>Linux</h3>
+          <ol class="text-small">
+            <li><code>.deb</code>: doppio clic, oppure <code>sudo apt install ./Psicologo-Digitale-Linux-amd64.deb</code>.</li>
+            <li>AppImage: <code>chmod +x Psicologo-Digitale-Linux-x86_64.AppImage</code>, poi doppio clic (o tasto destro → <em>Proprietà</em> → consenti l'esecuzione).</li>
+            <li>Se manca FUSE: <code>--appimage-extract-and-run</code> dopo il nome del file.</li>
+            <li>Nessun avviso di sicurezza da superare: il pacchetto funziona così com'è.</li>
+          </ol>
+          <p class="text-small muted mb-0">Su tutte e tre le strade il programma può essere usato anche senza installare niente, dal browser: <a href="./">apri il programma</a>.</p>
+        </div>
+      </div>
+
+      <div class="scheda-piede">
+        <p class="text-small mb-0"><strong>La connessione serve solo per scaricare.</strong> Dopo, il programma funziona offline e i dati restano sul dispositivo: nessun server li riceve. Se un passaggio non torna, le risposte sono nelle <a href="come-installare.html#domande-frequenti">domande frequenti</a>.</p>
+        <p class="text-small mb-0"><strong>Avvertenza.</strong> È uno strumento educativo e di orientamento: non formula diagnosi, non prescrive terapie e non sostituisce il parere di uno psicologo, di uno psicoterapeuta o di un medico. In caso di emergenza chiama il <strong>112</strong>.</p>
+        <p class="text-small muted mb-0">versione 1.3.18 · danilodauria.github.io/psicologo-digitale/scheda-rapida.html · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D'Auria</p>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Sulla scheda il pulsante serve più che altrove: chi la usa non vuole
+    // cercare il comando di stampa. Senza JavaScript resta Ctrl+P.
+    (function () {
+      var b = document.getElementById("stampaScheda");
+      if (b) b.addEventListener("click", function () { window.print(); });
+    })();
+  </script>
+</body>
+</html>
