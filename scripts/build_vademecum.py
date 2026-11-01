@@ -460,6 +460,14 @@ def costruisci(percorso, formato, d):
             "<b>Installa questo sito come app</b>. Su Safari per Mac: <b>File</b> → <b>Aggiungi al Dock</b>.",
             st["Corpo"],
         ),
+        Paragraph("La barra in alto", st["Sezione"]),
+        Paragraph(
+            "Sotto l'intestazione c'è una barra sempre visibile: dice se stai usando il browser, la PWA "
+            "installata o il programma per computer, se Ollama risponde, se il microfono è pronto e come "
+            "attivarlo, e offre <b>Ferma l'audio</b> e <b>Indietro</b>. In fondo alla barra, <b>Aiuto subito</b> "
+            "mostra 112, 1522 e Telefono Azzurro: sono a un tocco da qualsiasi pagina.",
+            st["Corpo"],
+        ),
         Paragraph("Un modello locale, se ti va", st["Sezione"]),
         Paragraph(
             "Neura funziona da sola. Se vuoi anche un modello generativo sul tuo computer puoi installare "
