@@ -133,9 +133,12 @@ jobs:
             desktop/dist/*.deb
             desktop/dist/*.AppImage
             desktop/dist/*.dmg
+            desktop/dist/latest*.yml
           if-no-files-found: error
           retention-days: 14
 
+      # latest*.yml sono i file che il programma installato legge per sapere che
+      # esiste una versione nuova: senza di loro l'aggiornamento automatico tace.
       - name: Pubblica nella release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
@@ -146,6 +149,7 @@ jobs:
             desktop/dist/*.deb
             desktop/dist/*.AppImage
             desktop/dist/*.dmg
+            desktop/dist/latest*.yml
           overwrite_files: true
           generate_release_notes: true
 
@@ -244,6 +248,9 @@ jobs:
             Psicologo-Digitale-Mac-arm64.dmg
             Psicologo-Digitale-Mac-x64.dmg
           )
+          # File di servizio per l'aggiornamento automatico: chi ha il
+          # programma installato li legge per scoprire le nuove versioni.
+          servizio=(latest.yml latest-mac.yml latest-linux.yml)
           presenti="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.assets[].name')"
           mkdir -p "$RUNNER_TEMP/rel"
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt \
@@ -264,8 +271,16 @@ jobs:
               mancanti=$((mancanti + 1))
             fi
           done
+          for f in "${servizio[@]}"; do
+            if grep -qxF "$f" <<< "$presenti"; then
+              echo "✓ $f"
+            else
+              echo "::error::Manca $f: senza questo file il programma installato non vede le nuove versioni."
+              mancanti=$((mancanti + 1))
+            fi
+          done
           if [[ "$mancanti" -gt 0 ]]; then
-            echo "::error::Release incompleta: $mancanti controlli falliti su $(( ${#attesi[@]} * 2 ))."
+            echo "::error::Release incompleta: $mancanti controlli falliti su $(( ${#attesi[@]} * 2 + ${#servizio[@]} ))."
             exit 1
           fi
-          echo "Release completa: ${#attesi[@]} pacchetti, ognuno con la sua impronta."
+          echo "Release completa: ${#attesi[@]} pacchetti con la loro impronta e ${#servizio[@]} file di aggiornamento."
