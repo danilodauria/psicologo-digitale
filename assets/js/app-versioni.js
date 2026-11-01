@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.12";
+  const VERSIONE = "1.3.13";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.13",
+      data: "1 novembre 2026",
+      titolo: "La pagina Come si installa",
+      punti: [
+        "Una pagina pubblica con i passaggi per Windows, macOS e Linux, raggiungibile anche da chi il programma non l'ha mai aperto.",
+        "Spiega quale file scegliere, cosa succede al primo avvio e come verificare l'impronta SHA-256 del file scaricato.",
+        "Funziona anche offline e senza programmi attivi: è una pagina del sito, non una schermata dell'applicazione."
+      ]
+    },
     {
       v: "1.3.12",
       data: "1 novembre 2026",

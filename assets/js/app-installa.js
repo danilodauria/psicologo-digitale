@@ -259,6 +259,7 @@
         '<div class="btn-row mt-1"><a class="btn btn-ghost btn-sm" href="' + SCARICA + '" target="_blank" rel="noopener">Tutti i file della versione</a>' +
           '<a class="btn btn-ghost btn-sm" href="https://github.com/danilodauria/psicologo-digitale#programmi-installabili" target="_blank" rel="noopener">Come si installano</a></div>' +
         '<p class="text-small muted mt-2">I pacchetti non hanno un certificato commerciale, quindi il sistema chiede conferma una volta sola. Non è un errore e non serve rinunciare: basta consentire l\'avvio.</p>' +
+        '<div class="btn-row mt-1"><a class="btn btn-soft btn-sm" href="come-installare.html">' + A.icon("download") + "Come si installa, passaggio per passaggio</a></div>" +
         '<ul class="text-small muted">' +
           "<li><strong>Windows</strong> — se compare <em>Windows ha protetto il PC</em>: <em>Altro informazioni</em> → <em>Esegui comunque</em>. Se il file resta bloccato, tasto destro → <em>Proprietà</em> → <em>Sblocca</em> → <em>OK</em>.</li>" +
           "<li><strong>macOS</strong> — doppio clic sull'app, <em>Fine</em>, poi <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em> (da macOS 15 il menu contestuale non basta più).</li>" +

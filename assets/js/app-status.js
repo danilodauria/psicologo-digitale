@@ -192,7 +192,8 @@
     html += "<h3>Se il sistema chiede conferma</h3>" +
       "<p>I pacchetti non hanno un certificato commerciale: il sistema avvisa una volta sola e poi lascia lavorare. Il consenso si dà così.</p>" +
       "<ul class=\"text-small\">" + istruzioniAvvio(s.id) + "</ul>" +
-      '<div class="status-actions"><a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Pagina Installa</a></div>';
+      '<div class="status-actions"><a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Pagina Installa</a>' +
+        '<a class="btn btn-ghost btn-sm" href="come-installare.html" data-status-close>Passaggio per passaggio</a></div>';
     return html;
   }
 

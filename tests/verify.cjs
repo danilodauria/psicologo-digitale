@@ -404,6 +404,21 @@ ok(/schedule:/.test(wfLink) && /workflow_dispatch:/.test(wfLink) && /workflow_ru
 ok(/issues: write/.test(wfLink), "il workflow può aprire segnalazioni");
 ok(/gh issue create/.test(wfLink) && /gh issue close/.test(wfLink), "la segnalazione si apre da sola e si chiude quando torna tutto a posto");
 ok(/Controllo dei link di download/.test(readmeTxt), "il README descrive il controllo dei link");
+
+/* Pagina pubblica «Come si installa» -------------------------------------- */
+
+const paginaComeInstallare = read("come-installare.html");
+ok(/<h1>Come si installa<\/h1>/.test(paginaComeInstallare), "esiste la pagina pubblica Come si installa");
+ok(/Esegui comunque/.test(paginaComeInstallare) && /Apri comunque/.test(paginaComeInstallare) && /AppImage/.test(paginaComeInstallare), "la pagina copre Windows, macOS e Linux");
+ok(/Tasto destro|tasto destro/.test(paginaComeInstallare) && /Sblocca/.test(paginaComeInstallare), "spiega cosa fare se il file Windows resta bloccato");
+ok(/non funziona più/.test(paginaComeInstallare) && /macOS 15/.test(paginaComeInstallare), "avverte che il menu contestuale macOS non funziona più");
+ok(/Get-FileHash/.test(paginaComeInstallare) && /sha256sum/.test(paginaComeInstallare) && /shasum -a 256/.test(paginaComeInstallare), "spiega come verificare l'impronta su ogni sistema");
+const vPagina = (paginaComeInstallare.match(/Aggiornata alla versione ([0-9.]+)/) || [])[1];
+ok(!!vPagina && vPagina === JSON.parse(read("package.json")).version, "la pagina è aggiornata alla versione del programma (" + vPagina + ")");
+ok(/come-installare\.html/.test(sw), "il service worker tiene la pagina disponibile anche offline");
+ok(/come-installare\.html/.test(html), "il piè di pagina del sito collega la pagina");
+ok(/come-installare\.html/.test(installaJs) && /come-installare\.html/.test(statoJs), "il programma rimanda alla pagina pubblica");
+ok(/Come si installa/.test(readmeTxt), "il README cita la pagina");
 ok(/firma ad-hoc/i.test(readmeTxt), "il README spiega la firma ad-hoc");
 ok(/non può essere notarizzato/i.test(readmeTxt), "il README dice che la notarizzazione non è disponibile senza abbonamento");
 ok(/Homebrew/.test(readmeTxt), "il README spiega perché una cask Homebrew non risolve");

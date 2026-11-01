@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Come si installa · Psicologo Digitale</title>
+  <meta name="description" content="Istruzioni per installare Psicologo Digitale su Windows, macOS e Linux, con la verifica dell'impronta SHA-256 e nessun certificato da comprare.">
+  <meta name="author" content="Danilo D'Auria">
+  <meta name="theme-color" content="#22345c">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:title" content="Come si installa · Psicologo Digitale">
+  <meta property="og:description" content="Un passaggio alla volta: Windows, macOS e Linux. Con la verifica dell'impronta e le istruzioni per il primo avvio.">
+  <meta property="og:site_name" content="Psicologo Digitale">
+  <meta property="og:url" content="https://danilodauria.github.io/psicologo-digitale/come-installare.html">
+  <meta property="og:image" content="https://danilodauria.github.io/psicologo-digitale/assets/img/icon-512.png">
+  <link rel="canonical" href="https://danilodauria.github.io/psicologo-digitale/come-installare.html">
+  <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+  <script>
+    // Il tema si legge come nel resto del programma, così la pagina non
+    // lampeggia in chiaro a chi tiene il sistema scuro.
+    (function () {
+      try {
+        var t = localStorage.getItem("psicologo-digitale:v1:theme");
+        if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Vai al contenuto</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="./" aria-label="Psicologo Digitale, pagina iniziale">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img" focusable="false">
+            <path d="M27 5.5c-8.3 0-14.5 5.7-14.5 13.4 0 4.2 1.9 7.5 4.8 9.6v6.2a3 3 0 0 0 3 3h3.2v3.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="27" cy="19.5" r="2.3" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <strong>Psicologo</strong>
+          <em>Digitale</em>
+        </span>
+      </a>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm" href="./">Apri il programma</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="app" tabindex="-1">
+    <div class="wrap page">
+
+      <div class="page-head">
+        <p class="crumbs"><a href="./">Pagina iniziale</a><span>›</span>Come si installa</p>
+        <h1>Come si installa</h1>
+        <p class="lead">Una pagina che esiste anche per chi il programma non l'ha ancora aperto: qui trovi il file giusto per il tuo sistema, i passaggi del primo avvio e come verificare che il file scaricato sia davvero quello pubblicato.</p>
+        <div class="btn-row mt-2">
+          <a class="btn btn-primary" href="https://github.com/danilodauria/psicologo-digitale/releases/latest" target="_blank" rel="noopener">Tutti i file della versione</a>
+          <a class="btn btn-ghost" href="./">Usarlo nel browser, senza installare</a>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <p><strong>Il primo avvio chiede conferma una volta sola.</strong> Non c'è nessun certificato commerciale e non è previsto: è una scelta del progetto. Windows e macOS mostrano un avviso di sicurezza, tu dai il consenso, e da lì in poi il programma si apre normalmente. Su macOS l'avviso resta finché non lo autorizzi: è il sistema che protegge, non un guasto del file.</p>
+      </div>
+
+      <div class="grid grid-2 mt-2">
+        <div class="card">
+          <h3>Quale file scegliere</h3>
+          <ul class="list-check text-small">
+            <li><strong>Windows</strong> — <code>.exe</code> per computer a 64 bit, con installazione classica; c'è anche la versione portatile in ZIP, che non installa nulla.</li>
+            <li><strong>macOS</strong> — <code>.dmg</code> per Apple Silicon (M1, M2, M3, M4) oppure per Intel. Per sapere quale hai: menu  → <em>Informazioni su questo Mac</em> → cerca «Chip» o «Processore».</li>
+            <li><strong>Linux</strong> — <code>.deb</code> per Debian, Ubuntu e derivate; <code>.AppImage</code> per tutto il resto, senza installare niente.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Cosa non serve</h3>
+          <ul class="list-check text-small">
+            <li>Niente account, niente registrazione, niente codice di attivazione.</li>
+            <li>Niente connessione dopo l'installazione: il programma funziona offline.</li>
+            <li>Niente da pagare, né ora né dopo.</li>
+            <li>I tuoi dati restano sul dispositivo: nessun server li riceve.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="mt-3">Windows</h2>
+      <div class="card">
+        <ol class="text-small">
+          <li>Scarica <code>Psicologo-Digitale-Windows-x64.exe</code> (oppure lo ZIP portatile).</li>
+          <li>Doppio clic sul file scaricato. Se compare <em>Windows ha protetto il PC</em>, scegli <strong>Altro informazioni</strong> → <strong>Esegui comunque</strong>.</li>
+          <li>Se il file resta bloccato prima ancora di partire: tasto destro sul file → <strong>Proprietà</strong> → in fondo <strong>Sblocca</strong> → <strong>OK</strong>.</li>
+          <li>Scegli la cartella, se vuoi il collegamento sul desktop, e completa l'installazione. Da lì in poi si apre dal menu avvio.</li>
+          <li>Versione portatile: scompatta lo ZIP dove preferisci e avvia <code>Psicologo Digitale.exe</code>. Non tocca il sistema e non lascia tracce nel registro.</li>
+        </ol>
+        <p class="text-small muted mb-0">L'avviso di SmartScreen può ricomparire a ogni nuova versione finché il file non acquista reputazione: non è un errore, e l'impronta qui sotto dice se il file è quello giusto.</p>
+      </div>
+
+      <h2 class="mt-3">macOS</h2>
+      <div class="card">
+        <ol class="text-small">
+          <li>Scarica il <code>.dmg</code> giusto per il tuo Mac: <em>Mac-arm64</em> per Apple Silicon, <em>Mac-x64</em> per Intel.</li>
+          <li>Apri il <code>.dmg</code> e trascina <strong>Psicologo Digitale</strong> nella cartella <em>Applicazioni</em>.</li>
+          <li>Doppio clic sull'app: compare <em>Apple non ha potuto verificare che «Psicologo Digitale» sia esente da malware</em>. Premi <strong>Fine</strong>, non <em>Sposta nel cestino</em>.</li>
+          <li>Apri <strong>Impostazioni di Sistema</strong> → <strong>Privacy e sicurezza</strong> e scorri in fondo, fino alla sezione <strong>Sicurezza</strong>: c'è una riga su Psicologo Digitale con il pulsante <strong>Apri comunque</strong>.</li>
+          <li>Autentica con password o Touch ID e conferma <strong>Apri</strong>. L'operazione si fa una volta per versione installata.</li>
+        </ol>
+        <p class="text-small muted"><strong>Il «tasto destro → Apri» non funziona più</strong>: Apple l'ha rimosso in macOS 15 Sequoia. Se il pulsante <em>Apri comunque</em> non c'è, riprova ad aprire l'app e torna in quella sezione: la voce compare solo dopo un tentativo bloccato e resta per circa un'ora.</p>
+        <p class="text-small muted mb-0">Se l'app è in <em>Applicazioni</em> e resta bloccata, da Terminale: <code>sudo xattr -dr com.apple.quarantine "/Applications/Psicologo Digitale.app"</code>. È un aggiramento noto ma non supportato da Apple: salta i controlli del primo avvio, quindi usalo solo per un file la cui impronta corrisponde.</p>
+      </div>
+
+      <h2 class="mt-3">Linux</h2>
+      <div class="card">
+        <ul class="text-small">
+          <li><strong>Pacchetto <code>.deb</code></strong> — doppio clic e installa, oppure da terminale: <code>sudo apt install ./Psicologo-Digitale-Linux-amd64.deb</code>.</li>
+          <li><strong>AppImage</strong> — rendila eseguibile con <code>chmod +x Psicologo-Digitale-Linux-x86_64.AppImage</code>, oppure tasto destro → <em>Proprietà</em> → <em>Consenti l'esecuzione</em>. Poi avviala con doppio clic.</li>
+          <li>Se manca FUSE: <code>./Psicologo-Digitale-Linux-x86_64.AppImage --appimage-extract-and-run</code>.</li>
+        </ul>
+        <p class="text-small muted mb-0">Su Linux non ci sono avvisi di sicurezza da superare: il pacchetto funziona così com'è.</p>
+      </div>
+
+      <h2 class="mt-3">Verificare che il file sia quello giusto</h2>
+      <div class="card">
+        <p class="text-small">Ogni release pubblica <code>SHA256SUMS.txt</code>: una riga per file, con l'impronta SHA-256 e il nome. Calcola l'impronta del file che hai scaricato e confrontala: se coincide, il file è esattamente quello pubblicato, indipendentemente da chi lo firma.</p>
+        <ul class="text-small">
+          <li><strong>Windows</strong> (PowerShell): <code>Get-FileHash .\Psicologo-Digitale-Windows-x64.exe -Algorithm SHA256</code></li>
+          <li><strong>macOS</strong>: <code>shasum -a 256 ~/Downloads/Psicologo-Digitale-Mac-arm64.dmg</code></li>
+          <li><strong>Linux</strong>: <code>sha256sum Psicologo-Digitale-Linux-amd64.deb</code></li>
+        </ul>
+        <div class="btn-row mt-2">
+          <a class="btn btn-soft btn-sm" href="https://github.com/danilodauria/psicologo-digitale/releases/latest/download/SHA256SUMS.txt">Apri SHA256SUMS.txt</a>
+          <a class="btn btn-ghost btn-sm" href="https://github.com/danilodauria/psicologo-digitale/releases/latest" target="_blank" rel="noopener">Pagina della versione</a>
+        </div>
+        <p class="text-small muted mt-2 mb-0">Nella stessa pagina trovi anche <code>Psicologo-Digitale-Sorgenti.zip</code>: l'intero progetto, per conservarne una copia o ricostruire i pacchetti.</p>
+      </div>
+
+      <h2 class="mt-3">Se qualcosa non torna</h2>
+      <div class="card">
+        <ul class="text-small mb-0">
+          <li><strong>Il download non parte o dà errore:</strong> il controllo automatico dei link gira ogni giorno e apre una segnalazione sul repository se un file non risponde; vale la pena riprovare dopo qualche minuto.</li>
+          <li><strong>«È danneggiato e non può essere aperto» su macOS:</strong> succede quando la firma del pacchetto non è valida. Segnalalo: la build verifica la firma ad-hoc a ogni release proprio per non far arrivare un pacchetto rotto.</li>
+          <li><strong>Non trovi il file per il tuo sistema:</strong> nella pagina della versione ci sono tutte le varianti, con le impronte.</li>
+          <li><strong>Vuoi solo provarlo:</strong> il programma funziona anche nel browser, senza installare nulla.</li>
+        </ul>
+      </div>
+
+      <div class="btn-row mt-3">
+        <a class="btn btn-primary" href="./">Apri il programma</a>
+        <a class="btn btn-ghost" href="./#/versioni">Versioni e novità</a>
+        <a class="btn btn-ghost" href="./#/licenze">Licenze e progetto</a>
+      </div>
+
+      <p class="text-small muted mt-3">Aggiornata alla versione 1.3.13 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D'Auria.</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <p class="footer-title">Psicologo Digitale</p>
+        <p class="footer-sub">Una stanza d'ascolto preliminare, sul tuo dispositivo.</p>
+        <p class="footer-badge"><span class="dot"></span> Gratuito · Senza account · Anche offline</p>
+        <p class="footer-credit">Ideato, scritto e sviluppato da <strong>Danilo D'Auria</strong><br>un progetto <strong>FeniceOS</strong></p>
+      </div>
+      <div class="footer-note">
+        <p class="footer-h">Avvertenza</p>
+        <p>Questo programma è <strong>educativo e di orientamento</strong>. Non formula diagnosi, non prescrive terapie e non sostituisce il parere di uno psicologo, di uno psicoterapeuta o di un medico. In caso di emergenza chiama il <strong>112</strong>.</p>
+        <p class="footer-license">Codice MIT · Contenuti CC BY-NC-SA 4.0 · «Psicologo Digitale» e «Neura» di Danilo D'Auria.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

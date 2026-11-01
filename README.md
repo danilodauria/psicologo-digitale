@@ -357,6 +357,12 @@ La pagina **Versioni e novità** (`#/versioni`, nel menu *Altro*) elenca le rele
 
 L'elenco vive in `assets/js/app-versioni.js`, in due punti: la costante `VERSIONE`, che deve coincidere con `package.json`, e l'array `NOVITA`, da aggiornare a ogni release. I test confrontano la costante con il campo `version` di `package.json`: se resta indietro, la build diventa rossa prima di pubblicare una pagina che annuncia la versione sbagliata.
 
+## Come si installa: la pagina pubblica
+
+`come-installare.html` è una pagina del sito, non una schermata del programma: si apre nel browser senza avviare nulla, e serve soprattutto a chi il programma non ce l'ha ancora o non riesce ad aprirlo. Contiene il file giusto per ogni sistema, i passaggi del primo avvio con le parole esatte degli avvisi di Windows e macOS, la verifica dell'impronta SHA-256 con il comando adatto a ciascun sistema, e il rimando al backup dei sorgenti.
+
+È raggiungibile in tre modi: dal piè di pagina del sito, dalla pagina *Installa l'app*, e dal pannello della barra di stato quando il sistema chiede conferma all'avvio. È nella cache del service worker, quindi resta consultabile anche offline, e non ha bisogno di JavaScript per essere letta: chi ha un browser bloccato o vecchio la vede lo stesso.
+
 ## Backup completo nella release
 
 Ogni release allega **`Psicologo-Digitale-Sorgenti.zip`**: l'intero progetto al momento del rilascio — sito, programma desktop, script, test, PDF e workflow — in un archivio che si apre con doppio clic. Serve a due cose: conservare una copia indipendente dal repository e ricostruire il pacchetto senza clonare nulla.
