@@ -332,12 +332,11 @@ ok(/it\.feniceos\.psicologodigitale/.test(desk), "l'app desktop ha un identifica
 /* Firma dei pacchetti ------------------------------------------------------ */
 
 const wf = read(".github/workflows/desktop.yml");
-ok(/WIN_CSC_LINK/.test(wf) && /MAC_CSC_LINK/.test(wf), "il workflow riceve i certificati di firma");
-ok(/APPLE_TEAM_ID/.test(wf) && /APPLE_API_KEY/.test(wf), "il workflow riceve le credenziali di notarizzazione");
-ok(/CSC_IDENTITY_AUTO_DISCOVERY: \$\{\{ matrix\.artifact == 'macos'/.test(wf), "la firma si cerca solo sul runner macOS");
-ok(/Get-AuthenticodeSignature/.test(wf) && /stapler validate/.test(wf), "la firma viene verificata dopo la build");
-ok(/hardenedRuntime/.test(desk), "il pacchetto macOS è pronto per l'hardened runtime");
-ok(/Firma dei pacchetti/.test(read("README.md")), "il README spiega come firmare i pacchetti");
+ok(!/WIN_CSC_LINK|MAC_CSC_LINK|APPLE_TEAM_ID|APPLE_API_KEY/.test(wf), "il workflow non chiede certificati né credenziali Apple");
+ok(!/CSC_IDENTITY_AUTO_DISCOVERY/.test(wf), "la build non cerca più identità di firma");
+ok(!/Get-AuthenticodeSignature/.test(wf) && !/stapler validate/.test(wf), "la build non verifica firme che il progetto non usa");
+ok(/codesign --verify/.test(wf), "la build verifica la firma ad-hoc dei pacchetti macOS");
+ok(/Firma ad-hoc, e perché basta/.test(read("README.md")), "il README spiega la firma ad-hoc e perché basta");
 ok(/Controllo che la release sia completa/.test(wf), "il workflow controlla che la release non perda pezzi");
 
 // Dopo la pubblicazione il sito deve servire davvero la versione appena uscita:
@@ -382,11 +381,14 @@ const installaJs = read("assets/js/app-installa.js");
 const afterPack = read("desktop/after-pack.cjs");
 ok(/afterPack/.test(read("desktop/package.json")), "electron-builder chiama l'hook della firma ad-hoc");
 ok(/codesign", \["--force", "--deep", "--sign", "-"/.test(afterPack), "l'hook firma davvero i pacchetti macOS in ad-hoc");
-ok(/CSC_LINK/.test(afterPack), "con un certificato configurato l'hook non tocca la firma");
-ok(!/-c\.mac\.identity=-/.test(wf), "la build non usa più identity=-, che in electron-builder 25 salta la firma");
-ok(/codesign --verify/.test(wf), "la build verifica la firma dei pacchetti macOS");
+ok(!/CSC_LINK|WIN_CSC|APPLE_ID|APPLE_API_KEY|notarize/.test(wf), "la build non chiede certificati né credenziali Apple");
+ok(!/Developer Program|Developer ID|CSC_LINK/.test(readmeTxt), "il README non rimanda più a certificati a pagamento");
+ok(/codesign --verify/.test(wf), "la build verifica la firma ad-hoc dei pacchetti macOS");
+ok(/Apri comunque/.test(readmeTxt) && /Esegui comunque/.test(readmeTxt) && /chmod \+x/.test(readmeTxt), "il README spiega come installare su tutti e tre i sistemi");
+ok(/Apri comunque/.test(statoJs) && /Apri comunque/.test(installaJs), "le pagine del programma ripetono le istruzioni di avvio");
+ok(/installarlo ci sia sempre/.test(readmeTxt), "il README promette che il modo per installarlo c'è sempre");
 ok(/firma ad-hoc/i.test(readmeTxt), "il README spiega la firma ad-hoc");
-ok(/non esiste un modo gratuito di notarizzare/i.test(readmeTxt), "il README dice che la notarizzazione non è gratuita");
+ok(/non può essere notarizzato/i.test(readmeTxt), "il README dice che la notarizzazione non è disponibile senza abbonamento");
 ok(/Homebrew/.test(readmeTxt), "il README spiega perché una cask Homebrew non risolve");
 ok(!/Ctrl\+clic/.test(readmeTxt), "il README non suggerisce più il menu contestuale, rimosso da macOS 15");
 ok(!/tasto destro sull'app/.test(statoJs), "la barra di stato non suggerisce più il menu contestuale su macOS");

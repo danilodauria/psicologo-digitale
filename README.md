@@ -133,7 +133,7 @@ Oggi i pacchetti escono **senza firma**: Windows mostra SmartScreen e macOS bloc
 
 ### Consentire l'avvio
 
-I certificati costano e restano facoltativi: finché i pacchetti escono non firmati, ogni sistema chiede conferma una volta sola. Il programma funziona normalmente dopo il consenso, e l'impronta in `SHA256SUMS.txt` dimostra che il file è quello pubblicato. Queste istruzioni accompagnano ogni release: non vanno tolte.
+Nessun certificato commerciale: il primo avvio chiede una conferma, una volta sola, e poi il programma funziona normalmente. L'impronta in `SHA256SUMS.txt` dimostra che il file è quello pubblicato. Queste istruzioni accompagnano ogni release e non vanno tolte: sono la garanzia che il programma si possa sempre installare.
 
 **Windows.** Se compare *Windows ha protetto il PC*, scegli **Altro informazioni** → **Esegui comunque**. Se il browser ha segnato il file scaricato, tasto destro sul file → **Proprietà** → in fondo **Sblocca** → **OK**.
 
@@ -154,43 +154,21 @@ Togliere la quarantena è un aggiramento noto ma non supportato da Apple: salta 
 
 **Linux.** Il `.deb` si installa con doppio clic oppure `sudo apt install ./Psicologo-Digitale-Linux-amd64.deb`. Per l'`AppImage`: `chmod +x Psicologo-Digitale-Linux-x86_64.AppImage`, oppure tasto destro → **Proprietà** → **Consenti l'esecuzione**; se manca FUSE, `./Psicologo-Digitale-Linux-x86_64.AppImage --appimage-extract-and-run`.
 
-### Firma dei pacchetti
+### Firma ad-hoc, e perché basta
 
-La firma non si può "attivare" con una modifica al codice: servono certificati intestati a una persona o azienda reale. Quello che manca qui è solo l'ultimo pezzo — i secret — perché il workflow è già predisposto: aggiungi i valori in **Settings → Secrets and variables → Actions** e le build dei tag firmano da sole. Senza secret i pacchetti escono con la sola firma ad-hoc descritta qui sotto, e il log lo dice.
+Il progetto non usa certificati commerciali e non ne prevede: è una scelta di coerenza, non un risparmio rinviato. Le conseguenze, dette come stanno: ogni sistema chiede conferma una volta sola al primo avvio, e macOS non può essere notarizzato senza un abbonamento Apple a pagamento. Nessuna delle due cose impedisce di usare il programma.
 
-#### Che cosa si ottiene gratis, e che cosa no
+Quello che il progetto garantisce è che **il modo per installarlo ci sia sempre**, e che sia scritto dove serve: qui sotto, nella pagina *Installa l'app*, nella barra di stato e nella pagina *Versioni e novità*. Se un sistema cambia le regole, l'istruzione cambia con lui: è già successo con macOS 15, che ha rimosso il menu contestuale, e le istruzioni sono state corrette di conseguenza.
 
-Vale la pena metterlo per iscritto, perché la domanda torna: **non esiste un modo gratuito di notarizzare un'app macOS**. La notarizzazione richiede un certificato *Developer ID*, e i certificati Developer ID si creano soltanto con l'**Apple Developer Program** (99 $ l'anno più IVA). Un Apple ID gratuito dà un *Personal Team*: profili di sviluppo che scadono dopo 7 giorni e nessun certificato distribuibile. Una firma autocostruita o ad-hoc non è un sostituto, perché non dice *chi* ha firmato: Gatekeeper non ha nulla da verificare e tratta il pacchetto come non firmato.
+Tre cose rendono l'installazione verificabile senza certificati:
 
-Quello che invece si può fare a costo zero, e che il progetto fa:
+- **Firma ad-hoc dei pacchetti macOS**, applicata da `desktop/after-pack.cjs` dopo l'impacchettamento e verificata a ogni release con `codesign --verify`. Non dice chi ha firmato, quindi Gatekeeper chiede conferma; serve a un'altra cosa, e non è poco: su Apple Silicon il sistema esegue solo codice con una firma valida, e un bundle non firmato può risultare «danneggiato» invece che «non verificato» — cioè senza modo di aprirlo.
+- **Impronte SHA-256** in `SHA256SUMS.txt`: dicono se il file scaricato è esattamente quello pubblicato, indipendentemente da chi lo firma.
+- **Codice leggibile e ricostruibile**: chi non si fida del pacchetto può compilarlo, perché la build sta nel repository.
 
-- **Firma ad-hoc dei pacchetti macOS.** Non convince Gatekeeper, ma su Apple Silicon il sistema rifiuta di eseguire codice senza una firma valida: senza di lei l'app può risultare «danneggiata» invece che semplicemente «non verificata», e non c'è modo di aprirla. La build la applica da sola quando non c'è un certificato (`-c.mac.identity=-`) e ne verifica la validità a ogni release con `codesign --verify`.
-- **Istruzioni che corrispondono al sistema vero**, cioè il percorso *Fine* → Privacy e sicurezza → *Apri comunque*. Suggerire il menu contestuale, come faceva questo README fino alla 1.3.9, manda solo a sbattere contro un muro che Apple ha alzato apposta.
-- **Impronte SHA-256** in `SHA256SUMS.txt`, che dicono se il file scaricato è quello pubblicato indipendentemente da chi lo firma.
+Una scorciatoia che sembrava promettente e non lo è: distribuire con una **cask Homebrew**. Homebrew conserva di proposito la quarantena sui pacchetti che installa, i flag `--no-quarantine` sono deprecati dalla 5.0 e le cask che non superano Gatekeeper sono disattivate da settembre 2026. Non è una strada per un'app senza certificato.
 
-Una scorciatoia che sembrava promettente e non lo è: distribuire con una **cask Homebrew**. Homebrew conserva di proposito l'attributo di quarantena sui pacchetti che installa, i flag `--no-quarantine` sono deprecati dalla versione 5.0 e le cask che non superano Gatekeeper sono disattivate da settembre 2026. Per un'app senza certificato non è una strada.
-
-Se un giorno servisse davvero il doppio clic pulito, l'unica via resta l'Apple Developer Program: con `MAC_CSC_LINK` e le credenziali di notarizzazione la build smette da sola di usare la firma ad-hoc, senza toccare il codice. Le istruzioni di `Consentire l'avvio` restano utili in ogni caso, perché servono anche a chi scarica prima che macOS conosca il pacchetto.
-
-**Windows.** Serve un certificato di code signing **OV** (o EV) emesso da una CA pubblica; da giugno 2023 la chiave privata deve stare su token hardware o su un servizio cloud del fornitore, quindi la firma avviene in CI con `signtool`. Costo indicativo 200-400 € l'anno.
-
-| Secret | Contenuto |
-|---|---|
-| `WIN_CSC_LINK` | certificato `.pfx` in base64 (`base64 -w0 cert.pfx`), oppure `data:…;base64,…` |
-| `WIN_CSC_KEY_PASSWORD` | password del `.pfx` |
-
-Due cose da sapere prima di spendere. **Azure Artifact Signing** (ex Trusted Signing, circa 10 $ al mese) sarebbe più comodo, ma le identità individuali sono ammesse solo da Stati Uniti e Canada: serve una partita IVA o una società con sede in UE, e la configurazione `win.sign` richiede electron-builder 27, mentre qui siamo alla 25. E **SmartScreen non sparisce subito**: dal 2024 un certificato valido mostra il nome dell'editore ma l'avviso resta finché il file non accumula reputazione, e EV non salta più SmartScreen. Azure ha un vantaggio reale: la reputazione è legata all'identità validata, quindi non riparte da zero a ogni rinnovo del certificato.
-
-**macOS.** Serve l'**Apple Developer Program** (99 $ l'anno più IVA locale, attivazione in genere 24-48 ore). Poi: crea un certificato **Developer ID Application** su developer.apple.com, esporta certificato e chiave privata insieme in un `.p12`, e aggiungi:
-
-| Secret | Contenuto |
-|---|---|
-| `MAC_CSC_LINK` | `.p12` in base64 (`base64 -i cert.p12`) |
-| `MAC_CSC_KEY_PASSWORD` | password del `.p12` |
-
-Per la notarizzazione scegli una delle due strade: `APPLE_ID` + `APPLE_APP_SPECIFIC_PASSWORD` + `APPLE_TEAM_ID`, oppure — meglio in CI, perché le chiavi non scadono e non chiedono 2FA — `APPLE_API_KEY` (percorso del `.p8` o il suo base64), `APPLE_API_KEY_ID` e `APPLE_API_ISSUER`. Con i secret presenti la build firma con hardened runtime, notarizza con `notarytool` e allega il ticket (stapling); il workflow controlla con `codesign --verify` e `xcrun stapler validate` e **fallisce** se il pacchetto non risulta firmato. Un'app firmata e notarizzata si apre con un doppio clic, anche offline.
-
-**Linux.** Non c'è un obbligo equivalente: `.deb` e `.AppImage` funzionano non firmati. Se vuoi, le impronte possono essere firmate con una chiave GPG.
+**Windows** e **Linux** non hanno bisogno di firma per funzionare: SmartScreen e i gestori di pacchetti non bloccano l'esecuzione, chiedono al massimo una conferma. E se un pacchetto risultasse rotto, il controllo di completezza rende rossa la build: un file che non si apre non arriva a nessuno in silenzio.
 
 ### Come si costruiscono
 

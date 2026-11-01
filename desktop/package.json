@@ -1,6 +1,6 @@
 {
   "name": "psicologo-digitale",
-  "version": "1.3.9",
+  "version": "1.3.10",
   "private": true,
   "description": "Psicologo Digitale per Windows, Linux e macOS: colloquio guidato, questionari, percorso, relazione e guida, anche offline.",
   "author": "Danilo D'Auria",
@@ -64,7 +64,6 @@
     },
     "mac": {
       "icon": "build/icon.png",
-      "hardenedRuntime": true,
       "category": "public.app-category.healthcare-fitness",
       "artifactName": "Psicologo-Digitale-Mac-${arch}.${ext}",
       "target": [

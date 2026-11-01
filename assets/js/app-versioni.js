@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.9";
+  const VERSIONE = "1.3.10";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.10",
+      data: "1 novembre 2026",
+      titolo: "Installare sempre, senza certificati",
+      punti: [
+        "Il progetto rinuncia ai certificati commerciali: resta il primo avvio con una conferma, e nient'altro da pagare o da attendere.",
+        "Ogni schermata che parla di installazione dice il percorso giusto per il sistema in uso, e un controllo automatico vigila che ci sia.",
+        "La firma ad-hoc dei pacchetti macOS resta attiva: non convince Gatekeeper, ma senza di lei Apple Silicon non eseguirebbe affatto il programma."
+      ]
+    },
     {
       v: "1.3.9",
       data: "1 novembre 2026",
