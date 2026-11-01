@@ -53,8 +53,6 @@ jobs:
       - name: Genera i pacchetti
         working-directory: desktop
         shell: bash
-        # Su macOS hdiutil a volte non riesce a smontare l'immagine appena
-        # creata (Exit code 16): un secondo tentativo risolve il problema.
         run: |
           # I secret non configurati arrivano qui come stringhe vuote: vanno tolte
           # dall'ambiente, se no electron-builder prova a firmare con un
@@ -75,7 +73,25 @@ jobs:
           if [ -z "${CSC_LINK}" ] && [ "${{ matrix.artifact }}" = "macos" ]; then
             extra="$extra -c.mac.identity=-"
           fi
-          npm run ${{ matrix.script }} -- $extra || npm run ${{ matrix.script }} -- $extra
+          # Su macOS hdiutil a volte non riesce a smontare l'immagine appena
+          # creata: il volume resta montato e fa fallire anche il tentativo
+          # successivo allo stesso punto. Si riprova smontando a forza.
+          ok=0
+          for tentativo in 1 2 3; do
+            if npm run ${{ matrix.script }} -- $extra; then ok=1; break; fi
+            echo "::warning::Tentativo $tentativo non riuscito."
+            if [ "${{ matrix.artifact }}" = "macos" ]; then
+              for v in /Volumes/Psicologo*; do
+                [ -e "$v" ] || continue
+                hdiutil detach "$v" -force || true
+              done
+              sleep 10
+            fi
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::Nessuno dei tre tentativi è riuscito."
+            exit 1
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Firma: i secret si aggiungono in Settings → Secrets and variables →
