@@ -328,6 +328,16 @@ pdfVersione.forEach((f) => {
 ok(exists("desktop/package.json"), "esiste la configurazione dei pacchetti desktop");
 const desk = exists("desktop/package.json") ? read("desktop/package.json") : "";
 ok(/it\.feniceos\.psicologodigitale/.test(desk), "l'app desktop ha un identificativo proprio");
+
+/* Firma dei pacchetti ------------------------------------------------------ */
+
+const wf = read(".github/workflows/desktop.yml");
+ok(/WIN_CSC_LINK/.test(wf) && /MAC_CSC_LINK/.test(wf), "il workflow riceve i certificati di firma");
+ok(/APPLE_TEAM_ID/.test(wf) && /APPLE_API_KEY/.test(wf), "il workflow riceve le credenziali di notarizzazione");
+ok(/CSC_IDENTITY_AUTO_DISCOVERY: \$\{\{ matrix\.artifact == 'macos'/.test(wf), "la firma si cerca solo sul runner macOS");
+ok(/Get-AuthenticodeSignature/.test(wf) && /stapler validate/.test(wf), "la firma viene verificata dopo la build");
+ok(/hardenedRuntime/.test(desk), "il pacchetto macOS è pronto per l'hardened runtime");
+ok(/Firma dei pacchetti/.test(read("README.md")), "il README spiega come firmare i pacchetti");
 ok(/nsis/.test(desk) && /dmg/.test(desk) && /"deb"/.test(desk), "i pacchetti coprono Windows, macOS e Linux");
 ok(/electron-builder/.test(desk), "i pacchetti sono costruiti con electron-builder");
 ok(exists("desktop/main.cjs") && /127\.0\.0\.1:11434/.test(read("desktop/main.cjs")), "il contenitore desktop parla con Ollama");

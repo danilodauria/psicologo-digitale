@@ -124,7 +124,31 @@ I download stanno nella [pagina delle release](https://github.com/danilodauria/p
 - [Windows x64](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Windows-x64.exe) · [portatile ZIP](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Windows-portatile.zip)
 - [Linux .deb](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Linux-amd64.deb) · [AppImage](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Linux-x86_64.AppImage)
 - [macOS Apple Silicon](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Mac-arm64.dmg) · [macOS Intel](https://github.com/danilodauria/psicologo-digitale/releases/latest/download/Psicologo-Digitale-Mac-x64.dmg)
- I pacchetti non sono firmati con un certificato commerciale: al primo avvio Windows può chiedere conferma (*Altro informazioni* → *Esegui comunque*) e macOS può richiedere il tasto destro → *Apri*. Le impronte SHA-256 permettono di verificare che il file scaricato sia quello pubblicato.
+Oggi i pacchetti escono **senza firma**: al primo avvio Windows mostra SmartScreen (*Altro informazioni* → *Esegui comunque*) e macOS blocca il doppio clic, chiedendo *Apri* dal menu contestuale. La pipeline è però già pronta: appena aggiungi i certificati, le build dei tag firmano da sole, senza toccare il codice — vedi [Firma dei pacchetti](#firma-dei-pacchetti). Le impronte SHA-256 permettono di verificare che il file scaricato sia quello pubblicato.
+
+### Firma dei pacchetti
+
+La firma non si può "attivare" con una modifica al codice: servono certificati intestati a una persona o azienda reale. Quello che manca qui è solo l'ultimo pezzo — i secret — perché il workflow è già predisposto: aggiungi i valori in **Settings → Secrets and variables → Actions** e le build dei tag firmano da sole. Senza secret tutto continua a funzionare come oggi, con un avviso nel log e un pacchetto dichiaratamente non firmato.
+
+**Windows.** Serve un certificato di code signing **OV** (o EV) emesso da una CA pubblica; da giugno 2023 la chiave privata deve stare su token hardware o su un servizio cloud del fornitore, quindi la firma avviene in CI con `signtool`. Costo indicativo 200-400 € l'anno.
+
+| Secret | Contenuto |
+|---|---|
+| `WIN_CSC_LINK` | certificato `.pfx` in base64 (`base64 -w0 cert.pfx`), oppure `data:…;base64,…` |
+| `WIN_CSC_KEY_PASSWORD` | password del `.pfx` |
+
+Due cose da sapere prima di spendere. **Azure Artifact Signing** (ex Trusted Signing, circa 10 $ al mese) sarebbe più comodo, ma le identità individuali sono ammesse solo da Stati Uniti e Canada: serve una partita IVA o una società con sede in UE, e la configurazione `win.sign` richiede electron-builder 27, mentre qui siamo alla 25. E **SmartScreen non sparisce subito**: dal 2024 un certificato valido mostra il nome dell'editore ma l'avviso resta finché il file non accumula reputazione, e EV non salta più SmartScreen. Azure ha un vantaggio reale: la reputazione è legata all'identità validata, quindi non riparte da zero a ogni rinnovo del certificato.
+
+**macOS.** Serve l'**Apple Developer Program** (99 $ l'anno più IVA locale, attivazione in genere 24-48 ore). Poi: crea un certificato **Developer ID Application** su developer.apple.com, esporta certificato e chiave privata insieme in un `.p12`, e aggiungi:
+
+| Secret | Contenuto |
+|---|---|
+| `MAC_CSC_LINK` | `.p12` in base64 (`base64 -i cert.p12`) |
+| `MAC_CSC_KEY_PASSWORD` | password del `.p12` |
+
+Per la notarizzazione scegli una delle due strade: `APPLE_ID` + `APPLE_APP_SPECIFIC_PASSWORD` + `APPLE_TEAM_ID`, oppure — meglio in CI, perché le chiavi non scadono e non chiedono 2FA — `APPLE_API_KEY` (percorso del `.p8` o il suo base64), `APPLE_API_KEY_ID` e `APPLE_API_ISSUER`. Con i secret presenti la build firma con hardened runtime, notarizza con `notarytool` e allega il ticket (stapling); il workflow controlla con `codesign --verify` e `xcrun stapler validate` e **fallisce** se il pacchetto non risulta firmato. Un'app firmata e notarizzata si apre con un doppio clic, anche offline.
+
+**Linux.** Non c'è un obbligo equivalente: `.deb` e `.AppImage` funzionano non firmati. Se vuoi, le impronte possono essere firmate con una chiave GPG.
 
 ### Come si costruiscono
 

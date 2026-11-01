@@ -53,6 +53,7 @@
     },
     "mac": {
       "icon": "build/icon.png",
+      "hardenedRuntime": true,
       "category": "public.app-category.healthcare-fitness",
       "artifactName": "Psicologo-Digitale-Mac-${arch}.${ext}",
       "target": [
