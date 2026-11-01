@@ -48,3 +48,67 @@ jobs:
           path: ${{ runner.temp }}/site
       - id: pages
         uses: actions/deploy-pages@v4
+
+  sito:
+    name: Il sito serve la versione giusta
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      # Pages pubblica con qualche istante di ritardo e il browser tiene in
+      # cache il service worker vecchio: senza questo controllo una versione
+      # sbagliata resta invisibile finché qualcuno non apre il sito.
+      - uses: actions/checkout@v4
+
+      - name: Verifica il service worker e i PDF pubblicati
+        env:
+          BASE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: |
+          set -euo pipefail
+          versione="psd-v$(node -p "require('./package.json').version")"
+          echo "Versione attesa: $versione"
+
+          sw=""
+          for tentativo in $(seq 1 20); do
+            sw="$(curl -fsSL --max-time 30 "${BASE}sw.js" || true)"
+            if grep -qF "VERSION = \"$versione\"" <<< "$sw"; then break; fi
+            echo "… sw.js non ancora aggiornato (tentativo $tentativo)"
+            sleep 15
+          done
+          if ! grep -qF "VERSION = \"$versione\"" <<< "$sw"; then
+            echo "::error::Il sito non serve lo sw.js di $versione."
+            exit 1
+          fi
+          echo "✓ sw.js dichiara $versione"
+
+          pdf=(
+            assets/pdf/vademecum-psicologo-digitale.pdf
+            assets/pdf/vademecum-psicologo-digitale-a4.pdf
+            assets/pdf/vademecum-psicologo-digitale-libricino-a4.pdf
+            assets/pdf/vademecum-clinico-psicologo-digitale.pdf
+          )
+          mkdir -p "$RUNNER_TEMP/sito"
+          mancanti=0
+          for f in "${pdf[@]}"; do
+            atteso="$(sha256sum "$f" | cut -d' ' -f1)"
+            nome="$(basename "$f")"
+            uguale=0
+            for tentativo in $(seq 1 10); do
+              if curl -fsSL --max-time 60 "${BASE}${f}" -o "$RUNNER_TEMP/sito/$nome" 2>/dev/null &&
+                 [ "$(sha256sum "$RUNNER_TEMP/sito/$nome" | cut -d' ' -f1)" = "$atteso" ]; then
+                uguale=1
+                break
+              fi
+              sleep 10
+            done
+            if [ "$uguale" = "1" ]; then
+              echo "✓ $f"
+            else
+              echo "::error::$f pubblicato diverso da quello del repository."
+              mancanti=$((mancanti + 1))
+            fi
+          done
+          if [ "$mancanti" -gt 0 ]; then
+            echo "::error::Sito non allineato: $mancanti PDF su ${#pdf[@]} diversi da quelli pubblicati dal repository."
+            exit 1
+          fi
+          echo "Sito allineato: $versione e quattro PDF con la loro impronta."
