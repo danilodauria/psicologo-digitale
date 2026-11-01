@@ -390,6 +390,20 @@ ok(/installarlo ci sia sempre/.test(readmeTxt), "il README promette che il modo 
 ok(/backup:/.test(wf) && /git archive --format=zip/.test(wf), "la release allega un archivio completo dei sorgenti");
 ok(/Psicologo-Digitale-Sorgenti\.zip/.test(wf), "il controllo di completezza esige il backup");
 ok(/Backup completo nella release/.test(readmeTxt), "il README spiega il backup e a cosa serve");
+
+/* Controllo dei link di download ------------------------------------------ */
+
+const links = read("scripts/check-links.cjs");
+const wfLink = read(".github/workflows/link.yml");
+ok(/Psicologo-Digitale-Windows-x64\.exe/.test(links) && /Psicologo-Digitale-Sorgenti\.zip/.test(links), "il controllo conosce tutti i file attesi");
+ok(/latest-mac\.yml/.test(links) && /SHA256SUMS\.txt/.test(links), "il controllo include impronte e file di aggiornamento");
+ok(/digest/.test(links) && /impronta diversa da quella pubblicata/.test(links), "il controllo confronta le impronte dichiarate");
+ok(/tentativi = 3/.test(links), "un 404 passeggero viene ritentato prima di essere segnalato");
+ok(/process\.exit\(1\)/.test(links), "un link rotto fa fallire il controllo");
+ok(/schedule:/.test(wfLink) && /workflow_dispatch:/.test(wfLink) && /workflow_run:/.test(wfLink), "il controllo gira ogni giorno, a mano e dopo ogni pubblicazione");
+ok(/issues: write/.test(wfLink), "il workflow può aprire segnalazioni");
+ok(/gh issue create/.test(wfLink) && /gh issue close/.test(wfLink), "la segnalazione si apre da sola e si chiude quando torna tutto a posto");
+ok(/Controllo dei link di download/.test(readmeTxt), "il README descrive il controllo dei link");
 ok(/firma ad-hoc/i.test(readmeTxt), "il README spiega la firma ad-hoc");
 ok(/non può essere notarizzato/i.test(readmeTxt), "il README dice che la notarizzazione non è disponibile senza abbonamento");
 ok(/Homebrew/.test(readmeTxt), "il README spiega perché una cask Homebrew non risolve");

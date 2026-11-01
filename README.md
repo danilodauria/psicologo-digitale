@@ -363,6 +363,21 @@ Ogni release allega **`Psicologo-Digitale-Sorgenti.zip`**: l'intero progetto al 
 
 Il file è prodotto dal job `backup` con `git archive` sul tag, allegato alla release e incluso in `SHA256SUMS.txt` come gli altri: sette impronte in tutto. Il controllo di completezza considera la release finita solo se il backup c'è, e un backup mancante rende la build rossa esattamente come un pacchetto mancante.
 
+## Controllo dei link di download
+
+Un workflow separato — `Link di download` — apre ogni giorno, subito dopo una pubblicazione e su richiesta tutti gli indirizzi della release più recente: sei pacchetti, backup dei sorgenti, `SHA256SUMS.txt` e i tre file dell'aggiornamento automatico. Non si limita a guardare l'elenco: scarica l'intestazione di ogni file, e confronta l'impronta dichiarata in `SHA256SUMS.txt` con il digest che GitHub ha calcolato al caricamento.
+
+Se un file manca, risponde con un errore o ha un'impronta diversa, il controllo diventa rosso e apre una segnalazione sul repository con la tabella dei problemi; ai controlli successivi aggiorna la stessa segnalazione invece di aprirne una nuova, e la chiude quando torna tutto a posto.
+
+Si lancia anche a mano, che è il modo per capire subito se un link è rotto davvero:
+
+```bash
+node scripts/check-links.cjs              # ultima release
+node scripts/check-links.cjs psd-v1.3.12  # un tag preciso
+```
+
+Un 404 appena dopo un ri-caricamento viene ritentato tre volte prima di essere segnalato, perché il CDN di GitHub a volte serve per qualche secondo la risposta vecchia: è successo davvero con `SHA256SUMS.txt` della 1.3.10, e senza i tentativi il controllo avrebbe gridato al lupo.
+
 ## Limitazioni note
 
 - Non è una terapia e non sostituisce una visita.
