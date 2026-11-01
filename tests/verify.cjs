@@ -314,7 +314,8 @@ const pdfVersione = [
   "assets/pdf/vademecum-psicologo-digitale.pdf",
   "assets/pdf/vademecum-psicologo-digitale-a4.pdf",
   "assets/pdf/vademecum-psicologo-digitale-libricino-a4.pdf",
-  "assets/pdf/vademecum-clinico-psicologo-digitale.pdf"
+  "assets/pdf/vademecum-clinico-psicologo-digitale.pdf",
+  "assets/pdf/Psicologo-Digitale-Come-si-installa.pdf"
 ];
 pdfVersione.forEach((f) => {
   const testo = fs.readFileSync(path.join(root, f)).toString("latin1");
@@ -322,6 +323,28 @@ pdfVersione.forEach((f) => {
 });
 // assets/data/vademecum.json è generato e non versionato: in CI non esiste, e
 // il confronto che conta è quello sui PDF, che invece sono nel repository.
+
+/* Foglio di installazione in PDF ------------------------------------------ */
+
+// Il foglio esiste per chi consegna le istruzioni a qualcun altro, quindi deve
+// restare leggero e autonomo: nessun collegamento da cui dipendere.
+const pdfInstalla = "assets/pdf/Psicologo-Digitale-Come-si-installa.pdf";
+ok(exists(pdfInstalla), "esiste il foglio di installazione " + pdfInstalla);
+const ib = fs.readFileSync(path.join(root, pdfInstalla));
+ok(ib.slice(0, 5).toString("latin1") === "%PDF-", "il foglio di installazione è un PDF");
+const it = ib.toString("latin1");
+ok(/%%EOF/.test(it), "il foglio di installazione è chiuso correttamente");
+const ipagine = (it.match(/\/Type\s*\/Page[^s]/g) || []).length;
+ok(ipagine >= 3 && ipagine <= 8, "il foglio di installazione sta fra tre e otto pagine (" + ipagine + ")");
+ok(ib.length > 15000 && ib.length < 400000, "il foglio di installazione si può allegare a un'email (" + ib.length + " byte)");
+ok(/Psicologo-Digitale-Come-si-installa\.pdf/.test(read("come-installare.html")), "la pagina pubblica collega il foglio in PDF");
+ok(/Psicologo-Digitale-Come-si-installa\.pdf/.test(read("README.md")), "il README indica il foglio in PDF");
+ok(exists("scripts/build_come_installare_pdf.py"), "il generatore del foglio è nel progetto");
+// Se il generatore smettesse di leggere la pagina, il PDF tornerebbe a essere
+// una copia da aggiornare a mano: è il controllo che tiene in piedi il resto.
+const generatore = read("scripts/build_come_installare_pdf.py");
+ok(/come-installare\.html/.test(generatore), "il generatore legge la pagina pubblica");
+ok(!/danneggiata|Aggiungi a schermata Home|Nessun modello locale/.test(generatore), "il generatore non contiene una seconda copia delle risposte");
 
 /* Programmi installabili e benvenuto --------------------------------------- */
 

@@ -1,0 +1,1216 @@
+%PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document (opensource)
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 6 0 R /F6 9 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+>>
+endobj
+5 0 obj
+<<
+/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F4 /Subtype /Type1 /Type /Font
+>>
+endobj
+6 0 obj
+<<
+/BaseFont /Symbol /Name /F5 /Subtype /Type1 /Type /Font
+>>
+endobj
+7 0 obj
+<<
+/Contents 15 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+8 0 obj
+<<
+/Contents 16 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+9 0 obj
+<<
+/BaseFont /Helvetica-BoldOblique /Encoding /WinAnsiEncoding /Name /F6 /Subtype /Type1 /Type /Font
+>>
+endobj
+10 0 obj
+<<
+/Contents 17 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+11 0 obj
+<<
+/Contents 18 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+12 0 obj
+<<
+/PageMode /UseNone /Pages 14 0 R /Type /Catalog
+>>
+endobj
+13 0 obj
+<<
+/Author (Danilo D'Auria) /CreationDate (D:20261101153713+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261101153713+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (Istruzioni di installazione per Windows, macOS e Linux) /Title (Psicologo Digitale \267 Come si installa) /Trapped /False
+>>
+endobj
+14 0 obj
+<<
+/Count 4 /Kids [ 7 0 R 8 0 R 10 0 R 11 0 R ] /Type /Pages
+>>
+endobj
+15 0 obj
+<<
+/Length 8385
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+BT /F1 7.6 Tf 9.12 TL ET
+.356863 .392157 .447059 rg
+BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.16) Tj T* ET
+.788235 .768627 .721569 RG
+.5 w
+n 51.02362 796.5354 m 544.252 796.5354 l S
+BT 1 0 0 1 51.02362 31.1811 Tm (danilodauria.github.io/psicologo-digitale/come-installare.html) Tj T* ET
+BT 1 0 0 1 515.0984 31.1811 Tm (pagina 1) Tj T* ET
+Q
+q
+1 0 0 1 57.02362 748.5276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 4 Tm /F2 21 Tf 25 TL (Come si installa) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 715.3276 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 17.3 Tm /F1 9.9 Tf 13.6 TL 1.351807 Tw (Una pagina che esiste anche per chi il programma non l'ha ancora aperto: qui trovi il file giusto per il tuo) Tj T* 0 Tw (sistema, i passaggi del primo avvio e come verificare che il file scaricato sia davvero quello pubblicato.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 661.9276 cm
+q
+BT 1 0 0 1 0 41.2 Tm 12.6 TL /F3 9.2 Tf 0 0 0 rg (Scarica il PDF) Tj /F1 9.2 Tf ( prende gi\340 il foglio pronto, da allegare a un'email o da aprire con il lettore che hai; ) Tj /F3 9.2 Tf (Stampa o salva in) Tj T* (PDF) Tj /F1 9.2 Tf ( apre la stampa del sistema, e va bene anche ) Tj /F4 8.6 Tf (Ctrl+P) Tj /F1 9.2 Tf (, su Mac ) Tj /F4 8.6 Tf (Cmd+P) Tj /F1 9.2 Tf (. Sulla carta escono una colonna sola, i) Tj T* -0.033843 Tw (riquadri senza ombre e in testa al foglio la versione e l'indirizzo da cui viene: niente menu, niente pulsanti, niente colori) Tj T* 0 Tw (da consumare.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 634.7276 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (Il PDF \350 ricavato da questa stessa pagina a ogni versione: se il foglio dice 1.3.16, il sito dice lo stesso. Non \350 una) Tj T* (copia lasciata l\354 a invecchiare.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 566.3276 cm
+q
+.968627 .960784 .937255 rg
+n 0 66.4 481.2283 -66.4 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 44.5 Tm -0.008797 Tw 13.6 TL /F2 9.9 Tf 0 0 0 rg (Il primo avvio chiede conferma una volta sola.) Tj /F1 9.9 Tf ( Non c'\350 nessun certificato commerciale e non \350 previsto:) Tj T* 0 Tw .031077 Tw (\350 una scelta del progetto. Windows e macOS mostrano un avviso di sicurezza, tu dai il consenso, e da l\354 in) Tj T* 0 Tw .899026 Tw (poi il programma si apre normalmente. Su macOS l'avviso resta finch\351 non lo autorizzi: \350 il sistema che) Tj T* 0 Tw (protegge, non un guasto del file.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 66.4 m 481.2283 66.4 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 66.4 l S
+n 481.2283 0 m 481.2283 66.4 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 561.8276 cm
+Q
+q
+1 0 0 1 57.02362 459.6276 cm
+q
+1 1 1 rg
+n 0 102.2 481.2283 -102.2 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 83 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Quale file scegliere) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 78 cm
+Q
+q
+1 0 0 1 7 52.8 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Windows) Tj /F1 9.2 Tf ( \227 ) Tj /F4 8.6 Tf (.exe) Tj /F1 9.2 Tf ( per computer a 64 bit, con installazione classica; c'\350 anche la versione portatile in ZIP, che) Tj T* (non installa nulla.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 48.3 cm
+Q
+q
+1 0 0 1 7 23.1 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (macOS) Tj /F1 9.2 Tf ( \227 ) Tj /F4 8.6 Tf (.dmg) Tj /F1 9.2 Tf ( per Apple Silicon \(M1, M2, M3, M4\) oppure per Intel. Per sapere quale hai: menu ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL T* /F3 9.2 Tf (Informazioni su questo Mac) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( cerca \253Chip\273 o \253Processore\273.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 18.6 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 3.4 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Linux) Tj /F1 9.2 Tf ( \227 ) Tj /F4 8.6 Tf (.deb) Tj /F1 9.2 Tf ( per Debian, Ubuntu e derivate; ) Tj /F4 8.6 Tf (.AppImage) Tj /F1 9.2 Tf ( per tutto il resto, senza installare niente.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 102.2 m 481.2283 102.2 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 102.2 l S
+n 481.2283 0 m 481.2283 102.2 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 455.1276 cm
+Q
+q
+1 0 0 1 57.02362 361.0276 cm
+q
+1 1 1 rg
+n 0 94.1 481.2283 -94.1 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 74.9 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Cosa non serve) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 69.9 cm
+Q
+q
+1 0 0 1 7 57.3 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 11 3.4 Tm /F1 9.2 Tf 12.6 TL (Niente account, niente registrazione, niente codice di attivazione.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 52.8 cm
+Q
+q
+1 0 0 1 7 40.2 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 11 3.4 Tm /F1 9.2 Tf 12.6 TL (Niente connessione dopo l'installazione: il programma funziona offline.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 35.7 cm
+Q
+q
+1 0 0 1 7 23.1 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 11 3.4 Tm /F1 9.2 Tf 12.6 TL (Niente da pagare, n\351 ora n\351 dopo.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 18.6 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 11 3.4 Tm /F1 9.2 Tf 12.6 TL (I tuoi dati restano sul dispositivo: nessun server li riceve.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 94.1 m 481.2283 94.1 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 94.1 l S
+n 481.2283 0 m 481.2283 94.1 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 356.5276 cm
+Q
+q
+1 0 0 1 57.02362 327.5276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Windows) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 162.0276 cm
+q
+1 1 1 rg
+n 0 160.5 481.2283 -160.5 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 141.9 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (1.) Tj ET
+BT 1 0 0 1 11 3.4 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Scarica ) Tj /F4 8.6 Tf (Psicologo-Digitale-Windows-x64.exe) Tj /F1 9.2 Tf ( \(oppure lo ZIP portatile\).) Tj T* -4.1928 0 Td ET
+Q
+Q
+q
+1 0 0 1 7 137.4 cm
+Q
+q
+1 0 0 1 7 112.2 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (2.) Tj ET
+BT 1 0 0 1 11 16 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Doppio clic sul file scaricato. Se compare ) Tj /F3 9.2 Tf (Windows ha protetto il PC) Tj /F1 9.2 Tf (, scegli ) Tj /F2 9.2 Tf (Altro informazioni) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (Esegui) Tj T* -4.1928 0 Td (comunque) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 107.7 cm
+Q
+q
+1 0 0 1 7 95.1 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (3.) Tj ET
+BT 1 0 0 1 11 3.4 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Se il file resta bloccato prima ancora di partire: tasto destro sul file ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (Propriet\340) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( in fondo ) Tj /F2 9.2 Tf (Sblocca) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (OK) Tj /F1 9.2 Tf (.) Tj T* -4.1928 0 Td ET
+Q
+Q
+q
+1 0 0 1 7 90.6 cm
+Q
+q
+1 0 0 1 7 65.4 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (4.) Tj ET
+0 0 0 rg
+BT 1 0 0 1 11 16 Tm /F1 9.2 Tf 12.6 TL 4.1928 0 Td (Scegli la cartella, se vuoi il collegamento sul desktop, e completa l'installazione. Da l\354 in poi si apre dal menu) Tj T* -4.1928 0 Td (avvio.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 60.9 cm
+Q
+q
+1 0 0 1 7 35.7 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (5.) Tj ET
+BT 1 0 0 1 11 16 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Versione portatile: scompatta lo ZIP dove preferisci e avvia ) Tj /F4 8.6 Tf (Psicologo Digitale.exe) Tj /F1 9.2 Tf (. Non tocca il sistema e) Tj T* -4.1928 0 Td (non lascia tracce nel registro.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 31.2 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (L'avviso di SmartScreen pu\362 ricomparire a ogni nuova versione finch\351 il file non acquista reputazione: non \350 un) Tj T* (errore, e l'impronta qui sotto dice se il file \350 quello giusto.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 160.5 m 481.2283 160.5 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 160.5 l S
+n 481.2283 0 m 481.2283 160.5 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 157.5276 cm
+Q
+ 
+endstream
+endobj
+16 0 obj
+<<
+/Length 9297
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+BT /F1 7.6 Tf 9.12 TL ET
+.356863 .392157 .447059 rg
+BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.16) Tj T* ET
+.788235 .768627 .721569 RG
+.5 w
+n 51.02362 796.5354 m 544.252 796.5354 l S
+BT 1 0 0 1 51.02362 31.1811 Tm (danilodauria.github.io/psicologo-digitale/come-installare.html) Tj T* ET
+BT 1 0 0 1 515.0984 31.1811 Tm (pagina 2) Tj T* ET
+Q
+q
+1 0 0 1 57.02362 757.5276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (macOS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 550.2276 cm
+q
+1 1 1 rg
+n 0 202.3 481.2283 -202.3 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 183.7 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (1.) Tj ET
+BT 1 0 0 1 11 3.4 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Scarica il ) Tj /F4 8.6 Tf (.dmg) Tj /F1 9.2 Tf ( giusto per il tuo Mac: ) Tj /F3 9.2 Tf (Mac-arm64) Tj /F1 9.2 Tf ( per Apple Silicon, ) Tj /F3 9.2 Tf (Mac-x64) Tj /F1 9.2 Tf ( per Intel.) Tj T* -4.1928 0 Td ET
+Q
+Q
+q
+1 0 0 1 7 179.2 cm
+Q
+q
+1 0 0 1 7 166.6 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (2.) Tj ET
+BT 1 0 0 1 11 3.4 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Apri il ) Tj /F4 8.6 Tf (.dmg) Tj /F1 9.2 Tf ( e trascina ) Tj /F2 9.2 Tf (Psicologo Digitale) Tj /F1 9.2 Tf ( nella cartella ) Tj /F3 9.2 Tf (Applicazioni) Tj /F1 9.2 Tf (.) Tj T* -4.1928 0 Td ET
+Q
+Q
+q
+1 0 0 1 7 162.1 cm
+Q
+q
+1 0 0 1 7 136.9 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (3.) Tj ET
+BT 1 0 0 1 11 16 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Doppio clic sull'app: compare ) Tj /F3 9.2 Tf (Apple non ha potuto verificare che \253Psicologo Digitale\273 sia esente da malware) Tj /F1 9.2 Tf (.) Tj T* -4.1928 0 Td (Premi ) Tj /F2 9.2 Tf (Fine) Tj /F1 9.2 Tf (, non ) Tj /F3 9.2 Tf (Sposta nel cestino) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 132.4 cm
+Q
+q
+1 0 0 1 7 107.2 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (4.) Tj ET
+BT 1 0 0 1 11 16 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Apri ) Tj /F2 9.2 Tf (Impostazioni di Sistema) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (Privacy e sicurezza) Tj /F1 9.2 Tf ( e scorri in fondo, fino alla sezione ) Tj /F2 9.2 Tf (Sicurezza) Tj /F1 9.2 Tf (: c'\350 una) Tj T* -4.1928 0 Td (riga su Psicologo Digitale con il pulsante ) Tj /F2 9.2 Tf (Apri comunque) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 102.7 cm
+Q
+q
+1 0 0 1 7 90.1 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (5.) Tj ET
+BT 1 0 0 1 11 3.4 Tm 4.1928 0 Td 12.6 TL /F1 9.2 Tf 0 0 0 rg (Autentica con password o Touch ID e conferma ) Tj /F2 9.2 Tf (Apri) Tj /F1 9.2 Tf (. L'operazione si fa una volta per versione installata.) Tj T* -4.1928 0 Td ET
+Q
+Q
+q
+1 0 0 1 7 85.6 cm
+Q
+q
+1 0 0 1 7 47.8 cm
+q
+BT 1 0 0 1 0 28.6 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Il \253tasto destro ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F2 9.2 Tf 12.6 TL ( Apri\273 non funziona pi\371) Tj /F1 9.2 Tf (: Apple l'ha rimosso in macOS 15 Sequoia. Se il pulsante ) Tj /F3 9.2 Tf (Apri) Tj T* (comunque) Tj /F1 9.2 Tf ( non c'\350, riprova ad aprire l'app e torna in quella sezione: la voce compare solo dopo un tentativo) Tj T* (bloccato e resta per circa un'ora.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 43.8 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 28.6 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Se l'app \350 in ) Tj /F3 9.2 Tf (Applicazioni) Tj /F1 9.2 Tf ( e resta bloccata, da Terminale: ) Tj /F4 8.6 Tf (sudo xattr -dr com.apple.quarantine) Tj T* ("/Applications/Psicologo Digitale.app") Tj /F1 9.2 Tf (. \310 un aggiramento noto ma non supportato da Apple: salta i) Tj T* (controlli del primo avvio, quindi usalo solo per un file la cui impronta corrisponde.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 202.3 m 481.2283 202.3 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 202.3 l S
+n 481.2283 0 m 481.2283 202.3 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 545.7276 cm
+Q
+q
+1 0 0 1 57.02362 516.7276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Linux) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 410.6276 cm
+q
+1 1 1 rg
+n 0 101.1 481.2283 -101.1 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 69.9 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Pacchetto ) Tj /F4 8.6 Tf (.deb) Tj /F1 9.2 Tf ( \227 doppio clic e installa, oppure da terminale: ) Tj /F4 8.6 Tf (sudo apt install) Tj T* (./Psicologo-Digitale-Linux-amd64.deb) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 65.4 cm
+Q
+q
+1 0 0 1 7 40.2 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (AppImage) Tj /F1 9.2 Tf ( \227 rendila eseguibile con ) Tj /F4 8.6 Tf (chmod +x Psicologo-Digitale-Linux-x86_64.AppImage) Tj /F1 9.2 Tf (, oppure) Tj T* (tasto destro ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Propriet\340) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Consenti l'esecuzione) Tj /F1 9.2 Tf (. Poi avviala con doppio clic.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 35.7 cm
+Q
+q
+1 0 0 1 7 23.1 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 3.4 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Se manca FUSE: ) Tj /F4 8.6 Tf (./Psicologo-Digitale-Linux-x86_64.AppImage --appimage-extract-and-run) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 18.6 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3.4 Tm /F1 9.2 Tf 12.6 TL (Su Linux non ci sono avvisi di sicurezza da superare: il pacchetto funziona cos\354 com'\350.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 101.1 m 481.2283 101.1 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 101.1 l S
+n 481.2283 0 m 481.2283 101.1 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 406.1276 cm
+Q
+q
+1 0 0 1 57.02362 377.1276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Verificare che il file sia quello giusto) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 241.8276 cm
+q
+1 1 1 rg
+n 0 130.3 481.2283 -130.3 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 86.5 cm
+q
+BT 1 0 0 1 0 28.6 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Ogni release pubblica ) Tj /F4 8.6 Tf (SHA256SUMS.txt) Tj /F1 9.2 Tf (: una riga per file, con l'impronta SHA-256 e il nome. Calcola l'impronta del) Tj T* (file che hai scaricato e confrontala: se coincide, il file \350 esattamente quello pubblicato, indipendentemente da chi lo) Tj T* (firma.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 82.5 cm
+Q
+q
+1 0 0 1 7 69.9 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 3.4 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Windows) Tj /F1 9.2 Tf ( \(PowerShell\): ) Tj /F4 8.6 Tf (Get-FileHash .\\Psicologo-Digitale-Windows-x64.exe -Algorithm SHA256) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 65.4 cm
+Q
+q
+1 0 0 1 7 52.8 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 3.4 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (macOS) Tj /F1 9.2 Tf (: ) Tj /F4 8.6 Tf (shasum -a 256 ~/Downloads/Psicologo-Digitale-Mac-arm64.dmg) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 48.3 cm
+Q
+q
+1 0 0 1 7 35.7 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 3.4 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Linux) Tj /F1 9.2 Tf (: ) Tj /F4 8.6 Tf (sha256sum Psicologo-Digitale-Linux-amd64.deb) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 31.2 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 16 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Nella stessa pagina trovi anche ) Tj /F4 8.6 Tf (Psicologo-Digitale-Sorgenti.zip) Tj /F1 9.2 Tf (: l'intero progetto, per conservarne una) Tj T* (copia o ricostruire i pacchetti.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 130.3 m 481.2283 130.3 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 130.3 l S
+n 481.2283 0 m 481.2283 130.3 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 237.3276 cm
+Q
+q
+1 0 0 1 57.02362 208.3276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Domande frequenti) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 165.5276 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 28.6 Tm /F1 9.2 Tf 12.6 TL (Non sono domande inventate: sono i punti in cui l'installazione si blocca davvero, e ognuno di questi \350 un messaggio) Tj T* (che il programma stesso intercetta o un caso provato a ogni versione. Se la tua domanda non c'\350, la sezione qui sotto) Tj T* (dice dove guardare.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 82.92756 cm
+q
+1 1 1 rg
+n 0 80.6 481.2283 -80.6 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 61.4 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Su macOS dice che l'app \350 danneggiata: il file \350 rotto?) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 56.4 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 41.2 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Quasi mai. Il messaggio compare quando il sistema non riesce a convalidare la firma ad-hoc del pacchetto, e la) Tj T* (causa pi\371 frequente \350 aver scaricato l'architettura sbagliata: un ) Tj /F4 8.6 Tf (.dmg) Tj /F1 9.2 Tf ( Intel su un Mac Apple Silicon, o il contrario.) Tj T* (Controlla il chip, riscarica il file giusto e confronta l'impronta: se coincide con ) Tj /F4 8.6 Tf (SHA256SUMS.txt) Tj /F1 9.2 Tf ( il file \350 integro, e) Tj T* (serve solo il passaggio ) Tj /F3 9.2 Tf (Apri comunque) Tj /F1 9.2 Tf (. Se l'impronta non coincide, non aprirlo: riscarica.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 80.6 m 481.2283 80.6 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 80.6 l S
+n 481.2283 0 m 481.2283 80.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 78.42756 cm
+Q
+ 
+endstream
+endobj
+17 0 obj
+<<
+/Length 9956
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+BT /F1 7.6 Tf 9.12 TL ET
+.356863 .392157 .447059 rg
+BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.16) Tj T* ET
+.788235 .768627 .721569 RG
+.5 w
+n 51.02362 796.5354 m 544.252 796.5354 l S
+BT 1 0 0 1 51.02362 31.1811 Tm (danilodauria.github.io/psicologo-digitale/come-installare.html) Tj T* ET
+BT 1 0 0 1 515.0984 31.1811 Tm (pagina 3) Tj T* ET
+Q
+q
+1 0 0 1 57.02362 692.9276 cm
+q
+1 1 1 rg
+n 0 80.6 481.2283 -80.6 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 61.4 cm
+q
+BT 1 0 0 1 0 2.6 Tm 13.2 TL /F2 10.6 Tf .133333 .203922 .360784 rg (In ) Tj /F6 10.6 Tf (Privacy e sicurezza) Tj /F2 10.6 Tf ( non trovo ) Tj /F6 10.6 Tf (Apri comunque) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 56.4 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 41.2 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (La voce compare solo ) Tj /F2 9.2 Tf (dopo un tentativo di apertura andato a vuoto) Tj /F1 9.2 Tf (, e resta per circa un'ora. Apri l'app, premi) Tj T* /F3 9.2 Tf (Fine) Tj /F1 9.2 Tf (, poi torna in ) Tj /F3 9.2 Tf (Privacy e sicurezza) Tj /F1 9.2 Tf ( e scorri fino in fondo, nella sezione ) Tj /F2 9.2 Tf (Sicurezza) Tj /F1 9.2 Tf (: non \350 in ) Tj /F3 9.2 Tf (Generali) Tj /F1 9.2 Tf (. Se ancora) Tj T* -0.033166 Tw (non c'\350, riavvia il Mac e ripeti il tentativo. Su macOS 14 e precedenti il percorso era tasto destro ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Apri) Tj /F1 9.2 Tf (: da macOS) Tj T* 0 Tw (15 quel menu non aggira pi\371 il controllo.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 80.6 m 481.2283 80.6 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 80.6 l S
+n 481.2283 0 m 481.2283 80.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 688.4276 cm
+Q
+q
+1 0 0 1 57.02362 620.4276 cm
+q
+1 1 1 rg
+n 0 68 481.2283 -68 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 48.8 cm
+q
+BT 1 0 0 1 0 2.6 Tm 13.2 TL /F2 10.6 Tf .133333 .203922 .360784 rg (Windows: nella finestra manca il collegamento ) Tj /F6 10.6 Tf (Esegui comunque) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 43.8 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 28.6 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Se la finestra non lo mostra, il file porta il marchio \253scaricato da un altro computer\273: tasto destro sul file ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL T* /F2 9.2 Tf (Propriet\340) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( in fondo ) Tj /F2 9.2 Tf (Sblocca) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F2 9.2 Tf (OK) Tj /F1 9.2 Tf (, poi riaprilo. Se un antivirus l'ha messo in quarantena, ripristinalo dalla) Tj T* (cronologia dell'antivirus prima di riprovare. In alternativa la versione portatile in ZIP non esegue alcun installatore.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 68 m 481.2283 68 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 68 l S
+n 481.2283 0 m 481.2283 68 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 615.9276 cm
+Q
+q
+1 0 0 1 57.02362 535.3276 cm
+q
+1 1 1 rg
+n 0 80.6 481.2283 -80.6 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 61.4 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Si apre una finestra bianca e non succede niente) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 56.4 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 41.2 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Di solito \350 una copia in cache pi\371 vecchia del programma. Nell'app installata: chiudila del tutto e riaprila. Nel) Tj T* (browser: ricarica forzata con ) Tj /F4 8.6 Tf (Ctrl+Shift+R) Tj /F1 9.2 Tf ( \(su Mac ) Tj /F4 8.6 Tf (Cmd+Shift+R) Tj /F1 9.2 Tf (\). Se resta bianca, ) Tj /F2 9.2 Tf (esporta prima il backup) Tj T* (JSON) Tj /F1 9.2 Tf (, poi disinstalla e reinstalla: \350 l'unica operazione che toglie di mezzo la cache, e senza il backup porterebbe) Tj T* (via anche i tuoi dati.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 80.6 m 481.2283 80.6 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 80.6 l S
+n 481.2283 0 m 481.2283 80.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 530.8276 cm
+Q
+q
+1 0 0 1 57.02362 462.8276 cm
+q
+1 1 1 rg
+n 0 68 481.2283 -68 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 48.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Serve la connessione per installarlo? E dopo?) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 43.8 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 28.6 Tm /F1 9.2 Tf 12.6 TL (Solo per scaricare. Dopo l'installazione il programma funziona senza rete: contenuti, questionari, PDF e Neura) Tj T* (sono dentro il pacchetto. Nel browser la rete serve la prima volta che apri il sito; poi il service worker conserva le) Tj T* (pagine e restano disponibili anche offline.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 68 m 481.2283 68 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 68 l S
+n 481.2283 0 m 481.2283 68 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 458.3276 cm
+Q
+q
+1 0 0 1 57.02362 365.1276 cm
+q
+1 1 1 rg
+n 0 93.2 481.2283 -93.2 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 74 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Il microfono non parte o la dettatura non fa niente) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 69 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 53.8 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (\310 quasi sempre il permesso. Nel browser: icona del lucchetto accanto all'indirizzo ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Microfono) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Consenti) Tj /F1 9.2 Tf (, poi) Tj T* (ricarica. Nel programma installato: ) Tj /F3 9.2 Tf (Impostazioni di sistema) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Privacy e sicurezza) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Microfono) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( consenti a) Tj T* /F3 9.2 Tf (Psicologo Digitale) Tj /F1 9.2 Tf (. Senza microfono il programma resta completo: puoi scrivere. La dettatura usa il riconoscimento) Tj T* (del browser, quindi su Chrome ed Edge l'audio pu\362 passare dai loro server; la voce in uscita invece \350 generata sul) Tj T* (dispositivo.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 93.2 m 481.2283 93.2 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 93.2 l S
+n 481.2283 0 m 481.2283 93.2 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 360.6276 cm
+Q
+q
+1 0 0 1 57.02362 292.6276 cm
+q
+1 1 1 rg
+n 0 68 481.2283 -68 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 48.8 cm
+q
+BT 1 0 0 1 0 2.6 Tm 13.2 TL /F2 10.6 Tf .133333 .203922 .360784 rg (Dice ) Tj /F6 10.6 Tf (Nessun modello locale trovato) Tj /F2 10.6 Tf (: devo installare Ollama?) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 43.8 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 28.6 Tm /F1 9.2 Tf 12.6 TL (No. Neura \350 un motore di regole e recupero, non dipende da un modello: risponde lo stesso, e la barra di stato lo) Tj T* (dice. Ollama \350 un'aggiunta facoltativa per chi vuole risposte pi\371 discorsive: \350 gratuito e la pagina Installa l'app) Tj T* (riconosce il sistema e indica il comando giusto.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 68 m 481.2283 68 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 68 l S
+n 481.2283 0 m 481.2283 68 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 288.1276 cm
+Q
+q
+1 0 0 1 57.02362 220.1276 cm
+q
+1 1 1 rg
+n 0 68 481.2283 -68 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 48.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Devo riscaricare il file a ogni aggiornamento?) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 43.8 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 28.6 Tm /F1 9.2 Tf 12.6 TL (No. Nel browser la pagina si aggiorna da s\351: cambia il numero del service worker e il dispositivo se ne accorge al) Tj T* (primo avvio. Nel programma installato, dalla 1.3.7 in poi, l'aggiornamento si scarica in sottofondo e si applica alla) Tj T* (chiusura. La pagina Versioni e novit\340 dice cosa ha portato ogni versione.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 68 m 481.2283 68 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 68 l S
+n 481.2283 0 m 481.2283 68 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 215.6276 cm
+Q
+q
+1 0 0 1 57.02362 147.6276 cm
+q
+1 1 1 rg
+n 0 68 481.2283 -68 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 48.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Ho un iPhone o un tablet: c'\350 un pacchetto per me?) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 43.8 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 0 28.6 Tm -0.103088 Tw 12.6 TL /F1 9.2 Tf 0 0 0 rg (I pacchetti installabili esistono per Windows, macOS e Linux. Su iPhone, iPad e Android si usa la PWA: apri il sito e) Tj T* 0 Tw (scegli ) Tj /F3 9.2 Tf (Aggiungi a schermata Home) Tj /F1 9.2 Tf ( \(Safari: ) Tj /F3 9.2 Tf (Condividi) Tj /F1 9.2 Tf ( ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Aggiungi a Home) Tj /F1 9.2 Tf (; Chrome: menu ) Tj /F5 9.2 Tf 12.6 TL (\256) Tj /F1 9.2 Tf 12.6 TL ( ) Tj /F3 9.2 Tf (Installa app) Tj /F1 9.2 Tf (\). Si apre) Tj T* (a schermo intero, senza barra degli indirizzi, e funziona offline.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 68 m 481.2283 68 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 68 l S
+n 481.2283 0 m 481.2283 68 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 143.1276 cm
+Q
+q
+1 0 0 1 57.02362 75.12756 cm
+q
+1 1 1 rg
+n 0 68 481.2283 -68 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 48.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Prima di disinstallare, cosa devo salvare?) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 43.8 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 28.6 Tm /F1 9.2 Tf 12.6 TL (Il backup JSON, perch\351 \350 l'unica copia: il programma non manda niente a nessun server. Disinstallando) Tj T* (spariscono dati e cronologia locali, mentre il file esportato si reimporta sul stesso dispositivo o su un altro, senza) Tj T* (account.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 68 m 481.2283 68 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 68 l S
+n 481.2283 0 m 481.2283 68 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 70.62756 cm
+Q
+ 
+endstream
+endobj
+18 0 obj
+<<
+/Length 4216
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+BT /F1 7.6 Tf 9.12 TL ET
+.356863 .392157 .447059 rg
+BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.16) Tj T* ET
+.788235 .768627 .721569 RG
+.5 w
+n 51.02362 796.5354 m 544.252 796.5354 l S
+BT 1 0 0 1 51.02362 31.1811 Tm (danilodauria.github.io/psicologo-digitale/come-installare.html) Tj T* ET
+BT 1 0 0 1 515.0984 31.1811 Tm (pagina 4) Tj T* ET
+Q
+q
+1 0 0 1 57.02362 757.5276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Se qualcosa non torna) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 651.4276 cm
+q
+1 1 1 rg
+n 0 101.1 481.2283 -101.1 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 7 69.9 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Il download non parte o d\340 errore:) Tj /F1 9.2 Tf ( il controllo automatico dei link gira ogni giorno e apre una segnalazione sul) Tj T* (repository se un file non risponde; vale la pena riprovare dopo qualche minuto.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 65.4 cm
+Q
+q
+1 0 0 1 7 40.2 cm
+q
+BT 1 0 0 1 2 16 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (\253\310 danneggiato e non pu\362 essere aperto\273 su macOS:) Tj /F1 9.2 Tf ( succede quando la firma del pacchetto non \350 valida.) Tj T* (Segnalalo: la build verifica la firma ad-hoc a ogni release proprio per non far arrivare un pacchetto rotto.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 35.7 cm
+Q
+q
+1 0 0 1 7 23.1 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 3.4 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Non trovi il file per il tuo sistema:) Tj /F1 9.2 Tf ( nella pagina della versione ci sono tutte le varianti, con le impronte.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 7 18.6 cm
+Q
+q
+1 0 0 1 7 6 cm
+q
+BT 1 0 0 1 2 3.4 Tm /F1 9.2 Tf 11.04 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 11 3.4 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Vuoi solo provarlo:) Tj /F1 9.2 Tf ( il programma funziona anche nel browser, senza installare nulla.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.5 w
+n 0 101.1 m 481.2283 101.1 l S
+n 0 0 m 481.2283 0 l S
+n 0 0 m 0 101.1 l S
+n 481.2283 0 m 481.2283 101.1 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 646.9276 cm
+Q
+q
+1 0 0 1 57.02362 621.7276 cm
+q
+BT 1 0 0 1 0 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Psicologo Digitale \267 Come si installa \267 versione 1.3.16) Tj /F1 9.2 Tf ( \227) Tj T* (danilodauria.github.io/psicologo-digitale/come-installare.html) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 594.5276 cm
+q
+BT 1 0 0 1 0 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Avvertenza.) Tj /F1 9.2 Tf ( Il programma \350 educativo e di orientamento: non formula diagnosi, non prescrive terapie e non) Tj T* (sostituisce il parere di uno psicologo, di uno psicoterapeuta o di un medico. In caso di emergenza chiama il ) Tj /F2 9.2 Tf (112) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 554.7276 cm
+q
+BT 1 0 0 1 0 28.6 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Le impronte dei file stanno in ) Tj /F4 8.6 Tf (SHA256SUMS.txt) Tj /F1 9.2 Tf (, nella pagina della versione:) Tj T* -0.013807 Tw /F4 8.6 Tf (github.com/danilodauria/psicologo-digitale/releases/latest) Tj /F1 9.2 Tf (. Se questo foglio \350 vecchio, la pagina online) Tj T* 0 Tw (dice la stessa cosa aggiornata.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 540.1276 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3.4 Tm /F1 9.2 Tf 12.6 TL (Aggiornata alla versione 1.3.16 \267 novembre 2026 \267 Codice MIT \267 Contenuti CC BY-NC-SA 4.0 \267 \251 Danilo D'Auria.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 530.1276 cm
+Q
+q
+1 0 0 1 57.02362 504.9276 cm
+q
+BT 1 0 0 1 0 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Avvertenza.) Tj /F1 9.2 Tf ( Il programma \350 educativo e di orientamento: non formula diagnosi, non prescrive terapie e non) Tj T* (sostituisce il parere di uno psicologo, di uno psicoterapeuta o di un medico. In caso di emergenza chiama il ) Tj /F2 9.2 Tf (112) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 477.7276 cm
+q
+BT 1 0 0 1 0 16 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Le impronte dei file stanno in ) Tj /F4 8.6 Tf (SHA256SUMS.txt) Tj /F1 9.2 Tf (, nella pagina della versione:) Tj T* /F4 8.6 Tf (github.com/danilodauria/psicologo-digitale/releases/latest) Tj /F1 9.2 Tf (.) Tj T* ET
+Q
+Q
+ 
+endstream
+endobj
+xref
+0 19
+0000000000 65535 f 
+0000000061 00000 n 
+0000000142 00000 n 
+0000000249 00000 n 
+0000000361 00000 n 
+0000000476 00000 n 
+0000000581 00000 n 
+0000000658 00000 n 
+0000000863 00000 n 
+0000001068 00000 n 
+0000001187 00000 n 
+0000001393 00000 n 
+0000001599 00000 n 
+0000001669 00000 n 
+0000002038 00000 n 
+0000002118 00000 n 
+0000010555 00000 n 
+0000019904 00000 n 
+0000029912 00000 n 
+trailer
+<<
+/ID 
+[<4bd43de358ff22ac5e84f6b10b625241><4bd43de358ff22ac5e84f6b10b625241>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 13 0 R
+/Root 12 0 R
+/Size 19
+>>
+startxref
+34180
+%%EOF
