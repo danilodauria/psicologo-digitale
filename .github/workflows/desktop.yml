@@ -128,9 +128,39 @@ jobs:
           overwrite_files: true
           generate_release_notes: true
 
+  # Un archivio unico con tutto il progetto, per chi vuole lavorarci o
+  # conservarne una copia: si scarica dalla stessa pagina dei pacchetti e si
+  # apre con doppio clic anche su Windows.
+  backup:
+    name: Backup dei sorgenti
+    needs: build
+    if: >-
+      always() && !cancelled() &&
+      (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/psd-v'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Crea l'archivio completo
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=zip \
+            --prefix="psicologo-digitale-${GITHUB_REF_NAME}/" \
+            -o "Psicologo-Digitale-Sorgenti.zip" HEAD
+          unzip -l "Psicologo-Digitale-Sorgenti.zip" | tail -3
+          du -h "Psicologo-Digitale-Sorgenti.zip"
+
+      - name: Allega il backup alla release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Psicologo-Digitale-Sorgenti.zip
+          overwrite_files: true
+
   checksums:
     name: Impronte SHA-256
-    needs: build
+    needs: [build, backup]
     if: >-
       always() && !cancelled() &&
       (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/psd-v') || github.ref == 'refs/heads/main')
@@ -175,16 +205,16 @@ jobs:
               | "\(.digest | sub("^sha256:"; ""))  \(.name)"' 2>/dev/null | sort -k2 > SHA256SUMS.txt || true
             righe="$(wc -l < SHA256SUMS.txt)"
             echo "Impronte disponibili: $righe"
-            if [[ "$righe" -ge 5 ]]; then
+            if [[ "$righe" -ge 6 ]]; then
               echo "pronte=1" >> "$GITHUB_OUTPUT"
               break
             fi
             sleep 30
           done
           cat SHA256SUMS.txt
-          if [[ "$(wc -l < SHA256SUMS.txt)" -lt 5 ]]; then
+          if [[ "$(wc -l < SHA256SUMS.txt)" -lt 6 ]]; then
             if [[ "$DA_TAG" == "true" ]]; then
-              echo "::warning::Meno di cinque pacchetti con impronta nella release $TAG."
+              echo "::warning::Meno di sei file con impronta nella release $TAG."
             fi
             echo "pronte=0" >> "$GITHUB_OUTPUT"
           fi
@@ -209,7 +239,7 @@ jobs:
       # Un pacchetto che manca non si nota subito: si nota quando qualcuno
       # clicca il link e trova un 404. Questo passaggio rende rossa la build.
       # Jobs senza checkout: gh ha bisogno di sapere quale repository guardare.
-      - name: Verifica i sei pacchetti e le impronte
+      - name: Verifica pacchetti, backup e impronte
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
@@ -226,6 +256,9 @@ jobs:
           # File di servizio per l'aggiornamento automatico: chi ha il
           # programma installato li legge per scoprire le nuove versioni.
           servizio=(latest.yml latest-mac.yml latest-linux.yml)
+          # Copia completa del progetto: serve a chi vuole ricostruire o
+          # conservare il pacchetto senza dipendere da questo repository.
+          extra=(Psicologo-Digitale-Sorgenti.zip)
           presenti="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.assets[].name')"
           mkdir -p "$RUNNER_TEMP/rel"
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt \
@@ -254,8 +287,22 @@ jobs:
               mancanti=$((mancanti + 1))
             fi
           done
+          for f in "${extra[@]}"; do
+            if grep -qxF "$f" <<< "$presenti"; then
+              echo "✓ $f"
+            else
+              echo "::error::Manca $f: senza il backup la release non è completa."
+              mancanti=$((mancanti + 1))
+            fi
+            if grep -q "  $f\$" "$RUNNER_TEMP/rel/SHA256SUMS.txt"; then
+              echo "  impronta presente"
+            else
+              echo "::error::Manca l'impronta di $f in SHA256SUMS.txt."
+              mancanti=$((mancanti + 1))
+            fi
+          done
           if [[ "$mancanti" -gt 0 ]]; then
-            echo "::error::Release incompleta: $mancanti controlli falliti su $(( ${#attesi[@]} * 2 + ${#servizio[@]} ))."
+            echo "::error::Release incompleta: $mancanti controlli falliti."
             exit 1
           fi
-          echo "Release completa: ${#attesi[@]} pacchetti con la loro impronta e ${#servizio[@]} file di aggiornamento."
+          echo "Release completa: ${#attesi[@]} pacchetti con la loro impronta, ${#servizio[@]} file di aggiornamento e il backup dei sorgenti."
