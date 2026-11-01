@@ -79,7 +79,7 @@ class Guida(BaseDocTemplate):
             title=kw.get("titolo", "Vademecum · Psicologo Digitale"),
             author="Danilo D'Auria",
             subject=kw.get("soggetto", "Guida tascabile alla stanza d'ascolto"),
-            keywords="psicologia, autovalutazione, PWA, vademecum, FeniceOS",
+            keywords="psicologia, autovalutazione, PWA, vademecum, FeniceOS, versione=" + kw.get("versione", ""),
         )
         frame = Frame(
             self.leftMargin,
@@ -528,7 +528,7 @@ def costruisci(percorso, formato, d):
     return doc.page
 
 
-def imponi_libricino(origine, destinazione):
+def imponi_libricino(origine, destinazione, versione=""):
     """Dispone le pagine A5 su fogli A4 orizzontali, pronte per la stampa fronte-retro."""
     import pymupdf
 
@@ -559,6 +559,14 @@ def imponi_libricino(origine, destinazione):
             for x in (cx - 6, cx + 6):
                 pagina.draw_line((x, 8), (x, altezza - 8), color=(0.72, 0.69, 0.62), width=0.4)
 
+    # L'imposizione crea un documento nuovo: i metadati vanno riscritti, se no
+    # il libricino perde la versione del programma.
+    out.set_metadata({
+        "title": "Vademecum \u00b7 Psicologo Digitale",
+        "author": "Danilo D'Auria",
+        "subject": "Guida tascabile alla stanza d'ascolto",
+        "keywords": "psicologia, autovalutazione, PWA, vademecum, FeniceOS, versione=" + versione,
+    })
     out.save(destinazione, deflate=True, garbage=3)
     out.close()
     src.close()
@@ -577,7 +585,7 @@ def main():
 
     pagine_a5 = costruisci(a5, "a5", d)
     pagine_a4 = costruisci(a4, "a4", d)
-    totale = imponi_libricino(a5, libretto)
+    totale = imponi_libricino(a5, libretto, d["versione"])
 
     for percorso, pagine in ((a5, pagine_a5), (a4, pagine_a4)):
         peso = os.path.getsize(percorso) / 1024

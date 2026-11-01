@@ -493,6 +493,22 @@ def costruisci(percorso, d):
             "clinico.",
             st["Corpo"],
         ),
+        Spacer(1, 3 * mm),
+        Paragraph("Se la persona usa il programma anche in seduta", st["Sezione"]),
+        Paragraph(
+            "La barra in alto dice dove sta girando il programma — browser, PWA installata o applicazione per "
+            "computer —, se un modello locale risponde e se il microfono è pronto, con il permesso da concedere. "
+            "<b>Ferma l'audio</b> interrompe la voce in qualsiasi momento, <b>Indietro</b> torna alla pagina "
+            "precedente e <b>Aiuto subito</b> mette i numeri di emergenza a un tocco: serve se durante il "
+            "colloquio emerge un rischio che non avevi previsto.",
+            st["Corpo"],
+        ),
+        Paragraph(
+            "Un avviso da dare prima: la dettatura usa il riconoscimento vocale del browser e su Chrome ed Edge "
+            "l'audio può essere elaborato dai loro server. Per contenuti clinici sensibili conviene la tastiera. "
+            "La voce in uscita resta invece sul dispositivo.",
+            st["Corpo"],
+        ),
         PageBreak(),
     ]
 

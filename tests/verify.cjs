@@ -305,6 +305,26 @@ ok(/vademecum-clinico-psicologo-digitale\.pdf/.test(html), "il footer collega la
 ok(exists("scripts/build_vademecum_clinico.py") && /limiti dichiarati/i.test(read("scripts/build_vademecum_clinico.py")), "il generatore della guida dichiara i limiti");
 ok(/clinico/.test(read("scripts/export-data.cjs")), "l'esportazione include i dati per la guida del clinico");
 
+/* I PDF dichiarano la versione del programma ------------------------------ */
+
+// Se si aggiorna package.json senza rigenerare i PDF, la versione nei piedi di
+// pagina resta quella vecchia: questo controllo lo intercetta.
+const versione = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).version;
+const pdfVersione = [
+  "assets/pdf/vademecum-psicologo-digitale.pdf",
+  "assets/pdf/vademecum-psicologo-digitale-a4.pdf",
+  "assets/pdf/vademecum-psicologo-digitale-libricino-a4.pdf",
+  "assets/pdf/vademecum-clinico-psicologo-digitale.pdf"
+];
+pdfVersione.forEach((f) => {
+  const testo = fs.readFileSync(path.join(root, f)).toString("latin1");
+  ok(testo.indexOf("versione=" + versione) !== -1, "il PDF " + f + " dichiara la versione " + versione);
+});
+ok(
+  JSON.parse(fs.readFileSync(path.join(root, "assets/data/vademecum.json"), "utf8")).versione === versione,
+  "i dati dei vademecum sono esportati dalla versione corrente (" + versione + ")"
+);
+
 /* Programmi installabili e benvenuto --------------------------------------- */
 
 ok(exists("desktop/package.json"), "esiste la configurazione dei pacchetti desktop");
