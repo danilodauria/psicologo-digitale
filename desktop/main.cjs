@@ -64,6 +64,81 @@ ipcMain.handle("ollama:generate", async (_event, payload) => {
   }
 });
 
+/* Aggiornamenti ------------------------------------------------------------ */
+
+// Le nuove versioni arrivano dalle release GitHub. Su Windows e Linux AppImage
+// l'aggiornamento non chiede nulla; su macOS serve un pacchetto firmato, e
+// quindi l'errore va spiegato invece di lasciare l'utente in attesa.
+let statoUpdate = { fase: "sconosciuto", versione: "", percentuale: 0, messaggio: "" };
+
+function aggiornaStato(nuovo) {
+  statoUpdate = Object.assign({}, statoUpdate, nuovo);
+  BrowserWindow.getAllWindows().forEach((w) => {
+    if (!w.isDestroyed() && w.webContents) w.webContents.send("update:stato", statoUpdate);
+  });
+}
+
+function preparaAggiornamenti() {
+  if (!app.isPackaged) {
+    aggiornaStato({ fase: "sviluppo", messaggio: "Gli aggiornamenti funzionano solo nel programma installato." });
+    return;
+  }
+
+  let autoUpdater;
+  try {
+    autoUpdater = require("electron-updater").autoUpdater;
+  } catch (e) {
+    aggiornaStato({ fase: "disattivato", messaggio: "Questa build non include il modulo degli aggiornamenti." });
+    return;
+  }
+
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on("checking-for-update", () => aggiornaStato({ fase: "verifica", messaggio: "Controllo le nuove versioni…" }));
+  autoUpdater.on("update-available", (info) => aggiornaStato({
+    fase: "disponibile",
+    versione: String((info && info.version) || ""),
+    messaggio: "Nuova versione in scaricamento."
+  }));
+  autoUpdater.on("update-not-available", () => aggiornaStato({
+    fase: "aggiornato", percentuale: 0, messaggio: "Questa è la versione più recente."
+  }));
+  autoUpdater.on("download-progress", (p) => aggiornaStato({
+    fase: "scaricamento", percentuale: Math.round((p && p.percent) || 0)
+  }));
+  autoUpdater.on("update-downloaded", (info) => aggiornaStato({
+    fase: "pronto",
+    versione: String((info && info.version) || ""),
+    percentuale: 100,
+    messaggio: "L'aggiornamento è pronto: si installa alla chiusura, o subito se preferisci."
+  }));
+  autoUpdater.on("error", (err) => {
+    const testo = String((err && err.message) || err || "errore sconosciuto");
+    const firma = /signature|code sign|not signed|Could not get code signature/i.test(testo);
+    aggiornaStato({
+      fase: "errore",
+      messaggio: firma
+        ? "macOS aggiorna da solo solo i pacchetti firmati: scarica la nuova versione dalla pagina delle release."
+        : "Controllo non riuscito: " + testo
+    });
+  });
+
+  ipcMain.handle("update:stato", () => statoUpdate);
+  ipcMain.handle("update:controlla", async () => {
+    try { await autoUpdater.checkForUpdates(); } catch (e) { /* l'errore arriva dall'evento */ }
+    return statoUpdate;
+  });
+  ipcMain.handle("update:installa", () => {
+    if (statoUpdate.fase !== "pronto") return { ok: false, motivo: "nessun aggiornamento pronto" };
+    setImmediate(() => autoUpdater.quitAndInstall(false, true));
+    return { ok: true };
+  });
+
+  // Il primo controllo non blocca l'avvio: la finestra si apre comunque.
+  setTimeout(() => { autoUpdater.checkForUpdates().catch(() => {}); }, 4000);
+}
+
 /* Finestra ----------------------------------------------------------------- */
 
 function createWindow() {
@@ -117,6 +192,7 @@ if (!unoSolo) {
   app.whenReady().then(() => {
     Menu.setApplicationMenu(null);
     createWindow();
+    preparaAggiornamenti();
 
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();

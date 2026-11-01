@@ -1,6 +1,6 @@
 {
   "name": "psicologo-digitale",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "private": true,
   "description": "Psicologo Digitale per Windows, Linux e macOS: colloquio guidato, questionari, percorso, relazione e guida, anche offline.",
   "author": "Danilo D'Auria",
@@ -14,6 +14,9 @@
     "dist:linux": "electron-builder --linux --publish never",
     "dist:mac": "electron-builder --mac --publish never"
   },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
   "devDependencies": {
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8"
@@ -23,7 +26,14 @@
     "productName": "Psicologo Digitale",
     "copyright": "Copyright © 2026 Danilo D'Auria · FeniceOS",
     "artifactName": "Psicologo-Digitale-${version}-${os}-${arch}.${ext}",
-    "publish": null,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "danilodauria",
+        "repo": "psicologo-digitale",
+        "releaseType": "release"
+      }
+    ],
     "directories": {
       "output": "dist",
       "buildResources": "build"

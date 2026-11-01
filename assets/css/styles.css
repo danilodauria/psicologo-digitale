@@ -1709,6 +1709,8 @@ html[data-theme="dark"] .emergency-box h2, html[data-theme="dark"] .emergency-bo
 .welcome-note ul { margin: .2rem 0 .4rem; padding-left: 1.1rem; font-size: .82rem; }
 .welcome-note .mini { font-size: .78rem; opacity: .85; }
 /* Nessuna voce italiana installata: la scheda Voce spiega come aggiungerla. */
+.status-chip[hidden] { display: none !important; }
+
 .voice-help { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(168, 116, 38, .08); border: 1px solid rgba(168, 116, 38, .22); }
 .voice-help[hidden] { display: none; }
 .voice-help p { font-size: .82rem; margin: 0 0 .35rem; }

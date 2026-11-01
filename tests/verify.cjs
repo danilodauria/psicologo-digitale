@@ -346,6 +346,20 @@ const pagine = exists(".github/workflows/pages.yml") ? read(".github/workflows/p
 ok(/Il sito serve la versione giusta/.test(pagine), "il controllo del sito ha un nome riconoscibile");
 ok(/needs: deploy/.test(pagine) && /sw\.js/.test(pagine), "dopo la pubblicazione si controlla il service worker servito");
 ok(/sha256sum/.test(pagine) && /vademecum-clinico-psicologo-digitale\.pdf/.test(pagine), "il controllo confronta le impronte dei PDF pubblicati");
+/* Aggiornamenti automatici ------------------------------------------------ */
+
+const mainDesk = read("desktop/main.cjs");
+const pkgDesk = read("desktop/package.json");
+ok(/electron-updater/.test(pkgDesk) && /electron-updater/.test(mainDesk), "il programma desktop usa electron-updater");
+ok(/"provider": "github"/.test(pkgDesk), "i pacchetti dichiarano le release GitHub come sorgente degli aggiornamenti");
+ok(/update:controlla/.test(mainDesk) && /quitAndInstall/.test(mainDesk), "il processo principale controlla e installa gli aggiornamenti");
+ok(/checkForUpdates/.test(mainDesk) && /isPackaged/.test(mainDesk), "l'aggiornamento agisce solo nel programma installato");
+ok(/signature|code signature/i.test(mainDesk), "su macOS senza firma l'errore viene spiegato");
+ok(/aggiornamenti/.test(read("desktop/preload.cjs")), "il ponte espone gli aggiornamenti alla pagina");
+ok(/statusUpdate/.test(read("assets/js/app-status.js")) && /data-update-install/.test(read("assets/js/app-status.js")), "la barra mostra quando un aggiornamento è pronto");
+ok(/latest\*\.yml/.test(wf), "il workflow allega alla release i file di aggiornamento");
+ok(/Aggiornamenti automatici/.test(read("README.md")), "il README spiega l'aggiornamento automatico");
+
 // I certificati restano facoltativi: le istruzioni per consentire l'avvio dal
 // sistema operativo devono restare sia nel README sia nella pagina di installazione.
 const readme = read("README.md");

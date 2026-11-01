@@ -198,6 +198,84 @@
 
   /* Pannello --------------------------------------------------------------- */
 
+  /* Aggiornamenti ----------------------------------------------------------- */
+
+  // Il ponte esiste solo nel programma installato: nel browser la pagina si
+  // aggiorna da sé quando il sito pubblica una nuova versione.
+  function ponteAggiornamenti() {
+    const d = window.npDesktop;
+    return d && d.aggiornamenti ? d.aggiornamenti : null;
+  }
+
+  let statoUpdate = { fase: "sconosciuto", versione: "", percentuale: 0, messaggio: "" };
+
+  function mostraStatoUpdate() {
+    const chip = document.getElementById("statusUpdate");
+    if (!chip) return;
+    const fase = statoUpdate.fase;
+    chip.hidden = !(fase === "pronto" || fase === "disponibile" || fase === "scaricamento");
+    const testo = document.getElementById("statusUpdateText");
+    if (testo) {
+      testo.textContent = fase === "pronto" ? "Riavvia per aggiornare"
+        : fase === "scaricamento" ? "Nuova versione " + (statoUpdate.percentuale || 0) + "%"
+        : "Nuova versione " + (statoUpdate.versione || "");
+    }
+    const dot = document.getElementById("statusUpdateDot");
+    if (dot) dot.setAttribute("data-state", fase === "pronto" ? "ok" : "attesa");
+    chip.setAttribute("aria-label", (testo ? testo.textContent : "Aggiornamento") + ": apri i dettagli");
+  }
+
+  function controllaAggiornamenti() {
+    const ponte = ponteAggiornamenti();
+    if (!ponte) return;
+    statoUpdate = { fase: "verifica", versione: statoUpdate.versione || "", percentuale: 0, messaggio: "Controllo le nuove versioni…" };
+    mostraStatoUpdate();
+    if (aperto === "modo") riempiPannello();
+    ponte.controlla();
+  }
+
+  function installaAggiornamento() {
+    const ponte = ponteAggiornamenti();
+    if (!ponte) return;
+    const ok = window.confirm("Riavvio il programma per installare la versione " + (statoUpdate.versione || "nuova") + ". Diario, questionari e chat restano salvati.");
+    if (ok) ponte.installa();
+  }
+
+  function bloccoAggiornamenti() {
+    const ponte = ponteAggiornamenti();
+    let html = "<h3>Aggiornamenti</h3>";
+
+    if (!ponte) {
+      return html + '<p class="text-small muted mb-0">Qui gli aggiornamenti non si gestiscono: nel browser la pagina si rinnova da sé quando il sito pubblica una nuova versione. Il controllo automatico riguarda il programma installato.</p>';
+    }
+
+    const fase = statoUpdate.fase;
+    if (fase === "pronto") {
+      html += "<p><strong>Versione " + esc(statoUpdate.versione || "nuova") + " pronta.</strong> " + esc(statoUpdate.messaggio || "Si installa alla chiusura del programma.") + "</p>" +
+        '<div class="status-actions"><button type="button" class="btn btn-soft btn-sm" data-update-install>Riavvia e aggiorna</button>' +
+        '<button type="button" class="btn btn-ghost btn-sm" data-status-close>Più tardi</button></div>';
+    } else if (fase === "scaricamento") {
+      html += "<p>Scaricamento in corso: <strong>" + (statoUpdate.percentuale || 0) + "%</strong>. Puoi continuare a usare il programma.</p>";
+    } else if (fase === "disponibile") {
+      html += "<p>Nuova versione " + esc(statoUpdate.versione || "") + " trovata: la scarico in sottofondo e la installo alla chiusura.</p>";
+    } else if (fase === "verifica") {
+      html += '<p class="muted">Controllo le nuove versioni…</p>';
+    } else if (fase === "aggiornato") {
+      html += "<p><span class=\"badge badge-green\">Aggiornato</span> Questa è la versione più recente.</p>" +
+        '<div class="status-actions"><button type="button" class="btn btn-ghost btn-sm" data-update-check>Controlla adesso</button></div>';
+    } else if (fase === "errore") {
+      html += "<p><strong>Aggiornamento non riuscito.</strong> " + esc(statoUpdate.messaggio || "") + "</p>" +
+        '<div class="status-actions"><button type="button" class="btn btn-soft btn-sm" data-update-check>Riprova</button>' +
+        '<a class="btn btn-ghost btn-sm" href="https://github.com/danilodauria/psicologo-digitale/releases/latest" target="_blank" rel="noopener">Pagina dei download</a></div>';
+    } else {
+      html += '<p class="muted">' + esc(statoUpdate.messaggio || "Stato degli aggiornamenti non ancora letto.") + "</p>" +
+        '<div class="status-actions"><button type="button" class="btn btn-soft btn-sm" data-update-check>Controlla adesso</button></div>';
+    }
+
+    html += '<p class="text-small muted mb-0">Il programma scarica la nuova versione dalle release GitHub e la installa da solo. Su Windows e Linux AppImage funziona senza intervento; su macOS serve un pacchetto firmato, altrimenti il download resta manuale.</p>';
+    return html;
+  }
+
   function contenutoModo() {
     const m = modo();
     const d = dispositivo();
@@ -229,6 +307,7 @@
       '<button type="button" class="btn btn-soft btn-sm" data-ai-check>Controlla di nuovo</button>' +
       (telefono ? "" : '<a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Installare Ollama</a>') +
       "</div>";
+    html += bloccoAggiornamenti();
     return html;
   }
 
@@ -390,6 +469,9 @@
         '<button type="button" class="status-chip status-os" id="statusOs" aria-expanded="false" aria-controls="statusPanel" title="Sistema operativo in uso">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg>' +
           '<span id="statusOsText">' + esc(modo() && sistemaOperativo().nome) + "</span></button>" +
+        '<button type="button" class="status-chip status-update" id="statusUpdate" hidden title="Aggiornamento del programma">' +
+          '<span class="status-dot" id="statusUpdateDot" data-state="attesa" aria-hidden="true"></span>' +
+          '<span id="statusUpdateText">Aggiornamento</span></button>' +
         '<button type="button" class="status-chip" id="statusMic" aria-expanded="false" aria-controls="statusPanel" title="Stato del microfono">' +
           '<span class="status-dot" id="statusMicDot" data-state="attesa" aria-hidden="true"></span>' +
           '<span id="statusMicText">Microfono: controllo…</span></button>' +
@@ -433,6 +515,21 @@
     const help = document.getElementById("statusHelp");
     if (help) help.addEventListener("click", function () { apriPannello("aiuto", help); });
 
+    // Il pulsante compare solo quando c'è qualcosa da fare: se l'aggiornamento
+    // è pronto installa subito, altrimenti apre il pannello che lo racconta.
+    const upd = document.getElementById("statusUpdate");
+    if (upd) upd.addEventListener("click", function () {
+      if (statoUpdate.fase === "pronto") { installaAggiornamento(); return; }
+      apriPannello("modo", mode);
+    });
+
+    const pannello = document.getElementById("statusPanel");
+    if (pannello) pannello.addEventListener("click", function (e) {
+      if (!e.target.closest) return;
+      if (e.target.closest("[data-update-check]")) { controllaAggiornamenti(); return; }
+      if (e.target.closest("[data-update-install]")) installaAggiornamento();
+    });
+
     document.addEventListener("click", function (e) {
       if (!aperto) return;
       if (e.target.closest && (e.target.closest("#statusBar") || e.target.closest(".status-panel"))) return;
@@ -446,6 +543,23 @@
     window.addEventListener("hashchange", chiudiPannello);
 
     document.addEventListener("np:voce", notificaStato);
+
+    const ponteUpd = ponteAggiornamenti();
+    if (ponteUpd) {
+      ponteUpd.stato().then(function (s) {
+        if (s) statoUpdate = s;
+        mostraStatoUpdate();
+        if (aperto === "modo") riempiPannello();
+      }).catch(function () { /* nessuno stato disponibile */ });
+      if (typeof ponteUpd.on === "function") ponteUpd.on(function (s) {
+        statoUpdate = s || statoUpdate;
+        mostraStatoUpdate();
+        if (aperto === "modo") riempiPannello();
+        if (statoUpdate.fase === "pronto") A.toast("Aggiornamento pronto: si installa alla chiusura.");
+        else if (statoUpdate.fase === "disponibile") A.toast("Nuova versione " + (statoUpdate.versione || "") + ": la scarico in sottofondo.");
+      });
+    }
+    mostraStatoUpdate();
 
     aggiornaMicrofono();
     controllaIa();

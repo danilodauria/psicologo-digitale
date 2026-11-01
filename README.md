@@ -316,6 +316,18 @@ Pages è impostato su **GitHub Actions**. A ogni push su `main` il workflow `.gi
 
 Per far girare i test senza pubblicare basta lanciare il workflow a mano da **Actions → Test e pubblicazione → Run workflow**.
 
+### Aggiornamenti automatici
+
+I pacchetti desktop si aggiornano da soli. All'avvio il programma chiede a GitHub l'ultima release (`electron-updater`, sorgente dichiarata in `desktop/package.json`); se ce n'è una nuova la scarica in sottofondo e la installa alla chiusura. Quando il download è finito compare nella barra in alto il pulsante **Riavvia per aggiornare**, che installa subito senza aspettare la prossima apertura. Il pannello della barra, sezione *Aggiornamenti*, mostra a che punto è e permette di controllare a mano.
+
+Tre limiti da conoscere:
+
+- **Windows** (installatore `.exe`) e **Linux AppImage** si aggiornano davvero da soli. Il `.deb` no: lì l'aggiornamento lo fa il gestore di pacchetti della distribuzione.
+- **macOS** accetta l'aggiornamento automatico solo da pacchetti firmati: senza certificato il programma lo dice e rimanda alla pagina dei download, invece di provare e fallire in silenzio.
+- La versione portatile in ZIP non si aggiorna: è pensata per essere sostituita.
+
+Perché funzioni, la release deve contenere anche i tre file di servizio che GitHub non mostra tra i download: `latest.yml` (Windows), `latest-mac.yml` e `latest-linux.yml`. Li scrive `electron-builder` a ogni build e il workflow li allega; *Controllo che la release sia completa* verifica che ci siano, perché senza di loro il programma installato non vede le nuove versioni.
+
 ### Controllo del sito pubblicato
 
 Dopo la pubblicazione parte il job **Il sito serve la versione giusta**. Scarica `sw.js` e verifica che dichiari la versione di `package.json`: un service worker vecchio in cache non dà errori, resta lì finché qualcuno non apre la pagina. Poi scarica i quattro PDF e ne confronta l'impronta SHA-256 con quella dei file del repository, così un PDF non copiato nell'artefatto si vede subito. I tentativi si ripetono per qualche minuto, perché Pages non è aggiornato nell'istante in cui il deploy finisce; se la versione resta sbagliata la build diventa rossa e il problema si vede senza aprire il browser.
