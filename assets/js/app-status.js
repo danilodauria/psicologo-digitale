@@ -1,0 +1,391 @@
+/* ==========================================================================
+   Psicologo Digitale · barra di stato
+   Licenza del codice: MIT · Danilo D'Auria
+   --------------------------------------------------------------------------
+   Dice sempre, in alto, dove stiamo girando (browser, PWA installata o
+   programma desktop), se sul computer c'è un modello locale, se il microfono
+   c'è e se va autorizzato. Da qui si ferma la voce, si torna indietro e si
+   raggiungono i numeri di emergenza in un tocco.
+   ========================================================================== */
+
+(function () {
+  "use strict";
+
+  const A = NP && NP.app;
+  if (!A) return;
+
+  const esc = A.esc;
+  const NUMERI = (NP.data && NP.data.sicurezza && NP.data.sicurezza.numeri) || [];
+  const SISTEMI = { win32: "Windows", darwin: "macOS", linux: "Linux", freebsd: "FreeBSD" };
+
+  let ultimaIa = null;       // { ok, modelli, errore }
+  let aperto = null;         // pannello attualmente aperto
+  let statoMic = { presente: false, permesso: "sconosciuto" };
+  let inCorso = false;       // una richiesta a Ollama è in volo
+
+  /* Ambiente --------------------------------------------------------------- */
+
+  function desktop() {
+    const d = window.npDesktop;
+    return d && d.platform ? d : null;
+  }
+
+  function pwa() {
+    try {
+      if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
+      if (window.navigator.standalone === true) return true;
+    } catch (e) { /* niente */ }
+    return false;
+  }
+
+  function modo() {
+    const d = desktop();
+    if (d) {
+      return {
+        id: "desktop",
+        titolo: "Programma installato",
+        dove: SISTEMI[d.platform] || d.platform,
+        nota: "Stai usando il pacchetto desktop: finestra propria, nessun browser di mezzo, funziona anche senza connessione."
+      };
+    }
+    if (pwa()) {
+      return {
+        id: "pwa",
+        titolo: "App installata",
+        dove: "PWA a schermo intero",
+        nota: "Stai usando la PWA installata sul dispositivo: si apre dall'icona, senza barra degli indirizzi, e funziona offline."
+      };
+    }
+    return {
+      id: "browser",
+      titolo: "Nel browser",
+      dove: "scheda del browser",
+      nota: "Questa è la versione web: non è installata. Se la installi la trovi tra le app del dispositivo, apre a schermo intero e resta disponibile senza rete."
+    };
+  }
+
+  function dispositivo() {
+    try {
+      return NP.ambiente && typeof NP.ambiente.detect === "function" ? NP.ambiente.detect() : null;
+    } catch (e) { return null; }
+  }
+
+  /* Voce e dettatura ------------------------------------------------------- */
+
+  function notificaStato() {
+    const btn = document.getElementById("statusStop");
+    if (!btn) return;
+    const voce = !!(NP.neuraUI && typeof NP.neuraUI.isSpeaking === "function" && NP.neuraUI.isSpeaking());
+    const dettatura = !!(NP.neuraUI && typeof NP.neuraUI.isListening === "function" && NP.neuraUI.isListening());
+    const attivo = voce || dettatura;
+    btn.setAttribute("data-active", attivo ? "true" : "false");
+    btn.setAttribute("title", attivo ? "Ferma la voce o la dettatura in corso" : "Ferma l'audio di Neura");
+    btn.setAttribute("aria-label", attivo ? "Ferma l'audio in corso" : "Ferma l'audio di Neura");
+  }
+
+  function fermaAudio() {
+    let fermato = false;
+    if (NP.neuraUI) {
+      if (typeof NP.neuraUI.isSpeaking === "function" && NP.neuraUI.isSpeaking()) fermato = true;
+      if (typeof NP.neuraUI.stopListening === "function" && NP.neuraUI.stopListening()) fermato = true;
+      if (typeof NP.neuraUI.stop === "function") NP.neuraUI.stop();
+    }
+    notificaStato();
+    A.toast(fermato ? "Audio fermato." : "Nessun audio in corso.");
+  }
+
+  /* Microfono -------------------------------------------------------------- */
+
+  function permessoMicrofono(cb) {
+    const nav = window.navigator || {};
+    if (!nav.permissions || typeof nav.permissions.query !== "function") { cb("sconosciuto"); return; }
+    let p;
+    try { p = nav.permissions.query({ name: "microphone" }); } catch (e) { cb("sconosciuto"); return; }
+    if (!p || typeof p.then !== "function") { cb("sconosciuto"); return; }
+    p.then(function (s) {
+      cb(String((s && s.state) || "sconosciuto"));
+      if (s) s.onchange = function () { aggiornaMicrofono(); };
+    }).catch(function () { cb("sconosciuto"); });
+  }
+
+  function aggiornaMicrofono() {
+    const nav = window.navigator || {};
+    statoMic.presente = !!(nav.mediaDevices && typeof nav.mediaDevices.getUserMedia === "function");
+
+    const testo = document.getElementById("statusMicText");
+    const dot = document.getElementById("statusMicDot");
+    const bottone = document.getElementById("statusMic");
+
+    function scrivi(etichetta, statoDot) {
+      if (testo) testo.textContent = etichetta;
+      if (dot) dot.setAttribute("data-state", statoDot);
+      if (bottone) bottone.setAttribute("title", etichetta + ": tocca per i dettagli");
+    }
+
+    if (!statoMic.presente) { scrivi("Microfono: non disponibile", "off"); return; }
+
+    permessoMicrofono(function (stato) {
+      statoMic.permesso = stato;
+      if (stato === "granted") scrivi("Microfono: pronto", "ok");
+      else if (stato === "denied") scrivi("Microfono: bloccato", "no");
+      else scrivi("Microfono: da attivare", "attesa");
+      if (aperto === "microfono") riempiPannello();
+    });
+  }
+
+  /* Pannello --------------------------------------------------------------- */
+
+  function contenutoModo() {
+    const m = modo();
+    const d = dispositivo();
+    const telefono = !!(d && d.telefono);
+
+    let html = "<h3>Dove stai usando il programma</h3>" +
+      "<p><strong>" + esc(m.titolo) + "</strong> · " + esc(m.dove) + "</p>" +
+      "<p>" + esc(m.nota) + "</p>" +
+      '<div class="status-actions"><a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Pagina Installa</a></div>' +
+      "<h3>Intelligenza artificiale sul dispositivo</h3>";
+
+    if (telefono) {
+      html += "<p>Su telefono e tablet non c'è un modello locale, e non serve: Neura legge i contenuti del programma e risponde senza inventare.</p>";
+    } else if (!ultimaIa) {
+      html += '<p class="muted">' + (inCorso ? "Sto controllando se Ollama risponde…" : "Stato di Ollama non ancora letto.") + "</p>";
+    } else if (ultimaIa.ok && ultimaIa.modelli.length) {
+      html += '<p><span class="badge badge-green">Ollama attivo</span> Modello installato: <strong>' + esc(ultimaIa.modelli[0]) + "</strong>" +
+        (ultimaIa.modelli.length > 1 ? " (e altri " + (ultimaIa.modelli.length - 1) + ")" : "") + ".</p>" +
+        "<p>Risponde solo sul tuo computer: nessuna domanda esce da qui. Si usa nella pagina Installa per le domande libere; le risposte verificate restano quelle di Neura.</p>";
+    } else if (ultimaIa.ok) {
+      html += '<p><span class="badge">Ollama attivo</span> Non ci sono ancora modelli scaricati.</p>' +
+        "<p>Copia il comando <code>ollama pull</code> dalla pagina Installa e riprova.</p>";
+    } else {
+      html += "<p><strong>Nessun modello locale trovato.</strong> Ollama non è installato oppure non è avviato. Non è un problema: Neura non dipende da lui e funziona lo stesso.</p>" +
+        "<p>Se lo vuoi, è gratuito e si installa in pochi minuti: la pagina Installa riconosce il sistema e indica il pacchetto giusto.</p>";
+    }
+
+    html += '<div class="status-actions">' +
+      '<button type="button" class="btn btn-soft btn-sm" data-ai-check>Controlla di nuovo</button>' +
+      (telefono ? "" : '<a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Installare Ollama</a>') +
+      "</div>";
+    return html;
+  }
+
+  function contenutoMicrofono() {
+    let html = "<h3>Microfono</h3>";
+
+    if (!statoMic.presente) {
+      html += "<p><strong>Qui il microfono non è disponibile</strong> per l'app: succede con browser molto vecchi, con i permessi bloccati o su dispositivi senza microfono.</p>" +
+        "<p>Non è un limite del programma: puoi scrivere le domande e Neura risponde lo stesso, e la voce in uscita continua a funzionare.</p>";
+    } else if (statoMic.permesso === "granted") {
+      html += '<p><span class="badge badge-green">Microfono pronto</span> Il permesso è già stato concesso a questo programma.</p>';
+    } else if (statoMic.permesso === "denied") {
+      html += '<p><span class="badge">Microfono bloccato</span> Il permesso è stato negato. Per riattivarlo: icona del lucchetto o del tondino accanto all\'indirizzo → <em>Microfono</em> → <em>Consenti</em>, poi ricarica. Nel programma installato si gestisce dalle impostazioni di sistema del computer.</p>';
+    } else {
+      html += '<p><span class="badge">Da attivare</span> Il microfono c\'è, ma il permesso non è ancora stato dato: la prima volta il browser — o il programma — chiede il consenso.</p>';
+    }
+
+    if (statoMic.presente) {
+      html += "<p><strong>Come si usa.</strong></p><ul class=\"text-small\">" +
+        "<li>Vai nella pagina <a href=\"#/neura\" data-status-close>Neura</a>: accanto alla casella della domanda c'è l'icona dell'onda.</li>" +
+        "<li>Toccala e parla con calma; toccala di nuovo per fermare. La frase compare nella casella e parte da sola.</li>" +
+        "<li>Alla prima richiesta rispondi <em>Consenti</em>: senza permesso la dettatura non parte.</li>" +
+        "</ul>" +
+        '<div class="status-actions"><button type="button" class="btn btn-soft btn-sm" data-mic-attiva>Attiva adesso il microfono</button></div>';
+    }
+
+    html += '<p class="text-small muted"><strong>Una cosa da sapere.</strong> La dettatura usa il riconoscimento vocale del browser: su Chrome ed Edge l\'audio può essere elaborato dai loro server, quindi non è detto che resti sul dispositivo. Se preferisci, scrivi. La voce di Neura in uscita, invece, è generata sul tuo computer.</p>';
+    return html;
+  }
+
+  function contenutoAiuto() {
+    const numeri = NUMERI.filter(function (n) {
+      return ["112", "1522", "19696"].indexOf(n.numero) >= 0;
+    });
+
+    return "<h3>Se hai bisogno di una persona, adesso</h3>" +
+      "<p>Questa app non è un servizio di emergenza e nessuno la sta guardando. Se c'è un pericolo, una violenza o pensieri di farti del male, la priorità è una persona.</p>" +
+      '<div class="status-numbers">' + numeri.map(function (n) {
+        return '<a class="status-num" href="tel:' + esc(n.tel) + '"><b>' + esc(n.numero) + "</b><span>" + esc(n.nome) + "</span></a>";
+      }).join("") + "</div>" +
+      '<p class="text-small muted">Le chiamate sono gratuite e riservate. Il 112 risponde anche per le emergenze psicologiche.</p>' +
+      '<div class="status-actions"><a class="btn btn-soft btn-sm" href="#/sicurezza" data-status-close>Numeri e cosa fare</a></div>';
+  }
+
+  function riempiPannello() {
+    const panel = document.getElementById("statusPanel");
+    if (!panel) return;
+    const mappa = { modo: contenutoModo, microfono: contenutoMicrofono, aiuto: contenutoAiuto };
+    const fn = mappa[aperto] || contenutoModo;
+    panel.innerHTML = '<div class="wrap status-panel-inner">' + fn() + "</div>";
+    collegaPannello();
+  }
+
+  function chiudiPannello() {
+    const panel = document.getElementById("statusPanel");
+    if (panel) { panel.hidden = true; panel.innerHTML = ""; }
+    aperto = null;
+    ["statusMode", "statusMic", "statusHelp"].forEach(function (id) {
+      const b = document.getElementById(id);
+      if (b) b.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function apriPannello(nome, bottone) {
+    if (aperto === nome) { chiudiPannello(); return; }
+    chiudiPannello();
+    aperto = nome;
+    riempiPannello();
+    const panel = document.getElementById("statusPanel");
+    if (panel) panel.hidden = false;
+    if (bottone) bottone.setAttribute("aria-expanded", "true");
+  }
+
+  function collegaPannello() {
+    const panel = document.getElementById("statusPanel");
+    if (!panel) return;
+
+    panel.querySelectorAll("[data-status-close]").forEach(function (a) {
+      a.addEventListener("click", function () { chiudiPannello(); });
+    });
+
+    const check = panel.querySelector("[data-ai-check]");
+    if (check) check.addEventListener("click", function () { controllaIa(); });
+
+    const attiva = panel.querySelector("[data-mic-attiva]");
+    if (attiva) attiva.addEventListener("click", function () {
+      const nav = window.navigator || {};
+      if (!nav.mediaDevices || typeof nav.mediaDevices.getUserMedia !== "function") return;
+      attiva.disabled = true;
+      nav.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) { /* niente */ }
+        A.toast("Microfono autorizzato: ora puoi dettare nella pagina Neura.");
+        aggiornaMicrofono();
+      }).catch(function () {
+        A.toast("Permesso negato: puoi riattivarlo dalle impostazioni del sito.");
+        aggiornaMicrofono();
+      }).then(function () { attiva.disabled = false; });
+    });
+  }
+
+  /* Ollama ----------------------------------------------------------------- */
+
+  function controllaIa() {
+    const testo = document.getElementById("statusAiText");
+    const dot = document.getElementById("statusAiDot");
+    if (testo) testo.textContent = "IA locale: controllo…";
+    if (dot) dot.setAttribute("data-state", "attesa");
+    inCorso = true;
+
+    if (aperto === "modo") riempiPannello();
+
+    const amb = NP.ambiente;
+    const richiesta = amb && typeof amb.tags === "function"
+      ? amb.tags()
+      : Promise.resolve({ ok: false, error: "controllo non disponibile" });
+
+    richiesta.then(function (r) {
+      const modelli = (r && r.ok && r.models ? r.models : []).map(function (m) { return m.name; }).filter(Boolean);
+      ultimaIa = { ok: !!(r && r.ok), modelli: modelli, errore: r && r.error };
+      inCorso = false;
+
+      if (testo) testo.textContent = modelli.length
+        ? "IA locale: " + modelli[0]
+        : (r && r.ok ? "IA locale: nessun modello" : "IA locale: da installare");
+      if (dot) dot.setAttribute("data-state", modelli.length ? "ok" : "attesa");
+      if (aperto === "modo") riempiPannello();
+    }).catch(function () {
+      inCorso = false;
+      ultimaIa = { ok: false, modelli: [], errore: "errore" };
+      if (testo) testo.textContent = "IA locale: da installare";
+      if (dot) dot.setAttribute("data-state", "attesa");
+      if (aperto === "modo") riempiPannello();
+    });
+  }
+
+  /* Costruzione ------------------------------------------------------------ */
+
+  function costruisci() {
+    if (document.getElementById("statusBar")) return;
+
+    const bar = document.createElement("aside");
+    bar.className = "status-bar no-print";
+    bar.id = "statusBar";
+    bar.setAttribute("aria-label", "Stato del programma");
+
+    const m = modo();
+
+    bar.innerHTML =
+      '<div class="wrap status-inner">' +
+        '<button type="button" class="status-chip" id="statusBack" title="Torna alla pagina precedente">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>' +
+          "<span>Indietro</span></button>" +
+        '<button type="button" class="status-chip" id="statusMode" aria-expanded="false" aria-controls="statusPanel" title="Dove gira il programma e quale IA è presente">' +
+          '<span class="status-dot" id="statusModeDot" data-state="' + (m.id === "browser" ? "off" : "ok") + '" aria-hidden="true"></span>' +
+          '<span id="statusModeText">' + esc(m.titolo) + "</span>" +
+          '<span class="status-sep" aria-hidden="true">·</span>' +
+          '<span class="status-dot status-dot-sm" id="statusAiDot" data-state="attesa" aria-hidden="true"></span>' +
+          '<span id="statusAiText" class="status-ai">IA locale: controllo…</span></button>' +
+        '<button type="button" class="status-chip" id="statusMic" aria-expanded="false" aria-controls="statusPanel" title="Stato del microfono">' +
+          '<span class="status-dot" id="statusMicDot" data-state="attesa" aria-hidden="true"></span>' +
+          '<span id="statusMicText">Microfono: controllo…</span></button>' +
+        '<button type="button" class="status-chip status-stop" id="statusStop" data-active="false" title="Ferma la voce o la dettatura">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/></svg>' +
+          "<span>Ferma l'audio</span></button>" +
+        '<button type="button" class="status-chip status-help" id="statusHelp" aria-expanded="false" aria-controls="statusPanel" title="Numeri utili, subito">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>' +
+          "<span>Aiuto subito</span></button>" +
+      "</div>" +
+      '<div class="status-panel" id="statusPanel" hidden></div>';
+
+    const header = document.getElementById("siteHeader");
+    if (header && header.parentNode) header.parentNode.insertBefore(bar, header.nextSibling);
+    else document.body.insertBefore(bar, document.body.firstChild);
+
+    const back = document.getElementById("statusBack");
+    if (back) back.addEventListener("click", function () {
+      if (window.history && typeof window.history.back === "function" && (location.hash && location.hash !== "#/" || window.history.length > 1)) {
+        window.history.back();
+        return;
+      }
+      A.go("");
+    });
+
+    const mode = document.getElementById("statusMode");
+    if (mode) mode.addEventListener("click", function () { apriPannello("modo", mode); });
+
+    const mic = document.getElementById("statusMic");
+    if (mic) mic.addEventListener("click", function () {
+      aggiornaMicrofono();
+      apriPannello("microfono", mic);
+    });
+
+    const stop = document.getElementById("statusStop");
+    if (stop) stop.addEventListener("click", fermaAudio);
+
+    const help = document.getElementById("statusHelp");
+    if (help) help.addEventListener("click", function () { apriPannello("aiuto", help); });
+
+    document.addEventListener("click", function (e) {
+      if (!aperto) return;
+      if (e.target.closest && (e.target.closest("#statusBar") || e.target.closest(".status-panel"))) return;
+      chiudiPannello();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") chiudiPannello();
+    });
+
+    window.addEventListener("hashchange", chiudiPannello);
+
+    document.addEventListener("np:voce", notificaStato);
+
+    aggiornaMicrofono();
+    controllaIa();
+    notificaStato();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", costruisci);
+  } else {
+    costruisci();
+  }
+})();

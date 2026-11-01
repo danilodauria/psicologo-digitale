@@ -324,6 +324,23 @@ ok(/Sono Neura/.test(welcome), "Neura si presenta all'apertura");
 ok(/speechSynthesis|NP\.neuraUI\.speak/.test(welcome), "il benvenuto usa la voce del dispositivo");
 ok(/welcome-hidden/.test(welcome), "il benvenuto si può nascondere");
 
+/* Barra di stato ---------------------------------------------------------- */
+
+ok(/app-status\.js/.test(html), "index.html carica la barra di stato");
+const status = exists("assets/js/app-status.js") ? read("assets/js/app-status.js") : "";
+ok(/npDesktop/.test(status), "la barra riconosce il programma installato");
+ok(/display-mode: standalone/.test(status), "la barra riconosce la PWA installata");
+ok(/mediaDevices/.test(status), "la barra controlla la presenza del microfono");
+ok(/neuraUI\.stop/.test(status), "la barra ferma la voce di Neura");
+ok(/history\.back/.test(status), "la barra torna alla pagina precedente");
+ok(/112/.test(status) && /1522/.test(status), "la barra offre i numeri di emergenza");
+ok(/data-state/.test(status), "la barra segnala lo stato con un indicatore");
+
+const neuraUI = read("assets/js/app-neura.js");
+ok(/natural\|neural\|premium/.test(neuraUI), "la voce privilegia le voci naturali del dispositivo");
+ok(/voiceSelect/.test(neuraUI), "si può scegliere la voce del dispositivo");
+ok(/stopListening/.test(neuraUI), "la dettatura si può interrompere");
+
 const inst = read("assets/js/app-installa.js");
 ok(/api\/tags/.test(inst), "la pagina installa legge i modelli presenti");
 ok(/Installato sul tuo computer/.test(inst), "il modello installato viene evidenziato");

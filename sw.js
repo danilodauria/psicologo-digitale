@@ -3,7 +3,7 @@
    Licenza del codice: MIT · Danilo D'Auria
    ========================================================================== */
 
-const VERSION = "psd-v1.2.0";
+const VERSION = "psd-v1.3.0";
 
 const ASSETS = [
   "./",
@@ -31,6 +31,7 @@ const ASSETS = [
   "assets/js/app-views.js",
   "assets/js/app-nutrizione.js",
   "assets/js/app-installa.js",
+  "assets/js/app-status.js",
   "assets/js/app-report.js",
   "assets/js/app-init.js",
   "assets/js/app-welcome.js"

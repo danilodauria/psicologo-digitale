@@ -456,4 +456,9 @@
         '<p class="text-small muted mb-0">Se il problema è il permesso del browser, usa il pulsante «Verifica il collegamento» qui sopra: trovi il comando da copiare.</p></div>';
     });
   }
+
+  /* API condivisa ----------------------------------------------------------- */
+
+  // La barra di stato in alto riusa gli stessi controlli invece di duplicarli.
+  NP.ambiente = { detect: detect, standalone: standalone, tags: tags, genera: genera };
 })();

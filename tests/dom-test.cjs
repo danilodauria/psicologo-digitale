@@ -55,6 +55,7 @@ const scripts = [
   "assets/js/app-views.js",
   "assets/js/app-nutrizione.js",
   "assets/js/app-installa.js",
+  "assets/js/app-status.js",
   "assets/js/app-report.js",
   "assets/js/app-init.js",
   "assets/js/app-welcome.js"
@@ -220,6 +221,8 @@ ok(document.querySelector(".quiz-feedback"), "la risposta mostra la spiegazione"
 
 navigate("#/neura");
 ok(document.getElementById("chatLog"), "la chat di Neura è presente");
+ok(!!document.getElementById("voiceSelect"), "la pagina Neura offre la scelta della voce");
+ok(typeof NP.neuraUI.voceAttuale === "function", "la voce migliore viene scelta automaticamente");
 
 const input = document.getElementById("neuraInput");
 const form = document.getElementById("chatForm");
@@ -258,6 +261,20 @@ setTimeout(function () {
   ok(document.body.textContent.indexOf("Ollama") >= 0, "la pagina installa descrive il modello locale");
 
   /* Tema ------------------------------------------------------------------ */
+
+  /* Barra di stato -------------------------------------------------------- */
+
+  ok(!!document.getElementById("statusBar"), "la barra di stato è presente in alto");
+  ok(/installata|programma|browser/i.test(document.getElementById("statusMode").textContent), "la barra dichiara dove gira il programma");
+  ok(/Microfono/i.test(document.getElementById("statusMicText").textContent), "la barra mostra lo stato del microfono");
+  ok(!!document.getElementById("statusBack") && !!document.getElementById("statusStop"), "la barra offre indietro e stop audio");
+  document.getElementById("statusHelp").click();
+  ok(document.getElementById("statusPanel").hidden === false, "il pannello si apre al tocco");
+  ok(/112/.test(document.getElementById("statusPanel").textContent) && /1522/.test(document.getElementById("statusPanel").textContent), "l'aiuto immediato mostra 112 e 1522");
+  document.getElementById("statusMode").click();
+  ok(/Ollama|intelligenza artificiale/i.test(document.getElementById("statusPanel").textContent), "il pannello spiega l'IA locale e la modalità d'uso");
+  document.getElementById("statusMode").click();
+  ok(document.getElementById("statusPanel").hidden === true, "il pannello si richiude");
 
   const before = document.documentElement.getAttribute("data-theme");
   document.getElementById("themeBtn").click();

@@ -30,11 +30,74 @@
     }
   }
 
-  function voiceFor() {
-    if (!window.speechSynthesis) return null;
-    const voices = window.speechSynthesis.getVoices() || [];
-    return voices.filter(function (v) { return /it(-|_)?IT/i.test(v.lang); })[0] ||
-      voices.filter(function (v) { return /^it/i.test(v.lang); })[0] || null;
+  const CHIAVE_VOCE = A.PREFIX + "voice-name";
+  let parlando = false;
+
+  function vociItaliane() {
+    if (!window.speechSynthesis) return [];
+    const voci = window.speechSynthesis.getVoices() || [];
+    return voci.filter(function (v) { return /^it/i.test(v.lang); });
+  }
+
+  // Le voci «Natural», «Neural» e «Premium» sono registrazioni, non sintesi a
+  // formanti: a parità di italiano vale la pena sceglierle.
+  function punteggioVoce(v) {
+    const nome = String(v.name || "");
+    let s = 0;
+    if (/natural|neural|premium|enhanced/i.test(nome)) s += 9;
+    if (/^google/i.test(nome)) s += 6;
+    if (/microsoft/i.test(nome) && /(elsa|isabella|diego|cosimo|fiamma|giuseppe|benigno|alice|giulia)/i.test(nome)) s += 5;
+    if (/siri/i.test(nome)) s += 4;
+    if (/^(alice|luca|paola|federica|chiara|fabio)/i.test(nome)) s += 3;
+    if (/compact|espeak|pico|festival|robot/i.test(nome)) s -= 8;
+    if (/^it[-_]it/i.test(v.lang)) s += 2;
+    return s;
+  }
+
+  function voceSalvata() {
+    let nome = null;
+    try { nome = localStorage.getItem(CHIAVE_VOCE); } catch (e) { nome = null; }
+    if (!nome) return null;
+    const basso = String(nome).toLowerCase();
+    return vociItaliane().filter(function (v) { return String(v.name).toLowerCase() === basso; })[0] || null;
+  }
+
+  function voceMigliore() {
+    const salvata = voceSalvata();
+    if (salvata) return salvata;
+    const voci = vociItaliane();
+    if (!voci.length) return null;
+    return voci.slice().sort(function (a, b) { return punteggioVoce(b) - punteggioVoce(a); })[0];
+  }
+
+  function setVoce(nome) {
+    try {
+      if (nome) localStorage.setItem(CHIAVE_VOCE, nome);
+      else localStorage.removeItem(CHIAVE_VOCE);
+    } catch (e) { /* storage negato */ }
+  }
+
+  function notifica() {
+    try {
+      if (typeof window.CustomEvent !== "function") return;
+      document.dispatchEvent(new window.CustomEvent("np:voce", { detail: { attiva: parlando, dettatura: listening } }));
+    } catch (e) { /* niente */ }
+  }
+
+  // Il testo viene spezzato in frasi: la sintesi respira invece di correre, e
+  // le pause tra una frase e l'altra sono quelle di una lettura vera.
+  function frasi(testo) {
+    const pezzi = String(testo || "").match(/[^.!?;:]+[.!?;:]*/g) || [];
+    const out = [];
+    let corrente = "";
+    pezzi.forEach(function (p) {
+      const t = p.trim();
+      if (!t) return;
+      if (corrente && (corrente + " " + t).length > 190) { out.push(corrente); corrente = t; }
+      else corrente = corrente ? corrente + " " + t : t;
+    });
+    if (corrente) out.push(corrente);
+    return out.slice(0, 8);
   }
 
   function speak(html) {
@@ -43,20 +106,44 @@
     tmp.innerHTML = html;
     const text = (tmp.textContent || "").replace(/\s+/g, " ").trim();
     if (!text) return;
+    const lista = frasi(text);
+    if (!lista.length) return;
+
     try {
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text.slice(0, 900));
-      u.lang = "it-IT";
-      u.rate = 0.98;
-      u.pitch = 1.02;
-      const v = voiceFor();
-      if (v) u.voice = v;
-      window.speechSynthesis.speak(u);
-    } catch (e) {}
+      const voce = voceMigliore();
+      parlando = true;
+      lista.forEach(function (t, i) {
+        const u = new SpeechSynthesisUtterance(t);
+        u.lang = "it-IT";
+        u.rate = 0.97;
+        u.pitch = 1;
+        u.volume = 1;
+        if (voce) u.voice = voce;
+        if (i === lista.length - 1) {
+          u.onend = function () { parlando = false; notifica(); };
+          u.onerror = function () { parlando = false; notifica(); };
+        }
+        window.speechSynthesis.speak(u);
+      });
+      notifica();
+    } catch (e) { parlando = false; }
   }
 
   function stopSpeaking() {
+    parlando = false;
     try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+    notifica();
+  }
+
+  function stopListening() {
+    if (!listening) return false;
+    try { if (recog) recog.stop(); } catch (e) { /* niente */ }
+    listening = false;
+    const mic = document.getElementById("micBtn");
+    if (mic) mic.setAttribute("aria-pressed", "false");
+    notifica();
+    return true;
   }
 
   function renderLog(typing) {
@@ -114,7 +201,7 @@
           '<div class="chat-log" id="chatLog" role="log" aria-live="polite"></div>' +
           '<div class="chat-quick" id="chatQuick"></div>' +
           '<form class="chat-form" id="chatForm">' +
-            '<button type="button" class="icon-btn" id="micBtn" title="Detta la domanda" aria-label="Detta la domanda" style="display:none">' + A.icon("wave") + "</button>" +
+            '<button type="button" class="icon-btn" id="micBtn" title="Detta la domanda" aria-label="Detta la domanda" aria-pressed="false" style="display:none">' + A.icon("wave") + "</button>" +
             '<textarea class="chat-input" id="neuraInput" rows="1" placeholder="Scrivi una domanda…" aria-label="La tua domanda"></textarea>' +
             '<button type="submit" class="send-btn" aria-label="Invia">' + A.icon("arrow") + "</button>" +
           "</form>" +
@@ -125,8 +212,10 @@
           "</ul></div>" +
           '<div class="card"><h3>Quando non basta</h3><p class="text-small">Se il disagio è intenso, dura da settimane o c\'è un rischio, Neura non è lo strumento giusto: serve una persona.</p>' +
             '<div class="pill-row"><a class="chip" href="#/sicurezza">Numeri utili</a><a class="chip" href="#/colloquio">Colloquio</a></div></div>' +
-          '<div class="card"><h3>Voce</h3><p class="text-small">Il pulsante dell\'altoparlante in alto attiva o disattiva la lettura. Puoi fermarla con Stop o con Esc.</p>' +
-            '<p class="text-small muted mb-0">La voce usa il sintetizzatore del dispositivo: nessun audio lascia il computer.</p></div>' +
+          '<div class="card"><h3>Voce</h3><p class="text-small">Il pulsante dell\'altoparlante in alto attiva o disattiva la lettura. Puoi fermarla con Stop, con «Ferma l\'audio» nella barra in alto o con Esc.</p>' +
+            '<div class="form-field"><label class="field-label" for="voiceSelect">Voce del dispositivo</label>' +
+              '<select class="input" id="voiceSelect"><option value="">Automatica (consigliata)</option></select></div>' +
+            '<p class="text-small muted mb-0">La voce usa il sintetizzatore del dispositivo: nessun audio lascia il computer. Su Windows e macOS la più naturale è quella «Natural» o «Premium»: se non compare, si aggiunge dalle impostazioni di sistema.</p></div>' +
         "</aside>" +
       "</div>"
     );
@@ -162,6 +251,30 @@
     const stop = document.getElementById("stopBtn");
     if (stop) stop.addEventListener("click", function () { stopSpeaking(); A.toast("Voce fermata."); });
 
+    // Scelta della voce: quella migliore disponibile resta il default.
+    const sel = document.getElementById("voiceSelect");
+    if (sel) {
+      const riempi = function () {
+        const voci = vociItaliane();
+        const attuale = voceMigliore();
+        sel.innerHTML = '<option value="">Automatica (consigliata)</option>' + voci.map(function (v) {
+          return '<option value="' + esc(v.name) + '">' + esc(v.name) + " (" + esc(v.lang) + ")</option>";
+        }).join("");
+        sel.value = attuale ? attuale.name : "";
+      };
+      riempi();
+      sel.addEventListener("change", function () {
+        setVoce(sel.value);
+        A.toast(sel.value ? "Voce impostata: " + sel.value : "Torno alla voce automatica.");
+        speak("<p>Ecco come suono. Se ti va bene, andiamo avanti.</p>");
+      });
+      if (window.speechSynthesis) {
+        const riaggiorna = function () { riempi(); };
+        if (typeof window.speechSynthesis.addEventListener === "function") window.speechSynthesis.addEventListener("voiceschanged", riaggiorna);
+        else window.speechSynthesis.onvoiceschanged = riaggiorna;
+      }
+    }
+
     // Riconoscimento vocale, se disponibile
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const mic = document.getElementById("micBtn");
@@ -174,9 +287,9 @@
           recog.lang = "it-IT";
           recog.interimResults = false;
           recog.maxAlternatives = 1;
-          recog.onstart = function () { listening = true; mic.setAttribute("aria-pressed", "true"); A.toast("Ti ascolto…"); };
-          recog.onend = function () { listening = false; mic.setAttribute("aria-pressed", "false"); };
-          recog.onerror = function () { listening = false; mic.setAttribute("aria-pressed", "false"); A.toast("Microfono non disponibile."); };
+          recog.onstart = function () { listening = true; mic.setAttribute("aria-pressed", "true"); A.toast("Ti ascolto…"); notifica(); };
+          recog.onend = function () { listening = false; mic.setAttribute("aria-pressed", "false"); notifica(); };
+          recog.onerror = function () { listening = false; mic.setAttribute("aria-pressed", "false"); A.toast("Microfono non disponibile: controlla il permesso nella barra in alto."); notifica(); };
           recog.onresult = function (ev) {
             const t = ev.results[0][0].transcript;
             if (input) input.value = t;
@@ -191,5 +304,18 @@
   };
 
   // API per il resto dell'app
-  NP.neuraUI = { send: send, speak: speak, stop: stopSpeaking, setVoice: setVoice, voiceOn: voiceOn, welcome: WELCOME };
+  NP.neuraUI = {
+    send: send,
+    speak: speak,
+    stop: stopSpeaking,
+    setVoice: setVoice,
+    voiceOn: voiceOn,
+    welcome: WELCOME,
+    voci: vociItaliane,
+    voceAttuale: voceMigliore,
+    setVoce: setVoce,
+    stopListening: stopListening,
+    isSpeaking: function () { return parlando; },
+    isListening: function () { return listening; }
+  };
 })();

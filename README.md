@@ -56,7 +56,22 @@ Neura **non è un modello linguistico generativo** e non chiama servizi esterni.
 
 Quando non trova una risposta affidabile, **lo dice**. È una scelta di progetto: meglio un assistente che ammette i limiti che una macchina che sembra sapere tutto.
 
-La voce usa `speechSynthesis` del dispositivo: nessun audio lascia il computer. Il pulsante dell'altoparlante in alto attiva o disattiva la lettura; `Esc` o **Stop** la interrompono.
+La voce usa `speechSynthesis` del dispositivo: nessun audio lascia il computer. Il pulsante dell'altoparlante in alto attiva o disattiva la lettura; `Esc`, **Stop** o **Ferma l'audio** nella barra di stato la interrompono.
+
+La voce viene scelta tra quelle italiane installate dando la precedenza alle versioni **Natural**, **Neural** e **Premium**, che sono registrazioni e non sintesi a formanti, e il testo viene spezzato in frasi perché la lettura respiri. Nella pagina Neura, sotto la chat, puoi scegliere una voce diversa: la preferenza resta sul dispositivo.
+
+### La barra di stato
+
+Sotto l'intestazione c'è una barra sempre visibile, che non richiede account e non manda nulla in rete:
+
+- **dove stai girando**: programma installato (con il sistema riconosciuto), PWA installata o scheda del browser;
+- **IA locale**: se Ollama risponde e quale modello è installato, oppure l'avviso che manca e il collegamento alla guida;
+- **microfono**: presente, pronto, da attivare o bloccato, con il permesso richiesto da un pulsante e le istruzioni per riattivarlo;
+- **ferma l'audio**: interrompe voce e dettatura da qualsiasi pagina;
+- **indietro**: torna alla pagina precedente;
+- **aiuto subito**: 112, 1522 e Telefono Azzurro in un tocco, più il rimando alla sezione Sicurezza.
+
+La barra è onesta su un punto: la dettatura usa il riconoscimento vocale del browser, quindi su Chrome ed Edge l'audio può essere elaborato dai loro server. La voce in uscita, invece, resta sul dispositivo.
 
 ### Ollama, se lo vuoi
 
