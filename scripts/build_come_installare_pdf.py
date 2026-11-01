@@ -43,7 +43,10 @@ LINEA = colors.HexColor("#c9c4b8")
 
 # Classi la cui discendenza non deve finire sul foglio: sono i comandi che su
 # carta non si possono premere.
-SALTA = ("btn-row", "no-print", "header-actions", "status-bar", "footer-grid", "crumbs")
+# Il blocco .solo-stampa si salta perché è pensato per la stampa del browser:
+# qui avvertenza e impronte si aggiungono in coda, una volta sola, invece di
+# ripeterle due volte nello stesso foglio.
+SALTA = ("btn-row", "no-print", "header-actions", "status-bar", "footer-grid", "crumbs", "solo-stampa")
 
 # Tag che aprono un blocco di testo.
 BLOCCHI = ("h1", "h2", "h3", "p", "li")
