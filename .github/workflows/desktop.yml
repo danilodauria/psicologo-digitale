@@ -67,35 +67,34 @@ jobs:
           if [ -n "${APPLE_API_KEY}" ] || [ -n "${APPLE_ID}" ]; then
             extra="-c.mac.notarize=true"
           fi
-          # Senza certificato resta la firma ad-hoc: non dice chi ha firmato,
-          # quindi Gatekeeper la ignora, ma è una firma valida e senza di lei
-          # Apple Silicon può rifiutare il pacchetto come danneggiato.
-          if [ -z "${CSC_LINK}" ] && [ "${{ matrix.artifact }}" = "macos" ]; then
-            extra="$extra -c.mac.identity=-"
-          fi
           # Su macOS hdiutil a volte non riesce a smontare l'immagine appena
-          # creata: il volume resta montato e fa fallire anche il tentativo
-          # successivo allo stesso punto. Si riprova smontando a forza.
+          # creata: il volume resta agganciato e fa fallire anche il tentativo
+          # successivo allo stesso punto. Si riprova, insistendo sullo smontaggio.
+          #
+          # La firma ad-hoc dei pacchetti macOS non passa da qui: la applica
+          # desktop/after-pack.cjs dopo l'impacchettamento, perché con
+          # mac.identity = "-" electron-builder non firma affatto.
           ok=0
-          for tentativo in 1 2 3; do
+          for tentativo in 1 2 3 4; do
             if npm run ${{ matrix.script }} -- $extra; then ok=1; break; fi
             echo "::warning::Tentativo $tentativo non riuscito."
             if [ "${{ matrix.artifact }}" = "macos" ]; then
-              for v in /Volumes/Psicologo*; do
-                [ -e "$v" ] || continue
-                hdiutil detach "$v" -force || true
+              for giro in 1 2 3 4 5; do
+                hdiutil info | grep -q "/Volumes/Psicologo" || break
+                diskutil unmount force "/Volumes/Psicologo Digitale" >/dev/null 2>&1 || true
+                hdiutil detach -force "/Volumes/Psicologo Digitale" >/dev/null 2>&1 || true
+                sleep 4
               done
-              sleep 10
             fi
           done
           if [ "$ok" -ne 1 ]; then
-            echo "::error::Nessuno dei tre tentativi è riuscito."
+            echo "::error::Nessuno dei quattro tentativi è riuscito."
             exit 1
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Firma: i secret si aggiungono in Settings → Secrets and variables →
-          # Actions. Se mancano, il pacchetto esce non firmato e la build passa.
+          # Actions. Se mancano, il pacchetto esce con la sola firma ad-hoc.
           CSC_IDENTITY_AUTO_DISCOVERY: ${{ matrix.artifact == 'macos' && 'true' || 'false' }}
           CSC_LINK: ${{ matrix.artifact == 'macos' && secrets.MAC_CSC_LINK || '' }}
           CSC_KEY_PASSWORD: ${{ matrix.artifact == 'macos' && secrets.MAC_CSC_KEY_PASSWORD || '' }}
@@ -138,14 +137,13 @@ jobs:
           # La firma si verifica in ogni caso: un bundle con la firma rotta non
           # parte su Apple Silicon, e sarebbe un guasto silenzioso fino al
           # primo utente che scarica.
+          codesign --verify --deep --strict --verbose=2 "$app"
           if [ -z "${APPLE_API_KEY}" ] && [ -z "${APPLE_ID}" ]; then
-            codesign --verify --deep --strict --verbose=2 "$app"
             firma="$(codesign -dv --verbose=4 "$app" 2>&1 | grep -E '^(Signature|Authority)=' || true)"
             echo "::notice::macOS senza certificato: firma ad-hoc valida ($firma). Il sistema chiede conferma una volta sola."
-            exit 0
+          else
+            xcrun stapler validate "$app"
           fi
-          codesign --verify --deep --strict --verbose=2 "$app"
-          xcrun stapler validate "$app"
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
