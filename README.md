@@ -357,6 +357,12 @@ La pagina **Versioni e novità** (`#/versioni`, nel menu *Altro*) elenca le rele
 
 L'elenco vive in `assets/js/app-versioni.js`, in due punti: la costante `VERSIONE`, che deve coincidere con `package.json`, e l'array `NOVITA`, da aggiornare a ogni release. I test confrontano la costante con il campo `version` di `package.json`: se resta indietro, la build diventa rossa prima di pubblicare una pagina che annuncia la versione sbagliata.
 
+## Backup completo nella release
+
+Ogni release allega **`Psicologo-Digitale-Sorgenti.zip`**: l'intero progetto al momento del rilascio — sito, programma desktop, script, test, PDF e workflow — in un archivio che si apre con doppio clic. Serve a due cose: conservare una copia indipendente dal repository e ricostruire il pacchetto senza clonare nulla.
+
+Il file è prodotto dal job `backup` con `git archive` sul tag, allegato alla release e incluso in `SHA256SUMS.txt` come gli altri: sette impronte in tutto. Il controllo di completezza considera la release finita solo se il backup c'è, e un backup mancante rende la build rossa esattamente come un pacchetto mancante.
+
 ## Limitazioni note
 
 - Non è una terapia e non sostituisce una visita.

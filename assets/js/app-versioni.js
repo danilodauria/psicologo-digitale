@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.10";
+  const VERSIONE = "1.3.11";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.11",
+      data: "1 novembre 2026",
+      titolo: "Un archivio con tutto il progetto",
+      punti: [
+        "Nella pagina della versione c'è anche <strong>Psicologo-Digitale-Sorgenti.zip</strong>: sito, programma desktop, script, test e PDF in un unico file che si apre con doppio clic.",
+        "Serve a chi vuole conservare una copia completa, ricostruire il pacchetto o leggerne il codice senza passare da Git.",
+        "Anche il backup ha la sua impronta SHA-256, e il controllo di completezza considera la release finita solo se c'è."
+      ]
+    },
     {
       v: "1.3.10",
       data: "1 novembre 2026",

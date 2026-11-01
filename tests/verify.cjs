@@ -387,6 +387,9 @@ ok(/codesign --verify/.test(wf), "la build verifica la firma ad-hoc dei pacchett
 ok(/Apri comunque/.test(readmeTxt) && /Esegui comunque/.test(readmeTxt) && /chmod \+x/.test(readmeTxt), "il README spiega come installare su tutti e tre i sistemi");
 ok(/Apri comunque/.test(statoJs) && /Apri comunque/.test(installaJs), "le pagine del programma ripetono le istruzioni di avvio");
 ok(/installarlo ci sia sempre/.test(readmeTxt), "il README promette che il modo per installarlo c'è sempre");
+ok(/backup:/.test(wf) && /git archive --format=zip/.test(wf), "la release allega un archivio completo dei sorgenti");
+ok(/Psicologo-Digitale-Sorgenti\.zip/.test(wf), "il controllo di completezza esige il backup");
+ok(/Backup completo nella release/.test(readmeTxt), "il README spiega il backup e a cosa serve");
 ok(/firma ad-hoc/i.test(readmeTxt), "il README spiega la firma ad-hoc");
 ok(/non può essere notarizzato/i.test(readmeTxt), "il README dice che la notarizzazione non è disponibile senza abbonamento");
 ok(/Homebrew/.test(readmeTxt), "il README spiega perché una cask Homebrew non risolve");
