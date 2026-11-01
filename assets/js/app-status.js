@@ -133,6 +133,69 @@
     });
   }
 
+  /* Sistema operativo ------------------------------------------------------ */
+
+  // Su desktop la piattaforma la dichiara Electron (l'unica affidabile, perché
+  // il riconoscimento dal browser string è una deduzione); nel browser si legge
+  // quello che dice NP.ambiente.
+  function sistemaOperativo() {
+    const d = desktop();
+    if (d) {
+      const id = d.platform === "win32" ? "windows" : d.platform === "darwin" ? "macos" : d.platform === "linux" ? "linux" : "altro";
+      return { id: id, nome: SISTEMI[d.platform] || d.platform, certo: true };
+    }
+    const det = dispositivo();
+    const os = (det && det.os) || "altro";
+    const nomi = { windows: "Windows", macos: "macOS", linux: "Linux", android: "Android", ios: "iPhone o iPad" };
+    return { id: os === "mac" ? "macos" : os, nome: nomi[os] || "Sistema non riconosciuto", certo: false };
+  }
+
+  function vociDisponibili() {
+    try {
+      const voci = window.speechSynthesis ? window.speechSynthesis.getVoices() || [] : [];
+      return {
+        totali: voci.length,
+        italiane: voci.filter(function (v) { return /^it/i.test(v.lang); }).length
+      };
+    } catch (e) { return { totali: 0, italiane: 0 }; }
+  }
+
+  function istruzioniAvvio(id) {
+    if (id === "windows") {
+      return "<li><strong>Windows</strong> — se compare <em>Windows ha protetto il PC</em>: <em>Altro informazioni</em> → <em>Esegui comunque</em>. Se il file resta bloccato, tasto destro → <em>Proprietà</em> → <em>Sblocca</em> → <em>OK</em>.</li>";
+    }
+    if (id === "macos") {
+      return "<li><strong>macOS</strong> — se dice che non può verificare il programma: <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em>, oppure tasto destro sull'app → <em>Apri</em>.</li>";
+    }
+    if (id === "linux") {
+      return "<li><strong>Linux</strong> — <code>.deb</code>: doppio clic e installa; <code>.AppImage</code>: <em>Proprietà</em> → <em>Consenti l'esecuzione</em>, oppure <code>chmod +x</code>.</li>";
+    }
+    return "<li><strong>Telefono o tablet</strong> — qui il programma si installa come app dal browser: non ci sono avvisi di questo tipo da superare.</li>";
+  }
+
+  function contenutoSistema() {
+    const s = sistemaOperativo();
+    const v = vociDisponibili();
+    const m = modo();
+
+    let html = "<h3>Sistema in uso</h3>" +
+      "<p><strong>" + esc(s.nome) + "</strong> · " + esc(m.titolo) + " · " + esc(m.dove) + "</p>" +
+      '<p class="text-small muted">' + (s.certo
+        ? "Il sistema lo dichiara il programma installato: il riconoscimento è esatto, non una deduzione."
+        : "Il sistema è dedotto dal browser: se non corrisponde, non cambia nulla nel funzionamento.") + "</p>";
+
+    html += "<h3>Voci del dispositivo</h3>" +
+      "<p>Voci disponibili: <strong>" + v.totali + "</strong>" + (v.italiane ? " (" + v.italiane + " in italiano)" : "") + ".</p>" +
+      '<p class="text-small muted">Nel browser Chrome ed Edge aggiungono voci online che il programma desktop non vede: lì restano solo quelle installate nel sistema. Per averne altre: su Windows <em>Impostazioni</em> → <em>Data e ora e lingua</em> → <em>Riconoscimento vocale</em> → <em>Aggiungi voci</em>; su macOS <em>Impostazioni di Sistema</em> → <em>Accessibilità</em> → <em>Contenuto pronunciato</em> → <em>Voce di sistema</em> → <em>Gestisci voci</em>.</p>' +
+      '<div class="status-actions"><a class="btn btn-soft btn-sm" href="#/neura" data-status-close>Scegliere la voce</a></div>';
+
+    html += "<h3>Se il sistema chiede conferma</h3>" +
+      "<p>I pacchetti non hanno un certificato commerciale: il sistema avvisa una volta sola e poi lascia lavorare. Il consenso si dà così.</p>" +
+      "<ul class=\"text-small\">" + istruzioniAvvio(s.id) + "</ul>" +
+      '<div class="status-actions"><a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Pagina Installa</a></div>';
+    return html;
+  }
+
   /* Pannello --------------------------------------------------------------- */
 
   function contenutoModo() {
@@ -213,7 +276,7 @@
   function riempiPannello() {
     const panel = document.getElementById("statusPanel");
     if (!panel) return;
-    const mappa = { modo: contenutoModo, microfono: contenutoMicrofono, aiuto: contenutoAiuto };
+    const mappa = { modo: contenutoModo, microfono: contenutoMicrofono, aiuto: contenutoAiuto, sistema: contenutoSistema };
     const fn = mappa[aperto] || contenutoModo;
     panel.innerHTML = '<div class="wrap status-panel-inner">' + fn() + "</div>";
     collegaPannello();
@@ -223,7 +286,7 @@
     const panel = document.getElementById("statusPanel");
     if (panel) { panel.hidden = true; panel.innerHTML = ""; }
     aperto = null;
-    ["statusMode", "statusMic", "statusHelp"].forEach(function (id) {
+    ["statusMode", "statusOs", "statusMic", "statusHelp"].forEach(function (id) {
       const b = document.getElementById(id);
       if (b) b.setAttribute("aria-expanded", "false");
     });
@@ -324,6 +387,9 @@
           '<span class="status-sep" aria-hidden="true">·</span>' +
           '<span class="status-dot status-dot-sm" id="statusAiDot" data-state="attesa" aria-hidden="true"></span>' +
           '<span id="statusAiText" class="status-ai">IA locale: controllo…</span></button>' +
+        '<button type="button" class="status-chip status-os" id="statusOs" aria-expanded="false" aria-controls="statusPanel" title="Sistema operativo in uso">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg>' +
+          '<span id="statusOsText">' + esc(modo() && sistemaOperativo().nome) + "</span></button>" +
         '<button type="button" class="status-chip" id="statusMic" aria-expanded="false" aria-controls="statusPanel" title="Stato del microfono">' +
           '<span class="status-dot" id="statusMicDot" data-state="attesa" aria-hidden="true"></span>' +
           '<span id="statusMicText">Microfono: controllo…</span></button>' +
@@ -360,6 +426,9 @@
 
     const stop = document.getElementById("statusStop");
     if (stop) stop.addEventListener("click", fermaAudio);
+
+    const os = document.getElementById("statusOs");
+    if (os) os.addEventListener("click", function () { apriPannello("sistema", os); });
 
     const help = document.getElementById("statusHelp");
     if (help) help.addEventListener("click", function () { apriPannello("aiuto", help); });

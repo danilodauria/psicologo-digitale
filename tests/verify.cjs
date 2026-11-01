@@ -338,6 +338,7 @@ ok(/CSC_IDENTITY_AUTO_DISCOVERY: \$\{\{ matrix\.artifact == 'macos'/.test(wf), "
 ok(/Get-AuthenticodeSignature/.test(wf) && /stapler validate/.test(wf), "la firma viene verificata dopo la build");
 ok(/hardenedRuntime/.test(desk), "il pacchetto macOS è pronto per l'hardened runtime");
 ok(/Firma dei pacchetti/.test(read("README.md")), "il README spiega come firmare i pacchetti");
+ok(/Controllo che la release sia completa/.test(wf), "il workflow controlla che la release non perda pezzi");
 // I certificati restano facoltativi: le istruzioni per consentire l'avvio dal
 // sistema operativo devono restare sia nel README sia nella pagina di installazione.
 const readme = read("README.md");
@@ -359,6 +360,8 @@ const welcome = exists("assets/js/app-welcome.js") ? read("assets/js/app-welcome
 ok(/Sono Neura/.test(welcome), "Neura si presenta all'apertura");
 ok(/speechSynthesis|NP\.neuraUI\.speak/.test(welcome), "il benvenuto usa la voce del dispositivo");
 ok(/welcome-hidden/.test(welcome), "il benvenuto si può nascondere");
+ok(/npDesktop/.test(welcome) && /Prima volta su questo computer/.test(welcome), "al primo avvio desktop il benvenuto spiega come consentire l'esecuzione");
+ok(/Altro informazioni/.test(welcome) && /Apri comunque/.test(welcome), "l'avviso del primo avvio copre Windows e macOS");
 
 /* Barra di stato ---------------------------------------------------------- */
 
@@ -371,10 +374,14 @@ ok(/neuraUI\.stop/.test(status), "la barra ferma la voce di Neura");
 ok(/history\.back/.test(status), "la barra torna alla pagina precedente");
 ok(/112/.test(status) && /1522/.test(status), "la barra offre i numeri di emergenza");
 ok(/data-state/.test(status), "la barra segnala lo stato con un indicatore");
+ok(/statusOs/.test(status) && /Sistema in uso/.test(status), "la barra ha un pulsante che dichiara il sistema operativo");
+ok(/Aggiungi voci/.test(status) && /Gestisci voci/.test(status), "il pannello spiega dove aggiungere voci di sistema");
 
 const neuraUI = read("assets/js/app-neura.js");
 ok(/natural\|neural\|premium/.test(neuraUI), "la voce privilegia le voci naturali del dispositivo");
 ok(/voiceSelect/.test(neuraUI), "si può scegliere la voce del dispositivo");
+ok(/tutteLeVoci/.test(neuraUI) && /Altre lingue/.test(neuraUI), "il selettore elenca tutte le voci del sistema, con le italiane in cima");
+ok(/voiceNote/.test(neuraUI), "la pagina Neura dichiara quante voci vede il sistema");
 ok(/stopListening/.test(neuraUI), "la dettatura si può interrompere");
 
 const inst = read("assets/js/app-installa.js");

@@ -15,6 +15,7 @@
   const PREFIX = A.PREFIX;
   const CHIAVE_NASCOSTO = PREFIX + "welcome-hidden";
   const CHIAVE_SESSIONE = PREFIX + "welcome-ritorno";
+  const CHIAVE_AVVIO = PREFIX + "avvio-spiegato";
 
   const PRESENTAZIONE = "Sono Neura. Sono il cervello digitale di questa stanza d'ascolto: leggo, ascolto e ti aiuto a mettere in ordine le parole. Non ho una laurea, non faccio diagnosi e non ti giudico. Conosco ogni pagina di questo programma e non ricordo niente fuori dal tuo dispositivo. Cominciamo da una domanda semplice: come stai, adesso?";
 
@@ -58,8 +59,37 @@
     } catch (e) { /* sintesi non disponibile */ }
   }
 
-  function chiudi(pannello, definitivo) {
-    if (definitivo) scrivi(CHIAVE_NASCOSTO, "1");
+  function desktop() {
+    const d = window.npDesktop;
+    return d && d.platform ? d : null;
+  }
+
+  function nomeSistema(platform) {
+    return { win32: "Windows", darwin: "macOS", linux: "Linux" }[platform] || "questo sistema";
+  }
+
+  // Il primo avvio nel programma installato è il momento in cui l'utente ha
+  // appena visto l'avviso del sistema: qui trova i passaggi, così non deve
+  // cercarli. Compare una volta sola per installazione.
+  function notaAvvio() {
+    const d = desktop();
+    if (!d) return "";
+    if (leggi(CHIAVE_AVVIO) === "1") return "";
+
+    const istruzioni = d.platform === "win32"
+      ? "<li>se compare <em>Windows ha protetto il PC</em>: <em>Altro informazioni</em> → <em>Esegui comunque</em>;</li>" +
+        "<li>se il file resta bloccato: tasto destro → <em>Proprietà</em> → <em>Sblocca</em> → <em>OK</em>.</li>"
+      : "<li>se dice che non può verificare il programma: <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em>;</li>" +
+        "<li>in alternativa: tasto destro sull'app → <em>Apri</em>.</li>";
+
+    return '<div class="welcome-note">' +
+      "<p><strong>Prima volta su questo computer.</strong> Il programma non ha un certificato commerciale, quindi " + A.esc(nomeSistema(d.platform)) + " ti ha chiesto conferma per aprirlo. Succederà ancora a ogni aggiornamento: è normale, e il consenso si dà così.</p>" +
+      '<ul class="text-small">' + istruzioni + "</ul>" +
+      '<p class="mini mb-0">Accanto ai pacchetti c\'è <code>SHA256SUMS.txt</code>: se l\'impronta del file coincide, il programma è esattamente quello pubblicato.</p>' +
+      "</div>";
+  }
+
+  function chiudi(pannello, definitivo) {    if (definitivo) scrivi(CHIAVE_NASCOSTO, "1");
     if (window.speechSynthesis) {
       try { window.speechSynthesis.cancel(); } catch (e) { /* niente */ }
     }
@@ -78,6 +108,7 @@
         "<div><strong>Neura</strong><span class=\"welcome-role\">ascolto guidato</span></div>" +
         '<button type="button" class="welcome-x" data-welcome="close" aria-label="Chiudi il benvenuto">×</button></div>' +
       '<div class="welcome-body">' + TESTO + "</div>" +
+      notaAvvio() +
       '<div class="welcome-actions">' +
         '<button type="button" class="btn btn-soft btn-sm" data-welcome="speak">' + A.icon("wave") + "Ascolta</button>" +
         '<a class="btn btn-ghost btn-sm" href="#/neura" data-welcome="chat">Parla con Neura</a>' +
@@ -110,6 +141,7 @@
 
     const pannello = costruisci();
     segnaVista();
+    if (desktop()) scrivi(CHIAVE_AVVIO, "1");
 
     const voceAttiva = !NP.neuraUI || typeof NP.neuraUI.voiceOn !== "function" || NP.neuraUI.voiceOn();
     if (voceAttiva) {

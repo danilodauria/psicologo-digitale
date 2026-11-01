@@ -39,6 +39,22 @@
     return voci.filter(function (v) { return /^it/i.test(v.lang); });
   }
 
+  // Il programma desktop usa solo le voci installate nel sistema (SAPI su
+  // Windows, voce di sistema su macOS): Chrome ed Edge aggiungono voci online
+  // che lì non esistono. Per questo il selettore mostra tutte quelle che il
+  // sistema offre, con le italiane in cima, invece di nascondere le altre.
+  function tutteLeVoci() {
+    if (!window.speechSynthesis) return { italiane: [], altre: [] };
+    const voci = (window.speechSynthesis.getVoices() || []).slice();
+    const italiane = voci.filter(function (v) { return /^it/i.test(v.lang); })
+      .sort(function (a, b) { return punteggioVoce(b) - punteggioVoce(a); });
+    const altre = voci.filter(function (v) { return !/^it/i.test(v.lang); })
+      .sort(function (a, b) {
+        return String(a.lang).localeCompare(String(b.lang)) || String(a.name).localeCompare(String(b.name));
+      });
+    return { italiane: italiane, altre: altre };
+  }
+
   // Le voci «Natural», «Neural» e «Premium» sono registrazioni, non sintesi a
   // formanti: a parità di italiano vale la pena sceglierle.
   function punteggioVoce(v) {
@@ -59,7 +75,10 @@
     try { nome = localStorage.getItem(CHIAVE_VOCE); } catch (e) { nome = null; }
     if (!nome) return null;
     const basso = String(nome).toLowerCase();
-    return vociItaliane().filter(function (v) { return String(v.name).toLowerCase() === basso; })[0] || null;
+    // Si cerca fra tutte le voci del sistema: una voce scelta in un'altra
+    // lingua deve restare valida anche dopo una ricarica.
+    const tutte = window.speechSynthesis ? window.speechSynthesis.getVoices() || [] : [];
+    return tutte.filter(function (v) { return String(v.name).toLowerCase() === basso; })[0] || null;
   }
 
   function voceMigliore() {
@@ -215,6 +234,7 @@
           '<div class="card"><h3>Voce</h3><p class="text-small">Il pulsante dell\'altoparlante in alto attiva o disattiva la lettura. Puoi fermarla con Stop, con «Ferma l\'audio» nella barra in alto o con Esc.</p>' +
             '<div class="form-field"><label class="field-label" for="voiceSelect">Voce del dispositivo</label>' +
               '<select class="input" id="voiceSelect"><option value="">Automatica (consigliata)</option></select></div>' +
+            '<p class="text-small muted" id="voiceNote">Lettura delle voci del sistema in corso…</p>' +
             '<p class="text-small muted mb-0">La voce usa il sintetizzatore del dispositivo: nessun audio lascia il computer. Su Windows e macOS la più naturale è quella «Natural» o «Premium»: se non compare, si aggiunge dalle impostazioni di sistema.</p></div>' +
         "</aside>" +
       "</div>"
@@ -255,12 +275,25 @@
     const sel = document.getElementById("voiceSelect");
     if (sel) {
       const riempi = function () {
-        const voci = vociItaliane();
+        const gruppi = tutteLeVoci();
         const attuale = voceMigliore();
-        sel.innerHTML = '<option value="">Automatica (consigliata)</option>' + voci.map(function (v) {
-          return '<option value="' + esc(v.name) + '">' + esc(v.name) + " (" + esc(v.lang) + ")</option>";
-        }).join("");
+        const opzioni = function (lista) {
+          return lista.map(function (v) {
+            return '<option value="' + esc(v.name) + '">' + esc(v.name) + " (" + esc(v.lang) + ")</option>";
+          }).join("");
+        };
+        sel.innerHTML = '<option value="">Automatica (consigliata)</option>' +
+          (gruppi.italiane.length ? '<optgroup label="Italiano">' + opzioni(gruppi.italiane) + "</optgroup>" : "") +
+          (gruppi.altre.length ? '<optgroup label="Altre lingue">' + opzioni(gruppi.altre) + "</optgroup>" : "");
         sel.value = attuale ? attuale.name : "";
+        const nota = document.getElementById("voiceNote");
+        if (nota) {
+          const tot = gruppi.italiane.length + gruppi.altre.length;
+          nota.textContent = tot
+            ? "Voci lette dal sistema: " + tot + (gruppi.italiane.length ? " (" + gruppi.italiane.length + " in italiano)" : "") +
+              ". Il programma desktop vede solo le voci installate nel computer; Chrome ed Edge ne aggiungono altre online, che restano nel browser."
+            : "Il sistema non ha ancora dichiarato le sue voci: si popolano dopo qualche istante, oppure vanno aggiunte dalle impostazioni di sistema.";
+        }
       };
       riempi();
       sel.addEventListener("change", function () {

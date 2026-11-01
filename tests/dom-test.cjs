@@ -275,6 +275,11 @@ setTimeout(function () {
   ok(/Ollama|intelligenza artificiale/i.test(document.getElementById("statusPanel").textContent), "il pannello spiega l'IA locale e la modalità d'uso");
   document.getElementById("statusMode").click();
   ok(document.getElementById("statusPanel").hidden === true, "il pannello si richiude");
+  ok(!!document.getElementById("statusOs"), "la barra mostra il sistema in uso con un pulsante");
+  document.getElementById("statusOs").click();
+  ok(/Sistema in uso/.test(document.getElementById("statusPanel").textContent), "il pannello dice su quale sistema gira il programma");
+  ok(/Voci del dispositivo/.test(document.getElementById("statusPanel").textContent), "il pannello conta le voci disponibili");
+  document.getElementById("statusOs").click();
 
   const before = document.documentElement.getAttribute("data-theme");
   document.getElementById("themeBtn").click();

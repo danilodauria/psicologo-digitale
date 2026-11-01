@@ -1704,6 +1704,10 @@ html[data-theme="dark"] .emergency-box h2, html[data-theme="dark"] .emergency-bo
 .welcome-x { margin-left: auto; background: none; border: 0; cursor: pointer; padding: 0 2px; font-size: 1.4rem; line-height: 1; color: var(--inchiostro-faint, #6d7688); }
 .welcome-body { margin-top: 8px; font-size: .9rem; line-height: 1.5; color: var(--inchiostro, #1b2333); }
 .welcome-body p { margin: 0 0 .5rem; }
+.welcome-note { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(61, 91, 150, .07); border: 1px solid rgba(61, 91, 150, .18); }
+.welcome-note p { font-size: .82rem; }
+.welcome-note ul { margin: .2rem 0 .4rem; padding-left: 1.1rem; font-size: .82rem; }
+.welcome-note .mini { font-size: .78rem; opacity: .85; }
 .welcome-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .welcome-actions .btn { font-size: .8rem; }
 
