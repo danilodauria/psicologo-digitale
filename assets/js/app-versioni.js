@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.14";
+  const VERSIONE = "1.3.15";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.15",
+      data: "1 novembre 2026",
+      titolo: "Le istruzioni che si possono stampare",
+      punti: [
+        "La pagina Come si installa ha un pulsante Stampa o salva in PDF: sulla carta escono una colonna sola, riquadri senza ombre e nessun pulsante.",
+        "In testa al foglio finiscono versione e indirizzo della pagina, così chi lo riceve sa a quando risale e dove trovarne una aggiornata.",
+        "Il foglio stampato porta con sé l'avvertenza e il numero 112: chi lo legge su carta non deve fidarsi della memoria di chi gliel'ha dato."
+      ]
+    },
     {
       v: "1.3.14",
       data: "1 novembre 2026",

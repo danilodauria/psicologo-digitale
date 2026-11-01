@@ -429,6 +429,17 @@ ok(/ripristinalo dalla cronologia dell'antivirus/.test(paginaComeInstallare), "s
 ok(/esporta prima il backup JSON/.test(paginaComeInstallare), "avverte di salvare il backup prima di disinstallare");
 ok(/Nessun modello locale trovato/.test(paginaComeInstallare) && /Aggiungi a schermata Home/.test(paginaComeInstallare), "chiarisce che Ollama non serve e che su iPhone c'è la PWA");
 ok(/Domande frequenti/.test(readmeTxt), "il README descrive le domande frequenti");
+ok(/<body class="pagina-installa">/.test(paginaComeInstallare), "la pagina è marcata per le regole di stampa");
+ok(/data-stampa/.test(paginaComeInstallare) && /window\.print\(\)/.test(paginaComeInstallare), "c'è un pulsante che apre la stampa del sistema");
+ok(/Ctrl\+P/.test(paginaComeInstallare) && /⌘P/.test(paginaComeInstallare), "spiega la scorciatoia di stampa a chi non usa il pulsante");
+ok(/class="solo-stampa"/.test(paginaComeInstallare) && /112/.test(paginaComeInstallare.match(/class="solo-stampa"[\s\S]{0,900}/)[0]), "il foglio stampato porta con sé l'avvertenza e il 112");
+ok(/class="btn-row[^"]*no-print"/.test(paginaComeInstallare), "i pulsanti non finiscono sulla carta");
+const css = read("assets/css/styles.css");
+ok(/\.solo-stampa \{ display: none; \}/.test(css), "il blocco per la carta resta nascosto a schermo");
+ok(/\.pagina-installa \.grid \{ display: block !important; \}/.test(css), "sulla carta il testo va in una colonna sola");
+ok(/\.pagina-installa \{[\s\S]{0,600}break-inside: avoid/.test(css) || /\.pagina-installa \.card[\s\S]{0,400}break-inside: avoid/.test(css), "i riquadri non si spezzano a metà foglio");
+ok(/@media print[\s\S]{0,4000}\.pagina-installa \.card/.test(css), "le regole di stampa valgono per questa pagina");
+ok(/Stampa o salva in PDF/.test(readmeTxt), "il README spiega come si stampa la pagina");
 ok(/firma ad-hoc/i.test(readmeTxt), "il README spiega la firma ad-hoc");
 ok(/non può essere notarizzato/i.test(readmeTxt), "il README dice che la notarizzazione non è disponibile senza abbonamento");
 ok(/Homebrew/.test(readmeTxt), "il README spiega perché una cask Homebrew non risolve");

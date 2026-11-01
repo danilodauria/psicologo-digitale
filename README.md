@@ -363,6 +363,8 @@ L'elenco vive in `assets/js/app-versioni.js`, in due punti: la costante `VERSION
 
 La pagina si chiude con una sezione **Domande frequenti**: dieci domande che non sono un elenco di cortesia, ma i punti in cui l'installazione si blocca davvero — il file dichiarato «danneggiato» su macOS, il pulsante *Apri comunque* che non compare, il collegamento *Esegui comunque* assente su Windows, la finestra bianca dopo un aggiornamento, il microfono che non parte, Ollama che sembra obbligatorio e non lo è. Ogni risposta dice il percorso esatto dei menu e che cosa fare se l'impronta non corrisponde, e l'ultima dice cosa salvare prima di disinstallare.
 
+La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sistema, e da lì *Salva come PDF* dà un file da allegare o da consegnare; funziona anche `Ctrl+P` / `⌘P`, quindi senza JavaScript. Il foglio non è una fotografia della pagina: le regole `@media print` in `assets/css/styles.css` (blocco `.pagina-installa`) tolgono menu, pulsanti, ombre e colori pieni, portano il testo in una colonna sola e non spezzano i riquadri a metà, mentre `.solo-stampa` aggiunge in testa versione e indirizzo della pagina e in coda l'avvertenza con il 112 — cose che a schermo non servono e su carta sì.
+
 È raggiungibile in tre modi: dal piè di pagina del sito, dalla pagina *Installa l'app*, e dal pannello della barra di stato quando il sistema chiede conferma all'avvio. È nella cache del service worker, quindi resta consultabile anche offline, e non ha bisogno di JavaScript per essere letta: chi ha un browser bloccato o vecchio la vede lo stesso.
 
 ## Backup completo nella release

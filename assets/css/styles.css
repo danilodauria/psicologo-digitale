@@ -1866,3 +1866,41 @@ html[data-theme="dark"] .status-num b { color: #dce6fb; }
 @media print {
   .status-bar { display: none !important; }
 }
+
+/* Pagina «Come si installa», foglio da consegnare -------------------------- */
+
+/* Serve a chi consegna le istruzioni su carta: una colonna sola, riquadri con
+   bordi leggeri invece delle ombre, nessun colore pieno da consumare in ufficio
+   e la versione in testa al foglio per capire a quando risale. Il testo che
+   interessa solo sulla carta sta in .solo-stampa. */
+.solo-stampa { display: none; }
+
+@media print {
+  .pagina-installa .page-head .lead { display: block !important; color: #111 !important; }
+  .pagina-installa .grid { display: block !important; }
+  .pagina-installa h1 { font-size: 18pt; margin-bottom: .3rem; }
+  .pagina-installa h2 { font-size: 12.5pt; margin-top: 1rem !important; page-break-after: avoid; }
+  .pagina-installa h3 { font-size: 10.5pt; page-break-after: avoid; }
+  .pagina-installa .card,
+  .pagina-installa .callout {
+    background: #fff !important;
+    border: 1px solid #999 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: .45rem .55rem !important;
+    margin-bottom: .45rem !important;
+    break-inside: avoid;
+  }
+  .pagina-installa .text-small { font-size: 9.5pt; }
+  .pagina-installa code { background: transparent !important; border-bottom: 1px dotted #666; }
+  .pagina-installa .muted { color: #333 !important; }
+  .pagina-installa a { color: #111 !important; text-decoration: none; }
+  .pagina-installa ul,
+  .pagina-installa ol { padding-left: 1rem; }
+  .solo-stampa {
+    display: block !important;
+    border-top: 1px solid #999;
+    margin-top: .6rem;
+    padding-top: .4rem;
+  }
+}
