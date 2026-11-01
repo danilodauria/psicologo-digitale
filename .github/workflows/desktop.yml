@@ -69,6 +69,12 @@ jobs:
           if [ -n "${APPLE_API_KEY}" ] || [ -n "${APPLE_ID}" ]; then
             extra="-c.mac.notarize=true"
           fi
+          # Senza certificato resta la firma ad-hoc: non dice chi ha firmato,
+          # quindi Gatekeeper la ignora, ma è una firma valida e senza di lei
+          # Apple Silicon può rifiutare il pacchetto come danneggiato.
+          if [ -z "${CSC_LINK}" ] && [ "${{ matrix.artifact }}" = "macos" ]; then
+            extra="$extra -c.mac.identity=-"
+          fi
           npm run ${{ matrix.script }} -- $extra || npm run ${{ matrix.script }} -- $extra
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -112,11 +118,16 @@ jobs:
         if: matrix.artifact == 'macos'
         shell: bash
         run: |
+          app="$(ls -d desktop/dist/mac*/*.app | head -1)"
+          # La firma si verifica in ogni caso: un bundle con la firma rotta non
+          # parte su Apple Silicon, e sarebbe un guasto silenzioso fino al
+          # primo utente che scarica.
           if [ -z "${APPLE_API_KEY}" ] && [ -z "${APPLE_ID}" ]; then
-            echo "::notice::Firma macOS non configurata: i pacchetti escono non firmati."
+            codesign --verify --deep --strict --verbose=2 "$app"
+            firma="$(codesign -dv --verbose=4 "$app" 2>&1 | grep -E '^(Signature|Authority)=' || true)"
+            echo "::notice::macOS senza certificato: firma ad-hoc valida ($firma). Il sistema chiede conferma una volta sola."
             exit 0
           fi
-          app="$(ls -d desktop/dist/mac*/*.app | head -1)"
           codesign --verify --deep --strict --verbose=2 "$app"
           xcrun stapler validate "$app"
         env:
