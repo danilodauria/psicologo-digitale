@@ -56,7 +56,17 @@ async function trovaRelease() {
   const r = await fetch(url, { headers: intestazioni() });
   // Nessuna release ancora pubblicata non è un guasto: succede al primo avvio.
   if (r.status === 404) return null;
-  if (!r.ok) throw new Error("l'API di GitHub ha risposto " + r.status + " per " + url);
+  if (!r.ok) {
+    // 403 e 429 senza token sono il limite di richieste anonime, non un
+    // guasto del repository: dirlo aiuta chi lancia lo script a mano.
+    if ((r.status === 403 || r.status === 429) && !TOKEN) {
+      throw new Error(
+        "GitHub ha limitato le richieste anonime (" + r.status + "): rilancia con GITHUB_TOKEN impostato, " +
+          "oppure guarda l'esito del workflow «Link di download», che in CI lo esegue con il suo token."
+      );
+    }
+    throw new Error("l'API di GitHub ha risposto " + r.status + " per " + url);
+  }
   return r.json();
 }
 
