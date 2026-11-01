@@ -1708,6 +1708,15 @@ html[data-theme="dark"] .emergency-box h2, html[data-theme="dark"] .emergency-bo
 .welcome-note p { font-size: .82rem; }
 .welcome-note ul { margin: .2rem 0 .4rem; padding-left: 1.1rem; font-size: .82rem; }
 .welcome-note .mini { font-size: .78rem; opacity: .85; }
+/* Nessuna voce italiana installata: la scheda Voce spiega come aggiungerla. */
+.voice-help { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(168, 116, 38, .08); border: 1px solid rgba(168, 116, 38, .22); }
+.voice-help[hidden] { display: none; }
+.voice-help p { font-size: .82rem; margin: 0 0 .35rem; }
+.voice-help .voice-steps { margin: .2rem 0 .5rem; padding-left: 1.1rem; font-size: .82rem; }
+.voice-help .voice-steps li { margin-bottom: .2rem; }
+.voice-help .mini { font-size: .78rem; opacity: .85; }
+.voice-help .chip { margin-top: 2px; }
+
 .welcome-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .welcome-actions .btn { font-size: .8rem; }
 

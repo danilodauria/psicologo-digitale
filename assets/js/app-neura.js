@@ -55,6 +55,54 @@
     return { italiane: italiane, altre: altre };
   }
 
+  const NOMI_SISTEMA = { windows: "Windows", macos: "macOS", linux: "Linux", android: "Android", ios: "iPhone o iPad", altro: "questo sistema" };
+
+  // Il sistema può non avere voci italiane: succede spesso nel programma
+  // desktop appena installato, dove restano solo voci di altre lingue. Qui si
+  // riconosce il sistema per dare i passaggi giusti, non quelli generici.
+  function sistemaRilevato() {
+    const d = window.npDesktop;
+    if (d && d.platform) {
+      if (d.platform === "win32") return "windows";
+      if (d.platform === "darwin") return "macos";
+      if (d.platform === "linux") return "linux";
+      return "altro";
+    }
+    try {
+      const det = NP.ambiente && typeof NP.ambiente.detect === "function" ? NP.ambiente.detect() : null;
+      const os = det && det.os;
+      if (os === "mac") return "macos";
+      return os || "altro";
+    } catch (e) { return "altro"; }
+  }
+
+  function istruzioniVoci(id) {
+    const coda = '<li class="mini">Torna qui quando hai finito: l\'elenco si aggiorna da solo, senza riavviare.</li></ol>';
+    const inizio = '<ol class="voice-steps">';
+    if (id === "windows") {
+      return inizio +
+        "<li><em>Impostazioni</em> → <em>Data e ora e lingua</em> → <em>Riconoscimento vocale</em>.</li>" +
+        "<li><em>Aggiungi voci</em> → scegli <strong>Italiano (Italia)</strong> → <em>Aggiungi</em>.</li>" + coda;
+    }
+    if (id === "macos") {
+      return inizio +
+        "<li><em>Impostazioni di Sistema</em> → <em>Accessibilità</em> → <em>Contenuto pronunciato</em>.</li>" +
+        "<li><em>Voce di sistema</em> → <em>Gestisci voci</em> → <strong>Italiano</strong> → <em>Scarica</em> (meglio una <em>Premium</em> o <em>Migliorata</em>).</li>" + coda;
+    }
+    if (id === "linux") {
+      return inizio +
+        "<li>Installa le voci italiane: <code>sudo apt install espeak-ng</code> (o <code>speech-dispatcher</code> con <code>pico2wave</code>).</li>" +
+        "<li>Se usi il programma installato, riaprilo dopo l\'installazione.</li>" + coda;
+    }
+    return inizio +
+      "<li>Il sistema è questo dispositivo: le voci si aggiungono da <em>Impostazioni</em> → <em>Accessibilità</em> → <em>Sintesi vocale</em>.</li>" +
+      "<li>Installa la voce <strong>italiana</strong> e torna qui.</li>" + coda;
+  }
+
+  function vociMancanti(gruppi) {
+    return !!(gruppi && gruppi.italiane.length === 0 && gruppi.altre.length > 0);
+  }
+
   // Le voci «Natural», «Neural» e «Premium» sono registrazioni, non sintesi a
   // formanti: a parità di italiano vale la pena sceglierle.
   function punteggioVoce(v) {
@@ -84,9 +132,12 @@
   function voceMigliore() {
     const salvata = voceSalvata();
     if (salvata) return salvata;
-    const voci = vociItaliane();
-    if (!voci.length) return null;
-    return voci.slice().sort(function (a, b) { return punteggioVoce(b) - punteggioVoce(a); })[0];
+    const gruppi = tutteLeVoci();
+    // Senza voci italiane si legge con la migliore disponibile: una voce in
+    // un'altra lingua è comunque meglio del silenzio.
+    const lista = gruppi.italiane.length ? gruppi.italiane : gruppi.altre;
+    if (!lista.length) return null;
+    return lista.slice().sort(function (a, b) { return punteggioVoce(b) - punteggioVoce(a); })[0];
   }
 
   function setVoce(nome) {
@@ -134,7 +185,9 @@
       parlando = true;
       lista.forEach(function (t, i) {
         const u = new SpeechSynthesisUtterance(t);
-        u.lang = "it-IT";
+        // Con una voce di ripiego in un'altra lingua la lingua va allineata,
+        // altrimenti il motore legge il testo con una fonetica che non c'è.
+        u.lang = (voce && voce.lang) || "it-IT";
         u.rate = 0.97;
         u.pitch = 1;
         u.volume = 1;
@@ -235,6 +288,7 @@
             '<div class="form-field"><label class="field-label" for="voiceSelect">Voce del dispositivo</label>' +
               '<select class="input" id="voiceSelect"><option value="">Automatica (consigliata)</option></select></div>' +
             '<p class="text-small muted" id="voiceNote">Lettura delle voci del sistema in corso…</p>' +
+            '<div class="voice-help" id="voiceAiuto" hidden></div>' +
             '<p class="text-small muted mb-0">La voce usa il sintetizzatore del dispositivo: nessun audio lascia il computer. Su Windows e macOS la più naturale è quella «Natural» o «Premium»: se non compare, si aggiunge dalle impostazioni di sistema.</p></div>' +
         "</aside>" +
       "</div>"
@@ -294,7 +348,28 @@
               ". Il programma desktop vede solo le voci installate nel computer; Chrome ed Edge ne aggiungono altre online, che restano nel browser."
             : "Il sistema non ha ancora dichiarato le sue voci: si popolano dopo qualche istante, oppure vanno aggiunte dalle impostazioni di sistema.";
         }
+        const aiuto = document.getElementById("voiceAiuto");
+        if (aiuto) {
+          if (vociMancanti(gruppi)) {
+            const ripiego = voceMigliore();
+            aiuto.hidden = false;
+            aiuto.innerHTML = "<p><strong>Il sistema non offre voci italiane.</strong> Neura legge lo stesso, con " +
+              (ripiego ? "<strong>" + esc(ripiego.name) + "</strong> (" + esc(ripiego.lang) + ")" : "la voce predefinita") +
+              ": si sente, ma la pronuncia non è italiana. Una voce italiana si aggiunge in un minuto, su " + esc(NOMI_SISTEMA[sistemaRilevato()] || "questo sistema") + ":</p>" +
+              istruzioniVoci(sistemaRilevato()) +
+              '<button type="button" class="chip" id="voiceProva" title="Fai parlare Neura con questa voce">Ascoltala</button>';
+          } else {
+            aiuto.hidden = true;
+            aiuto.innerHTML = "";
+          }
+        }
       };
+      const aiutoBox = document.getElementById("voiceAiuto");
+      if (aiutoBox) aiutoBox.addEventListener("click", function (e) {
+        if (!e.target.closest || !e.target.closest("#voiceProva")) return;
+        speak("<p>Ecco come suono con la voce che ho trovato. Se vuoi la pronuncia italiana, aggiungi una voce del sistema.</p>");
+        A.toast("Provo la voce disponibile.");
+      });
       riempi();
       sel.addEventListener("change", function () {
         setVoce(sel.value);
@@ -345,7 +420,11 @@
     voiceOn: voiceOn,
     welcome: WELCOME,
     voci: vociItaliane,
+    vociTutte: tutteLeVoci,
     voceAttuale: voceMigliore,
+    mancanoItaliane: function () { return vociMancanti(tutteLeVoci()); },
+    istruzioniVoci: istruzioniVoci,
+    sistema: sistemaRilevato,
     setVoce: setVoce,
     stopListening: stopListening,
     isSpeaking: function () { return parlando; },

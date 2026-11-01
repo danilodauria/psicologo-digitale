@@ -382,6 +382,10 @@ ok(/natural\|neural\|premium/.test(neuraUI), "la voce privilegia le voci natural
 ok(/voiceSelect/.test(neuraUI), "si può scegliere la voce del dispositivo");
 ok(/tutteLeVoci/.test(neuraUI) && /Altre lingue/.test(neuraUI), "il selettore elenca tutte le voci del sistema, con le italiane in cima");
 ok(/voiceNote/.test(neuraUI), "la pagina Neura dichiara quante voci vede il sistema");
+ok(/vociMancanti/.test(neuraUI) && /Il sistema non offre voci italiane/.test(neuraUI), "se il sistema non ha voci italiane la pagina lo dice");
+ok(/function istruzioniVoci/.test(neuraUI) && /Aggiungi voci/.test(neuraUI) && /Gestisci voci/.test(neuraUI) && /espeak-ng/.test(neuraUI), "i passaggi per aggiungere una voce seguono il sistema rilevato");
+ok(/function sistemaRilevato/.test(neuraUI) && /window\.npDesktop/.test(neuraUI) && /NP\.ambiente\.detect/.test(neuraUI), "il sistema si legge dalla piattaforma dichiarata, non solo dal browser");
+ok(/voiceProva/.test(neuraUI) && /gruppi\.italiane\.length \? gruppi\.italiane : gruppi\.altre/.test(neuraUI), "senza voci italiane la lettura ripiega su quella migliore disponibile");
 ok(/stopListening/.test(neuraUI), "la dettatura si può interrompere");
 
 const inst = read("assets/js/app-installa.js");

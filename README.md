@@ -62,6 +62,8 @@ La voce viene scelta tra quelle installate dando la precedenza alle italiane e, 
 
 Una differenza da conoscere: nel browser Chrome ed Edge aggiungono voci online che il programma desktop non vede, perché il pacchetto usa solo le voci installate nel computer (SAPI su Windows, voce di sistema su macOS). Per questo nel `.exe` l'elenco è più corto. Si allunga dalle impostazioni: su Windows *Impostazioni* → *Data e ora e lingua* → *Riconoscimento vocale* → *Aggiungi voci*; su macOS *Impostazioni di Sistema* → *Accessibilità* → *Contenuto pronunciato* → *Voce di sistema* → *Gestisci voci*.
 
+Se il computer non ha nessuna voce italiana, la pagina Neura non lascia la lettura muta: sceglie **la voce migliore fra quelle disponibili** e lo dice apertamente, con i passaggi per aggiungere una voce italiana su quel sistema — quelli di Windows, di macOS o di Linux, riconosciuto il sistema in uso — e un pulsante per ascoltare subito la voce di ripiego.
+
 ### La barra di stato
 
 Sotto l'intestazione c'è una barra sempre visibile, che non richiede account e non manda nulla in rete:

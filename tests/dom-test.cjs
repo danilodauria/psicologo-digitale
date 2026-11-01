@@ -36,6 +36,21 @@ window.matchMedia = function () {
 window.confirm = function () { return true; };
 window.alert = function () {};
 
+// Il sistema di prova ha solo voci inglesi e tedesche: serve a verificare il
+// ripiego quando manca una voce italiana, il caso tipico del pacchetto desktop.
+window.speechSynthesis = {
+  getVoices: function () {
+    return [
+      { name: "Alice", lang: "en-US" },
+      { name: "Anna", lang: "de-DE" }
+    ];
+  },
+  speak: function () {},
+  cancel: function () {},
+  addEventListener: function () {}
+};
+window.SpeechSynthesisUtterance = function (testo) { this.text = testo; };
+
 const scripts = [
   "assets/js/data-scales.js",
   "assets/js/data-intake.js",
@@ -223,6 +238,14 @@ navigate("#/neura");
 ok(document.getElementById("chatLog"), "la chat di Neura è presente");
 ok(!!document.getElementById("voiceSelect"), "la pagina Neura offre la scelta della voce");
 ok(typeof NP.neuraUI.voceAttuale === "function", "la voce migliore viene scelta automaticamente");
+ok(NP.neuraUI.mancanoItaliane() === true, "il test riconosce un sistema senza voci italiane");
+const voceRipiego = NP.neuraUI.voceAttuale();
+ok(!!voceRipiego && !/^it/i.test(voceRipiego.lang), "senza voci italiane la lettura usa la migliore disponibile");
+const voiceAiuto = document.getElementById("voiceAiuto");
+ok(!!voiceAiuto && voiceAiuto.hidden === false, "la scheda Voce spiega che manca una voce italiana");
+ok(/non offre voci italiane/.test(voiceAiuto.textContent), "l'avviso lo dice a parole chiare");
+ok(/Aggiungi voci|Gestisci voci|espeak-ng|Sintesi vocale/.test(voiceAiuto.textContent), "l'avviso dà i passaggi del sistema in uso");
+ok(!!document.getElementById("voiceProva"), "la voce di ripiego si può ascoltare");
 
 const input = document.getElementById("neuraInput");
 const form = document.getElementById("chatForm");
