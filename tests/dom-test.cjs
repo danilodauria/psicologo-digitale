@@ -246,6 +246,12 @@ ok(!!voiceAiuto && voiceAiuto.hidden === false, "la scheda Voce spiega che manca
 ok(/non offre voci italiane/.test(voiceAiuto.textContent), "l'avviso lo dice a parole chiare");
 ok(/Aggiungi voci|Gestisci voci|espeak-ng|Sintesi vocale/.test(voiceAiuto.textContent), "l'avviso dà i passaggi del sistema in uso");
 ok(!!document.getElementById("voiceProva"), "la voce di ripiego si può ascoltare");
+ok(!!document.getElementById("voiceRileggi"), "l'elenco delle voci si può rileggere senza riaprire il programma");
+const voiceSpiega = document.getElementById("voiceSpiega");
+ok(!!voiceSpiega && voiceSpiega.hidden === false, "la scheda Voce spiega la differenza fra browser e programma");
+ok(/Chrome ed Edge/.test(voiceSpiega.textContent) && /programma installato non vede/.test(voiceSpiega.textContent), "la spiegazione nomina le voci online del browser");
+document.getElementById("voiceRileggi").click();
+ok(/Voci lette dal sistema: 2/.test(document.getElementById("voiceNote").textContent), "rileggere l'elenco aggiorna il conteggio delle voci");
 
 const input = document.getElementById("neuraInput");
 const form = document.getElementById("chatForm");

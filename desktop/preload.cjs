@@ -13,6 +13,11 @@ contextBridge.exposeInMainWorld("npDesktop", {
     tags: () => ipcRenderer.invoke("ollama:tags"),
     generate: (payload) => ipcRenderer.invoke("ollama:generate", payload)
   },
+  // Impostazioni del sistema: aprire il pannello delle voci dal processo
+  // principale, perché la pagina non può lanciare i collegamenti di sistema.
+  sistema: {
+    impostazioniVoce: () => ipcRenderer.invoke("sistema:impostazioniVoce")
+  },
   // Aggiornamenti: la pagina può leggerne lo stato, chiedere un controllo e
   // riavviare il programma quando la nuova versione è pronta.
   aggiornamenti: {

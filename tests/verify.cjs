@@ -546,6 +546,13 @@ ok(/vociMancanti/.test(neuraUI) && /Il sistema non offre voci italiane/.test(neu
 ok(/function istruzioniVoci/.test(neuraUI) && /Aggiungi voci/.test(neuraUI) && /Gestisci voci/.test(neuraUI) && /espeak-ng/.test(neuraUI), "i passaggi per aggiungere una voce seguono il sistema rilevato");
 ok(/function sistemaRilevato/.test(neuraUI) && /window\.npDesktop/.test(neuraUI) && /NP\.ambiente\.detect/.test(neuraUI), "il sistema si legge dalla piattaforma dichiarata, non solo dal browser");
 ok(/voiceProva/.test(neuraUI) && /gruppi\.italiane\.length \? gruppi\.italiane : gruppi\.altre/.test(neuraUI), "senza voci italiane la lettura ripiega su quella migliore disponibile");
+ok(/voiceRileggi/.test(neuraUI) && /voiceImpostazioni/.test(neuraUI), "la scheda Voce apre le impostazioni e rilegge l'elenco");
+ok(/Online \(Natural\)/.test(neuraUI) && /cloud di Microsoft/.test(neuraUI) && /non le vede/.test(neuraUI), "il programma spiega perché le voci del browser non compaiono");
+ok((neuraUI.match(/addEventListener\("voiceschanged"/g) || []).length === 1, "l'ascolto delle voci si registra una volta sola");
+const preloadC = read("desktop/preload.cjs");
+ok(/sistema:/ .test(preloadC) && /impostazioniVoce/.test(preloadC), "il ponte desktop espone il pannello delle voci");
+const mainC = read("desktop/main.cjs");
+ok(/sistema:impostazioniVoce/.test(mainC) && /ms-settings:speech/.test(mainC) && /universalaccess\?SpokenContent/.test(mainC), "il processo principale apre il pannello voce giusto per Windows e macOS");
 ok(/stopListening/.test(neuraUI), "la dettatura si può interrompere");
 
 const inst = read("assets/js/app-installa.js");

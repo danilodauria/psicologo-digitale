@@ -33,6 +33,15 @@
   const CHIAVE_VOCE = A.PREFIX + "voice-name";
   let parlando = false;
 
+  // Un solo ascoltatore per tutta l'app: la vista di Neura si ridisegna a ogni
+  // visita, e registrarlo ogni volta li accumulerebbe senza motivo.
+  let aggiornaElencoVoci = null;
+  if (window.speechSynthesis) {
+    const quandoCambiano = function () { if (typeof aggiornaElencoVoci === "function") aggiornaElencoVoci(); };
+    if (typeof window.speechSynthesis.addEventListener === "function") window.speechSynthesis.addEventListener("voiceschanged", quandoCambiano);
+    else window.speechSynthesis.onvoiceschanged = quandoCambiano;
+  }
+
   function vociItaliane() {
     if (!window.speechSynthesis) return [];
     const voci = window.speechSynthesis.getVoices() || [];
@@ -258,6 +267,8 @@
   }
 
   views.neura = function () {
+    const suDesktop = !!(window.npDesktop && window.npDesktop.platform);
+    const piattaforma = sistemaRilevato();
     if (!state.chat.length) {
       state.chat.push({ role: "neura", html: WELCOME });
     }
@@ -288,6 +299,11 @@
             '<div class="form-field"><label class="field-label" for="voiceSelect">Voce del dispositivo</label>' +
               '<select class="input" id="voiceSelect"><option value="">Automatica (consigliata)</option></select></div>' +
             '<p class="text-small muted" id="voiceNote">Lettura delle voci del sistema in corso…</p>' +
+            '<div class="pill-row" id="voiceAzioni">' +
+              '<button type="button" class="chip" id="voiceRileggi" title="Rilegge l\'elenco delle voci installate">Rileggi l\'elenco</button>' +
+              (suDesktop && piattaforma !== "linux" ? '<button type="button" class="chip" id="voiceImpostazioni" title="Apre le impostazioni voce del sistema">Aggiungi una voce</button>' : "") +
+            "</div>" +
+            '<p class="text-small muted" id="voiceSpiega" hidden></p>' +
             '<div class="voice-help" id="voiceAiuto" hidden></div>' +
             '<p class="text-small muted mb-0">La voce usa il sintetizzatore del dispositivo: nessun audio lascia il computer. Su Windows e macOS la più naturale è quella «Natural» o «Premium»: se non compare, si aggiunge dalle impostazioni di sistema.</p></div>' +
         "</aside>" +
@@ -344,9 +360,19 @@
         if (nota) {
           const tot = gruppi.italiane.length + gruppi.altre.length;
           nota.textContent = tot
-            ? "Voci lette dal sistema: " + tot + (gruppi.italiane.length ? " (" + gruppi.italiane.length + " in italiano)" : "") +
-              ". Il programma desktop vede solo le voci installate nel computer; Chrome ed Edge ne aggiungono altre online, che restano nel browser."
+            ? "Voci lette dal sistema: " + tot + (gruppi.italiane.length ? " (" + gruppi.italiane.length + " in italiano)" : "") + "."
             : "Il sistema non ha ancora dichiarato le sue voci: si popolano dopo qualche istante, oppure vanno aggiunte dalle impostazioni di sistema.";
+        }
+        // Le voci «Online (Natural)» di Edge vivono sul cloud di Microsoft: non
+        // si installano nel computer, e il programma non può usarle. Meglio
+        // dirlo qui, dove si sceglie la voce, che lasciare il dubbio.
+        const spiega = document.getElementById("voiceSpiega");
+        if (spiega) {
+          spiega.hidden = false;
+          spiega.textContent = suDesktop
+            ? "Le voci «Online (Natural)» che il browser mostra (Elsa Online, Diego Online…) sono sul cloud di Microsoft: non si installano nel computer, quindi il programma non le vede. Qui restano le voci installate in " +
+              (NOMI_SISTEMA[piattaforma] || "questo sistema") + ": scegline una, oppure aggiungine altre."
+            : "Chrome ed Edge aggiungono voci online che il programma installato non vede: qui puoi usarle, nel programma restano quelle del sistema.";
         }
         const aiuto = document.getElementById("voiceAiuto");
         if (aiuto) {
@@ -376,11 +402,38 @@
         A.toast(sel.value ? "Voce impostata: " + sel.value : "Torno alla voce automatica.");
         speak("<p>Ecco come suono. Se ti va bene, andiamo avanti.</p>");
       });
-      if (window.speechSynthesis) {
-        const riaggiorna = function () { riempi(); };
-        if (typeof window.speechSynthesis.addEventListener === "function") window.speechSynthesis.addEventListener("voiceschanged", riaggiorna);
-        else window.speechSynthesis.onvoiceschanged = riaggiorna;
+      // L'ascolto delle voci è registrato una volta sola all'avvio del modulo:
+      // qui si aggiorna solo la funzione che ridisegna l'elenco.
+      if (window.speechSynthesis && typeof window.speechSynthesis.addEventListener !== "function") {
+        window.speechSynthesis.onvoiceschanged = function () { riempi(); };
       }
+      aggiornaElencoVoci = riempi;
+
+      const rileggi = document.getElementById("voiceRileggi");
+      if (rileggi) rileggi.addEventListener("click", function () {
+        const prima = tutteLeVoci();
+        const nPrima = prima.italiane.length + prima.altre.length;
+        riempi();
+        const dopo = tutteLeVoci();
+        const nDopo = dopo.italiane.length + dopo.altre.length;
+        if (!nDopo) A.toast("Nessuna voce leggibile: aggiungine una dalle impostazioni del sistema.");
+        else if (nDopo !== nPrima) A.toast("Ora il sistema offre " + nDopo + " voci.");
+        else if (suDesktop) A.toast("Sono sempre " + nDopo + ": se ne hai appena aggiunta una, chiudi e riapri il programma.");
+        else A.toast("Sono sempre " + nDopo + ".");
+      });
+
+      // Il pannello delle voci si apre dal processo principale: la pagina non
+      // può lanciare da sola i collegamenti di sistema.
+      const imposta = document.getElementById("voiceImpostazioni");
+      if (imposta) imposta.addEventListener("click", function () {
+        const d = window.npDesktop;
+        const apri = d && d.sistema && d.sistema.impostazioniVoce;
+        if (typeof apri !== "function") { A.toast("Le impostazioni voce si aprono dal sistema."); return; }
+        Promise.resolve(apri()).then(function (r) {
+          if (r && r.ok) A.toast("Aperte le impostazioni voce di " + (NOMI_SISTEMA[piattaforma] || "sistema") + ".");
+          else A.toast("Non sono riuscito ad aprire le impostazioni: cercale nel sistema.");
+        }).catch(function () { A.toast("Non sono riuscito ad aprire le impostazioni."); });
+      });
     }
 
     // Riconoscimento vocale, se disponibile

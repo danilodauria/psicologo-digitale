@@ -64,6 +64,25 @@ ipcMain.handle("ollama:generate", async (_event, payload) => {
   }
 });
 
+/* Impostazioni del sistema -------------------------------------------------- */
+
+// Le voci installate si aggiungono dalle impostazioni del sistema: aprire il
+// pannello giusto evita di doverlo cercare a mano fra le schermate.
+ipcMain.handle("sistema:impostazioniVoce", async () => {
+  const pannelli = {
+    win32: "ms-settings:speech",
+    darwin: "x-apple.systempreferences:com.apple.preference.universalaccess?SpokenContent"
+  };
+  const pannello = pannelli[process.platform];
+  if (!pannello) return { ok: false, motivo: "linux" };
+  try {
+    await shell.openExternal(pannello);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, motivo: "errore", errore: String((err && err.message) || err) };
+  }
+});
+
 /* Aggiornamenti ------------------------------------------------------------ */
 
 // Le nuove versioni arrivano dalle release GitHub. Su Windows e Linux AppImage
