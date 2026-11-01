@@ -218,3 +218,52 @@ jobs:
         run: |
           set -euo pipefail
           gh release upload "$TAG" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
+
+  completezza:
+    name: Controllo che la release sia completa
+    needs: [checksums]
+    if: >-
+      always() && !cancelled() &&
+      (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/psd-v'))
+    runs-on: ubuntu-latest
+    steps:
+      # Un pacchetto che manca non si nota subito: si nota quando qualcuno
+      # clicca il link e trova un 404. Questo passaggio rende rossa la build.
+      - name: Verifica i sei pacchetti e le impronte
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          attesi=(
+            Psicologo-Digitale-Windows-x64.exe
+            Psicologo-Digitale-Windows-portatile.zip
+            Psicologo-Digitale-Linux-amd64.deb
+            Psicologo-Digitale-Linux-x86_64.AppImage
+            Psicologo-Digitale-Mac-arm64.dmg
+            Psicologo-Digitale-Mac-x64.dmg
+          )
+          presenti="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.assets[].name')"
+          mkdir -p "$RUNNER_TEMP/rel"
+          gh release download "$TAG" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/rel" --clobber \
+            || { echo "::error::Manca SHA256SUMS.txt nella release $TAG."; exit 1; }
+          mancanti=0
+          for f in "${attesi[@]}"; do
+            if grep -qxF "$f" <<< "$presenti"; then
+              echo "✓ $f"
+            else
+              echo "::error::Manca $f nella release $TAG."
+              mancanti=$((mancanti + 1))
+            fi
+            if grep -q "  $f\$" "$RUNNER_TEMP/rel/SHA256SUMS.txt"; then
+              echo "  impronta presente"
+            else
+              echo "::error::Manca l'impronta di $f in SHA256SUMS.txt."
+              mancanti=$((mancanti + 1))
+            fi
+          done
+          if [[ "$mancanti" -gt 0 ]]; then
+            echo "::error::Release incompleta: $mancanti controlli falliti su $(( ${#attesi[@]} * 2 ))."
+            exit 1
+          fi
+          echo "Release completa: ${#attesi[@]} pacchetti, ognuno con la sua impronta."
