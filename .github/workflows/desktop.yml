@@ -229,6 +229,7 @@ jobs:
     steps:
       # Un pacchetto che manca non si nota subito: si nota quando qualcuno
       # clicca il link e trova un 404. Questo passaggio rende rossa la build.
+      # Jobs senza checkout: gh ha bisogno di sapere quale repository guardare.
       - name: Verifica i sei pacchetti e le impronte
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -245,7 +246,8 @@ jobs:
           )
           presenti="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.assets[].name')"
           mkdir -p "$RUNNER_TEMP/rel"
-          gh release download "$TAG" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/rel" --clobber \
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt \
+            --dir "$RUNNER_TEMP/rel" --clobber \
             || { echo "::error::Manca SHA256SUMS.txt nella release $TAG."; exit 1; }
           mancanti=0
           for f in "${attesi[@]}"; do
