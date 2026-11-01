@@ -165,7 +165,7 @@
       return "<li><strong>Windows</strong> — se compare <em>Windows ha protetto il PC</em>: <em>Altro informazioni</em> → <em>Esegui comunque</em>. Se il file resta bloccato, tasto destro → <em>Proprietà</em> → <em>Sblocca</em> → <em>OK</em>.</li>";
     }
     if (id === "macos") {
-      return "<li><strong>macOS</strong> — se dice che non può verificare il programma: <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em>, oppure tasto destro sull'app → <em>Apri</em>.</li>";
+      return "<li><strong>macOS</strong> — doppio clic sull'app, poi <em>Fine</em>; <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em>, in fondo alla sezione <em>Sicurezza</em> trovi <em>Apri comunque</em>: conferma con password o Touch ID. Da macOS 15 il menu contestuale non aggira più il controllo.</li>";
     }
     if (id === "linux") {
       return "<li><strong>Linux</strong> — <code>.deb</code>: doppio clic e installa; <code>.AppImage</code>: <em>Proprietà</em> → <em>Consenti l'esecuzione</em>, oppure <code>chmod +x</code>.</li>";

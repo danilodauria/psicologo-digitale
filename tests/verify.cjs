@@ -374,6 +374,22 @@ ok(!!vUso && versioni.indexOf('v: "' + vUso + '"') > 0, "la versione in uso comp
 ok(versioni.indexOf('v: "1.2.0"') > 0, "la cronologia risale fino alla prima versione installabile");
 ok(/in uso/i.test(versioni), "la cronologia segnala la versione installata");
 
+/* macOS senza certificato: firma ad-hoc e istruzioni vere ------------------ */
+
+const readmeTxt = read("README.md");
+const statoJs = read("assets/js/app-status.js");
+const installaJs = read("assets/js/app-installa.js");
+ok(/-c\.mac\.identity=-/.test(wf), "senza certificato la build macOS chiede la firma ad-hoc");
+ok(/codesign --verify/.test(wf), "la build verifica la firma dei pacchetti macOS");
+ok(/firma ad-hoc/i.test(readmeTxt), "il README spiega la firma ad-hoc");
+ok(/non esiste un modo gratuito di notarizzare/i.test(readmeTxt), "il README dice che la notarizzazione non è gratuita");
+ok(/Homebrew/.test(readmeTxt), "il README spiega perché una cask Homebrew non risolve");
+ok(!/Ctrl\+clic/.test(readmeTxt), "il README non suggerisce più il menu contestuale, rimosso da macOS 15");
+ok(!/tasto destro sull'app/.test(statoJs), "la barra di stato non suggerisce più il menu contestuale su macOS");
+ok(!/tasto destro sull'app/.test(installaJs), "la pagina Installa non suggerisce più il menu contestuale su macOS");
+ok(/Da macOS 15/.test(statoJs), "la barra di stato spiega il percorso di macOS 15 e successivi");
+ok(/Apri comunque/.test(statoJs) && /Fine/.test(statoJs), "la barra di stato descrive i passaggi reali di macOS");
+
 // I certificati restano facoltativi: le istruzioni per consentire l'avvio dal
 // sistema operativo devono restare sia nel README sia nella pagina di installazione.
 const readme = read("README.md");

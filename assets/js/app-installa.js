@@ -261,7 +261,7 @@
         '<p class="text-small muted mt-2">I pacchetti non hanno un certificato commerciale, quindi il sistema chiede conferma una volta sola. Non è un errore e non serve rinunciare: basta consentire l\'avvio.</p>' +
         '<ul class="text-small muted">' +
           "<li><strong>Windows</strong> — se compare <em>Windows ha protetto il PC</em>: <em>Altro informazioni</em> → <em>Esegui comunque</em>. Se il file resta bloccato, tasto destro → <em>Proprietà</em> → <em>Sblocca</em> → <em>OK</em>.</li>" +
-          "<li><strong>macOS</strong> — <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em>, oppure tasto destro sull'app → <em>Apri</em>.</li>" +
+          "<li><strong>macOS</strong> — doppio clic sull'app, <em>Fine</em>, poi <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em> (da macOS 15 il menu contestuale non basta più).</li>" +
           "<li><strong>Linux</strong> — <code>.deb</code>: doppio clic e installa; <code>.AppImage</code>: <code>chmod +x</code> oppure <em>Proprietà</em> → <em>Consenti l'esecuzione</em>.</li>" +
         "</ul>" +
         '<p class="text-small muted">Nella pagina della versione trovi <code>SHA256SUMS.txt</code>: se l\'impronta del file scaricato coincide, il programma è esattamente quello pubblicato.</p></div>' +

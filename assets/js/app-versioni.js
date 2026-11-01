@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.8";
+  const VERSIONE = "1.3.9";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.9",
+      data: "1 novembre 2026",
+      titolo: "Mac: istruzioni vere e firma ad-hoc",
+      punti: [
+        "Da macOS 15 il «tasto destro → Apri» non aggira più il controllo: le istruzioni ora descrivono il percorso che esiste, cioè Fine → Privacy e sicurezza → Apri comunque.",
+        "I pacchetti macOS escono con una firma ad-hoc: nessuna identità Apple, ma una firma valida e coerente, che Apple Silicon pretende per eseguire il codice.",
+        "La build verifica quella firma a ogni release: un pacchetto rotto si vede in CI, non sul computer di chi lo scarica.",
+        "Resta detto chiaro: la notarizzazione Apple è a pagamento e non ha scorciatoie gratuite. Il README spiega perché, Homebrew compreso."
+      ]
+    },
     {
       v: "1.3.8",
       data: "1 novembre 2026",

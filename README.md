@@ -137,17 +137,40 @@ I certificati costano e restano facoltativi: finché i pacchetti escono non firm
 
 **Windows.** Se compare *Windows ha protetto il PC*, scegli **Altro informazioni** → **Esegui comunque**. Se il browser ha segnato il file scaricato, tasto destro sul file → **Proprietà** → in fondo **Sblocca** → **OK**.
 
-**macOS.** Doppio clic sull'app: il sistema dice che non può verificarla. Allora **Impostazioni di Sistema** → **Privacy e sicurezza**, scorri fino al messaggio su *Psicologo Digitale* → **Apri comunque**. In alternativa tasto destro (o Ctrl+clic) sull'app → **Apri**. Se l'app è già in *Applicazioni* e resta bloccata, da Terminale:
+**macOS.** Da macOS 15 il menu contestuale non aggira più il controllo: **il «tasto destro → Apri» è stato rimosso da Apple**. Il percorso è questo, e vale per Sequoia e successivi.
+
+1. Doppio clic sull'app: compare *Apple non ha potuto verificare che «Psicologo Digitale» sia esente da malware*.
+2. Premi **Fine**, non **Sposta nel cestino**.
+3. **Impostazioni di Sistema** → **Privacy e sicurezza**: scorri in fondo, fino alla sezione **Sicurezza**, dove compare una riga su *Psicologo Digitale* → **Apri comunque**.
+4. Autentica con password o Touch ID e conferma **Apri**.
+
+La voce *Apri comunque* appare solo dopo un tentativo di apertura bloccato e resta per circa un'ora: se non la vedi, riprova ad aprire l'app e torna lì. Si fa una volta per versione installata. Se il pacchetto è in *Applicazioni* e resta bloccato, da Terminale:
 
 ```bash
 sudo xattr -dr com.apple.quarantine "/Applications/Psicologo Digitale.app"
 ```
 
+Togliere la quarantena è un aggiramento noto ma non supportato da Apple: salta i controlli del primo avvio, quindi ha senso solo per un file che viene da qui e la cui impronta coincide con `SHA256SUMS.txt`. Va ripetuto a ogni nuova versione scaricata.
+
 **Linux.** Il `.deb` si installa con doppio clic oppure `sudo apt install ./Psicologo-Digitale-Linux-amd64.deb`. Per l'`AppImage`: `chmod +x Psicologo-Digitale-Linux-x86_64.AppImage`, oppure tasto destro → **Proprietà** → **Consenti l'esecuzione**; se manca FUSE, `./Psicologo-Digitale-Linux-x86_64.AppImage --appimage-extract-and-run`.
 
 ### Firma dei pacchetti
 
-La firma non si può "attivare" con una modifica al codice: servono certificati intestati a una persona o azienda reale. Quello che manca qui è solo l'ultimo pezzo — i secret — perché il workflow è già predisposto: aggiungi i valori in **Settings → Secrets and variables → Actions** e le build dei tag firmano da sole. Senza secret tutto continua a funzionare come oggi, con un avviso nel log e un pacchetto dichiaratamente non firmato.
+La firma non si può "attivare" con una modifica al codice: servono certificati intestati a una persona o azienda reale. Quello che manca qui è solo l'ultimo pezzo — i secret — perché il workflow è già predisposto: aggiungi i valori in **Settings → Secrets and variables → Actions** e le build dei tag firmano da sole. Senza secret i pacchetti escono con la sola firma ad-hoc descritta qui sotto, e il log lo dice.
+
+#### Che cosa si ottiene gratis, e che cosa no
+
+Vale la pena metterlo per iscritto, perché la domanda torna: **non esiste un modo gratuito di notarizzare un'app macOS**. La notarizzazione richiede un certificato *Developer ID*, e i certificati Developer ID si creano soltanto con l'**Apple Developer Program** (99 $ l'anno più IVA). Un Apple ID gratuito dà un *Personal Team*: profili di sviluppo che scadono dopo 7 giorni e nessun certificato distribuibile. Una firma autocostruita o ad-hoc non è un sostituto, perché non dice *chi* ha firmato: Gatekeeper non ha nulla da verificare e tratta il pacchetto come non firmato.
+
+Quello che invece si può fare a costo zero, e che il progetto fa:
+
+- **Firma ad-hoc dei pacchetti macOS.** Non convince Gatekeeper, ma su Apple Silicon il sistema rifiuta di eseguire codice senza una firma valida: senza di lei l'app può risultare «danneggiata» invece che semplicemente «non verificata», e non c'è modo di aprirla. La build la applica da sola quando non c'è un certificato (`-c.mac.identity=-`) e ne verifica la validità a ogni release con `codesign --verify`.
+- **Istruzioni che corrispondono al sistema vero**, cioè il percorso *Fine* → Privacy e sicurezza → *Apri comunque*. Suggerire il menu contestuale, come faceva questo README fino alla 1.3.9, manda solo a sbattere contro un muro che Apple ha alzato apposta.
+- **Impronte SHA-256** in `SHA256SUMS.txt`, che dicono se il file scaricato è quello pubblicato indipendentemente da chi lo firma.
+
+Una scorciatoia che sembrava promettente e non lo è: distribuire con una **cask Homebrew**. Homebrew conserva di proposito l'attributo di quarantena sui pacchetti che installa, i flag `--no-quarantine` sono deprecati dalla versione 5.0 e le cask che non superano Gatekeeper sono disattivate da settembre 2026. Per un'app senza certificato non è una strada.
+
+Se un giorno servisse davvero il doppio clic pulito, l'unica via resta l'Apple Developer Program: con `MAC_CSC_LINK` e le credenziali di notarizzazione la build smette da sola di usare la firma ad-hoc, senza toccare il codice. Le istruzioni di `Consentire l'avvio` restano utili in ogni caso, perché servono anche a chi scarica prima che macOS conosca il pacchetto.
 
 **Windows.** Serve un certificato di code signing **OV** (o EV) emesso da una CA pubblica; da giugno 2023 la chiave privata deve stare su token hardware o su un servizio cloud del fornitore, quindi la firma avviene in CI con `signtool`. Costo indicativo 200-400 € l'anno.
 

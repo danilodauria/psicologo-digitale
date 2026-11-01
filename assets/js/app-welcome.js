@@ -80,7 +80,7 @@
       ? "<li>se compare <em>Windows ha protetto il PC</em>: <em>Altro informazioni</em> → <em>Esegui comunque</em>;</li>" +
         "<li>se il file resta bloccato: tasto destro → <em>Proprietà</em> → <em>Sblocca</em> → <em>OK</em>.</li>"
       : "<li>se dice che non può verificare il programma: <em>Impostazioni di Sistema</em> → <em>Privacy e sicurezza</em> → <em>Apri comunque</em>;</li>" +
-        "<li>in alternativa: tasto destro sull'app → <em>Apri</em>.</li>";
+        "<li>se il pulsante non c'è: riprova ad aprire l'app, poi torna in <em>Privacy e sicurezza</em> (da macOS 15 il menu contestuale non funziona più).</li>";
 
     return '<div class="welcome-note">' +
       "<p><strong>Prima volta su questo computer.</strong> Il programma non ha un certificato commerciale, quindi " + A.esc(nomeSistema(d.platform)) + " ti ha chiesto conferma per aprirlo. Succederà ancora a ogni aggiornamento: è normale, e il consenso si dà così.</p>" +
