@@ -317,7 +317,13 @@ setTimeout(async function () {
 
   /* Voce naturale (solo nel programma installato) ------------------------- */
 
-  const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0, ultimoRitmo: null };
+  const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0, ultimoRitmo: null, ultimaVoce: null, installate: [] };
+  const vociStato = function () {
+    return [
+      { id: "paola", nome: "Paola", genere: "femminile", mb: 61, installata: chiamateVoce.installate.indexOf("paola") !== -1 },
+      { id: "riccardo", nome: "Riccardo", genere: "maschile", mb: 27, installata: chiamateVoce.installate.indexOf("riccardo") !== -1 }
+    ];
+  };
   const audioRiprodotti = [];
   window.Audio = function (src) {
     this.src = src;
@@ -332,19 +338,27 @@ setTimeout(async function () {
     platform: "win32",
     sistema: { impostazioniVoce: function () { return Promise.resolve({ ok: true }); } },
     voceNaturale: {
-      stato: function () { return Promise.resolve({ ok: true, disponibile: true, installata: false, voce: "Paola", peso: 86 }); },
-      scarica: function () {
-        chiamateVoce.scarica++;
-        return Promise.resolve({ ok: true, disponibile: true, installata: true, voce: "Paola", peso: 86 });
+      stato: function () {
+        const voci = vociStato();
+        return Promise.resolve({ ok: true, disponibile: true, installata: voci.some(function (v) { return v.installata; }), peso: 86, voci: voci });
       },
-      pronuncia: function (testo, passo) {
+      scarica: function (id) {
+        chiamateVoce.scarica++;
+        chiamateVoce.ultimaVoce = id;
+        if (chiamateVoce.installate.indexOf(id) === -1) chiamateVoce.installate.push(id);
+        const voci = vociStato();
+        return Promise.resolve({ ok: true, disponibile: true, installata: true, voce: id, peso: 86, voci: voci });
+      },
+      pronuncia: function (testo, passo, voce) {
         chiamateVoce.pronuncia++;
         chiamateVoce.ultimoRitmo = passo;
+        chiamateVoce.ultimaVoceNaturale = voce;
         return Promise.resolve({ ok: true, wav: [82, 73, 70, 70] });
       },
       rimuovi: function () {
         chiamateVoce.rimuovi++;
-        return Promise.resolve({ ok: true, disponibile: true, installata: false, voce: "Paola" });
+        chiamateVoce.installate = [];
+        return Promise.resolve({ ok: true, disponibile: true, installata: false, voci: vociStato() });
       },
       onProgresso: function () {}
     }
@@ -356,12 +370,20 @@ setTimeout(async function () {
   ok(/facoltativa/.test(document.getElementById("voiceNaturaleNota").textContent), "la nota dice che è facoltativa");
   ok(/86 MB/.test(document.getElementById("voiceNaturaleNota").textContent), "la nota dice quanto pesa, una volta sola");
 
-  document.getElementById("voiceNaturaleInstalla").click();
+  const pulsantiVoce = document.querySelectorAll("#voiceNaturaleVoci [data-voce]");
+  ok(pulsantiVoce.length === 2, "la scheda Voce offre due voci naturali, una accanto all'altra");
+  ok(/Riccardo/.test(document.getElementById("voiceNaturaleVoci").textContent) && /27 MB/.test(document.getElementById("voiceNaturaleVoci").textContent), "la seconda voce dice nome, genere e peso");
+
+  document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').click();
   await new Promise(function (r) { setTimeout(r, 40); });
-  ok(chiamateVoce.scarica === 1, "il pulsante scarica la voce naturale");
-  ok(!!document.querySelector('#voiceSelect option[value="__naturale__"]'), "la voce installata entra nell'elenco");
+  ok(chiamateVoce.scarica === 1 && chiamateVoce.ultimaVoce === "paola", "il pulsante scarica la voce scelta");
+  ok(!!document.querySelector('#voiceSelect option[value="__naturale__:paola"]'), "la voce installata entra nell'elenco");
   ok(/Paola/.test(document.getElementById("voiceNaturaleNota").textContent), "la scheda conferma quale voce è pronta");
-  ok(document.getElementById("voiceNaturaleInstalla").hidden === true, "dopo l'installazione il pulsante di download sparisce");
+
+  document.querySelector('#voiceNaturaleVoci [data-voce="riccardo"]').click();
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(chiamateVoce.scarica === 2 && chiamateVoce.ultimaVoce === "riccardo", "si aggiunge la seconda voce senza riscaricare il motore");
+  ok(!!document.querySelector('#voiceSelect option[value="__naturale__:riccardo"]'), "anche la voce maschile entra nell'elenco");
 
   const cursore = document.getElementById("voiceRitmo");
   ok(!!cursore, "la scheda Voce ha il cursore della velocità");
@@ -374,13 +396,22 @@ setTimeout(async function () {
   await new Promise(function (r) { setTimeout(r, 40); });
   ok(chiamateVoce.pronuncia >= 1, "la lettura passa dalla voce naturale");
   ok(chiamateVoce.ultimoRitmo === 1.3, "la voce naturale riceve la velocità scelta");
+  ok(chiamateVoce.ultimaVoceNaturale === "riccardo", "la lettura usa la voce appena scelta");
+
+  document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').click();
+  await new Promise(function (r) { setTimeout(r, 40); });
+  NP.neuraUI.speak("<p>Provo l'altra voce.</p>");
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(chiamateVoce.ultimaVoceNaturale === "paola", "si può tornare alla voce femminile in un clic");
+  NP.neuraUI.stop();
   ok(audioRiprodotti.length >= 1, "l'audio prodotto viene riprodotto");
   NP.neuraUI.stop();
 
   document.getElementById("voiceNaturaleRimuovi").click();
   await new Promise(function (r) { setTimeout(r, 40); });
   ok(chiamateVoce.rimuovi === 1, "la voce naturale si può togliere");
-  ok(!document.querySelector('#voiceSelect option[value="__naturale__"]'), "tolta la voce, l'elenco torna alle voci del sistema");
+  ok(!document.querySelector('#voiceSelect option[value="__naturale__:paola"]'), "tolte le voci, l'elenco torna alle voci del sistema");
+  ok(document.querySelectorAll("#voiceNaturaleVoci [data-voce]").length === 2, "dopo la rimozione le due voci tornano da installare");
 
   // Su Mac il motore locale non esiste: la scheda deve mandare alle voci
   // «Premium» di Apple invece di offrire un download che non funzionerebbe.
@@ -392,7 +423,7 @@ setTimeout(async function () {
   await new Promise(function (r) { setTimeout(r, 40); });
   const notaMac = document.getElementById("voiceNaturaleNota");
   ok(/Premium/.test(notaMac.textContent) && /Apple/.test(notaMac.textContent), "su Mac la scheda indica le voci Premium di Apple");
-  ok(document.getElementById("voiceNaturaleInstalla").hidden === true, "su Mac non compare un pulsante di download che non servirebbe");
+  ok(document.querySelectorAll("#voiceNaturaleVoci [data-voce]").length === 0, "su Mac non compare un pulsante di download che non servirebbe");
   ok(NP.neuraUI.ritmo() === 1.3, "la velocità scelta resta memorizzata fra una visita e l'altra");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");

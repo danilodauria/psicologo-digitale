@@ -124,49 +124,107 @@ function motoreVoce() {
   return VOCE_MOTORE[process.platform + "-" + process.arch] || null;
 }
 
-const VOCE_FILE = [
+// Le voci disponibili. Il motore si scarica una volta sola; ogni voce è un
+// modello a sé e si scarica solo quando la si sceglie.
+const VOCE_VOCI = [
   {
-    nome: "it_IT-paola-medium.onnx",
-    url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx",
-    sha256: "6fc918b5a0ea6137382833dddfa567bffbe6a5060c02043c87192ee59c04210c",
-    byte: 63511038
+    id: "paola",
+    nome: "Paola",
+    genere: "femminile",
+    nota: "la più naturale",
+    file: [
+      {
+        nome: "it_IT-paola-medium.onnx",
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx",
+        sha256: "6fc918b5a0ea6137382833dddfa567bffbe6a5060c02043c87192ee59c04210c",
+        byte: 63511038
+      },
+      {
+        nome: "it_IT-paola-medium.onnx.json",
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json",
+        sha256: "aea19c0a7fce29fbc359b93f10e7902854401e4c95ae2ea328ae516b15d296cf",
+        byte: 7099
+      }
+    ]
   },
   {
-    nome: "it_IT-paola-medium.onnx.json",
-    url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json",
-    sha256: "aea19c0a7fce29fbc359b93f10e7902854401e4c95ae2ea328ae516b15d296cf",
-    byte: 7099
+    id: "riccardo",
+    nome: "Riccardo",
+    genere: "maschile",
+    nota: "voce maschile, più leggera",
+    file: [
+      {
+        nome: "it_IT-riccardo-x_low.onnx",
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx",
+        sha256: "1368de15f123275a7ef951c9e5e30be0f58a032daa14a0da44037443c1d1d21b",
+        byte: 28130791
+      },
+      {
+        nome: "it_IT-riccardo-x_low.onnx.json",
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx.json",
+        sha256: "146ab9c634afe524e9fb7530f2510df7a42fb1db56b52658ca1fb3d98001a62a",
+        byte: 4161
+      }
+    ]
   }
 ];
 
-const VOCE_NOME = "Paola";
+function vocePerId(id) {
+  return VOCE_VOCI.filter((v) => v.id === id)[0] || null;
+}
 
 function cartellaVoce() {
   return path.join(app.getPath("userData"), "voce-naturale");
 }
 
-function percorsiVoce() {
+function percorsiVoce(id) {
   const cartella = cartellaVoce();
+  const voce = vocePerId(id) || VOCE_VOCI[0];
   return {
     cartella: cartella,
     exe: path.join(cartella, "piper", process.platform === "win32" ? "piper.exe" : "piper"),
-    modello: path.join(cartella, VOCE_FILE[0].nome),
-    config: path.join(cartella, VOCE_FILE[1].nome)
+    modello: path.join(cartella, voce.file[0].nome),
+    config: path.join(cartella, voce.file[1].nome),
+    voce: voce
   };
 }
 
+function motorePronto() {
+  return fs.existsSync(percorsiVoce().exe);
+}
+
+function vocePronta(id) {
+  const dove = percorsiVoce(id);
+  return fs.existsSync(dove.modello) && fs.existsSync(dove.config);
+}
+
 function voceInstallata() {
-  const dove = percorsiVoce();
-  return fs.existsSync(dove.exe) && fs.existsSync(dove.modello) && fs.existsSync(dove.config);
+  return motorePronto() && VOCE_VOCI.some((v) => vocePronta(v.id));
 }
 
 function statoVoce() {
   const motore = motoreVoce();
+  const voci = VOCE_VOCI.map((v) => ({
+    id: v.id,
+    nome: v.nome,
+    genere: v.genere,
+    nota: v.nota,
+    mb: Math.round(v.file.reduce((s, f) => s + f.byte, 0) / 1048576),
+    installata: vocePronta(v.id)
+  }));
+  const pronte = voci.filter((v) => v.installata);
   if (!motore) {
-    return { ok: true, disponibile: false, installata: false, motivo: process.platform + "-" + process.arch };
+    return { ok: true, disponibile: false, installata: false, motivo: process.platform + "-" + process.arch, voci: voci };
   }
-  const peso = Math.round((motore.byte + VOCE_FILE.reduce((s, f) => s + f.byte, 0)) / 1048576);
-  return { ok: true, disponibile: true, installata: voceInstallata(), voce: VOCE_NOME, peso: peso };
+  const primo = VOCE_VOCI[0].file.reduce((s, f) => s + f.byte, 0);
+  return {
+    ok: true,
+    disponibile: true,
+    installata: motorePronto() && pronte.length > 0,
+    voce: (pronte[0] || voci[0]).nome,
+    peso: Math.round((motore.byte + primo) / 1048576),
+    voci: voci
+  };
 }
 
 // Download con avanzamento e verifica: se manca un byte o l'impronta non
@@ -210,10 +268,12 @@ let scaricamentoVoce = null;
 
 ipcMain.handle("voceNaturale:stato", () => statoVoce());
 
-ipcMain.handle("voceNaturale:scarica", async (evento) => {
+ipcMain.handle("voceNaturale:scarica", async (evento, id) => {
   const motore = motoreVoce();
   if (!motore) return { ok: false, disponibile: false, motivo: process.platform + "-" + process.arch };
-  if (voceInstallata()) return statoVoce();
+  const voce = vocePerId(id) || VOCE_VOCI[0];
+  const motoreCera = motorePronto();
+  if (motoreCera && vocePronta(voce.id)) return statoVoce();
   if (scaricamentoVoce) return scaricamentoVoce;
 
   const manda = (dati) => {
@@ -222,19 +282,21 @@ ipcMain.handle("voceNaturale:scarica", async (evento) => {
   };
   const cartella = cartellaVoce();
   const archivio = path.join(cartella, "motore.zip");
-  const pesoTotale = motore.byte + VOCE_FILE.reduce((s, f) => s + f.byte, 0);
+  const pesoTotale = (motoreCera ? 0 : motore.byte) + voce.file.reduce((s, f) => s + f.byte, 0);
   let fatto = 0;
 
   scaricamentoVoce = (async () => {
     await fs.promises.mkdir(cartella, { recursive: true });
-    manda({ fase: "motore", percentuale: 0 });
-    await scaricaFile(archivio, motore, (letti) => manda({ fase: "motore", percentuale: Math.round((letti / pesoTotale) * 100) }));
-    fatto += motore.byte;
-    scompattaMotore(await fs.promises.readFile(archivio), cartella, motore.tipo);
-    await fs.promises.unlink(archivio).catch(() => {});
-    if (!fs.existsSync(percorsiVoce().exe)) throw new Error("l'archivio non conteneva il motore vocale");
+    if (!motoreCera) {
+      manda({ fase: "motore", percentuale: 0 });
+      await scaricaFile(archivio, motore, (letti) => manda({ fase: "motore", percentuale: Math.round((letti / pesoTotale) * 100) }));
+      fatto += motore.byte;
+      scompattaMotore(await fs.promises.readFile(archivio), cartella, motore.tipo);
+      await fs.promises.unlink(archivio).catch(() => {});
+      if (!fs.existsSync(percorsiVoce().exe)) throw new Error("l'archivio non conteneva il motore vocale");
+    }
 
-    for (const file of VOCE_FILE) {
+    for (const file of voce.file) {
       const prima = fatto;
       await scaricaFile(path.join(cartella, file.nome), file, (letti) => manda({
         fase: "voce",
@@ -247,8 +309,9 @@ ipcMain.handle("voceNaturale:scarica", async (evento) => {
   })()
     .catch(async (err) => {
       // Un'installazione a metà non deve restare lì a sembrare completa.
-      await fs.promises.rm(path.join(cartella, "piper"), { recursive: true, force: true }).catch(() => {});
+      if (!motoreCera) await fs.promises.rm(path.join(cartella, "piper"), { recursive: true, force: true }).catch(() => {});
       await fs.promises.rm(archivio, { force: true }).catch(() => {});
+      for (const file of voce.file) await fs.promises.rm(path.join(cartella, file.nome), { force: true }).catch(() => {});
       return { ok: false, errore: String((err && err.message) || err) };
     })
     .finally(() => { scaricamentoVoce = null; });
@@ -258,14 +321,16 @@ ipcMain.handle("voceNaturale:scarica", async (evento) => {
 
 // La voce si genera qui, in un processo separato, e torna alla pagina come
 // WAV: l'audio non passa da nessun server e non resta sul disco.
-ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo, ritmo) => {
+ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo, ritmo, id) => {
   const pulito = String(testo || "").replace(/\s+/g, " ").trim().slice(0, 800);
   // La velocità scelta nella pagina diventa il passo del motore: in Piper
   // «length_scale» più basso vuol dire lettura più veloce.
   const passo = Math.min(1.6, Math.max(0.5, 1 / (Number(ritmo) || 1)));
   if (!pulito) return { ok: false, errore: "testo vuoto" };
-  if (!voceInstallata()) return { ok: false, errore: "la voce naturale non è installata" };
-  const dove = percorsiVoce();
+  const dove = percorsiVoce(id);
+  if (!motorePronto() || !vocePronta(dove.voce.id)) {
+    return { ok: false, errore: "la voce naturale scelta non è installata" };
+  }
   // Su macOS e Linux il motore arriva con i suoi permessi, ma un archivio
   // scompattato altrove potrebbe averli persi: il bit di esecuzione serve.
   if (process.platform !== "win32") {

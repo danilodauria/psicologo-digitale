@@ -38,7 +38,11 @@
   // Genera l'audio sul computer, quindi nessun testo esce da qui.
   const NATURALE = "__naturale__";
   const VOCE_NATURALE = "Paola";
+  const CHIAVE_VOCE_NATURALE = A.PREFIX + "voice-natural-id";
   let naturalePronta = false;
+  // Le voci naturali che il programma conosce, come le racconta lui: ognuna
+  // con il suo stato, perché il motore resta uno e i modelli si scaricano a sé.
+  let naturaleVoci = [];
   let audioNaturale = null;
 
   function ponteNaturale() {
@@ -46,12 +50,31 @@
     return d && d.voceNaturale ? d.voceNaturale : null;
   }
 
+  function voceNaturaleSalvata() {
+    let id = null;
+    try { id = localStorage.getItem(CHIAVE_VOCE_NATURALE); } catch (e) { id = null; }
+    return id;
+  }
+
+  function setVoceNaturale(id) {
+    try {
+      if (id) localStorage.setItem(CHIAVE_VOCE_NATURALE, id);
+      else localStorage.removeItem(CHIAVE_VOCE_NATURALE);
+    } catch (e) { /* storage negato */ }
+  }
+
+  function voceNaturalePronta(id) {
+    return naturaleVoci.some(function (v) { return v.installata && (!id || v.id === id); });
+  }
+
+  // La voce naturale in uso: quella scelta se è installata, altrimenti la
+  // prima disponibile. Restituisce l'identificativo, o null se non ce n'è.
   function naturaleScelta() {
-    if (!naturalePronta || !ponteNaturale()) return false;
-    let scelta = null;
-    try { scelta = localStorage.getItem(CHIAVE_VOCE); } catch (e) { scelta = null; }
-    // Automatica: se c'è, la voce naturale è la migliore che il programma ha.
-    return !scelta || scelta === NATURALE;
+    if (!naturalePronta || !ponteNaturale()) return null;
+    const scelta = voceNaturaleSalvata();
+    if (scelta && voceNaturalePronta(scelta)) return scelta;
+    const prima = naturaleVoci.filter(function (v) { return v.installata; })[0];
+    return prima ? prima.id : null;
   }
 
   function aggiornaNaturale() {
@@ -62,9 +85,11 @@
     }
     return Promise.resolve(p.stato()).then(function (s) {
       naturalePronta = !!(s && s.ok && s.installata);
+      naturaleVoci = (s && Array.isArray(s.voci)) ? s.voci : [];
       return s || { ok: true, disponibile: true, installata: false };
     }).catch(function () {
       naturalePronta = false;
+      naturaleVoci = [];
       return { ok: false, installata: false };
     });
   }
@@ -80,7 +105,8 @@
   // la lettura comincia subito anche su un testo lungo.
   function parlaNaturale(testo) {
     const p = ponteNaturale();
-    if (!p || typeof p.pronuncia !== "function" || !naturaleScelta()) return false;
+    const scelta = naturaleScelta();
+    if (!p || typeof p.pronuncia !== "function" || !scelta) return false;
     const pezzi = frasi(testo);
     if (!pezzi.length) return false;
 
@@ -96,7 +122,7 @@
         return;
       }
       const pezzo = pezzi[indice++];
-      Promise.resolve(p.pronuncia(pezzo, ritmo())).then(function (r) {
+      Promise.resolve(p.pronuncia(pezzo, ritmo(), scelta)).then(function (r) {
         if (!parlando) return;
         if (!r || !r.ok || !r.wav) throw new Error((r && (r.errore || r.motivo)) || "voce naturale non disponibile");
         const byte = new Uint8Array(r.wav);
@@ -438,9 +464,9 @@
             "</div>" +
             (ponteNaturale() ? '<div class="voice-naturale" id="voiceNaturale">' +
               '<p class="text-small mb-0" id="voiceNaturaleNota"></p>' +
+              '<div class="pill-row" id="voiceNaturaleVoci"></div>' +
               '<div class="pill-row">' +
-                '<button type="button" class="chip" id="voiceNaturaleInstalla" title="Scarica una volta la voce naturale">Installa la voce naturale</button>' +
-                '<button type="button" class="chip" id="voiceNaturaleRimuovi" title="Libera lo spazio occupato dalla voce naturale" hidden>Rimuovi la voce naturale</button>' +
+                '<button type="button" class="chip" id="voiceNaturaleRimuovi" title="Libera lo spazio occupato dalle voci naturali" hidden>Rimuovi le voci naturali</button>' +
               "</div></div>" : "") +
             '<p class="text-small muted" id="voiceSpiega" hidden></p>' +
             '<div class="voice-help" id="voiceAiuto" hidden></div>' +
@@ -491,15 +517,19 @@
             return '<option value="' + esc(v.name) + '">' + esc(v.name) + " (" + esc(v.lang) + ")</option>";
           }).join("");
         };
+        const pronte = naturaleVoci.filter(function (v) { return v.installata; });
         sel.innerHTML = '<option value="">Automatica (consigliata)</option>' +
-          (naturalePronta ? '<optgroup label="Voce naturale"><option value="' + NATURALE + '">' + esc(VOCE_NATURALE) + " — voce naturale (la più naturale)</option></optgroup>" : "") +
+          (pronte.length ? '<optgroup label="Voci naturali">' + pronte.map(function (v) {
+            return '<option value="' + NATURALE + ":" + esc(v.id) + '">' + esc(v.nome) + " — voce naturale (" + esc(v.genere) + ")</option>";
+          }).join("") + "</optgroup>" : "") +
           (gruppi.italiane.length ? '<optgroup label="Italiano">' + opzioni(gruppi.italiane) + "</optgroup>" : "") +
           (gruppi.altre.length ? '<optgroup label="Altre lingue">' + opzioni(gruppi.altre) + "</optgroup>" : "");
-        sel.value = naturaleScelta() ? NATURALE : (attuale ? attuale.name : "");
+        const naturale = naturaleScelta();
+        sel.value = naturale ? NATURALE + ":" + naturale : (attuale ? attuale.name : "");
         const nota = document.getElementById("voiceNote");
         if (nota) {
           const tot = gruppi.italiane.length + gruppi.altre.length;
-          nota.textContent = (naturalePronta ? "Voce naturale installata. " : "") + (tot
+          nota.textContent = (pronte.length ? "Voce naturale installata. " : "") + (tot
             ? "Voci lette dal sistema: " + tot + (gruppi.italiane.length ? " (" + gruppi.italiane.length + " in italiano)" : "") + "."
             : "Il sistema non ha ancora dichiarato le sue voci: si popolano dopo qualche istante, oppure vanno aggiunte dalle impostazioni di sistema.");
         }
@@ -539,7 +569,10 @@
       riempi();
       sel.addEventListener("change", function () {
         setVoce(sel.value);
-        A.toast(sel.value === NATURALE ? "Voce naturale: " + VOCE_NATURALE + "." : (sel.value ? "Voce impostata: " + sel.value : "Torno alla voce automatica."));
+        const sceltaNaturale = /^__naturale__:/.test(sel.value)
+          ? naturaleVoci.filter(function (v) { return NATURALE + ":" + v.id === sel.value; })[0]
+          : null;
+        A.toast(sceltaNaturale ? "Voce naturale: " + sceltaNaturale.nome + "." : (sel.value ? "Voce impostata: " + sel.value : "Torno alla voce automatica."));
         speak("<p>Ecco come suono. Se ti va bene, andiamo avanti.</p>");
       });
       // L'ascolto delle voci è registrato una volta sola all'avvio del modulo:
@@ -586,16 +619,31 @@
       // Voce naturale facoltativa: si scarica una volta e resta nel computer.
       const scatolaNaturale = document.getElementById("voiceNaturale");
       const notaNaturale = document.getElementById("voiceNaturaleNota");
-      const installaNaturale = document.getElementById("voiceNaturaleInstalla");
+      const vociNaturale = document.getElementById("voiceNaturaleVoci");
       const rimuoviNaturale = document.getElementById("voiceNaturaleRimuovi");
       const disegnaNaturale = function (s) {
         if (!scatolaNaturale || !notaNaturale) return;
         const stato = s || {};
-        if (stato.installata) {
-          notaNaturale.innerHTML = "<strong>Voce naturale pronta: " + esc(VOCE_NATURALE) + ".</strong> È generata sul tuo computer: nessun testo esce da qui.";
-          if (installaNaturale) installaNaturale.hidden = true;
-          if (rimuoviNaturale) rimuoviNaturale.hidden = false;
-        } else if (stato.disponibile === false) {
+        if (Array.isArray(stato.voci)) naturaleVoci = stato.voci;
+        const voci = naturaleVoci;
+        const pronte = voci.filter(function (v) { return v.installata; });
+        naturalePronta = !!stato.installata || (stato.installata === undefined && pronte.length > 0);
+
+        // Una voce per pulsante: quelle già installate si scelgono, le altre
+        // dicono quanto pesano e si scaricano una alla volta.
+        if (vociNaturale) {
+          const scelta = naturaleScelta();
+          vociNaturale.innerHTML = voci.map(function (v) {
+            const attiva = v.installata && v.id === scelta;
+            const testo = v.installata
+              ? esc(v.nome) + " · " + esc(v.genere) + (attiva ? " ✓" : "")
+              : "Installa " + esc(v.nome) + " · " + v.mb + " MB";
+            return '<button type="button" class="chip' + (attiva ? " is-active" : "") + '" data-voce="' + esc(v.id) + '"' +
+              (v.installata ? ' aria-pressed="' + (attiva ? "true" : "false") + '"' : "") + ">" + testo + "</button>";
+          }).join("");
+        }
+
+        if (stato.disponibile === false) {
           // Su Mac il motore locale non c'è (gli archivi ufficiali non
           // contengono le librerie che servono): la voce naturale sono quelle
           // «Premium» di Apple, che il programma usa come voci del sistema.
@@ -604,40 +652,63 @@
           } else {
             notaNaturale.textContent = "La voce naturale si scarica per Windows e Linux, su processori Intel e ARM: su questo sistema restano le voci del sistema.";
           }
-          if (installaNaturale) installaNaturale.hidden = true;
+          if (vociNaturale) vociNaturale.innerHTML = "";
           if (rimuoviNaturale) rimuoviNaturale.hidden = true;
+          return;
+        }
+
+        if (pronte.length) {
+          notaNaturale.innerHTML = "<strong>Voci naturali pronte: " +
+            pronte.map(function (v) { return esc(v.nome); }).join(" e ") +
+            ".</strong> Sono generate sul tuo computer: nessun testo esce da qui.";
         } else {
           notaNaturale.textContent = "Voce naturale (facoltativa): suona come una persona, non come un robot. Si scarica una volta sola" +
             (stato.peso ? " (circa " + stato.peso + " MB)" : "") + " e poi funziona anche senza Internet.";
-          if (installaNaturale) installaNaturale.hidden = false;
-          if (rimuoviNaturale) rimuoviNaturale.hidden = true;
         }
+        if (rimuoviNaturale) rimuoviNaturale.hidden = pronte.length === 0;
       };
 
       if (ponteNaturale()) {
         aggiornaNaturale().then(function (s) { disegnaNaturale(s); riempi(); });
 
-        if (installaNaturale) installaNaturale.addEventListener("click", function () {
+        if (vociNaturale) vociNaturale.addEventListener("click", function (e) {
+          const bottone = e.target && e.target.closest ? e.target.closest("[data-voce]") : null;
+          if (!bottone) return;
           const p = ponteNaturale();
-          if (!p || typeof p.scarica !== "function") return;
-          installaNaturale.disabled = true;
-          if (notaNaturale) notaNaturale.textContent = "Scarico la voce naturale: ci vuole un minuto e non serve altro.";
+          if (!p) return;
+          const id = bottone.getAttribute("data-voce");
+          const voce = naturaleVoci.filter(function (v) { return v.id === id; })[0];
+          if (!voce) return;
+
+          // Già installata: la si sceglie, e si sente subito come suona.
+          if (voce.installata) {
+            setVoceNaturale(id);
+            setVoce(NATURALE + ":" + id);
+            disegnaNaturale({ disponibile: true, installata: true, voci: naturaleVoci });
+            riempi();
+            A.toast("Voce naturale: " + voce.nome + ".");
+            speak("<p>Ecco come suono con questa voce.</p>");
+            return;
+          }
+
+          if (typeof p.scarica !== "function") return;
+          bottone.disabled = true;
+          if (notaNaturale) notaNaturale.textContent = "Scarico " + voce.nome + ": ci vuole un minuto e non serve altro.";
           A.toast("Scarico la voce naturale…");
-          Promise.resolve(p.scarica()).then(function (s) {
-            installaNaturale.disabled = false;
+          Promise.resolve(p.scarica(id)).then(function (s) {
             if (s && s.ok && s.installata) {
               naturalePronta = true;
-              setVoce(NATURALE);
+              setVoceNaturale(id);
+              setVoce(NATURALE + ":" + id);
               disegnaNaturale(s);
               riempi();
-              A.toast("Voce naturale pronta: " + VOCE_NATURALE + ".");
+              A.toast("Voce naturale pronta: " + voce.nome + ".");
             } else {
-              disegnaNaturale({ disponibile: true, installata: false });
+              disegnaNaturale({ disponibile: true, installata: pronte.length > 0, voci: naturaleVoci });
               A.toast("Voce naturale non installata: " + ((s && (s.errore || s.motivo)) || "riprova") + ".");
             }
           }).catch(function () {
-            installaNaturale.disabled = false;
-            disegnaNaturale({ disponibile: true, installata: false });
+            disegnaNaturale({ disponibile: true, installata: pronte.length > 0, voci: naturaleVoci });
             A.toast("Voce naturale non installata: controlla la connessione e riprova.");
           });
         });
@@ -647,15 +718,18 @@
           if (!p || typeof p.rimuovi !== "function") return;
           Promise.resolve(p.rimuovi()).then(function (s) {
             naturalePronta = !!(s && s.installata);
-            if (!naturalePronta) { setVoce(null); riempi(); }
-            disegnaNaturale(s && s.ok ? s : { disponibile: true, installata: naturalePronta });
+            if (!naturalePronta) { setVoce(null); setVoceNaturale(null); }
+            // Prima si aggiorna l'elenco delle voci, poi il selettore: al
+            // contrario resterebbero le opzioni appena rimosse.
+            disegnaNaturale(s && s.ok ? s : { disponibile: true, installata: naturalePronta, voci: naturaleVoci });
+            riempi();
             A.toast("Voce naturale rimossa: torno alle voci del sistema.");
           }).catch(function () { A.toast("Non sono riuscito a rimuovere la voce naturale."); });
         });
 
         if (typeof ponteNaturale().onProgresso === "function") {
           ponteNaturale().onProgresso(function (st) {
-            if (!notaNaturale || !st || naturalePronta) return;
+            if (!notaNaturale || !st) return;
             notaNaturale.textContent = "Scarico la voce naturale… " + (st.percentuale || 0) + "%";
           });
         }

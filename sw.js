@@ -3,7 +3,7 @@
    Licenza del codice: MIT · Danilo D'Auria
    ========================================================================== */
 
-const VERSION = "psd-v1.3.22";
+const VERSION = "psd-v1.3.23";
 
 const ASSETS = [
   "./",

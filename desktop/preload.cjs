@@ -23,8 +23,8 @@ contextBridge.exposeInMainWorld("npDesktop", {
   // WAV già pronto e l'avanzamento del download.
   voceNaturale: {
     stato: () => ipcRenderer.invoke("voceNaturale:stato"),
-    scarica: () => ipcRenderer.invoke("voceNaturale:scarica"),
-    pronuncia: (testo, ritmo) => ipcRenderer.invoke("voceNaturale:pronuncia", testo, ritmo),
+    scarica: (voce) => ipcRenderer.invoke("voceNaturale:scarica", voce),
+    pronuncia: (testo, ritmo, voce) => ipcRenderer.invoke("voceNaturale:pronuncia", testo, ritmo, voce),
     rimuovi: () => ipcRenderer.invoke("voceNaturale:rimuovi"),
     onProgresso: (fn) => {
       const ascolta = (_evento, stato) => fn(stato);
