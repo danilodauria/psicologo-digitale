@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld("npDesktop", {
   voceNaturale: {
     stato: () => ipcRenderer.invoke("voceNaturale:stato"),
     scarica: () => ipcRenderer.invoke("voceNaturale:scarica"),
-    pronuncia: (testo) => ipcRenderer.invoke("voceNaturale:pronuncia", testo),
+    pronuncia: (testo, ritmo) => ipcRenderer.invoke("voceNaturale:pronuncia", testo, ritmo),
     rimuovi: () => ipcRenderer.invoke("voceNaturale:rimuovi"),
     onProgresso: (fn) => {
       const ascolta = (_evento, stato) => fn(stato);

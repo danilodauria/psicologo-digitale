@@ -1950,3 +1950,8 @@ html[data-theme="dark"] .status-num b { color: #dce6fb; }
   .pagina-scheda .scheda-piede { font-size: 7.5pt; margin-top: 3mm; page-break-inside: avoid; }
   .pagina-scheda .scheda-piede p { margin-bottom: .6mm; }
 }
+
+/* Velocità di lettura nella scheda Voce */
+.voice-ritmo .ritmo-riga { display: flex; align-items: center; gap: .7rem; }
+.voice-ritmo input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--accent); }
+.voice-ritmo .ritmo-valore { font-variant-numeric: tabular-nums; font-size: .9rem; font-weight: 600; min-width: 3.2rem; text-align: right; }

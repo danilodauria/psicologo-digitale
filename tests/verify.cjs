@@ -571,6 +571,9 @@ ok(/voiceNaturaleInstalla/.test(neuraUI) && /voiceNaturaleRimuovi/.test(neuraUI)
 ok(/"__naturale__"/.test(neuraUI) && /function parlaNaturale/.test(neuraUI), "la voce naturale entra nell'elenco e nella lettura");
 ok(/parlaConSistema\(testo\)/.test(neuraUI) && /se la voce naturale non parte/i.test(neuraUI), "se la voce naturale non parte si torna alla voce del sistema");
 ok(/darwin/.test(neuraUI) && /Premium/.test(neuraUI), "su Mac la scheda indica le voci naturali di Apple");
+ok(/voiceRitmo/.test(neuraUI) && /CHIAVE_RITMO/.test(neuraUI) && /u\.rate = Math\.min\(2, 0\.97 \* ritmo\(\)\)/.test(neuraUI), "la velocità di lettura si sceglie e vale per le voci del sistema");
+ok(/pronuncia\(pezzo, ritmo\(\)\)/.test(neuraUI) && /--length_scale/.test(mainC), "la voce naturale rispetta la velocità scelta");
+ok(/pronuncia: \(testo, ritmo\)/.test(preloadC), "il ponte passa la velocità alla voce naturale");
 ok(/stopListening/.test(neuraUI), "la dettatura si può interrompere");
 
 const inst = read("assets/js/app-installa.js");

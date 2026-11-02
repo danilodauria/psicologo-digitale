@@ -317,7 +317,7 @@ setTimeout(async function () {
 
   /* Voce naturale (solo nel programma installato) ------------------------- */
 
-  const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0 };
+  const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0, ultimoRitmo: null };
   const audioRiprodotti = [];
   window.Audio = function (src) {
     this.src = src;
@@ -337,8 +337,9 @@ setTimeout(async function () {
         chiamateVoce.scarica++;
         return Promise.resolve({ ok: true, disponibile: true, installata: true, voce: "Paola", peso: 86 });
       },
-      pronuncia: function () {
+      pronuncia: function (testo, passo) {
         chiamateVoce.pronuncia++;
+        chiamateVoce.ultimoRitmo = passo;
         return Promise.resolve({ ok: true, wav: [82, 73, 70, 70] });
       },
       rimuovi: function () {
@@ -362,9 +363,17 @@ setTimeout(async function () {
   ok(/Paola/.test(document.getElementById("voiceNaturaleNota").textContent), "la scheda conferma quale voce è pronta");
   ok(document.getElementById("voiceNaturaleInstalla").hidden === true, "dopo l'installazione il pulsante di download sparisce");
 
+  const cursore = document.getElementById("voiceRitmo");
+  ok(!!cursore, "la scheda Voce ha il cursore della velocità");
+  ok(/100%/.test(document.getElementById("voiceRitmoValore").textContent), "il cursore parte dal passo normale");
+  cursore.value = "1.3";
+  cursore.dispatchEvent(new window.Event("input"));
+  ok(/130%/.test(document.getElementById("voiceRitmoValore").textContent), "il cursore mostra la velocità scelta");
+
   NP.neuraUI.speak("<p>Ecco come suono con la voce naturale.</p>");
   await new Promise(function (r) { setTimeout(r, 40); });
   ok(chiamateVoce.pronuncia >= 1, "la lettura passa dalla voce naturale");
+  ok(chiamateVoce.ultimoRitmo === 1.3, "la voce naturale riceve la velocità scelta");
   ok(audioRiprodotti.length >= 1, "l'audio prodotto viene riprodotto");
   NP.neuraUI.stop();
 
@@ -384,6 +393,7 @@ setTimeout(async function () {
   const notaMac = document.getElementById("voiceNaturaleNota");
   ok(/Premium/.test(notaMac.textContent) && /Apple/.test(notaMac.textContent), "su Mac la scheda indica le voci Premium di Apple");
   ok(document.getElementById("voiceNaturaleInstalla").hidden === true, "su Mac non compare un pulsante di download che non servirebbe");
+  ok(NP.neuraUI.ritmo() === 1.3, "la velocità scelta resta memorizzata fra una visita e l'altra");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {

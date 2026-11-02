@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.21";
+  const VERSIONE = "1.3.22";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.22",
+      data: "2 novembre 2026",
+      titolo: "La lettura va alla velocità che scegli",
+      punti: [
+        "Nel pannello Voce c'è un cursore per la velocità: dal 70% al 140%, con il 100% come passo normale, e la scelta resta anche dopo aver chiuso il programma.",
+        "Vale per tutte e due le voci: quella del sistema e quella naturale, che viene rallentata o accelerata alla fonte invece di essere riprodotta a un'altra velocità.",
+        "Lasciando il cursore si sente subito un esempio, e un doppio clic riporta al passo normale."
+      ]
+    },
     {
       v: "1.3.21",
       data: "2 novembre 2026",

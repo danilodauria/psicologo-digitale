@@ -31,6 +31,7 @@
   }
 
   const CHIAVE_VOCE = A.PREFIX + "voice-name";
+  const CHIAVE_RITMO = A.PREFIX + "voice-rate";
   let parlando = false;
 
   // Voce naturale: un motore neurale che il programma installa su richiesta.
@@ -95,7 +96,7 @@
         return;
       }
       const pezzo = pezzi[indice++];
-      Promise.resolve(p.pronuncia(pezzo)).then(function (r) {
+      Promise.resolve(p.pronuncia(pezzo, ritmo())).then(function (r) {
         if (!parlando) return;
         if (!r || !r.ok || !r.wav) throw new Error((r && (r.errore || r.motivo)) || "voce naturale non disponibile");
         const byte = new Uint8Array(r.wav);
@@ -256,6 +257,25 @@
     } catch (e) { /* storage negato */ }
   }
 
+  // Velocità di lettura: 1 è il passo normale. Il valore vale sia per le voci
+  // del sistema sia per quella naturale, che viene rallentata o accelerata
+  // alla fonte invece di essere riprodotta a un'altra velocità.
+  const RITMO_MIN = 0.7;
+  const RITMO_MAX = 1.4;
+
+  function ritmo() {
+    let v = 1;
+    try { v = parseFloat(localStorage.getItem(CHIAVE_RITMO)); } catch (e) { v = 1; }
+    if (!isFinite(v) || v <= 0) v = 1;
+    return Math.min(RITMO_MAX, Math.max(RITMO_MIN, v));
+  }
+
+  function setRitmo(v) {
+    const pulito = Math.min(RITMO_MAX, Math.max(RITMO_MIN, Number(v) || 1));
+    try { localStorage.setItem(CHIAVE_RITMO, String(pulito)); } catch (e) { /* storage negato */ }
+    return pulito;
+  }
+
   function notifica() {
     try {
       if (typeof window.CustomEvent !== "function") return;
@@ -305,7 +325,7 @@
         // Con una voce di ripiego in un'altra lingua la lingua va allineata,
         // altrimenti il motore legge il testo con una fonetica che non c'è.
         u.lang = (voce && voce.lang) || "it-IT";
-        u.rate = 0.97;
+        u.rate = Math.min(2, 0.97 * ritmo());
         u.pitch = 1;
         u.volume = 1;
         if (voce) u.voice = voce;
@@ -407,6 +427,10 @@
           '<div class="card"><h3>Voce</h3><p class="text-small">Il pulsante dell\'altoparlante in alto attiva o disattiva la lettura. Puoi fermarla con Stop, con «Ferma l\'audio» nella barra in alto o con Esc.</p>' +
             '<div class="form-field"><label class="field-label" for="voiceSelect">Voce del dispositivo</label>' +
               '<select class="input" id="voiceSelect"><option value="">Automatica (consigliata)</option></select></div>' +
+            '<div class="form-field voice-ritmo"><label class="field-label" for="voiceRitmo">Velocità di lettura</label>' +
+              '<div class="ritmo-riga"><input type="range" id="voiceRitmo" min="0.7" max="1.4" step="0.05" value="1" aria-describedby="voiceRitmoValore">' +
+              '<output class="ritmo-valore" id="voiceRitmoValore" for="voiceRitmo">100%</output></div>' +
+              '<p class="text-small muted mb-0">Vale per tutte le voci, naturale compresa.</p></div>' +
             '<p class="text-small muted" id="voiceNote">Lettura delle voci del sistema in corso…</p>' +
             '<div class="pill-row" id="voiceAzioni">' +
               '<button type="button" class="chip" id="voiceRileggi" title="Rilegge l\'elenco delle voci installate">Rileggi l\'elenco</button>' +
@@ -524,6 +548,27 @@
         window.speechSynthesis.onvoiceschanged = function () { riempi(); };
       }
       aggiornaElencoVoci = riempi;
+
+      // Velocità di lettura: l'anteprima parte quando si lascia il cursore,
+      // non a ogni passo, altrimenti le frasi si accavallano.
+      const ritmoBox = document.getElementById("voiceRitmo");
+      const ritmoValore = document.getElementById("voiceRitmoValore");
+      const mostraRitmo = function (v) {
+        if (ritmoValore) ritmoValore.textContent = Math.round(v * 100) + "%";
+        if (ritmoBox) ritmoBox.value = String(v);
+      };
+      mostraRitmo(ritmo());
+      if (ritmoBox) {
+        ritmoBox.addEventListener("input", function () { mostraRitmo(setRitmo(ritmoBox.value)); });
+        ritmoBox.addEventListener("change", function () {
+          const v = setRitmo(ritmoBox.value);
+          mostraRitmo(v);
+          A.toast(v < 0.95 ? "Leggo più piano." : (v > 1.05 ? "Leggo più veloce." : "Velocità normale."));
+          speak("<p>Ecco come leggo a questa velocità.</p>");
+        });
+        // Un doppio clic riporta al passo normale, senza cercare il centro.
+        ritmoBox.addEventListener("dblclick", function () { mostraRitmo(setRitmo(1)); A.toast("Velocità normale."); });
+      }
 
       const rileggi = document.getElementById("voiceRileggi");
       if (rileggi) rileggi.addEventListener("click", function () {
@@ -669,6 +714,8 @@
     voci: vociItaliane,
     vociTutte: tutteLeVoci,
     voceNaturale: aggiornaNaturale,
+    ritmo: ritmo,
+    setRitmo: setRitmo,
     naturaleAttiva: naturaleScelta,
     parlaNaturale: parlaNaturale,
     voceAttuale: voceMigliore,

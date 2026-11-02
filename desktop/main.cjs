@@ -258,8 +258,11 @@ ipcMain.handle("voceNaturale:scarica", async (evento) => {
 
 // La voce si genera qui, in un processo separato, e torna alla pagina come
 // WAV: l'audio non passa da nessun server e non resta sul disco.
-ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo) => {
+ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo, ritmo) => {
   const pulito = String(testo || "").replace(/\s+/g, " ").trim().slice(0, 800);
+  // La velocità scelta nella pagina diventa il passo del motore: in Piper
+  // «length_scale» più basso vuol dire lettura più veloce.
+  const passo = Math.min(1.6, Math.max(0.5, 1 / (Number(ritmo) || 1)));
   if (!pulito) return { ok: false, errore: "testo vuoto" };
   if (!voceInstallata()) return { ok: false, errore: "la voce naturale non è installata" };
   const dove = percorsiVoce();
@@ -282,7 +285,7 @@ ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo) => {
 
     let figlio;
     try {
-      figlio = spawn(dove.exe, ["--model", dove.modello, "--config", dove.config, "--output_file", wav], { windowsHide: true });
+      figlio = spawn(dove.exe, ["--model", dove.modello, "--config", dove.config, "--length_scale", passo.toFixed(2), "--output_file", wav], { windowsHide: true });
     } catch (err) {
       chiudi({ ok: false, errore: String((err && err.message) || err) });
       return;
