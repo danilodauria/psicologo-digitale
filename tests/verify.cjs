@@ -571,6 +571,8 @@ ok(/motore\.cjs/.test(read("desktop/package.json")), "anche il nuovo modulo entr
 ok(/\["--model", dove\.modello, "--config", dove\.config/.test(mainC) && /stdin\.end\(pulito/.test(mainC), "la voce legge il testo dall'ingresso standard e restituisce un WAV");
 ok(/voiceNaturaleVoci/.test(neuraUI) && /voiceNaturaleRimuovi/.test(neuraUI) && /data-voce/.test(neuraUI), "la scheda Voce mostra una voce naturale per pulsante");
 ok(/naturaleVoci/.test(neuraUI) && /CHIAVE_VOCE_NATURALE/.test(neuraUI), "la voce naturale scelta resta memorizzata");
+ok(/voceNaturale:rimuoviVoce/.test(mainC) && /rimuoviVoce/.test(preloadC), "una voce naturale si può togliere da sola");
+ok(/data-rimuovi/.test(neuraUI) && /voceNaturale:rimuoviVoce/.test(mainC), "la scheda Voce offre «Togli» accanto a ogni voce installata");
 ok(/"__naturale__"/.test(neuraUI) && /function parlaNaturale/.test(neuraUI), "la voce naturale entra nell'elenco e nella lettura");
 ok(/parlaConSistema\(testo\)/.test(neuraUI) && /se la voce naturale non parte/i.test(neuraUI), "se la voce naturale non parte si torna alla voce del sistema");
 ok(/darwin/.test(neuraUI) && /Premium/.test(neuraUI), "su Mac la scheda indica le voci naturali di Apple");

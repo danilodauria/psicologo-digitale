@@ -382,6 +382,25 @@ ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo, ritmo, id) => {
   });
 });
 
+// Una voce alla volta: si tolgono i suoi file, il motore resta finché serve
+// all'altra. Quando non resta più nessuna voce, si libera anche il motore.
+ipcMain.handle("voceNaturale:rimuoviVoce", async (_evento, id) => {
+  const voce = vocePerId(id);
+  if (!voce) return { ok: false, errore: "voce sconosciuta" };
+  try {
+    const cartella = cartellaVoce();
+    for (const file of voce.file) {
+      await fs.promises.rm(path.join(cartella, file.nome), { force: true }).catch(() => {});
+    }
+    if (!VOCE_VOCI.some((v) => vocePronta(v.id))) {
+      await fs.promises.rm(path.join(cartella, "piper"), { recursive: true, force: true }).catch(() => {});
+    }
+    return statoVoce();
+  } catch (err) {
+    return { ok: false, errore: String((err && err.message) || err) };
+  }
+});
+
 ipcMain.handle("voceNaturale:rimuovi", async () => {
   try {
     await fs.promises.rm(cartellaVoce(), { recursive: true, force: true });

@@ -355,6 +355,13 @@ setTimeout(async function () {
         chiamateVoce.ultimaVoceNaturale = voce;
         return Promise.resolve({ ok: true, wav: [82, 73, 70, 70] });
       },
+      rimuoviVoce: function (id) {
+        chiamateVoce.rimuoviVoce = (chiamateVoce.rimuoviVoce || 0) + 1;
+        chiamateVoce.voceRimossa = id;
+        chiamateVoce.installate = chiamateVoce.installate.filter(function (v) { return v !== id; });
+        const voci = vociStato();
+        return Promise.resolve({ ok: true, disponibile: true, installata: voci.some(function (v) { return v.installata; }), voci: voci });
+      },
       rimuovi: function () {
         chiamateVoce.rimuovi++;
         chiamateVoce.installate = [];
@@ -403,6 +410,15 @@ setTimeout(async function () {
   NP.neuraUI.speak("<p>Provo l'altra voce.</p>");
   await new Promise(function (r) { setTimeout(r, 40); });
   ok(chiamateVoce.ultimaVoceNaturale === "paola", "si può tornare alla voce femminile in un clic");
+
+  document.querySelector('#voiceNaturaleVoci [data-rimuovi="paola"]').click();
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(chiamateVoce.rimuoviVoce === 1 && chiamateVoce.voceRimossa === "paola", "si può togliere una sola voce");
+  ok(/Installa Paola/.test(document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').textContent), "la voce tolta torna da installare");
+  ok(!!document.querySelector('#voiceSelect option[value="__naturale__:riccardo"]'), "l'altra voce resta installata");
+  NP.neuraUI.speak("<p>Continuo con la voce rimasta.</p>");
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(chiamateVoce.ultimaVoceNaturale === "riccardo", "la lettura continua con la voce rimasta");
   NP.neuraUI.stop();
   ok(audioRiprodotti.length >= 1, "l'audio prodotto viene riprodotto");
   NP.neuraUI.stop();
@@ -412,6 +428,7 @@ setTimeout(async function () {
   ok(chiamateVoce.rimuovi === 1, "la voce naturale si può togliere");
   ok(!document.querySelector('#voiceSelect option[value="__naturale__:paola"]'), "tolte le voci, l'elenco torna alle voci del sistema");
   ok(document.querySelectorAll("#voiceNaturaleVoci [data-voce]").length === 2, "dopo la rimozione le due voci tornano da installare");
+  ok(document.querySelectorAll("#voiceNaturaleVoci [data-rimuovi]").length === 0, "senza voci installate non resta alcun «Togli»");
 
   // Su Mac il motore locale non esiste: la scheda deve mandare alle voci
   // «Premium» di Apple invece di offrire un download che non funzionerebbe.

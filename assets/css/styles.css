@@ -1956,3 +1956,6 @@ html[data-theme="dark"] .status-num b { color: #dce6fb; }
 .voice-ritmo input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--accent); }
 .voice-ritmo .ritmo-valore { font-variant-numeric: tabular-nums; font-size: .9rem; font-weight: 600; min-width: 3.2rem; text-align: right; }
 .voice-naturale .chip.is-active { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+.voice-naturale .voce-naturale-riga { display: inline-flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+.voice-naturale .chip-togli { font-size: .82rem; opacity: .85; }

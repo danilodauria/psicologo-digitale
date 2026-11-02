@@ -638,8 +638,14 @@
             const testo = v.installata
               ? esc(v.nome) + " · " + esc(v.genere) + (attiva ? " ✓" : "")
               : "Installa " + esc(v.nome) + " · " + v.mb + " MB";
-            return '<button type="button" class="chip' + (attiva ? " is-active" : "") + '" data-voce="' + esc(v.id) + '"' +
+            const pulsante = '<button type="button" class="chip' + (attiva ? " is-active" : "") + '" data-voce="' + esc(v.id) + '"' +
               (v.installata ? ' aria-pressed="' + (attiva ? "true" : "false") + '"' : "") + ">" + testo + "</button>";
+            // Una voce installata si può togliere da sola: l'altra resta.
+            return v.installata
+              ? '<span class="voce-naturale-riga">' + pulsante +
+                '<button type="button" class="chip chip-togli" data-rimuovi="' + esc(v.id) + '" title="Togli ' + esc(v.nome) +
+                ' e libera lo spazio">Togli</button></span>'
+              : pulsante;
           }).join("");
         }
 
@@ -672,10 +678,32 @@
         aggiornaNaturale().then(function (s) { disegnaNaturale(s); riempi(); });
 
         if (vociNaturale) vociNaturale.addEventListener("click", function (e) {
-          const bottone = e.target && e.target.closest ? e.target.closest("[data-voce]") : null;
+          const bottone = e.target && e.target.closest ? e.target.closest("[data-voce],[data-rimuovi]") : null;
           if (!bottone) return;
           const p = ponteNaturale();
           if (!p) return;
+
+          // Togliere una sola voce: il motore e l'altra restano dove sono.
+          if (bottone.hasAttribute("data-rimuovi")) {
+            const togli = bottone.getAttribute("data-rimuovi");
+            if (typeof p.rimuoviVoce !== "function") return;
+            bottone.disabled = true;
+            Promise.resolve(p.rimuoviVoce(togli)).then(function (s) {
+              const voci = (s && Array.isArray(s.voci)) ? s.voci : naturaleVoci;
+              naturaleVoci = voci;
+              naturalePronta = !!(s && s.installata);
+              if (voceNaturaleSalvata() === togli) setVoceNaturale(null);
+              // Se era quella in uso, si continua con l'altra senza riavviare.
+              const restante = naturaleScelta();
+              setVoce(restante ? NATURALE + ":" + restante : null);
+              disegnaNaturale(s && s.ok ? s : { disponibile: true, installata: naturalePronta, voci: voci });
+              riempi();
+              const nome = (voci.filter(function (v) { return v.id === togli; })[0] || {}).nome || togli;
+              A.toast("Voce naturale rimossa: " + nome + ".");
+            }).catch(function () { A.toast("Non sono riuscito a rimuovere quella voce."); });
+            return;
+          }
+
           const id = bottone.getAttribute("data-voce");
           const voce = naturaleVoci.filter(function (v) { return v.id === id; })[0];
           if (!voce) return;
