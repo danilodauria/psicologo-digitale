@@ -164,6 +164,64 @@
     return true;
   }
 
+  // La stessa frase detta da voci diverse, una dopo l'altra: la scelta si fa
+  // sentendo, invece di fidarsi di una descrizione scritta.
+  const FRASE_CONFRONTO = "Questa è la stessa frase, letta prima da una voce e poi dall'altra: ascolta la differenza.";
+
+  // Riproduce una voce sola e dice quando ha finito: il confronto deve
+  // aspettare la fine prima di far parlare l'altra.
+  function ascoltaConVoce(testo, id) {
+    const p = ponteNaturale();
+    if (!p || typeof p.pronuncia !== "function") return Promise.resolve(false);
+    return Promise.resolve(p.pronuncia(testo, ritmo(), id)).then(function (r) {
+      if (!r || !r.ok || !r.wav) return false;
+      const byte = new Uint8Array(r.wav);
+      const url = typeof URL !== "undefined" && URL.createObjectURL ? URL.createObjectURL(new window.Blob([byte], { type: "audio/wav" })) : "";
+      return new Promise(function (fine) {
+        const audio = new window.Audio(url);
+        audioNaturale = audio;
+        let chiuso = false;
+        const chiudi = function (esito) {
+          if (chiuso) return;
+          chiuso = true;
+          if (url) { try { URL.revokeObjectURL(url); } catch (e) { /* niente */ } }
+          if (audioNaturale === audio) audioNaturale = null;
+          fine(esito);
+        };
+        audio.onended = function () { chiudi(true); };
+        audio.onerror = function () { chiudi(false); };
+        try { Promise.resolve(audio.play()).catch(function () { chiudi(false); }); }
+        catch (e) { chiudi(false); }
+      });
+    }).catch(function () { return false; });
+  }
+
+  // Un confronto alla volta: il contatore ferma quello vecchio quando se ne
+  // avvia un altro o si preme Stop, senza lasciare due voci sovrapposte.
+  let confrontoInCorso = 0;
+
+  function confrontaVoci(aggiorna) {
+    const pronte = naturaleVoci.filter(function (v) { return v.installata; });
+    if (pronte.length < 2) return false;
+    const mio = ++confrontoInCorso;
+    stopSpeaking();
+    let indice = 0;
+    const avanti = function () {
+      if (mio !== confrontoInCorso) return;
+      if (indice >= pronte.length) {
+        if (typeof aggiorna === "function") aggiorna(null);
+        return;
+      }
+      const voce = pronte[indice++];
+      if (typeof aggiorna === "function") aggiorna(voce);
+      // Se una voce non parte, si passa comunque all'altra: il confronto non
+      // si blocca a metà.
+      ascoltaConVoce(FRASE_CONFRONTO, voce.id).then(avanti);
+    };
+    avanti();
+    return true;
+  }
+
   // All'avvio si sa già se la voce naturale è installata.
   aggiornaNaturale();
 
@@ -473,6 +531,7 @@
               '<p class="text-small mb-0" id="voiceNaturaleNota"></p>' +
               '<div class="pill-row" id="voiceNaturaleVoci"></div>' +
               '<div class="pill-row">' +
+                '<button type="button" class="chip" id="voiceNaturaleConfronta" title="Fa sentire la stessa frase con le voci installate, una dopo l\'altra" hidden>Confronta le voci</button>' +
                 '<button type="button" class="chip" id="voiceNaturaleRimuovi" title="Libera lo spazio occupato dalle voci naturali" hidden>Rimuovi le voci naturali</button>' +
               "</div></div>" : "") +
             '<p class="text-small muted" id="voiceSpiega" hidden></p>' +
@@ -628,6 +687,7 @@
       const notaNaturale = document.getElementById("voiceNaturaleNota");
       const vociNaturale = document.getElementById("voiceNaturaleVoci");
       const rimuoviNaturale = document.getElementById("voiceNaturaleRimuovi");
+      const confrontaNaturale = document.getElementById("voiceNaturaleConfronta");
       const disegnaNaturale = function (s) {
         if (!scatolaNaturale || !notaNaturale) return;
         const stato = s || {};
@@ -667,6 +727,7 @@
           }
           if (vociNaturale) vociNaturale.innerHTML = "";
           if (rimuoviNaturale) rimuoviNaturale.hidden = true;
+          if (confrontaNaturale) confrontaNaturale.hidden = true;
           return;
         }
 
@@ -682,6 +743,8 @@
             (stato.peso ? " (circa " + stato.peso + " MB)" : "") + " e poi funziona anche senza Internet.";
         }
         if (rimuoviNaturale) rimuoviNaturale.hidden = pronte.length === 0;
+        // Con una voce sola non c'è niente da confrontare.
+        if (confrontaNaturale) confrontaNaturale.hidden = pronte.length < 2;
       };
 
       if (ponteNaturale()) {
@@ -764,6 +827,19 @@
             riempi();
             A.toast("Voce naturale rimossa: torno alle voci del sistema.");
           }).catch(function () { A.toast("Non sono riuscito a rimuovere la voce naturale."); });
+        });
+
+        if (confrontaNaturale) confrontaNaturale.addEventListener("click", function () {
+          const avviato = confrontaVoci(function (voce) {
+            if (!notaNaturale) return;
+            if (voce) {
+              notaNaturale.textContent = "Confronto: adesso parla " + voce.nome + ". La frase è la stessa per tutte e due.";
+              return;
+            }
+            // Finito: torna la nota normale, con i pesi delle voci.
+            aggiornaNaturale().then(function (s) { disegnaNaturale(s); });
+          });
+          if (!avviato) A.toast("Servono due voci installate per il confronto.");
         });
 
         if (typeof ponteNaturale().onProgresso === "function") {

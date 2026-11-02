@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.25";
+  const VERSIONE = "1.3.26";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.26",
+      data: "2 novembre 2026",
+      titolo: "Le due voci si ascoltano una dopo l'altra",
+      punti: [
+        "Accanto alle voci installate c'è «Confronta le voci»: fa sentire la stessa frase prima con Paola e poi con Riccardo, senza cambiare voce a mano.",
+        "Mentre legge, la scheda dice quale voce sta parlando; alla fine torna la nota con i pesi.",
+        "Il pulsante compare solo quando le voci installate sono due: con una sola non ci sarebbe niente da confrontare."
+      ]
+    },
     {
       v: "1.3.25",
       data: "2 novembre 2026",

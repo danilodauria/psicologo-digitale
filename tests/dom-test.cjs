@@ -317,7 +317,7 @@ setTimeout(async function () {
 
   /* Voce naturale (solo nel programma installato) ------------------------- */
 
-  const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0, ultimoRitmo: null, ultimaVoce: null, installate: [] };
+  const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0, ultimoRitmo: null, ultimaVoce: null, installate: [], voceUsate: [] };
   const vociStato = function () {
     return [
       { id: "paola", nome: "Paola", genere: "femminile", mb: 61, mbReale: 61, installata: chiamateVoce.installate.indexOf("paola") !== -1 },
@@ -327,7 +327,14 @@ setTimeout(async function () {
   const audioRiprodotti = [];
   window.Audio = function (src) {
     this.src = src;
-    this.play = function () { audioRiprodotti.push(src); return Promise.resolve(); };
+    const audio = this;
+    this.play = function () {
+      audioRiprodotti.push(src);
+      // Come un audio vero: quando finisce lo dice, così si passa alla voce
+      // successiva del confronto.
+      if (typeof audio.onended === "function") setTimeout(function () { if (typeof audio.onended === "function") audio.onended(); }, 0);
+      return Promise.resolve();
+    };
     this.pause = function () {};
   };
   if (window.URL) {
@@ -353,6 +360,7 @@ setTimeout(async function () {
         chiamateVoce.pronuncia++;
         chiamateVoce.ultimoRitmo = passo;
         chiamateVoce.ultimaVoceNaturale = voce;
+        chiamateVoce.voceUsate.push(voce);
         return Promise.resolve({ ok: true, wav: [82, 73, 70, 70] });
       },
       rimuoviVoce: function (id) {
@@ -394,6 +402,17 @@ setTimeout(async function () {
   ok(/61 MB/.test(document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').textContent) && /27 MB/.test(document.querySelector('#voiceNaturaleVoci [data-voce="riccardo"]').textContent), "ogni voce installata dice quanto spazio occupa davvero");
   ok(/127 MB/.test(document.getElementById("voiceNaturaleNota").textContent), "la scheda dice quanto occupano insieme, motore compreso");
 
+  // Confronto: la stessa frase con una voce e poi con l'altra, in ordine.
+  const confronta = document.getElementById("voiceNaturaleConfronta");
+  ok(!!confronta && !confronta.hidden, "con due voci installate compare «Confronta le voci»");
+  ok(/Confronta/.test(confronta.textContent), "il pulsante dice a cosa serve");
+  const primaDelConfronto = chiamateVoce.voceUsate.length;
+  confronta.click();
+  await new Promise(function (r) { setTimeout(r, 120); });
+  const usate = chiamateVoce.voceUsate.slice(primaDelConfronto);
+  ok(usate.length === 2 && usate[0] === "paola" && usate[1] === "riccardo", "il confronto fa parlare le due voci una dopo l'altra");
+  ok(/pronte/.test(document.getElementById("voiceNaturaleNota").textContent), "a confronto finito torna la nota con i pesi");
+
   const cursore = document.getElementById("voiceRitmo");
   ok(!!cursore, "la scheda Voce ha il cursore della velocità");
   ok(/100%/.test(document.getElementById("voiceRitmoValore").textContent), "il cursore parte dal passo normale");
@@ -432,6 +451,7 @@ setTimeout(async function () {
   ok(!document.querySelector('#voiceSelect option[value="__naturale__:paola"]'), "tolte le voci, l'elenco torna alle voci del sistema");
   ok(document.querySelectorAll("#voiceNaturaleVoci [data-voce]").length === 2, "dopo la rimozione le due voci tornano da installare");
   ok(document.querySelectorAll("#voiceNaturaleVoci [data-rimuovi]").length === 0, "senza voci installate non resta alcun «Togli»");
+  ok(document.getElementById("voiceNaturaleConfronta").hidden === true, "con una voce sola il confronto non compare");
 
   // Su Mac il motore locale non esiste: la scheda deve mandare alle voci
   // «Premium» di Apple invece di offrire un download che non funzionerebbe.
