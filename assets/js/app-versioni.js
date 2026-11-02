@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.20";
+  const VERSIONE = "1.3.21";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.21",
+      data: "2 novembre 2026",
+      titolo: "La voce naturale arriva anche su Linux",
+      punti: [
+        "Nel programma per Linux, sia Intel sia ARM, la scheda Voce offre lo stesso pulsante di Windows: una voce italiana naturale, scaricata una volta (circa 86 MB) e poi disponibile anche senza Internet.",
+        "Su Mac il pannello dice dove si trova la voce naturale: le voci «Premium» di Apple si scaricano una volta dalle Impostazioni di Sistema e poi entrano nell'elenco come le altre.",
+        "L'audio resta generato sul computer, ogni file scaricato è verificato con la sua impronta e, se il motore non parte, la lettura continua con la voce del sistema."
+      ]
+    },
     {
       v: "1.3.20",
       data: "1 novembre 2026",

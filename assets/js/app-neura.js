@@ -420,7 +420,7 @@
               "</div></div>" : "") +
             '<p class="text-small muted" id="voiceSpiega" hidden></p>' +
             '<div class="voice-help" id="voiceAiuto" hidden></div>' +
-            '<p class="text-small muted mb-0">La voce usa il sintetizzatore del dispositivo: nessun audio lascia il computer. Su Windows e macOS la più naturale è quella «Natural» o «Premium»: se non compare, si aggiunge dalle impostazioni di sistema.</p></div>' +
+            '<p class="text-small muted mb-0">La voce usa il sintetizzatore del dispositivo: nessun audio lascia il computer. Su Windows la più naturale è quella «Natural», su macOS quella «Premium»: se non compare, si aggiunge dalle impostazioni di sistema.</p></div>' +
         "</aside>" +
       "</div>"
     );
@@ -551,7 +551,14 @@
           if (installaNaturale) installaNaturale.hidden = true;
           if (rimuoviNaturale) rimuoviNaturale.hidden = false;
         } else if (stato.disponibile === false) {
-          notaNaturale.textContent = "La voce naturale si installa nel programma per Windows: su questo sistema restano le voci del sistema.";
+          // Su Mac il motore locale non c'è (gli archivi ufficiali non
+          // contengono le librerie che servono): la voce naturale sono quelle
+          // «Premium» di Apple, che il programma usa come voci del sistema.
+          if (/^darwin/.test(String(stato.motivo || ""))) {
+            notaNaturale.innerHTML = "Su Mac la voce naturale è quella <strong>«Premium» di Apple</strong>: si scarica una volta da Impostazioni di Sistema → Accessibilità → Contenuto pronunciato → Gestisci voci, poi compare qui nell'elenco.";
+          } else {
+            notaNaturale.textContent = "La voce naturale si scarica per Windows e Linux, su processori Intel e ARM: su questo sistema restano le voci del sistema.";
+          }
           if (installaNaturale) installaNaturale.hidden = true;
           if (rimuoviNaturale) rimuoviNaturale.hidden = true;
         } else {

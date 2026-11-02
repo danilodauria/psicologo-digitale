@@ -373,6 +373,18 @@ setTimeout(async function () {
   ok(chiamateVoce.rimuovi === 1, "la voce naturale si può togliere");
   ok(!document.querySelector('#voiceSelect option[value="__naturale__"]'), "tolta la voce, l'elenco torna alle voci del sistema");
 
+  // Su Mac il motore locale non esiste: la scheda deve mandare alle voci
+  // «Premium» di Apple invece di offrire un download che non funzionerebbe.
+  window.npDesktop.voceNaturale.stato = function () {
+    return Promise.resolve({ ok: true, disponibile: false, installata: false, motivo: "darwin-arm64" });
+  };
+  navigate("#/");
+  navigate("#/neura");
+  await new Promise(function (r) { setTimeout(r, 40); });
+  const notaMac = document.getElementById("voiceNaturaleNota");
+  ok(/Premium/.test(notaMac.textContent) && /Apple/.test(notaMac.textContent), "su Mac la scheda indica le voci Premium di Apple");
+  ok(document.getElementById("voiceNaturaleInstalla").hidden === true, "su Mac non compare un pulsante di download che non servirebbe");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

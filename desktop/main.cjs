@@ -11,6 +11,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const { spawn } = require("child_process");
+const { scompattaMotore } = require("./motore.cjs");
 
 const HOME = path.join(__dirname, "app", "index.html");
 const OLLAMA = "http://127.0.0.1:11434";
@@ -93,13 +94,35 @@ ipcMain.handle("sistema:impostazioniVoce", async () => {
 // non sta nel pacchetto (86 MB), si scarica una volta dal pannello Voce e
 // resta nella cartella dei dati dell'utente. Ogni file ha un'impronta fissata
 // qui sotto e viene controllato prima di essere usato.
+// Un motore per sistema e processore: su Windows arriva uno ZIP, su Linux un
+// tar.gz con dentro il binario e le sue librerie.
 const VOCE_MOTORE = {
-  win32: {
+  "win32-x64": {
+    tipo: "zip",
     url: "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip",
     sha256: "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea",
     byte: 22477236
+  },
+  "linux-x64": {
+    tipo: "tar",
+    url: "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz",
+    sha256: "a50cb45f355b7af1f6d758c1b360717877ba0a398cc8cbe6d2a7a3a26e225992",
+    byte: 26460462
+  },
+  "linux-arm64": {
+    tipo: "tar",
+    url: "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_aarch64.tar.gz",
+    sha256: "fea0fd2d87c54dbc7078d0f878289f404bd4d6eea6e7444a77835d1537ab88eb",
+    byte: 26004717
   }
 };
+
+// macOS resta fuori: gli archivi ufficiali di Piper per Mac non contengono le
+// librerie che i binari cercano (libonnxruntime, libespeak-ng), quindi non
+// potrebbero funzionare. Lì la voce naturale sono quelle «Premium» di Apple.
+function motoreVoce() {
+  return VOCE_MOTORE[process.platform + "-" + process.arch] || null;
+}
 
 const VOCE_FILE = [
   {
@@ -138,9 +161,9 @@ function voceInstallata() {
 }
 
 function statoVoce() {
-  const motore = VOCE_MOTORE[process.platform];
+  const motore = motoreVoce();
   if (!motore) {
-    return { ok: true, disponibile: false, installata: false, motivo: process.platform };
+    return { ok: true, disponibile: false, installata: false, motivo: process.platform + "-" + process.arch };
   }
   const peso = Math.round((motore.byte + VOCE_FILE.reduce((s, f) => s + f.byte, 0)) / 1048576);
   return { ok: true, disponibile: true, installata: voceInstallata(), voce: VOCE_NOME, peso: peso };
@@ -180,31 +203,16 @@ async function scaricaFile(destinazione, file, onProgresso) {
   return contenuto;
 }
 
-// Il motore arriva come archivio ZIP: si scompatta dentro il programma, così
-// non serve né unzip né Powershell né il permesso di amministratore.
-function scompattaMotore(archivio, dove) {
-  const { unzipSync } = require("fflate");
-  const dentro = unzipSync(new Uint8Array(archivio));
-  const radice = path.join(dove, "piper") + path.sep;
-  Object.keys(dentro).forEach((nome) => {
-    if (!nome.startsWith("piper/") || nome.endsWith("/")) return;
-    const relativo = nome.slice("piper/".length);
-    if (!relativo) return;
-    const destinazione = path.join(dove, "piper", relativo);
-    // Nessun file può finire fuori dalla cartella della voce.
-    if (!destinazione.startsWith(radice)) return;
-    fs.mkdirSync(path.dirname(destinazione), { recursive: true });
-    fs.writeFileSync(destinazione, Buffer.from(dentro[nome]));
-  });
-}
+// Il motore si scompatta dentro il programma (vedi motore.cjs), così non
+// serve né unzip né tar né il permesso di amministratore.
 
 let scaricamentoVoce = null;
 
 ipcMain.handle("voceNaturale:stato", () => statoVoce());
 
 ipcMain.handle("voceNaturale:scarica", async (evento) => {
-  const motore = VOCE_MOTORE[process.platform];
-  if (!motore) return { ok: false, disponibile: false, motivo: process.platform };
+  const motore = motoreVoce();
+  if (!motore) return { ok: false, disponibile: false, motivo: process.platform + "-" + process.arch };
   if (voceInstallata()) return statoVoce();
   if (scaricamentoVoce) return scaricamentoVoce;
 
@@ -222,8 +230,9 @@ ipcMain.handle("voceNaturale:scarica", async (evento) => {
     manda({ fase: "motore", percentuale: 0 });
     await scaricaFile(archivio, motore, (letti) => manda({ fase: "motore", percentuale: Math.round((letti / pesoTotale) * 100) }));
     fatto += motore.byte;
-    scompattaMotore(await fs.promises.readFile(archivio), cartella);
+    scompattaMotore(await fs.promises.readFile(archivio), cartella, motore.tipo);
     await fs.promises.unlink(archivio).catch(() => {});
+    if (!fs.existsSync(percorsiVoce().exe)) throw new Error("l'archivio non conteneva il motore vocale");
 
     for (const file of VOCE_FILE) {
       const prima = fatto;
@@ -236,7 +245,12 @@ ipcMain.handle("voceNaturale:scarica", async (evento) => {
     manda({ fase: "pronta", percentuale: 100 });
     return statoVoce();
   })()
-    .catch((err) => ({ ok: false, errore: String((err && err.message) || err) }))
+    .catch(async (err) => {
+      // Un'installazione a metà non deve restare lì a sembrare completa.
+      await fs.promises.rm(path.join(cartella, "piper"), { recursive: true, force: true }).catch(() => {});
+      await fs.promises.rm(archivio, { force: true }).catch(() => {});
+      return { ok: false, errore: String((err && err.message) || err) };
+    })
     .finally(() => { scaricamentoVoce = null; });
 
   return scaricamentoVoce;
@@ -249,6 +263,11 @@ ipcMain.handle("voceNaturale:pronuncia", async (_evento, testo) => {
   if (!pulito) return { ok: false, errore: "testo vuoto" };
   if (!voceInstallata()) return { ok: false, errore: "la voce naturale non è installata" };
   const dove = percorsiVoce();
+  // Su macOS e Linux il motore arriva con i suoi permessi, ma un archivio
+  // scompattato altrove potrebbe averli persi: il bit di esecuzione serve.
+  if (process.platform !== "win32") {
+    try { fs.chmodSync(dove.exe, 0o755); } catch (e) { /* già eseguibile */ }
+  }
   const wav = path.join(app.getPath("temp"), "psicologo-digitale-voce-" + process.pid + ".wav");
 
   return new Promise((risolvi) => {

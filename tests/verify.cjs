@@ -558,14 +558,19 @@ ok(/sistema:impostazioniVoce/.test(mainC) && /ms-settings:speech/.test(mainC) &&
 
 ok(/voceNaturale/.test(preloadC) && /voceNaturale:scarica/.test(preloadC) && /pronuncia/.test(preloadC), "il ponte desktop espone download e lettura della voce naturale");
 ok(/voceNaturale:scarica/.test(mainC) && /voceNaturale:pronuncia/.test(mainC) && /voceNaturale:rimuovi/.test(mainC), "il processo principale scarica, legge e rimuove la voce naturale");
-ok(/piper_windows_amd64\.zip/.test(mainC) && /it_IT-paola-medium\.onnx/.test(mainC), "motore e voce naturale sono fissati a una versione precisa");
-ok((mainC.match(/sha256: "[0-9a-f]{64}"/g) || []).length === 3, "i tre file scaricati hanno un'impronta SHA-256 fissata");
+ok(/piper_windows_amd64\.zip/.test(mainC) && /piper_linux_x86_64\.tar\.gz/.test(mainC) && /piper_linux_aarch64\.tar\.gz/.test(mainC) && /it_IT-paola-medium\.onnx/.test(mainC), "il motore è fissato a una versione precisa per Windows e Linux");
+ok((mainC.match(/sha256: "[0-9a-f]{64}"/g) || []).length === 5, "ogni file scaricato (motore per sistema e voce) ha un'impronta SHA-256 fissata");
+ok(/function motoreVoce/.test(mainC) && /process\.platform \+ "-" \+ process\.arch/.test(mainC), "il motore si sceglie in base al sistema e al processore");
 ok(/createHash\("sha256"\)/.test(mainC) && /impronta SHA-256 diversa/.test(mainC), "i file scaricati sono verificati prima di essere usati");
-ok(/require\("fflate"\)/.test(mainC) && /unzipSync/.test(mainC), "l'archivio del motore si scompatta nel programma, senza strumenti esterni");
+const motoreC = read("desktop/motore.cjs");
+ok(/require\("\.\/motore\.cjs"\)/.test(mainC) && /scompattaMotore\(/.test(mainC), "il motore si scompatta dentro il programma");
+ok(/unzipSync/.test(motoreC) && /gunzipSync/.test(motoreC) && /symlinkSync/.test(motoreC) && /chmodSync/.test(motoreC), "ZIP e tar.gz si aprono senza strumenti esterni, con librerie e permessi");
+ok(/motore\.cjs/.test(read("desktop/package.json")), "anche il nuovo modulo entra nel pacchetto");
 ok(/\["--model", dove\.modello, "--config", dove\.config/.test(mainC) && /stdin\.end\(pulito/.test(mainC), "la voce legge il testo dall'ingresso standard e restituisce un WAV");
 ok(/voiceNaturaleInstalla/.test(neuraUI) && /voiceNaturaleRimuovi/.test(neuraUI), "la scheda Voce installa e rimuove la voce naturale");
 ok(/"__naturale__"/.test(neuraUI) && /function parlaNaturale/.test(neuraUI), "la voce naturale entra nell'elenco e nella lettura");
 ok(/parlaConSistema\(testo\)/.test(neuraUI) && /se la voce naturale non parte/i.test(neuraUI), "se la voce naturale non parte si torna alla voce del sistema");
+ok(/darwin/.test(neuraUI) && /Premium/.test(neuraUI), "su Mac la scheda indica le voci naturali di Apple");
 ok(/stopListening/.test(neuraUI), "la dettatura si può interrompere");
 
 const inst = read("assets/js/app-installa.js");
