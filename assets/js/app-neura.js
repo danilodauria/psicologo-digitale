@@ -67,6 +67,13 @@
     return naturaleVoci.some(function (v) { return v.installata && (!id || v.id === id); });
   }
 
+  // Il peso misurato dal programma sui file presenti, non la stima del
+  // catalogo: è quello che si libera davvero togliendo la voce.
+  function pesoVoce(v) {
+    if (!v) return 0;
+    return v.mbReale || v.mb || 0;
+  }
+
   // La voce naturale in uso: quella scelta se è installata, altrimenti la
   // prima disponibile. Restituisce l'identificativo, o null se non ce n'è.
   function naturaleScelta() {
@@ -636,7 +643,7 @@
           vociNaturale.innerHTML = voci.map(function (v) {
             const attiva = v.installata && v.id === scelta;
             const testo = v.installata
-              ? esc(v.nome) + " · " + esc(v.genere) + (attiva ? " ✓" : "")
+              ? esc(v.nome) + " · " + esc(v.genere) + " · " + pesoVoce(v) + " MB" + (attiva ? " ✓" : "")
               : "Installa " + esc(v.nome) + " · " + v.mb + " MB";
             const pulsante = '<button type="button" class="chip' + (attiva ? " is-active" : "") + '" data-voce="' + esc(v.id) + '"' +
               (v.installata ? ' aria-pressed="' + (attiva ? "true" : "false") + '"' : "") + ">" + testo + "</button>";
@@ -644,7 +651,7 @@
             return v.installata
               ? '<span class="voce-naturale-riga">' + pulsante +
                 '<button type="button" class="chip chip-togli" data-rimuovi="' + esc(v.id) + '" title="Togli ' + esc(v.nome) +
-                ' e libera lo spazio">Togli</button></span>'
+                ' e libera ' + pesoVoce(v) + ' MB">Togli</button></span>'
               : pulsante;
           }).join("");
         }
@@ -664,9 +671,12 @@
         }
 
         if (pronte.length) {
+          // Il totale dice quanto si libera togliendo tutto: voci misurate più
+          // il motore, che resta finché serve almeno una voce.
           notaNaturale.innerHTML = "<strong>Voci naturali pronte: " +
-            pronte.map(function (v) { return esc(v.nome); }).join(" e ") +
-            ".</strong> Sono generate sul tuo computer: nessun testo esce da qui.";
+            pronte.map(function (v) { return esc(v.nome); }).join(" e ") + ".</strong> " +
+            (stato.spazio ? "Occupano " + stato.spazio + " MB sul disco, motore compreso. " : "") +
+            "Sono generate sul tuo computer: nessun testo esce da qui.";
         } else {
           notaNaturale.textContent = "Voce naturale (facoltativa): suona come una persona, non come un robot. Si scarica una volta sola" +
             (stato.peso ? " (circa " + stato.peso + " MB)" : "") + " e poi funziona anche senza Internet.";
@@ -699,7 +709,8 @@
               disegnaNaturale(s && s.ok ? s : { disponibile: true, installata: naturalePronta, voci: voci });
               riempi();
               const nome = (voci.filter(function (v) { return v.id === togli; })[0] || {}).nome || togli;
-              A.toast("Voce naturale rimossa: " + nome + ".");
+              A.toast("Voce naturale rimossa: " + nome +
+                (s && s.liberati ? " · liberati " + s.liberati + " MB" : "") + ".");
             }).catch(function () { A.toast("Non sono riuscito a rimuovere quella voce."); });
             return;
           }

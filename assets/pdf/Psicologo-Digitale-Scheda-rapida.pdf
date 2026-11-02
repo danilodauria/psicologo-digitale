@@ -47,7 +47,7 @@ endobj
 endobj
 9 0 obj
 <<
-/Author (Danilo D'Auria) /CreationDate (D:20261102110733+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261102110733+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Danilo D'Auria) /CreationDate (D:20261102112221+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261102112221+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (Istruzioni di installazione per Windows, macOS e Linux) /Title (Psicologo Digitale \267 Scheda rapida) /Trapped /False
 >>
 endobj
@@ -66,7 +66,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Scheda rapida) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.24) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.25) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -299,7 +299,7 @@ q
 1 0 0 1 57.02362 363.7276 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (versione 1.3.24 \267 danilodauria.github.io/psicologo-digitale/scheda-rapida.html \267 Codice MIT \267 Contenuti CC BY-NC-SA) Tj T* (4.0 \267 \251 Danilo D'Auria) Tj T* ET
+BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (versione 1.3.25 \267 danilodauria.github.io/psicologo-digitale/scheda-rapida.html \267 Codice MIT \267 Contenuti CC BY-NC-SA) Tj T* (4.0 \267 \251 Danilo D'Auria) Tj T* ET
 Q
 Q
  
@@ -322,7 +322,7 @@ xref
 trailer
 <<
 /ID 
-[<de890cf2095cf66f30ae70d88803e22c><de890cf2095cf66f30ae70d88803e22c>]
+[<acb5abc5b65f724fca575cabebbb3beb><acb5abc5b65f724fca575cabebbb3beb>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 9 0 R

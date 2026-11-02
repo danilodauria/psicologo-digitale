@@ -320,8 +320,8 @@ setTimeout(async function () {
   const chiamateVoce = { scarica: 0, pronuncia: 0, rimuovi: 0, ultimoRitmo: null, ultimaVoce: null, installate: [] };
   const vociStato = function () {
     return [
-      { id: "paola", nome: "Paola", genere: "femminile", mb: 61, installata: chiamateVoce.installate.indexOf("paola") !== -1 },
-      { id: "riccardo", nome: "Riccardo", genere: "maschile", mb: 27, installata: chiamateVoce.installate.indexOf("riccardo") !== -1 }
+      { id: "paola", nome: "Paola", genere: "femminile", mb: 61, mbReale: 61, installata: chiamateVoce.installate.indexOf("paola") !== -1 },
+      { id: "riccardo", nome: "Riccardo", genere: "maschile", mb: 27, mbReale: 27, installata: chiamateVoce.installate.indexOf("riccardo") !== -1 }
     ];
   };
   const audioRiprodotti = [];
@@ -340,14 +340,14 @@ setTimeout(async function () {
     voceNaturale: {
       stato: function () {
         const voci = vociStato();
-        return Promise.resolve({ ok: true, disponibile: true, installata: voci.some(function (v) { return v.installata; }), peso: 86, voci: voci });
+        return Promise.resolve({ ok: true, disponibile: true, installata: voci.some(function (v) { return v.installata; }), peso: 86, spazio: 127, voci: voci });
       },
       scarica: function (id) {
         chiamateVoce.scarica++;
         chiamateVoce.ultimaVoce = id;
         if (chiamateVoce.installate.indexOf(id) === -1) chiamateVoce.installate.push(id);
         const voci = vociStato();
-        return Promise.resolve({ ok: true, disponibile: true, installata: true, voce: id, peso: 86, voci: voci });
+        return Promise.resolve({ ok: true, disponibile: true, installata: true, voce: id, peso: 86, spazio: 127, voci: voci });
       },
       pronuncia: function (testo, passo, voce) {
         chiamateVoce.pronuncia++;
@@ -360,7 +360,7 @@ setTimeout(async function () {
         chiamateVoce.voceRimossa = id;
         chiamateVoce.installate = chiamateVoce.installate.filter(function (v) { return v !== id; });
         const voci = vociStato();
-        return Promise.resolve({ ok: true, disponibile: true, installata: voci.some(function (v) { return v.installata; }), voci: voci });
+        return Promise.resolve({ ok: true, disponibile: true, installata: voci.some(function (v) { return v.installata; }), spazio: voci.some(function (v) { return v.installata; }) ? 127 : 0, liberati: 61, voci: voci });
       },
       rimuovi: function () {
         chiamateVoce.rimuovi++;
@@ -391,6 +391,8 @@ setTimeout(async function () {
   await new Promise(function (r) { setTimeout(r, 40); });
   ok(chiamateVoce.scarica === 2 && chiamateVoce.ultimaVoce === "riccardo", "si aggiunge la seconda voce senza riscaricare il motore");
   ok(!!document.querySelector('#voiceSelect option[value="__naturale__:riccardo"]'), "anche la voce maschile entra nell'elenco");
+  ok(/61 MB/.test(document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').textContent) && /27 MB/.test(document.querySelector('#voiceNaturaleVoci [data-voce="riccardo"]').textContent), "ogni voce installata dice quanto spazio occupa davvero");
+  ok(/127 MB/.test(document.getElementById("voiceNaturaleNota").textContent), "la scheda dice quanto occupano insieme, motore compreso");
 
   const cursore = document.getElementById("voiceRitmo");
   ok(!!cursore, "la scheda Voce ha il cursore della velocità");
@@ -415,6 +417,7 @@ setTimeout(async function () {
   await new Promise(function (r) { setTimeout(r, 40); });
   ok(chiamateVoce.rimuoviVoce === 1 && chiamateVoce.voceRimossa === "paola", "si può togliere una sola voce");
   ok(/Installa Paola/.test(document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').textContent), "la voce tolta torna da installare");
+  ok(/27 MB/.test(document.querySelector('#voiceNaturaleVoci [data-voce="riccardo"]').textContent), "la voce rimasta continua a dire quanto pesa");
   ok(!!document.querySelector('#voiceSelect option[value="__naturale__:riccardo"]'), "l'altra voce resta installata");
   NP.neuraUI.speak("<p>Continuo con la voce rimasta.</p>");
   await new Promise(function (r) { setTimeout(r, 40); });

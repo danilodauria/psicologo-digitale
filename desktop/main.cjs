@@ -202,27 +202,64 @@ function voceInstallata() {
   return motorePronto() && VOCE_VOCI.some((v) => vocePronta(v.id));
 }
 
+// Quanto occupa davvero una cartella sul disco. Il catalogo dice quanto pesa
+// il download; qui si guarda quello che c'è, perché è quello che si libera.
+function byteCartella(dove) {
+  let somma = 0;
+  let dentro = [];
+  try { dentro = fs.readdirSync(dove, { withFileTypes: true }); } catch (e) { return 0; }
+  for (const voce of dentro) {
+    const percorso = path.join(dove, voce.name);
+    if (voce.isDirectory()) { somma += byteCartella(percorso); continue; }
+    if (!voce.isFile()) continue;
+    try { somma += fs.statSync(percorso).size; } catch (e) { /* file sparito nel frattempo */ }
+  }
+  return somma;
+}
+
+function byteVoce(id) {
+  const dove = percorsiVoce(id);
+  let somma = 0;
+  for (const file of [dove.modello, dove.config]) {
+    try { somma += fs.statSync(file).size; } catch (e) { /* voce non installata */ }
+  }
+  return somma;
+}
+
+function byteMotore() {
+  return byteCartella(path.join(cartellaVoce(), "piper"));
+}
+
 function statoVoce() {
   const motore = motoreVoce();
-  const voci = VOCE_VOCI.map((v) => ({
-    id: v.id,
-    nome: v.nome,
-    genere: v.genere,
-    nota: v.nota,
-    mb: Math.round(v.file.reduce((s, f) => s + f.byte, 0) / 1048576),
-    installata: vocePronta(v.id)
-  }));
+  const voci = VOCE_VOCI.map((v) => {
+    const reale = byteVoce(v.id);
+    return {
+      id: v.id,
+      nome: v.nome,
+      genere: v.genere,
+      nota: v.nota,
+      mb: Math.round(v.file.reduce((s, f) => s + f.byte, 0) / 1048576),
+      // Il peso misurato sul disco: per una voce che c'è è questo che conta.
+      byte: reale,
+      mbReale: Math.round(reale / 1048576),
+      installata: vocePronta(v.id)
+    };
+  });
   const pronte = voci.filter((v) => v.installata);
   if (!motore) {
     return { ok: true, disponibile: false, installata: false, motivo: process.platform + "-" + process.arch, voci: voci };
   }
   const primo = VOCE_VOCI[0].file.reduce((s, f) => s + f.byte, 0);
+  // Quello che si libera togliendo tutto: le voci misurate più il motore.
+  const spazio = pronte.reduce((s, v) => s + v.byte, 0) + (motorePronto() ? byteMotore() : 0);
   return {
     ok: true,
     disponibile: true,
     installata: motorePronto() && pronte.length > 0,
     voce: (pronte[0] || voci[0]).nome,
     peso: Math.round((motore.byte + primo) / 1048576),
+    spazio: Math.round(spazio / 1048576),
     voci: voci
   };
 }
@@ -389,13 +426,17 @@ ipcMain.handle("voceNaturale:rimuoviVoce", async (_evento, id) => {
   if (!voce) return { ok: false, errore: "voce sconosciuta" };
   try {
     const cartella = cartellaVoce();
+    // Quanto c'era prima e quanto resta dopo: la differenza è lo spazio
+    // liberato, così la scheda può dirlo subito.
+    const prima = byteCartella(cartella);
     for (const file of voce.file) {
       await fs.promises.rm(path.join(cartella, file.nome), { force: true }).catch(() => {});
     }
     if (!VOCE_VOCI.some((v) => vocePronta(v.id))) {
       await fs.promises.rm(path.join(cartella, "piper"), { recursive: true, force: true }).catch(() => {});
     }
-    return statoVoce();
+    const liberati = Math.round((prima - byteCartella(cartella)) / 1048576);
+    return Object.assign({}, statoVoce(), { liberati: liberati });
   } catch (err) {
     return { ok: false, errore: String((err && err.message) || err) };
   }

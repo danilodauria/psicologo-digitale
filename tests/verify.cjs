@@ -573,6 +573,9 @@ ok(/voiceNaturaleVoci/.test(neuraUI) && /voiceNaturaleRimuovi/.test(neuraUI) && 
 ok(/naturaleVoci/.test(neuraUI) && /CHIAVE_VOCE_NATURALE/.test(neuraUI), "la voce naturale scelta resta memorizzata");
 ok(/voceNaturale:rimuoviVoce/.test(mainC) && /rimuoviVoce/.test(preloadC), "una voce naturale si può togliere da sola");
 ok(/data-rimuovi/.test(neuraUI) && /voceNaturale:rimuoviVoce/.test(mainC), "la scheda Voce offre «Togli» accanto a ogni voce installata");
+ok(/function byteCartella/.test(mainC) && /mbReale/.test(mainC) && /spazio: Math\.round/.test(mainC), "il programma misura lo spazio realmente occupato, non la stima del catalogo");
+ok(/mbReale/.test(neuraUI) && /pesoVoce\(v\)/.test(neuraUI) && /MB sul disco, motore compreso/.test(neuraUI), "la scheda Voce dice quanto pesa ogni voce installata e il totale");
+ok(/liberati/.test(mainC) && /liberati/.test(neuraUI), "togliendo una voce la scheda dice quanti MB ha liberato");
 ok(/"__naturale__"/.test(neuraUI) && /function parlaNaturale/.test(neuraUI), "la voce naturale entra nell'elenco e nella lettura");
 ok(/parlaConSistema\(testo\)/.test(neuraUI) && /se la voce naturale non parte/i.test(neuraUI), "se la voce naturale non parte si torna alla voce del sistema");
 ok(/darwin/.test(neuraUI) && /Premium/.test(neuraUI), "su Mac la scheda indica le voci naturali di Apple");
