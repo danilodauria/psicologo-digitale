@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.27";
+  const VERSIONE = "1.3.28";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.28",
+      data: "3 novembre 2026",
+      titolo: "Il pannello Sistema racconta anche le voci naturali",
+      punti: [
+        "La sezione «Voci del dispositivo» dice ora che le voci naturali di Paola e Riccardo si installano dal pannello Voce e restano dentro il programma.",
+        "Le altre voci arrivano dal sistema operativo: senza una voce italiana Neura tace e risponde per iscritto, e questo si legge prima dei passaggi per aggiungerne una.",
+        "La frase sulle voci online di Chrome ed Edge è stata riscritta: prima era sgrammaticata e lasciava credere che il programma non avesse voci proprie."
+      ]
+    },
     {
       v: "1.3.27",
       data: "3 novembre 2026",

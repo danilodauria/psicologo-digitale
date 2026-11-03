@@ -335,6 +335,8 @@ setTimeout(async function () {
   document.getElementById("statusOs").click();
   ok(/Sistema in uso/.test(document.getElementById("statusPanel").textContent), "il pannello dice su quale sistema gira il programma");
   ok(/Voci del dispositivo/.test(document.getElementById("statusPanel").textContent), "il pannello conta le voci disponibili");
+  ok(/voci naturali/.test(document.getElementById("statusPanel").textContent), "il pannello Sistema cita le voci naturali del programma");
+  ok(!/Nel browser Chrome ed Edge aggiungono/.test(document.getElementById("statusPanel").textContent), "il pannello non contiene più la frase sgrammaticata sul browser");
   document.getElementById("statusOs").click();
 
   const before = document.documentElement.getAttribute("data-theme");
