@@ -294,7 +294,7 @@
     } else if (!ultimaIa) {
       html += '<p class="muted">' + (inCorso ? "Sto controllando se Ollama risponde…" : "Stato di Ollama non ancora letto.") + "</p>";
     } else if (ultimaIa.ok && ultimaIa.modelli.length) {
-      html += '<p><span class="badge badge-green">Ollama attivo</span> Modello installato: <strong>' + esc(ultimaIa.modelli[0]) + "</strong>" +
+      html += '<p><span class="badge badge-green">Ollama attivo</span> Modello in uso: <strong>' + esc(ultimaIa.modelli[0]) + "</strong>" +
         (ultimaIa.modelli.length > 1 ? " (e altri " + (ultimaIa.modelli.length - 1) + ")" : "") + ".</p>" +
         "<p>Risponde solo sul tuo computer: nessuna domanda esce da qui. Si usa nella pagina Installa per le domande libere; le risposte verificate restano quelle di Neura.</p>";
     } else if (ultimaIa.ok) {
@@ -431,15 +431,15 @@
       ultimaIa = { ok: !!(r && r.ok), modelli: modelli, errore: r && r.error };
       inCorso = false;
 
-      if (testo) testo.textContent = modelli.length
-        ? "IA locale: " + modelli[0]
-        : (r && r.ok ? "IA locale: nessun modello" : "IA locale: da installare");
+      // Nel chip resta lo stato, non il nome del modello: il nome tecnico si
+      // legge nel pannello, dove c'è spazio per dirlo per esteso.
+      if (testo) testo.textContent = modelli.length ? "IA locale: pronta" : "IA locale: essenziale";
       if (dot) dot.setAttribute("data-state", modelli.length ? "ok" : "attesa");
       if (aperto === "modo") riempiPannello();
     }).catch(function () {
       inCorso = false;
       ultimaIa = { ok: false, modelli: [], errore: "errore" };
-      if (testo) testo.textContent = "IA locale: da installare";
+      if (testo) testo.textContent = "IA locale: essenziale";
       if (dot) dot.setAttribute("data-state", "attesa");
       if (aperto === "modo") riempiPannello();
     });

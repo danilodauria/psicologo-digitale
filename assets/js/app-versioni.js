@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.26";
+  const VERSIONE = "1.3.27";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.27",
+      data: "3 novembre 2026",
+      titolo: "La barra dice se l'IA è pronta, senza nomi tecnici",
+      punti: [
+        "Il chip della barra di stato ora dice «IA locale: pronta» quando un modello è installato, «IA locale: essenziale» quando non c'è o Ollama non risponde: si capisce a colpo d'occhio, senza leggere un nome di modello.",
+        "Il nome del modello non si perde: nel pannello compare come «Modello in uso: …», insieme alla spiegazione che Neura funziona lo stesso.",
+        "Il puntino resta verde quando un modello c'è e ambra quando manca, così lo stato si vede anche senza aprire il pannello."
+      ]
+    },
     {
       v: "1.3.26",
       data: "2 novembre 2026",

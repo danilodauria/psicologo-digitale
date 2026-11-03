@@ -261,6 +261,10 @@ ai.modelli.forEach((m) => ok(m.id && m.ramMin > 0 && m.uso, "il modello " + m.id
 ok(/^https:\/\/ollama\.com\//.test(ai.build.windows.url), "il download punta al sito ufficiale di Ollama");
 ok(ai.avvertenze.length >= 3, "l'IA locale ha avvertenze d'uso");
 ok(/OLLAMA_ORIGINS/.test(ai.comandi.windows), "è indicato il permesso d'origine richiesto da Ollama");
+const barraStato = read("assets/js/app-status.js");
+ok(/IA locale: pronta/.test(barraStato) && /IA locale: essenziale/.test(barraStato), "il chip IA dice «pronta» o «essenziale»");
+ok(!/IA locale: da installare/.test(barraStato) && !/IA locale: " \+ modelli\[0\]/.test(barraStato), "il chip non dice più «da installare» e non mostra il nome del modello");
+ok(/Modello in uso:/.test(barraStato), "il nome del modello si legge nel pannello, come «Modello in uso»");
 
 ok(/#\/nutrizione/.test(html), "index.html collega la sezione nutrizione");
 ok(/#\/installa/.test(html), "index.html collega la pagina di installazione");

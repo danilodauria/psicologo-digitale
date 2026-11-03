@@ -302,8 +302,35 @@ setTimeout(async function () {
   ok(/112/.test(document.getElementById("statusPanel").textContent) && /1522/.test(document.getElementById("statusPanel").textContent), "l'aiuto immediato mostra 112 e 1522");
   document.getElementById("statusMode").click();
   ok(/Ollama|intelligenza artificiale/i.test(document.getElementById("statusPanel").textContent), "il pannello spiega l'IA locale e la modalità d'uso");
-  document.getElementById("statusMode").click();
-  ok(document.getElementById("statusPanel").hidden === true, "il pannello si richiude");
+
+  // Con un modello installato il chip dice «pronta» e il nome tecnico resta nel
+  // pannello: la barra deve essere leggibile senza sapere cosa sia un modello.
+  const pannello = function () { return document.getElementById("statusPanel"); };
+  const apriModo = function () {
+    if (pannello().hidden) document.getElementById("statusMode").click();
+  };
+
+  NP.ambiente.tags = function () { return Promise.resolve({ ok: true, models: [{ name: "llama3.2:3b" }] }); };
+  apriModo();
+  document.querySelector("#statusPanel [data-ai-check]").click();
+  await new Promise(function (r) { setTimeout(r, 60); });
+  const chipPronta = document.getElementById("statusAiText").textContent;
+  ok(chipPronta === "IA locale: pronta", "con un modello il chip dice «IA locale: pronta»");
+  ok(!/llama/.test(chipPronta), "il nome del modello non sta nel chip");
+  ok(document.getElementById("statusAiDot").getAttribute("data-state") === "ok", "con un modello il puntino è verde");
+  apriModo();
+  ok(/Modello in uso:/.test(pannello().textContent) && /llama3\.2:3b/.test(pannello().textContent), "il pannello dice «Modello in uso: …» con il nome");
+
+  NP.ambiente.tags = function () { return Promise.resolve({ ok: false }); };
+  apriModo();
+  document.querySelector("#statusPanel [data-ai-check]").click();
+  await new Promise(function (r) { setTimeout(r, 60); });
+  ok(document.getElementById("statusAiText").textContent === "IA locale: essenziale", "senza Ollama il chip dice «IA locale: essenziale»");
+  ok(document.getElementById("statusAiDot").getAttribute("data-state") === "attesa", "senza modello il puntino è ambra");
+  apriModo();
+  ok(!/da installare/.test(pannello().textContent), "il pannello non dice più «da installare»");
+  if (!pannello().hidden) document.getElementById("statusMode").click();
+  ok(pannello().hidden === true, "il pannello si richiude");
   ok(!!document.getElementById("statusOs"), "la barra mostra il sistema in uso con un pulsante");
   document.getElementById("statusOs").click();
   ok(/Sistema in uso/.test(document.getElementById("statusPanel").textContent), "il pannello dice su quale sistema gira il programma");

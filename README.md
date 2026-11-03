@@ -76,7 +76,7 @@ Sotto l'intestazione c'è una barra sempre visibile, che non richiede account e 
 
 - **dove stai girando**: programma installato (con il sistema riconosciuto), PWA installata o scheda del browser;
 - **sistema in uso**: un pulsante con il sistema operativo riconosciuto (Windows, macOS, Linux, Android, iOS), quante voci di sintesi vede il sistema e, se serve, i passaggi per consentire l'avvio del pacchetto quando il sistema chiede conferma;
-- **IA locale**: se Ollama risponde e quale modello è installato, oppure l'avviso che manca e il collegamento alla guida;
+- **IA locale**: «pronta» se un modello è installato, «essenziale» se manca o Ollama non risponde — Neura funziona lo stesso; il nome del modello in uso, con il collegamento alla guida, sta nel pannello;
 - **microfono**: presente, pronto, da attivare o bloccato, con il permesso richiesto da un pulsante e le istruzioni per riattivarlo;
 - **ferma l'audio**: interrompe voce e dettatura da qualsiasi pagina;
 - **indietro**: torna alla pagina precedente;
