@@ -10,7 +10,9 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const dest = path.join(root, "desktop", "app");
 
-const files = ["index.html", "manifest.webmanifest", "sw.js", "LICENSE", "LICENSE-CONTENT.md", "README.md"];
+// Le pagine che il programma apre al suo interno devono viaggiare con lui:
+// senza, il pulsante «Passaggio per passaggio» portava a una finestra vuota.
+const files = ["index.html", "come-installare.html", "scheda-rapida.html", "manifest.webmanifest", "sw.js", "LICENSE", "LICENSE-CONTENT.md", "README.md"];
 const dirs = ["assets"];
 
 fs.rmSync(dest, { recursive: true, force: true });

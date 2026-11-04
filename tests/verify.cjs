@@ -265,6 +265,12 @@ const barraStato = read("assets/js/app-status.js");
 ok(/IA locale: pronta/.test(barraStato) && /IA locale: essenziale/.test(barraStato), "il chip IA dice «pronta» o «essenziale»");
 ok(!/IA locale: da installare/.test(barraStato) && !/IA locale: " \+ modelli\[0\]/.test(barraStato), "il chip non dice più «da installare» e non mostra il nome del modello");
 ok(/Modello in uso:/.test(barraStato), "il nome del modello si legge nel pannello, come «Modello in uso»");
+// Il pannello Sistema rimanda a una pagina del sito: nel pacchetto desktop deve
+// esserci davvero, altrimenti il pulsante apre una finestra vuota.
+const preparaDesktop = read("scripts/prepare-desktop.cjs");
+ok(/come-installare\.html/.test(preparaDesktop) && /scheda-rapida\.html/.test(preparaDesktop), "il pacchetto desktop include le pagine Come si installa e la scheda rapida");
+const contenitore = read("desktop/main.cjs");
+ok(/fs\.statSync\(percorso\)\.isFile\(\)/.test(contenitore), "il contenitore desktop controlla che la pagina locale esista prima di aprirla");
 
 ok(/#\/nutrizione/.test(html), "index.html collega la sezione nutrizione");
 ok(/#\/installa/.test(html), "index.html collega la pagina di installazione");

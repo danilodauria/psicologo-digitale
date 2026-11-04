@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.28";
+  const VERSIONE = "1.3.29";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.29",
+      data: "3 novembre 2026",
+      titolo: "«Passaggio per passaggio» si apre anche nel programma installato",
+      punti: [
+        "Nel programma desktop quel pulsante apriva una finestra vuota color crema: la pagina «Come si installa» non era inclusa nel pacchetto.",
+        "Ora la pagina e la scheda rapida viaggiano dentro il programma e si leggono anche senza connessione, con il PDF già a disposizione.",
+        "I collegamenti «Pagina iniziale» e «Apri il programma» riportano al programma; se una pagina locale manca, non resta più una finestra vuota."
+      ]
+    },
     {
       v: "1.3.28",
       data: "3 novembre 2026",

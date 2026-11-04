@@ -9,6 +9,7 @@
 const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const { fileURLToPath } = require("url");
 const crypto = require("crypto");
 const { spawn } = require("child_process");
 const { scompattaMotore } = require("./motore.cjs");
@@ -555,8 +556,20 @@ function createWindow() {
     return { action: "deny" };
   });
 
+  // Le pagine locali (Come si installa, scheda rapida) si aprono nella stessa
+  // finestra. Se il file non c'è — o il collegamento punta alla cartella — si
+  // torna al programma, invece di lasciare una finestra vuota.
   win.webContents.on("will-navigate", (event, url) => {
-    if (url.startsWith("file://")) return;
+    if (url.startsWith("file://")) {
+      let percorso = null;
+      try { percorso = fileURLToPath(url); } catch (e) { percorso = null; }
+      let pagina = false;
+      try { pagina = !!percorso && fs.statSync(percorso).isFile(); } catch (e) { pagina = false; }
+      if (pagina) return;
+      event.preventDefault();
+      win.loadFile(HOME);
+      return;
+    }
     if (isExternal(url)) shell.openExternal(url);
     event.preventDefault();
   });
