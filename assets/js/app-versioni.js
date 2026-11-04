@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.31";
+  const VERSIONE = "1.3.32";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.32",
+      data: "4 novembre 2026",
+      titolo: "Il controllo dei collegamenti guarda anche dentro i pannelli",
+      punti: [
+        "I collegamenti dei pannelli e delle finestre si costruiscono solo quando si aprono: ora il controllo li legge anche nel codice, non solo nella pagina già disegnata.",
+        "Da 317 a 388 destinazioni verificate a ogni pubblicazione, compresi i pulsanti della barra di stato.",
+        "Provato rompendo di proposito un file, una rotta e un'àncora: in tutti e tre i casi la pubblicazione si ferma."
+      ]
+    },
     {
       v: "1.3.31",
       data: "4 novembre 2026",

@@ -627,6 +627,11 @@ ok(/controlla-collegamenti/.test(pacchettoJson.scripts["test:links"] || ""), "il
 const controlloLink = read("scripts/check-links.cjs");
 ok(/const PAGINE = \[/.test(controlloLink), "il controllo quotidiano apre anche le pagine del sito");
 ok(/function indirizziCitati/.test(controlloLink), "il controllo quotidiano apre le fonti citate nei contenuti");
+// I pannelli costruiscono i link quando si aprono: senza questa lettura del
+// codice, un pulsante rotto dentro un pannello passerebbe inosservato.
+const controlloInterno = read("scripts/controlla-collegamenti.cjs");
+ok(/function controllaLetterali/.test(controlloInterno) && /controllaLetterali\(pacchetto, viste\)/.test(controlloInterno), "il controllo legge anche i collegamenti scritti nel codice");
+ok(/function rendiApp/.test(controlloInterno) && /function controllaPagine/.test(controlloInterno), "il controllo apre pagine, viste e collegamenti");
 
 /* Esito ------------------------------------------------------------------- */
 

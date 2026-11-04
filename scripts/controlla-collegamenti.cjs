@@ -189,6 +189,38 @@ function rendiApp(pacchetto, viste) {
   }
 }
 
+/* I collegamenti scritti nel codice ---------------------------------------- */
+
+// Pannelli e finestre costruiscono i loro collegamenti solo quando si aprono:
+// quelli scritti nel codice si controllano leggendoli, senza doverli mostrare.
+function ancoreDiTutteLePagine() {
+  const ancore = new Set();
+  for (const pagina of pagine) {
+    const dom = new JSDOM(fs.readFileSync(path.join(radice, pagina), "utf8"));
+    dom.window.document.querySelectorAll("[id]").forEach((e) => ancore.add(e.id));
+  }
+  return ancore;
+}
+
+function controllaLetterali(pacchetto, viste) {
+  const ancore = ancoreDiTutteLePagine();
+  const cartella = path.join(radice, "assets", "js");
+  const modello = /href=(?:"([^"]*)"|\\"([^"\\]*)\\"|'([^']*)')/g;
+  for (const f of fs.readdirSync(cartella)) {
+    if (!f.endsWith(".js")) continue;
+    const testo = fs.readFileSync(path.join(cartella, f), "utf8");
+    for (const m of testo.matchAll(modello)) {
+      const valore = m[1] !== undefined ? m[1] : m[2] !== undefined ? m[2] : m[3];
+      if (valore === undefined) continue;
+      // Un indirizzo composto a pezzi non si può verificare leggendolo: qui si
+      // controllano solo quelli già interi.
+      if (/['+`$]/.test(valore)) continue;
+      controlli++;
+      controllaDestinazione("assets/js/" + f, valore, ancore, pacchetto, viste);
+    }
+  }
+}
+
 /* Esito -------------------------------------------------------------------- */
 
 const pacchetto = pacchettoDesktop();
@@ -201,6 +233,7 @@ for (const f of pacchetto.files) {
 }
 
 controllaPagine(pacchetto, viste);
+controllaLetterali(pacchetto, viste);
 rendiApp(pacchetto, viste);
 
 console.log("\nControllo dei collegamenti");
