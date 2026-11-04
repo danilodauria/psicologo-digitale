@@ -617,6 +617,17 @@ ok(/buildPdf|NP\.reportPdf/.test(read("assets/js/app-report.js")), "il generator
 ok(/115|MediaBox|PDF-1\.4/.test(read("assets/js/app-report.js")), "il generatore produce un PDF 1.4 valido");
 ok(/WinAnsiEncoding/.test(read("assets/js/app-report.js")), "il PDF gestisce gli accenti con WinAnsi");
 
+/* Controllo automatico dei collegamenti ------------------------------------ */
+
+// Un collegamento rotto deve fermare la pubblicazione, non arrivare a chi legge.
+const pacchettoJson = JSON.parse(read("package.json"));
+ok(exists("scripts/controlla-collegamenti.cjs"), "esiste il controllo dei collegamenti interni");
+ok(/controlla-collegamenti/.test(pacchettoJson.scripts.test || ""), "npm test esegue il controllo dei collegamenti");
+ok(/controlla-collegamenti/.test(pacchettoJson.scripts["test:links"] || ""), "il controllo si può lanciare da solo con npm run test:links");
+const controlloLink = read("scripts/check-links.cjs");
+ok(/const PAGINE = \[/.test(controlloLink), "il controllo quotidiano apre anche le pagine del sito");
+ok(/function indirizziCitati/.test(controlloLink), "il controllo quotidiano apre le fonti citate nei contenuti");
+
 /* Esito ------------------------------------------------------------------- */
 
 console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " verifiche superate");

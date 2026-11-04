@@ -95,6 +95,56 @@ async function raggiungibile(url, tentativi = 3) {
   return { ok: false, stato: stato, errore: errore };
 }
 
+/* Sito e fonti -------------------------------------------------------------- */
+
+// Non basta che i pacchetti rispondano: le pagine del sito e le fonti citate
+// nei contenuti possono sparire o cambiare indirizzo. Anche loro si aprono,
+// una volta al giorno e dopo ogni pubblicazione.
+const BASE = process.env.BASE || "https://danilodauria.github.io/psicologo-digitale/";
+const PAGINE = ["", "come-installare.html", "scheda-rapida.html", "manifest.webmanifest", "sw.js"];
+
+function indirizziCitati() {
+  const cartella = path.join(__dirname, "..");
+  const file = ["index.html", "come-installare.html", "scheda-rapida.html", "desktop/main.cjs"];
+  for (const f of fs.readdirSync(path.join(cartella, "assets", "js"))) {
+    if (f.endsWith(".js")) file.push(path.join("assets", "js", f));
+  }
+  const trovati = new Set();
+  for (const f of file) {
+    let testo = "";
+    try { testo = fs.readFileSync(path.join(cartella, f), "utf8"); } catch (e) { continue; }
+    for (const m of testo.matchAll(/https?:\/\/[^\s"'`<>)]+/g)) {
+      const url = m[0].replace(/[.,;:]+$/, "");
+      if (/127\.0\.0\.1|localhost/.test(url)) continue;
+      // I file della release e il sito hanno i loro controlli qui sopra e sotto.
+      if (/github\.com\/danilodauria\/psicologo-digitale\/releases/.test(url)) continue;
+      if (/danilodauria\.github\.io/.test(url)) continue;
+      trovati.add(url);
+    }
+  }
+  return [...trovati].sort();
+}
+
+async function controllaSito(problemi) {
+  for (const pagina of PAGINE) {
+    const url = BASE + pagina;
+    const esito = await raggiungibile(url);
+    const nome = pagina || "pagina iniziale";
+    if (esito.ok) console.log("✓ sito: " + nome + " (HTTP " + esito.stato + ")");
+    else problemi.push([nome, "il sito non risponde: HTTP " + (esito.stato || "errore") + (esito.errore ? " · " + esito.errore : "") + " · " + url]);
+  }
+}
+
+async function controllaFonti(problemi) {
+  const indirizzi = indirizziCitati();
+  for (const url of indirizzi) {
+    const esito = await raggiungibile(url);
+    if (esito.ok) console.log("✓ fonte: " + url + " (HTTP " + esito.stato + ")");
+    else problemi.push([url, "fonte non raggiungibile: HTTP " + (esito.stato || "errore") + (esito.errore ? " · " + esito.errore : "")]);
+  }
+  return indirizzi.length;
+}
+
 (async function main() {
   let rel;
   try {
@@ -163,8 +213,11 @@ async function raggiungibile(url, tentativi = 3) {
     }
   }
 
+  await controllaSito(problemi);
+  const fonti = await controllaFonti(problemi);
+
   if (!problemi.length) {
-    console.log("Tutti i " + ATTESI.length + " link rispondono e le impronte combaciano.");
+    console.log("Tutti i " + ATTESI.length + " link della release rispondono, le impronte combaciano, " + PAGINE.length + " pagine del sito e " + fonti + " fonti sono raggiungibili.");
     try { fs.rmSync(REPORT, { force: true }); } catch (e) {}
     return;
   }
@@ -176,7 +229,7 @@ async function raggiungibile(url, tentativi = 3) {
     "# Link di download non raggiungibili",
     "",
     "Controllo del " + new Date().toISOString().slice(0, 16).replace("T", " ") +
-      " UTC sulla release **" + rel.tag_name + "**.",
+      " UTC sulla release **" + rel.tag_name + "**, sulle pagine del sito e sulle fonti citate.",
     "",
     "| File | Problema |",
     "|---|---|",

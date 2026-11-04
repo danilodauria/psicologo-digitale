@@ -283,6 +283,7 @@ scripts/build_vademecum_clinico.py  # genera la guida per il professionista
 assets/pdf/                 # Vademecum A5, A4 e libricino imposto (senza dipendenze)
 tests/verify.cjs            # integrità dati, collegamenti, Neura
 tests/dom-test.cjs          # interfaccia con jsdom
+scripts/controlla-collegamenti.cjs  # ogni link, rotta e ancora deve esistere
 .github/workflows/pages.yml # test e pubblicazione automatica
 ```
 
@@ -294,9 +295,10 @@ Serve Node 20+ solo per i test.
 
 ```bash
 npm install
-npm test                  # verify + dom
+npm test                  # verify + dom + collegamenti
 npm run test:data         # solo integrità
 npm run test:dom          # solo interfaccia
+npm run test:links        # solo collegamenti interni
 python3 -m http.server 3000 --bind 0.0.0.0   # anteprima con service worker
 ```
 
@@ -317,7 +319,9 @@ Il sito è un *project site* di GitHub Pages: l'applicazione vive in una sottoca
 
 ### Come avviene la pubblicazione
 
-Pages è impostato su **GitHub Actions**. A ogni push su `main` il workflow `.github/workflows/pages.yml` installa le dipendenze con `npm ci` ed esegue `npm test`: se una sola verifica fallisce la pubblicazione non avviene e il sito resta sull'ultima versione buona. Se i test passano, i file pubblici vengono copiati in un artefatto (senza test, script e dipendenze) e pubblicati con `actions/deploy-pages`.
+Pages è impostato su **GitHub Actions**. A ogni push su `main` il workflow `.github/workflows/pages.yml` installa le dipendenze con `npm ci` ed esegue `npm test`: se una sola verifica fallisce la pubblicazione non avviene e il sito resta sull'ultima versione buona.
+
+Dentro `npm test` c'è anche `scripts/controlla-collegamenti.cjs`: apre le tre pagine, percorre ogni vista e ogni capitolo e verifica che ogni collegamento abbia una destinazione che esiste — file sul disco, rotta registrata, àncora nella pagina — compreso il fatto che quella pagina viaggi nel pacchetto desktop. Un file rinominato con un pulsante rimasto indietro ferma la pubblicazione. Il workflow **Link di download** fa l'altra metà: ogni giorno, e dopo ogni rilascio, apre i file della release, le pagine del sito e le fonti citate nei contenuti, e se qualcosa non risponde apre una segnalazione che si chiude da sola alla verifica successiva. Se i test passano, i file pubblici vengono copiati in un artefatto (senza test, script e dipendenze) e pubblicati con `actions/deploy-pages`.
 
 `.nojekyll` è presente, quindi Jekyll non interferisce con i file del progetto; i percorsi restano relativi e l'app funziona anche nella sottocartella.
 
