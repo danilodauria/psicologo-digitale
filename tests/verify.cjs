@@ -271,6 +271,14 @@ const preparaDesktop = read("scripts/prepare-desktop.cjs");
 ok(/come-installare\.html/.test(preparaDesktop) && /scheda-rapida\.html/.test(preparaDesktop), "il pacchetto desktop include le pagine Come si installa e la scheda rapida");
 const contenitore = read("desktop/main.cjs");
 ok(/fs\.statSync\(percorso\)\.isFile\(\)/.test(contenitore), "il contenitore desktop controlla che la pagina locale esista prima di aprirla");
+// Nel programma installato non ci sono né telefono né lettore PDF interno:
+// entrambi devono passare dal sistema, altrimenti il clic non fa nulla.
+ok(/sistema:copia/.test(contenitore) && /clipboard\.writeText/.test(contenitore), "il contenitore copia il numero di telefono negli appunti");
+ok(/will-download/.test(contenitore) && /shell\.openPath/.test(contenitore), "i PDF locali si aprono con il lettore del sistema");
+const ponte = read("desktop/preload.cjs");
+ok(/copia: \(testo\) => ipcRenderer\.invoke\("sistema:copia"/.test(ponte), "il ponte espone la copia del numero alla pagina");
+const installa = read("assets/js/app-installa.js");
+ok(/Windows-portatile\.zip/.test(installa) && /Linux-x86_64\.AppImage/.test(installa), "la pagina Installa offre anche lo ZIP portatile e l'AppImage");
 
 ok(/#\/nutrizione/.test(html), "index.html collega la sezione nutrizione");
 ok(/#\/installa/.test(html), "index.html collega la pagina di installazione");

@@ -16,7 +16,9 @@
     windows: SCARICA + "/download/Psicologo-Digitale-Windows-x64.exe",
     linux: SCARICA + "/download/Psicologo-Digitale-Linux-amd64.deb",
     mac: SCARICA + "/download/Psicologo-Digitale-Mac-arm64.dmg",
-    macIntel: SCARICA + "/download/Psicologo-Digitale-Mac-x64.dmg"
+    macIntel: SCARICA + "/download/Psicologo-Digitale-Mac-x64.dmg",
+    windowsPortatile: SCARICA + "/download/Psicologo-Digitale-Windows-portatile.zip",
+    linuxAppimage: SCARICA + "/download/Psicologo-Digitale-Linux-x86_64.AppImage"
   };
 
   let promptEvent = null;
@@ -255,6 +257,12 @@
           '<a class="btn btn-soft btn-sm" href="' + PACCHETTI.linux + '">' + A.icon("download") + "Linux .deb</a>" +
           '<a class="btn btn-soft btn-sm" href="' + PACCHETTI.mac + '">' + A.icon("download") + "macOS Apple Silicon</a>" +
           '<a class="btn btn-ghost btn-sm" href="' + PACCHETTI.macIntel + '">macOS Intel</a>' +
+        "</div>" +
+        // Le alternative che il testo descrive devono avere un pulsante: chi
+        // legge «versione portatile» o «AppImage» deve poterle scaricare.
+        '<div class="btn-row mt-1">' +
+          '<a class="btn btn-ghost btn-sm" href="' + PACCHETTI.windowsPortatile + '">Windows portatile (.zip)</a>' +
+          '<a class="btn btn-ghost btn-sm" href="' + PACCHETTI.linuxAppimage + '">Linux AppImage</a>' +
         "</div>" +
         '<div class="btn-row mt-1"><a class="btn btn-ghost btn-sm" href="' + SCARICA + '" target="_blank" rel="noopener">Tutti i file della versione</a>' +
           '<a class="btn btn-ghost btn-sm" href="https://github.com/danilodauria/psicologo-digitale#programmi-installabili" target="_blank" rel="noopener">Come si installano</a></div>' +

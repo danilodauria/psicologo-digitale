@@ -495,6 +495,27 @@ setTimeout(async function () {
   ok(document.querySelectorAll("#voiceNaturaleVoci [data-voce]").length === 0, "su Mac non compare un pulsante di download che non servirebbe");
   ok(NP.neuraUI.ritmo() === 1.3, "la velocità scelta resta memorizzata fra una visita e l'altra");
 
+  /* Programma installato: numeri di telefono e PDF ------------------------- */
+
+  // Nel programma desktop non c'è un telefono da chiamare: il numero si copia.
+  const copiati = [];
+  window.npDesktop.sistema = window.npDesktop.sistema || {};
+  window.npDesktop.sistema.copia = function (t) { copiati.push(t); return Promise.resolve({ ok: true }); };
+  navigate("#/sicurezza");
+  const numeroTel = document.querySelector('#app a[href^="tel:"]');
+  ok(!!numeroTel, "la pagina sicurezza offre un numero da chiamare");
+  const clicTel = new window.MouseEvent("click", { bubbles: true, cancelable: true });
+  numeroTel.dispatchEvent(clicTel);
+  await new Promise(function (r) { setTimeout(r, 20); });
+  ok(clicTel.defaultPrevented, "nel programma installato il clic sul numero non tenta una chiamata impossibile");
+  ok(copiati.length === 1 && /\d/.test(copiati[0]), "il numero viene copiato negli appunti");
+  ok(/Numero copiato/.test(document.getElementById("toast").textContent), "un avviso dice che il numero è stato copiato");
+
+  delete window.npDesktop.sistema.copia;
+  const clicTelBrowser = new window.MouseEvent("click", { bubbles: true, cancelable: true });
+  document.querySelector('#app a[href^="tel:"]').dispatchEvent(clicTelBrowser);
+  ok(!clicTelBrowser.defaultPrevented, "nel browser il numero resta un collegamento telefonico");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

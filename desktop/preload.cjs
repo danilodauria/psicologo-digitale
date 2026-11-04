@@ -16,7 +16,10 @@ contextBridge.exposeInMainWorld("npDesktop", {
   // Impostazioni del sistema: aprire il pannello delle voci dal processo
   // principale, perché la pagina non può lanciare i collegamenti di sistema.
   sistema: {
-    impostazioniVoce: () => ipcRenderer.invoke("sistema:impostazioniVoce")
+    impostazioniVoce: () => ipcRenderer.invoke("sistema:impostazioniVoce"),
+    // Nel programma installato non c'è un telefono da chiamare: il numero si
+    // copia negli appunti, così resta utilizzabile.
+    copia: (testo) => ipcRenderer.invoke("sistema:copia", testo)
   },
   // Voce naturale facoltativa: si scarica una volta dal processo principale,
   // che poi genera l'audio sul computer. La pagina riceve solo lo stato, il

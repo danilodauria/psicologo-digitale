@@ -100,6 +100,23 @@
     }
   }
 
+  /* Numeri di telefono ----------------------------------------------------- */
+
+  // Nel programma installato un collegamento «tel:» non ha un telefono da
+  // chiamare: il numero viene copiato negli appunti, così resta utilizzabile.
+  // Nel browser resta il comportamento normale, che sul telefono avvia la chiamata.
+  document.addEventListener("click", function (e) {
+    const a = e.target && e.target.closest ? e.target.closest('a[href^="tel:"]') : null;
+    if (!a) return;
+    const d = window.npDesktop;
+    if (!d || !d.sistema || typeof d.sistema.copia !== "function") return;
+    e.preventDefault();
+    const numero = (a.textContent || "").replace(/\s+/g, " ").trim() || a.getAttribute("href").slice(4);
+    Promise.resolve(d.sistema.copia(numero)).then(function (r) {
+      A.toast(r && r.ok ? "Numero copiato: " + numero : "Chiama il " + numero);
+    }).catch(function () { A.toast("Chiama il " + numero); });
+  });
+
   /* Routing --------------------------------------------------------------- */
 
   window.addEventListener("hashchange", function () { A.render(); });

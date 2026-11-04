@@ -6,7 +6,7 @@
    Licenza del codice: MIT · Danilo D'Auria
    ========================================================================== */
 
-const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
+const { app, BrowserWindow, Menu, shell, ipcMain, clipboard } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { fileURLToPath } = require("url");
@@ -85,6 +85,19 @@ ipcMain.handle("sistema:impostazioniVoce", async () => {
     return { ok: true };
   } catch (err) {
     return { ok: false, motivo: "errore", errore: String((err && err.message) || err) };
+  }
+});
+
+// Un numero di telefono non si può comporre da qui: si copia negli appunti,
+// così chi legge lo ritrova dovunque gli serva.
+ipcMain.handle("sistema:copia", (_evento, testo) => {
+  const valore = String(testo || "").replace(/\s+/g, " ").trim().slice(0, 120);
+  if (!valore) return { ok: false };
+  try {
+    clipboard.writeText(valore);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, errore: String((err && err.message) || err) };
   }
 });
 
@@ -558,13 +571,19 @@ function createWindow() {
 
   // Le pagine locali (Come si installa, scheda rapida) si aprono nella stessa
   // finestra. Se il file non c'è — o il collegamento punta alla cartella — si
-  // torna al programma, invece di lasciare una finestra vuota.
+  // torna al programma, invece di lasciare una finestra vuota. I PDF non si
+  // mostrano qui dentro: li apre il lettore del sistema.
   win.webContents.on("will-navigate", (event, url) => {
     if (url.startsWith("file://")) {
       let percorso = null;
       try { percorso = fileURLToPath(url); } catch (e) { percorso = null; }
       let pagina = false;
       try { pagina = !!percorso && fs.statSync(percorso).isFile(); } catch (e) { pagina = false; }
+      if (pagina && /\.pdf$/i.test(percorso)) {
+        event.preventDefault();
+        shell.openPath(percorso).catch(() => {});
+        return;
+      }
       if (pagina) return;
       event.preventDefault();
       win.loadFile(HOME);
@@ -572,6 +591,15 @@ function createWindow() {
     }
     if (isExternal(url)) shell.openExternal(url);
     event.preventDefault();
+  });
+
+  // I PDF locali hanno spesso l'attributo download: in quel caso Chromium non
+  // naviga ma scarica. Anche qui li apre il lettore del sistema.
+  win.webContents.session.on("will-download", (evento, elemento) => {
+    const indirizzo = String((elemento && elemento.getURL && elemento.getURL()) || "");
+    if (!indirizzo.startsWith("file://")) return;
+    evento.preventDefault();
+    try { shell.openPath(fileURLToPath(indirizzo)).catch(() => {}); } catch (e) { /* niente */ }
   });
 
   return win;
