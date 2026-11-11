@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.32";
+  const VERSIONE = "1.3.33";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.33",
+      data: "4 novembre 2026",
+      titolo: "Ogni pagina supera un controllo di accessibilità",
+      punti: [
+        "Un controllo in più apre le tre pagine e ogni vista, nei due temi, e misura il contrasto vero di ogni testo sullo sfondo che ha sotto: minimo 4,5:1, la soglia AA.",
+        "I testi secondari e le etichette ambra erano appena sotto: ora sono più leggibili (il minimo misurato è 4,64:1). I titoli scendono un gradino alla volta, h1, h2, h3, con la stessa misura di prima.",
+        "Controlla anche che ogni immagine abbia il suo testo alternativo e che un pulsante di sola icona abbia un nome: se qualcosa resta indietro, la pubblicazione si ferma."
+      ]
+    },
     {
       v: "1.3.32",
       data: "4 novembre 2026",
@@ -363,7 +373,7 @@
           '<span class="text-small muted">' + esc(r.data) + "</span>" +
           (inUso ? '<span class="badge badge-green">in uso</span>' : "") +
         "</div>" +
-        '<h3 class="mt-1">' + esc(r.titolo) + "</h3>" +
+        '<h2 class="mt-1 h-sub">' + esc(r.titolo) + "</h2>" +
         '<ul class="list-check text-small">' +
           r.punti.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") +
         "</ul></article>";

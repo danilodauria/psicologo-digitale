@@ -306,7 +306,7 @@
     const scaleCards = scales.map(function (id) {
       const s = A.getScale(id);
       if (!s) return "";
-      return '<a class="card card-link" href="#/valutazione/' + s.id + '"><h3>' + esc(s.titolo) + '</h3><p>' + esc(s.istruzioni) + " · " + esc(s.tempo) + '</p><span class="go">Compila ' + A.icon("arrow") + "</span></a>";
+      return '<a class="card card-link" href="#/valutazione/' + s.id + '"><h2 class=h-sub>' + esc(s.titolo) + '</h2><p>' + esc(s.istruzioni) + " · " + esc(s.tempo) + '</p><span class="go">Compila ' + A.icon("arrow") + "</span></a>";
     }).join("");
 
     A.page(
@@ -326,7 +326,7 @@
             '<div class="summary-tile"><b>' + esc(p.urgenza === "subito" ? "Alta" : p.urgenza === "presto" ? "Media" : "Ordinaria") + "</b><span>Urgenza percepita</span></div>" +
           "</div>" +
           '<div class="callout info"><p><strong>Come usarlo.</strong> Porta questo quadro a uno psicologo o al medico di base. Le domande che seguono sono quelle che un clinico vorrebbe vedere approfondite.</p></div>' +
-          '<h3 class="mt-2">Domande da portare al professionista</h3>' +
+          '<h2 class="mt-2 h-sub">Domande da portare al professionista</h2>' +
           '<ul class="list-check">' +
             "<li>Da quanto tempo dura il quadro e cosa è cambiato nelle ultime settimane?</li>" +
             "<li>Quali cause mediche vanno escluse (tiroide, ferro, sonno, farmaci)?</li>" +
@@ -341,7 +341,7 @@
         "</div>" +
         '<h2 class="mt-3">Un passo successivo, se ti va</h2>' +
         '<div class="grid grid-3 mt-2">' + scaleCards +
-          '<a class="card card-link" href="#/percorso"><h3>Percorso in otto tappe</h3><p>Obiettivi, pratiche e tempi per lavorare sulle aree emerse.</p><span class="go">Vedi il percorso ' + A.icon("arrow") + "</span></a>" +
+          '<a class="card card-link" href="#/percorso"><h2 class=h-sub>Percorso in otto tappe</h2><p>Obiettivi, pratiche e tempi per lavorare sulle aree emerse.</p><span class="go">Vedi il percorso ' + A.icon("arrow") + "</span></a>" +
         "</div>" +
         '<p class="text-small muted mt-2">Se i segnali di rischio riguardano la tua sicurezza, non aspettare la relazione: chiama il 112 o uno dei numeri nella sezione <a href="#/sicurezza">Sicurezza</a>.</p>' +
       "</div>"

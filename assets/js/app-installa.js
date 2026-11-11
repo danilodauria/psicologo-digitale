@@ -209,7 +209,7 @@
     const connessione = d.telefono
       ? '<div class="callout info"><p><strong>Da qui Ollama non si installa.</strong> Su telefono e tablet l\'app funziona benissimo da sola: un modello locale ha bisogno di un computer. Se ne hai uno, apri questa pagina lì e troverai la versione giusta.</p></div>'
       : build
-        ? '<div class="card"><h3>La versione per il tuo sistema</h3>' +
+        ? '<div class="card"><h2 class=h-sub>La versione per il tuo sistema</h2>' +
             '<p>Per <strong>' + esc(build.sistema) + "</strong> ti serve questo:</p>" +
             '<div class="btn-row mt-1"><a class="btn btn-primary" href="' + build.url + '" target="_blank" rel="noopener">' + A.icon("download") + esc(build.scarica) + "</a>" +
             '<a class="btn btn-ghost" href="https://ollama.com/library" target="_blank" rel="noopener">Catalogo dei modelli</a></div>' +
@@ -224,12 +224,12 @@
       "</div>" +
 
       '<div class="grid grid-2">' +
-        '<div class="card"><h3>Su telefono e tablet</h3>' +
+        '<div class="card"><h2 class=h-sub>Su telefono e tablet</h2>' +
           "<p><strong>Android (Chrome):</strong> menu ⋮ in alto a destra, poi <em>Installa app</em> (su alcuni telefoni <em>Aggiungi alla schermata Home</em>).</p>" +
           "<p><strong>iPhone e iPad (Safari):</strong> tocca <em>Condividi</em>, scorri e scegli <em>Aggiungi alla schermata Home</em>. Da lì si apre come un'app, senza barra degli indirizzi.</p>" +
           '<p class="text-small muted">Se il menu non mostra l\'opzione, aggiorna il browser: l\'installazione richiede Chrome, Edge, Samsung Internet o Safari recenti.</p>' +
         "</div>" +
-        '<div class="card"><h3>Su computer</h3>' +
+        '<div class="card"><h2 class=h-sub>Su computer</h2>' +
           "<p><strong>Chrome e Edge:</strong> l\'icona di installazione compare a destra nella barra degli indirizzi (un monitor con la freccia). In alternativa, menu ⋮ → <em>App</em> → <em>Installa questo sito come app</em>.</p>" +
           "<p><strong>Safari su Mac:</strong> menu <em>File</em> → <em>Aggiungi al Dock</em>.</p>" +
           '<p class="text-small muted">Sul desktop l\'app si apre in una finestra sua e resta disponibile nel menu avvio, come qualsiasi altro programma.</p>' +
@@ -237,7 +237,7 @@
         "</div>" +
       "</div>" +
 
-      '<div class="card mt-2"><h3>Che cosa cambia davvero</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>Che cosa cambia davvero</h2>' +
         '<ul class="list-check">' +
           "<li>La prima apertura salva l'app nella memoria del browser: le volte successive partono senza connessione.</li>" +
           "<li>Risposte, questionari, diario e relazione restano su quel dispositivo. Non c'è un account da ricordare.</li>" +
@@ -245,7 +245,7 @@
           "<li>Gli aggiornamenti arrivano da soli alla riapertura, quando il dispositivo è in rete.</li>" +
         "</ul></div>" +
 
-      '<div class="card mt-2"><h3>I programmi installabili</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>I programmi installabili</h2>' +
         '<p>Oltre alla PWA ci sono i pacchetti desktop, costruiti dalla stessa base: finestra propria, icona nel menu avvio e nessun browser di mezzo.</p>' +
         '<ul class="text-small">' +
           "<li><strong>Windows</strong> — installatore <code>.exe</code> per processori x64, con cartella a scelta e collegamento sul desktop; c'è anche la versione portatile in ZIP.</li>" +
@@ -281,9 +281,9 @@
       '<div class="callout info"><p>' + esc(AI.introduzione) + "</p></div>" +
 
       '<div class="grid grid-2 mt-2">' +
-        '<div class="card"><h3>Il tuo dispositivo, come lo vede il browser</h3>' + hardware +
+        '<div class="card"><h2 class=h-sub>Il tuo dispositivo, come lo vede il browser</h2>' + hardware +
           '<p class="text-small muted mt-2">Il browser non può leggere tutto: la memoria è dichiarata solo da Chrome ed Edge e si ferma a 8 GB. Se il tuo computer ne ha 16 o 32, consideralo un margine in più.</p></div>' +
-        '<div class="card"><h3>Il modello che ti consiglio</h3>' +
+        '<div class="card"><h2 class=h-sub>Il modello che ti consiglio</h2>' +
           "<p><strong>" + esc(modello.nome) + '</strong> · ' + esc(modello.peso) +
             ' <span class="badge badge-green" id="modelloBadge" hidden>Installato</span></p>' +
           "<p>" + esc(modello.uso) + "</p>" +
@@ -294,25 +294,25 @@
 
       connessione +
 
-      '<div class="card mt-2"><h3>Quattro passi</h3><ol class="number-list">' +
+      '<div class="card mt-2"><h2 class=h-sub>Quattro passi</h2><ol class="number-list">' +
         AI.passi.map(function (p) { return "<li><strong>" + esc(p.t) + ".</strong> " + esc(p.d) + "</li>"; }).join("") +
       "</ol></div>" +
 
-      '<div class="card mt-2"><h3>I comandi, pronti da copiare</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>I comandi, pronti da copiare</h2>' +
         '<p class="text-small muted">Scarica il modello consigliato e avvialo. Su Windows usa il Prompt dei comandi o PowerShell.</p>' +
         "<p class=\"text-small\"><strong>1. Scarica</strong></p>" + comando("ollama pull " + modello.id) +
         "<p class=\"text-small mt-2\"><strong>2. Prova</strong></p>" + comando("ollama run " + modello.id) +
         '<p class="text-small muted mt-2">Se il computer è lento, chiudi tutto il resto o scegli un modello più piccolo. Se Ollama non parte affatto, la causa più comune è un processore senza istruzioni AVX: in quel caso resta la guida interna, che è già qui.</p>' +
       "</div>" +
 
-      '<div class="card mt-2"><h3>Prova il collegamento</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>Prova il collegamento</h2>' +
         '<p class="text-small">Se Ollama è installato e in esecuzione, questa pagina può parlarci direttamente: il browser contatta solo il tuo computer, sulla porta 11434. Nessun dato esce da qui.</p>' +
         '<div id="ollamaStato" class="text-small mb-1"><span class="muted">Controllo Ollama su questo computer…</span></div>' +
         '<div class="btn-row mt-1"><button type="button" class="btn btn-soft btn-sm" id="ollamaCheck">Verifica il collegamento</button></div>' +
         '<div id="ollamaOut" class="mt-2"></div>' +
       "</div>" +
 
-      '<div class="card mt-2"><h3>Una domanda al modello locale</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>Una domanda al modello locale</h2>' +
         '<p class="text-small">Serve un collegamento attivo. Il modello è generico: non conosce il manuale e può sbagliare. Le risposte verificate restano quelle di Neura.</p>' +
         '<form id="ollamaForm" class="mt-1">' +
           '<div class="form-field"><label class="field-label" for="ollamaModel">Modello</label>' +
@@ -329,7 +329,7 @@
         AI.avvertenze.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") +
       "</ul></div>" +
 
-      '<div class="card mt-2"><h3>Riferimenti</h3><div class="pill-row">' +
+      '<div class="card mt-2"><h2 class=h-sub>Riferimenti</h2><div class="pill-row">' +
         AI.fonti.map(function (f) { return '<a class="chip" href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a>"; }).join("") +
       "</div></div>"
     );

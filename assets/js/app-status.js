@@ -178,18 +178,18 @@
     const v = vociDisponibili();
     const m = modo();
 
-    let html = "<h3>Sistema in uso</h3>" +
+    let html = "<h2 class=h-sub>Sistema in uso</h2>" +
       "<p><strong>" + esc(s.nome) + "</strong> · " + esc(m.titolo) + " · " + esc(m.dove) + "</p>" +
       '<p class="text-small muted">' + (s.certo
         ? "Il sistema lo dichiara il programma installato: il riconoscimento è esatto, non una deduzione."
         : "Il sistema è dedotto dal browser: se non corrisponde, non cambia nulla nel funzionamento.") + "</p>";
 
-    html += "<h3>Voci del dispositivo</h3>" +
+    html += "<h2 class=h-sub>Voci del dispositivo</h2>" +
       "<p>Voci disponibili: <strong>" + v.totali + "</strong>" + (v.italiane ? " (" + v.italiane + " in italiano)" : "") + ".</p>" +
       '<p class="text-small muted">Le voci naturali si installano dal pannello Voce e restano dentro il programma; le altre arrivano dal sistema operativo, e senza una voce italiana Neura tace e risponde per iscritto. Chrome ed Edge, nel browser, aggiungono voci online che il programma desktop non vede: lì restano solo quelle installate nel sistema. Per averne altre: su Windows <em>Impostazioni</em> → <em>Data e ora e lingua</em> → <em>Riconoscimento vocale</em> → <em>Aggiungi voci</em>; su macOS <em>Impostazioni di Sistema</em> → <em>Accessibilità</em> → <em>Contenuto pronunciato</em> → <em>Voce di sistema</em> → <em>Gestisci voci</em>.</p>' +
       '<div class="status-actions"><a class="btn btn-soft btn-sm" href="#/neura" data-status-close>Scegliere la voce</a></div>';
 
-    html += "<h3>Se il sistema chiede conferma</h3>" +
+    html += "<h2 class=h-sub>Se il sistema chiede conferma</h2>" +
       "<p>I pacchetti non hanno un certificato commerciale: il sistema avvisa una volta sola e poi lascia lavorare. Il consenso si dà così.</p>" +
       "<ul class=\"text-small\">" + istruzioniAvvio(s.id) + "</ul>" +
       '<div class="status-actions"><a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Pagina Installa</a>' +
@@ -244,7 +244,7 @@
 
   function bloccoAggiornamenti() {
     const ponte = ponteAggiornamenti();
-    let html = "<h3>Aggiornamenti</h3>";
+    let html = "<h2 class=h-sub>Aggiornamenti</h2>";
 
     if (!ponte) {
       return html + '<p class="text-small muted mb-0">Qui gli aggiornamenti non si gestiscono: nel browser la pagina si rinnova da sé quando il sito pubblica una nuova versione. Il controllo automatico riguarda il programma installato.</p>';
@@ -283,11 +283,11 @@
     const d = dispositivo();
     const telefono = !!(d && d.telefono);
 
-    let html = "<h3>Dove stai usando il programma</h3>" +
+    let html = "<h2 class=h-sub>Dove stai usando il programma</h2>" +
       "<p><strong>" + esc(m.titolo) + "</strong> · " + esc(m.dove) + "</p>" +
       "<p>" + esc(m.nota) + "</p>" +
       '<div class="status-actions"><a class="btn btn-ghost btn-sm" href="#/installa" data-status-close>Pagina Installa</a></div>' +
-      "<h3>Intelligenza artificiale sul dispositivo</h3>";
+      "<h2 class=h-sub>Intelligenza artificiale sul dispositivo</h2>";
 
     if (telefono) {
       html += "<p>Su telefono e tablet non c'è un modello locale, e non serve: Neura legge i contenuti del programma e risponde senza inventare.</p>";
@@ -314,7 +314,7 @@
   }
 
   function contenutoMicrofono() {
-    let html = "<h3>Microfono</h3>";
+    let html = "<h2 class=h-sub>Microfono</h2>";
 
     if (!statoMic.presente) {
       html += "<p><strong>Qui il microfono non è disponibile</strong> per l'app: succede con browser molto vecchi, con i permessi bloccati o su dispositivi senza microfono.</p>" +
@@ -345,7 +345,7 @@
       return ["112", "1522", "19696"].indexOf(n.numero) >= 0;
     });
 
-    return "<h3>Se hai bisogno di una persona, adesso</h3>" +
+    return "<h2 class=h-sub>Se hai bisogno di una persona, adesso</h2>" +
       "<p>Questa app non è un servizio di emergenza e nessuno la sta guardando. Se c'è un pericolo, una violenza o pensieri di farti del male, la priorità è una persona.</p>" +
       '<div class="status-numbers">' + numeri.map(function (n) {
         return '<a class="status-num" href="tel:' + esc(n.tel) + '"><b>' + esc(n.numero) + "</b><span>" + esc(n.nome) + "</span></a>";

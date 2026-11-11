@@ -25,10 +25,10 @@
       '<div class="grid grid-2 mt-2">' + NP.data.manuale.map(function (c) {
         return '<a class="card card-link" href="#/manuale/' + c.id + '"><div class="card-icon">' + A.icon("book") + "</div>" +
           '<p class="text-small muted" style="margin-bottom:.2rem">Capitolo ' + c.n + " · " + c.minuti + " min</p>" +
-          "<h3>" + esc(c.titolo) + "</h3><p>" + esc(c.sommario) + "</p>" +
+          "<h2 class=h-sub>" + esc(c.titolo) + "</h2><p>" + esc(c.sommario) + "</p>" +
           '<span class="go">Leggi ' + A.icon("arrow") + "</span></a>";
       }).join("") + "</div>" +
-      '<div class="card mt-3"><h3>Fonti e metodo</h3><p class="text-small">I contenuti si appoggiano a linee guida e letteratura clinica (NICE, OMS, CNOP, DSM-5-TR, riviste peer-reviewed). Quando l\'evidenza è limitata, è scritto. Quando un tema richiede competenza specialistica, è indicato.</p>' +
+      '<div class="card mt-3"><h2 class=h-sub>Fonti e metodo</h2><p class="text-small">I contenuti si appoggiano a linee guida e letteratura clinica (NICE, OMS, CNOP, DSM-5-TR, riviste peer-reviewed). Quando l\'evidenza è limitata, è scritto. Quando un tema richiede competenza specialistica, è indicato.</p>' +
         '<div class="pill-row">' + NP.data.fonti.map(function (f) { return '<a class="chip" href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a>"; }).join("") + "</div></div>"
     );
   };
@@ -52,13 +52,13 @@
             return "<h2>" + esc(s.h) + "</h2>" + s.p.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("");
           }).join("") +
         "</div></article>" +
-        '<div class="card"><h3>' + A.icon("activity") + " Esercizio</h3><h4>" + esc(c.esercizio.titolo) + "</h4><p>" + esc(c.esercizio.testo) + "</p></div>" +
-        '<div class="card"><h3>' + A.icon("alert") + " Quando preoccuparsi</h3><h4>" + esc(c.quando.titolo) + "</h4><p>" + esc(c.quando.testo) + "</p></div>" +
-        '<div class="card"><h3>' + A.icon("spark") + " In sintesi, per Neura</h3><p class=\"text-small\">" + esc((c.neura.sintesi || [])[0]) + "</p>" +
+        '<div class="card"><h2 class=h-sub>' + A.icon("activity") + " Esercizio</h2><h3 class=h-sub-sm>" + esc(c.esercizio.titolo) + "</h3><p>" + esc(c.esercizio.testo) + "</p></div>" +
+        '<div class="card"><h2 class=h-sub>' + A.icon("alert") + " Quando preoccuparsi</h2><h3 class=h-sub-sm>" + esc(c.quando.titolo) + "</h3><p>" + esc(c.quando.testo) + "</p></div>" +
+        '<div class="card"><h2 class=h-sub>' + A.icon("spark") + " In sintesi, per Neura</h2><p class=\"text-small\">" + esc((c.neura.sintesi || [])[0]) + "</p>" +
           '<a class="chip" href="#/neura">Chiedi a Neura</a></div>' +
       "</div>" +
       '<div class="callout warn mt-2"><p><strong>Avviso.</strong> ' + esc(c.neura.avviso) + "</p></div>" +
-      '<div class="card mt-2"><h3>Riferimenti</h3><ul class="text-small muted">' + c.fonti.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></div>" +
+      '<div class="card mt-2"><h2 class=h-sub>Riferimenti</h2><ul class="text-small muted">' + c.fonti.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></div>" +
       '<div class="btn-row mt-3">' +
         (prev ? '<a class="btn btn-ghost" href="#/manuale/' + prev.id + '">← ' + esc(prev.titolo) + "</a>" : "") +
         '<a class="btn btn-soft" href="#/manuale">Tutti i capitoli</a>' +
@@ -122,8 +122,8 @@
       "</div>" +
 
       '<div class="grid grid-2 mt-2">' +
-        '<div class="card"><h3>Minori</h3><p>' + esc(S.minori) + "</p></div>" +
-        '<div class="card"><h3>Violenza e stalking</h3><p>' + esc(S.violenza) + "</p></div>" +
+        '<div class="card"><h2 class=h-sub>Minori</h2><p>' + esc(S.minori) + "</p></div>" +
+        '<div class="card"><h2 class=h-sub>Violenza e stalking</h2><p>' + esc(S.violenza) + "</p></div>" +
       "</div>" +
 
       '<div class="callout warn mt-2"><p><strong>Nota.</strong> ' + esc(S.nota) + "</p></div>" +
@@ -181,7 +181,7 @@
         "</div>" +
         '<div class="grid" style="gap:1rem">' +
           '<div class="card"><div class="btn-row" style="justify-content:space-between"><h2 style="margin:0">Le ultime voci</h2><span class="badge badge-blue">Media umore ' + avgMood + "</span></div><div class=\"diary-list mt-2\">" + listHTML + "</div></div>" +
-          '<div class="card"><h3>Scheda del pensiero</h3><p class="text-small">La classica scheda a sette colonne, ridotta all&rsquo;essenziale. Compila quando un pensiero ti ha fatto stare male.</p>' +
+          '<div class="card"><h2 class=h-sub>Scheda del pensiero</h2><p class="text-small">La classica scheda a sette colonne, ridotta all&rsquo;essenziale. Compila quando un pensiero ti ha fatto stare male.</p>' +
             '<form id="thoughtForm" class="thought-grid">' +
               '<div class="form-field"><label class="field-label" for="tSit">Situazione</label><input class="input" id="tSit" placeholder="Chi, dove, quando"></div>' +
               '<div class="form-field"><label class="field-label" for="tThought">Pensiero</label><input class="input" id="tThought" placeholder="La frase esatta"></div>' +
@@ -269,11 +269,11 @@
       "</div>" +
 
       '<div class="grid grid-2 mt-2">' +
-        '<div class="card"><h3>Codice</h3><p>HTML, CSS, JavaScript, service worker e test sono distribuiti con licenza <strong>MIT</strong>. Puoi usarli, modificarli e ridistribuirli citando il copyright.</p></div>' +
-        '<div class="card"><h3>Contenuti</h3><p>Testi, capitoli, questionari, esercizi, protocolli, glossario e grafica sono distribuiti con licenza <strong>Creative Commons BY-NC-SA 4.0</strong>: attribuzione, non commerciale, stessa licenza.</p></div>' +
+        '<div class="card"><h2 class=h-sub>Codice</h2><p>HTML, CSS, JavaScript, service worker e test sono distribuiti con licenza <strong>MIT</strong>. Puoi usarli, modificarli e ridistribuirli citando il copyright.</p></div>' +
+        '<div class="card"><h2 class=h-sub>Contenuti</h2><p>Testi, capitoli, questionari, esercizi, protocolli, glossario e grafica sono distribuiti con licenza <strong>Creative Commons BY-NC-SA 4.0</strong>: attribuzione, non commerciale, stessa licenza.</p></div>' +
       "</div>" +
 
-      '<div class="card mt-2"><h3>Privacy, in pratica</h3><ul class="list-check">' +
+      '<div class="card mt-2"><h2 class=h-sub>Privacy, in pratica</h2><ul class="list-check">' +
         "<li>Nessun account, nessun server, nessuna telemetria.</li>" +
         "<li>Risposte, diario, questionari e relazione restano nel <code>localStorage</code> del browser.</li>" +
         "<li>Il PDF viene generato sul dispositivo: non viene inviato da nessuna parte.</li>" +
@@ -284,7 +284,7 @@
         '<button type="button" class="btn btn-danger btn-sm" id="resetBtn">Cancella tutti i dati</button></div>' +
       "</div>" +
 
-      '<div class="card mt-2"><h3>Limiti dichiarati</h3><ul class="text-small">' +
+      '<div class="card mt-2"><h2 class=h-sub>Limiti dichiarati</h2><ul class="text-small">' +
         "<li>Non è un dispositivo medico ai sensi del Regolamento UE 2017/745.</li>" +
         "<li>Non formula diagnosi, non prescrive terapie, non gestisce emergenze.</li>" +
         "<li>Neura è un motore di conoscenza locale, non un'IA generativa: non apprende e non risponde fuori dal corpus.</li>" +
@@ -292,7 +292,7 @@
         "<li>I contenuti sono divulgativi e non sostituiscono la formazione e la responsabilità di un professionista.</li>" +
       "</ul></div>" +
 
-      '<div class="card mt-2"><h3>Vademecum in PDF</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>Vademecum in PDF</h2>' +
         '<p>La guida tascabile raccoglie colloquio, questionari, percorso, sicurezza, nutrizione e installazione: si legge sul telefono o si stampa e si tiene accanto al computer.</p>' +
         '<div class="btn-row mt-2">' +
           '<a class="btn btn-soft btn-sm" href="assets/pdf/vademecum-psicologo-digitale.pdf" download>' + A.icon("download") + "A5 · da leggere</a>" +
@@ -301,24 +301,24 @@
         "</div>" +
         '<p class="text-small muted mt-2">Il libricino A4 contiene le stesse pagine in formato A5 già impostate: si stampa fronte-retro, si piega in due e diventa un opuscolo da quattro fogli. Codice MIT, contenuti CC BY-NC-SA 4.0.</p></div>' +
 
-      '<div class="card mt-2"><h3>Guida per il professionista</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>Guida per il professionista</h2>' +
         '<p>Un secondo documento, scritto per chi riceve la relazione: che cosa contiene il PDF, come si leggono i punteggi dei sei questionari fascia per fascia e quali sono i limiti dichiarati del programma.</p>' +
         '<div class="btn-row mt-2">' +
           '<a class="btn btn-soft btn-sm" href="assets/pdf/vademecum-clinico-psicologo-digitale.pdf" download>' + A.icon("download") + "Guida per il clinico · A4</a>" +
         "</div>" +
         '<p class="text-small muted mt-2">Serve a rendere il primo colloquio più preciso, non a sostituirlo: il documento resta un\'autovalutazione, non un test validato.</p></div>' +
 
-      '<div class="card mt-2"><h3>Domande frequenti</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>Domande frequenti</h2>' +
         NP.data.faq.map(function (f) {
           return '<details style="border-top:1px solid var(--line);padding:.7rem 0"><summary style="cursor:pointer;font-weight:600">' + esc(f.d) + '</summary><p class="text-small mt-1">' + esc(f.r) + "</p></details>";
         }).join("") +
       "</div>" +
 
-      '<div class="card mt-2"><h3>Fonti e riferimenti</h3><ul class="text-small">' + NP.data.fonti.map(function (f) {
+      '<div class="card mt-2"><h2 class=h-sub>Fonti e riferimenti</h2><ul class="text-small">' + NP.data.fonti.map(function (f) {
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.32 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.33 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

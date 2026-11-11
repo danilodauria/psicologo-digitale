@@ -348,7 +348,7 @@ NP.app = (function () {
     const hasData = prog.answered > 0 || doneScales > 0;
 
     const resume = hasData
-      ? '<div class="card card-soft mt-2"><div class="btn-row" style="justify-content:space-between"><div><h3 style="margin-bottom:.2rem">Riprendi da dove eri</h3><p class="mb-0 text-small">' +
+      ? '<div class="card card-soft mt-2"><div class="btn-row" style="justify-content:space-between"><div><h2 class="h-sub" style="margin-bottom:.2rem">Riprendi da dove eri</h2><p class="mb-0 text-small">' +
         (prog.answered ? "Colloquio: " + prog.answered + " domande su " + prog.total + " (" + prog.pct + "%). " : "") +
         (doneScales ? "Questionari completati: " + doneScales + ". " : "") +
         "I dati restano su questo dispositivo.</p></div>" +
@@ -381,34 +381,34 @@ NP.app = (function () {
 
       '<section class="section"><div class="section-head"><p class="eyebrow">Da dove iniziare</p><h2>Quattro porte, nessun ordine obbligato</h2><p>Scegli quella che ti somiglia di più. Puoi cambiare strada quando vuoi: i dati restano.</p></div>' +
         '<div class="grid grid-2">' +
-          '<a class="card card-link" href="#/colloquio"><div class="card-icon">' + icon("chat") + "</div><h3>Colloquio con Neura</h3><p>Domande adattive su motivo, storia, funzionamento e sicurezza. Neura restituisce un quadro preliminare e ti dice cosa portare al professionista.</p><span class=\"go\">Inizia · 15-20 minuti " + icon("arrow") + "</span></a>" +
-          '<a class="card card-link" href="#/valutazione"><div class="card-icon">' + icon("list") + "</div><h3>Questionari di autovalutazione</h3><p>Sei strumenti su umore, ansia, stress, sonno, esaurimento e benessere. Punteggi, fasce e spiegazioni, con avvisi di sicurezza.</p><span class=\"go\">Scegli un questionario " + icon("arrow") + "</span></a>" +
-          '<a class="card card-link" href="#/percorso"><div class="card-icon">' + icon("compass") + "</div><h3>Percorso in otto tappe</h3><p>Un programma strutturato di 8-16 settimane: obiettivi, pratiche, indicatori. Con protocolli di seduta e tempi.</p><span class=\"go\">Vedi il percorso " + icon("arrow") + "</span></a>" +
-          '<a class="card card-link" href="#/relazione"><div class="card-icon">' + icon("print") + "</div><h3>Relazione per il professionista</h3><p>Un documento PDF stampabile con dati, punteggi, segnali di sicurezza, obiettivi e domande suggerite per il clinico.</p><span class=\"go\">Genera la relazione " + icon("arrow") + "</span></a>" +
+          '<a class="card card-link" href="#/colloquio"><div class="card-icon">' + icon("chat") + "</div><h2 class=h-sub>Colloquio con Neura</h2><p>Domande adattive su motivo, storia, funzionamento e sicurezza. Neura restituisce un quadro preliminare e ti dice cosa portare al professionista.</p><span class=\"go\">Inizia · 15-20 minuti " + icon("arrow") + "</span></a>" +
+          '<a class="card card-link" href="#/valutazione"><div class="card-icon">' + icon("list") + "</div><h2 class=h-sub>Questionari di autovalutazione</h2><p>Sei strumenti su umore, ansia, stress, sonno, esaurimento e benessere. Punteggi, fasce e spiegazioni, con avvisi di sicurezza.</p><span class=\"go\">Scegli un questionario " + icon("arrow") + "</span></a>" +
+          '<a class="card card-link" href="#/percorso"><div class="card-icon">' + icon("compass") + "</div><h2 class=h-sub>Percorso in otto tappe</h2><p>Un programma strutturato di 8-16 settimane: obiettivi, pratiche, indicatori. Con protocolli di seduta e tempi.</p><span class=\"go\">Vedi il percorso " + icon("arrow") + "</span></a>" +
+          '<a class="card card-link" href="#/relazione"><div class="card-icon">' + icon("print") + "</div><h2 class=h-sub>Relazione per il professionista</h2><p>Un documento PDF stampabile con dati, punteggi, segnali di sicurezza, obiettivi e domande suggerite per il clinico.</p><span class=\"go\">Genera la relazione " + icon("arrow") + "</span></a>" +
         "</div></section>" +
 
       '<section class="section"><div class="section-head"><p class="eyebrow">Come funziona</p><h2>Quattro passi, un obiettivo: arrivare preparato</h2></div>' +
         '<div class="steps">' +
-          '<div class="step"><div><h4>Racconta</h4><p>Il colloquio adattivo esplora ciò che pesa, da quanto, come interferisce. Puoi fermarti e riprendere.</p></div></div>' +
-          '<div class="step"><div><h4>Misura</h4><p>Uno o due questionari aggiungono intensità e confronto. Sono indicatori, non diagnosi.</p></div></div>' +
-          '<div class="step"><div><h4>Orienta</h4><p>Neura propone un percorso, esercizi e domande da portare al professionista, con i segnali da non ignorare.</p></div></div>' +
-          '<div class="step"><div><h4>Condividi</h4><p>La relazione PDF raccoglie tutto in modo leggibile: la consegni a chi può valutare davvero.</p></div></div>' +
+          '<div class="step"><div><h3 class=h-sub-sm>Racconta</h3><p>Il colloquio adattivo esplora ciò che pesa, da quanto, come interferisce. Puoi fermarti e riprendere.</p></div></div>' +
+          '<div class="step"><div><h3 class=h-sub-sm>Misura</h3><p>Uno o due questionari aggiungono intensità e confronto. Sono indicatori, non diagnosi.</p></div></div>' +
+          '<div class="step"><div><h3 class=h-sub-sm>Orienta</h3><p>Neura propone un percorso, esercizi e domande da portare al professionista, con i segnali da non ignorare.</p></div></div>' +
+          '<div class="step"><div><h3 class=h-sub-sm>Condividi</h3><p>La relazione PDF raccoglie tutto in modo leggibile: la consegni a chi può valutare davvero.</p></div></div>' +
         "</div></section>" +
 
       '<section class="section"><div class="grid grid-3">' +
-        '<a class="card card-link" href="#/neura"><div class="card-icon">' + icon("spark") + "</div><h3>Chiedi a Neura</h3><p>Un consulente digitale che risponde sui contenuti del programma, con voce e collegamenti. Non inventa.</p></a>" +
-        '<a class="card card-link" href="#/manuale"><div class="card-icon">' + icon("book") + "</div><h3>Manuale</h3><p>Dodici capitoli: primo colloquio, ansia, umore, sonno, stress, emozioni, pensieri, relazioni, trauma, corpo, etica.</p></a>" +
-        '<a class="card card-link" href="#/sicurezza"><div class="card-icon">' + icon("shield") + "</div><h3>Sicurezza e numeri utili</h3><p>Segnali d'allarme, cosa fare subito, numeri di ascolto e indicazioni per minori e violenza.</p></a>" +
+        '<a class="card card-link" href="#/neura"><div class="card-icon">' + icon("spark") + "</div><h2 class=h-sub>Chiedi a Neura</h2><p>Un consulente digitale che risponde sui contenuti del programma, con voce e collegamenti. Non inventa.</p></a>" +
+        '<a class="card card-link" href="#/manuale"><div class="card-icon">' + icon("book") + "</div><h2 class=h-sub>Manuale</h2><p>Dodici capitoli: primo colloquio, ansia, umore, sonno, stress, emozioni, pensieri, relazioni, trauma, corpo, etica.</p></a>" +
+        '<a class="card card-link" href="#/sicurezza"><div class="card-icon">' + icon("shield") + "</div><h2 class=h-sub>Sicurezza e numeri utili</h2><p>Segnali d'allarme, cosa fare subito, numeri di ascolto e indicazioni per minori e violenza.</p></a>" +
       "</div></section>" +
 
       '<section class="section"><blockquote class="quote">Un programma non può sostituire una persona. Può però aiutarti ad arrivare preparato, con parole più precise e domande migliori.<footer>Il progetto · Psicologo Digitale</footer></blockquote></section>' +
 
       '<section class="section"><div class="grid grid-2">' +
-        '<a class="card card-link" href="#/nutrizione"><div class="card-icon">' + icon("heart") + "</div><h3>Nutrizione e umore</h3><p>Come cibo, sonno ed energia si parlano, cosa chiedere a dietista o dietologo e quali segnali non vale la pena aspettare.</p><span class=\"go\">Apri la sezione " + icon("arrow") + "</span></a>" +
-        '<a class="card card-link" href="#/installa"><div class="card-icon">' + icon("download") + "</div><h3>Portala con te</h3><p>Installa l'app sul telefono o sul computer, usala senza connessione e, se vuoi, aggiungi un modello locale con Ollama.</p><span class=\"go\">Installa " + icon("arrow") + "</span></a>" +
+        '<a class="card card-link" href="#/nutrizione"><div class="card-icon">' + icon("heart") + "</div><h2 class=h-sub>Nutrizione e umore</h2><p>Come cibo, sonno ed energia si parlano, cosa chiedere a dietista o dietologo e quali segnali non vale la pena aspettare.</p><span class=\"go\">Apri la sezione " + icon("arrow") + "</span></a>" +
+        '<a class="card card-link" href="#/installa"><div class="card-icon">' + icon("download") + "</div><h2 class=h-sub>Portala con te</h2><p>Installa l'app sul telefono o sul computer, usala senza connessione e, se vuoi, aggiungi un modello locale con Ollama.</p><span class=\"go\">Installa " + icon("arrow") + "</span></a>" +
       "</div></section>" +
 
-      '<section class="section"><div class="card"><h3>Prima di cominciare, tre cose da sapere</h3><ul class="list-check">' +
+      '<section class="section"><div class="card"><h2 class=h-sub>Prima di cominciare, tre cose da sapere</h2><ul class="list-check">' +
         "<li>I dati restano nel browser del tuo dispositivo. Non c'è un server, non c'è un account.</li>" +
         "<li>I punteggi non sono una diagnosi e non definiscono chi sei.</li>" +
         "<li>Se c'è un rischio per la tua sicurezza, la priorità non è l'app: è il 112 o una persona di fiducia.</li>" +

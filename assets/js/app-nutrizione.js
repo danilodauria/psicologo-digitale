@@ -28,7 +28,7 @@
         N.principi.map(function (p, i) {
           return '<article class="card"><div class="card-icon">' + A.icon("heart") + "</div>" +
             '<p class="text-small muted" style="margin-bottom:.2rem">Punto ' + (i + 1) + "</p>" +
-            "<h3>" + esc(p.t) + "</h3><p>" + esc(p.d) + "</p></article>";
+            "<h2 class=h-sub>" + esc(p.t) + "</h2><p>" + esc(p.d) + "</p></article>";
         }).join("") +
       "</div>" +
 
@@ -47,7 +47,7 @@
       '<div class="section-head mt-3"><p class="eyebrow">La giornata</p><h2>Il ritmo, prima delle quantità</h2></div>' +
       '<div class="grid grid-2">' +
         N.ritmo.map(function (r) {
-          return '<div class="card"><div class="card-icon">' + A.icon("clock") + "</div><h3>" + esc(r.t) + "</h3><p>" + esc(r.d) + "</p></div>";
+          return '<div class="card"><div class="card-icon">' + A.icon("clock") + "</div><h2 class=h-sub>" + esc(r.t) + "</h2><p>" + esc(r.d) + "</p></div>";
         }).join("") +
       "</div>" +
 
@@ -66,7 +66,7 @@
         '<p>In Italia queste figure hanno percorsi diversi, e la differenza conta: chi ti prescrive una dieta non è sempre chi può prescriverti un esame o un farmaco.</p></div>' +
       '<div class="grid grid-2">' +
         N.professionisti.map(function (p) {
-          return '<article class="card"><div class="btn-row" style="justify-content:space-between"><h3 style="margin:0">' + esc(p.ruolo) + "</h3>" +
+          return '<article class="card"><div class="btn-row" style="justify-content:space-between"><h2 class="h-sub" style="margin:0">' + esc(p.ruolo) + "</h2>" +
             '<span class="chip chip-static">Professionista</span></div>' +
             '<p class="text-small mt-1"><strong>Chi è.</strong> ' + esc(p.chi) + "</p>" +
             '<p class="text-small"><strong>Cosa fa.</strong> ' + esc(p.cosa) + "</p>" +
@@ -74,17 +74,17 @@
         }).join("") +
       "</div>" +
 
-      '<div class="card mt-2"><h3>Le domande da portare al primo incontro</h3>' +
+      '<div class="card mt-2"><h2 class=h-sub>Le domande da portare al primo incontro</h2>' +
         '<ul class="list-check">' + N.domande.map(function (q) { return "<li>" + esc(q) + "</li>"; }).join("") + "</ul>" +
         '<p class="text-small muted mt-2">Puoi annotarle nel diario e stampare la relazione: arrivare con domande precise rende il primo incontro più utile per entrambi.</p>' +
         '<div class="btn-row mt-1"><a class="btn btn-soft btn-sm" href="#/diario">Apri il diario</a>' +
         '<a class="btn btn-ghost btn-sm" href="#/relazione">Relazione per il professionista</a></div></div>' +
 
-      '<div class="card mt-2"><h3>Che cosa questa sezione non fa</h3><ul class="text-small">' +
+      '<div class="card mt-2"><h2 class=h-sub>Che cosa questa sezione non fa</h2><ul class="text-small">' +
         N.limiti.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") +
       "</ul></div>" +
 
-      '<div class="card mt-2"><h3>Fonti</h3><div class="pill-row">' +
+      '<div class="card mt-2"><h2 class=h-sub>Fonti</h2><div class="pill-row">' +
         N.fonti.map(function (f) { return '<a class="chip" href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a>"; }).join("") +
       "</div>" +
       '<p class="text-small muted mt-2">Le indicazioni sono divulgative e generali: non tengono conto di allergie, intolleranze, patologie, farmaci, gravidanza o allattamento.</p></div>'

@@ -374,7 +374,7 @@ const schedaPdf = "assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf";
 ok(exists("scheda-rapida.html"), "esiste la scheda rapida come pagina del sito");
 ok(/class="[^"]*pagina-scheda/.test(schedaHtml), "la scheda è marcata per le regole di stampa");
 ["Windows", "macOS", "Linux"].forEach((sistema) => {
-  ok(schedaHtml.indexOf(">" + sistema + "<h3>") !== -1 || new RegExp("<h3>" + sistema + "</h3>").test(schedaHtml), "la scheda ha il blocco " + sistema);
+  ok(new RegExp("<h[1-6]>" + sistema + "</h[1-6]>").test(schedaHtml), "la scheda ha il blocco " + sistema);
 });
 ok((schedaHtml.match(/<li>/g) || []).length >= 12, "la scheda ha i passaggi essenziali dei tre sistemi");
 ok(/112/.test(schedaHtml), "la scheda porta con sé il numero di emergenza");
@@ -632,6 +632,13 @@ ok(/function indirizziCitati/.test(controlloLink), "il controllo quotidiano apre
 const controlloInterno = read("scripts/controlla-collegamenti.cjs");
 ok(/function controllaLetterali/.test(controlloInterno) && /controllaLetterali\(pacchetto, viste\)/.test(controlloInterno), "il controllo legge anche i collegamenti scritti nel codice");
 ok(/function rendiApp/.test(controlloInterno) && /function controllaPagine/.test(controlloInterno), "il controllo apre pagine, viste e collegamenti");
+// Accessibilità: contrasto, ordine dei titoli, testo alternativo.
+const accessibilita = read("scripts/controlla-accessibilita.cjs");
+ok(/function controllaTesti/.test(accessibilita), "l'accessibilità misura il contrasto dei testi");
+ok(/function controllaTitoli/.test(accessibilita) && /titolo fuori ordine/.test(accessibilita), "l'accessibilità controlla l'ordine dei titoli");
+ok(/function controllaImmagini/.test(accessibilita) && /senza testo alternativo/.test(accessibilita), "l'accessibilità chiede il testo alternativo");
+ok(/controlla-accessibilita\.cjs/.test(read("package.json")), "npm test esegue anche il controllo di accessibilità");
+ok(/html\[data-theme="dark"\]/.test(read("assets/css/styles.css")), "il foglio di stile ha il tema scuro, e il controllo lo misura");
 
 /* Esito ------------------------------------------------------------------- */
 

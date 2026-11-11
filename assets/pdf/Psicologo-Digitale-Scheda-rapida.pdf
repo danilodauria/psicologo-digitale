@@ -47,7 +47,7 @@ endobj
 endobj
 9 0 obj
 <<
-/Author (Danilo D'Auria) /CreationDate (D:20261104141314+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261104141314+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Danilo D'Auria) /CreationDate (D:20261111233027+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261111233027+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (Istruzioni di installazione per Windows, macOS e Linux) /Title (Psicologo Digitale \267 Scheda rapida) /Trapped /False
 >>
 endobj
@@ -58,7 +58,7 @@ endobj
 endobj
 11 0 obj
 <<
-/Length 8285
+/Length 8279
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -66,7 +66,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Scheda rapida) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.32) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.33) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -88,7 +88,7 @@ BT 1 0 0 1 0 17.3 Tm /F1 9.9 Tf 13.6 TL .29324 Tw (I passaggi che servono davver
 Q
 Q
 q
-1 0 0 1 51.02362 447.3276 cm
+1 0 0 1 51.02362 442.5276 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -96,14 +96,14 @@ q
 1 0 0 1 0 25.2 cm
 q
 1 1 1 rg
-n 0 239.8 160.4094 -239.8 re f*
+n 0 244.6 160.4094 -244.6 re f*
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 7 220.6 cm
+1 0 0 1 7 222.6 cm
 q
 .133333 .203922 .360784 rg
-BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Windows) Tj T* ET
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Windows) Tj T* ET
 Q
 Q
 q
@@ -147,10 +147,10 @@ q
 1 j
 .788235 .768627 .721569 RG
 .5 w
-n 0 239.8 m 160.4094 239.8 l S
+n 0 244.6 m 160.4094 244.6 l S
 n 0 0 m 160.4094 0 l S
-n 0 0 m 0 239.8 l S
-n 160.4094 0 m 160.4094 239.8 l S
+n 0 0 m 0 244.6 l S
+n 160.4094 0 m 160.4094 244.6 l S
 Q
 Q
 Q
@@ -158,14 +158,14 @@ q
 1 0 0 1 164.4094 12.6 cm
 q
 1 1 1 rg
-n 0 252.4 160.4094 -252.4 re f*
+n 0 257.2 160.4094 -257.2 re f*
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 7 233.2 cm
+1 0 0 1 7 235.2 cm
 q
 .133333 .203922 .360784 rg
-BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (macOS) Tj T* ET
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (macOS) Tj T* ET
 Q
 Q
 q
@@ -207,10 +207,10 @@ q
 1 j
 .788235 .768627 .721569 RG
 .5 w
-n 0 252.4 m 160.4094 252.4 l S
+n 0 257.2 m 160.4094 257.2 l S
 n 0 0 m 160.4094 0 l S
-n 0 0 m 0 252.4 l S
-n 160.4094 0 m 160.4094 252.4 l S
+n 0 0 m 0 257.2 l S
+n 160.4094 0 m 160.4094 257.2 l S
 Q
 Q
 Q
@@ -218,14 +218,14 @@ q
 1 0 0 1 328.8189 0 cm
 q
 1 1 1 rg
-n 0 265 160.4094 -265 re f*
+n 0 269.8 160.4094 -269.8 re f*
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 7 245.8 cm
+1 0 0 1 7 247.8 cm
 q
 .133333 .203922 .360784 rg
-BT 1 0 0 1 0 2.6 Tm /F2 10.6 Tf 13.2 TL (Linux) Tj T* ET
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Linux) Tj T* ET
 Q
 Q
 q
@@ -269,10 +269,10 @@ q
 1 j
 .788235 .768627 .721569 RG
 .5 w
-n 0 265 m 160.4094 265 l S
+n 0 269.8 m 160.4094 269.8 l S
 n 0 0 m 160.4094 0 l S
-n 0 0 m 0 265 l S
-n 160.4094 0 m 160.4094 265 l S
+n 0 0 m 0 269.8 l S
+n 160.4094 0 m 160.4094 269.8 l S
 Q
 Q
 Q
@@ -281,25 +281,25 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 443.3276 cm
+1 0 0 1 57.02362 438.5276 cm
 Q
 q
-1 0 0 1 57.02362 418.1276 cm
+1 0 0 1 57.02362 413.3276 cm
 q
 BT 1 0 0 1 0 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (La connessione serve solo per scaricare.) Tj /F1 9.2 Tf ( Dopo, il programma funziona offline e i dati restano sul dispositivo:) Tj T* (nessun server li riceve. Se un passaggio non torna, le risposte sono nelle domande frequenti.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 390.9276 cm
+1 0 0 1 57.02362 386.1276 cm
 q
 BT 1 0 0 1 0 16 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Avvertenza.) Tj /F1 9.2 Tf ( \310 uno strumento educativo e di orientamento: non formula diagnosi, non prescrive terapie e non) Tj T* (sostituisce il parere di uno psicologo, di uno psicoterapeuta o di un medico. In caso di emergenza chiama il ) Tj /F2 9.2 Tf (112) Tj /F1 9.2 Tf (.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 363.7276 cm
+1 0 0 1 57.02362 358.9276 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (versione 1.3.32 \267 danilodauria.github.io/psicologo-digitale/scheda-rapida.html \267 Codice MIT \267 Contenuti CC BY-NC-SA) Tj T* (4.0 \267 \251 Danilo D'Auria) Tj T* ET
+BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (versione 1.3.33 \267 danilodauria.github.io/psicologo-digitale/scheda-rapida.html \267 Codice MIT \267 Contenuti CC BY-NC-SA) Tj T* (4.0 \267 \251 Danilo D'Auria) Tj T* ET
 Q
 Q
  
@@ -322,7 +322,7 @@ xref
 trailer
 <<
 /ID 
-[<5957d08ef2996aa807e8670b5cdf2a18><5957d08ef2996aa807e8670b5cdf2a18>]
+[<99a6d64ddb23cd8af6971bfe709a1971><99a6d64ddb23cd8af6971bfe709a1971>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 9 0 R
@@ -330,5 +330,5 @@ trailer
 /Size 12
 >>
 startxref
-9684
+9678
 %%EOF

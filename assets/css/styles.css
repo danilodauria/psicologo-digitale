@@ -18,14 +18,14 @@
   --salvia-scura: #24625c;
   --salvia-chiara: #dcecea;
   --ambra: #b8843c;
-  --ambra-scura: #94682a;
+  --ambra-scura: #8a6024;
   --ambra-chiara: #f7ecd8;
   --crema: #f4f2ec;
   --carta: #fffdf8;
   --carta-2: #faf7f0;
   --inchiostro: #1b2333;
   --inchiostro-soft: #4a5365;
-  --inchiostro-faint: #6d7688;
+  --inchiostro-faint: #656d7e;
   --rosso: #a43a35;
   --rosso-chiara: #f8e3e0;
   --verde: #2b6b4d;
@@ -119,6 +119,12 @@ h1 { font-size: clamp(2rem, 4.4vw, 3.1rem); }
 h2 { font-size: clamp(1.45rem, 2.6vw, 2rem); }
 h3 { font-size: 1.2rem; }
 h4 { font-size: 1.02rem; }
+
+/* Le sezioni delle viste sono h2 (o h3) per la gerarchia dei titoli, ma
+   conservano la misura che avevano: da h3 a h4, in ordine. */
+.h-sub { font-size: 1.2rem; }
+.h-sub-sm { font-size: 1.02rem; }
+h2.h-sub, h3.h-sub-sm { margin-bottom: .4rem; }
 
 p { margin: 0 0 1rem; }
 p:last-child { margin-bottom: 0; }
@@ -932,6 +938,7 @@ html[data-theme="dark"] .intake-stage { color: #e2bd82; }
 .intake-map span.done { color: var(--verde); border-color: color-mix(in srgb, var(--verde) 30%, transparent); background: var(--verde-chiara); }
 .intake-map span.now { color: var(--indaco-700); border-color: var(--indaco-200); background: var(--indaco-100); font-weight: 600; }
 html[data-theme="dark"] .intake-map span.now { color: #dce6fb; }
+html[data-theme="dark"] .intake-map span.done { color: #9fdcb9; }
 
 .summary-band {
   display: grid;
@@ -1109,11 +1116,12 @@ html[data-theme="dark"] .score-big { color: #b7c9e9; }
   font-size: .72rem;
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: var(--salvia);
+  color: var(--salvia-scura);
   display: inline-flex;
   align-items: center;
   gap: .35rem;
 }
+html[data-theme="dark"] .chat-status { color: #9fdcb9; }
 .chat-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
 .chat-log {

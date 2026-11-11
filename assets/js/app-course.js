@@ -27,7 +27,7 @@
     const done = isDone(m.id);
     return '<article class="tl-item" data-module="' + m.id + '">' +
       '<div class="tl-num">' + m.n + "</div>" +
-      "<div><h3>" + esc(m.titolo) + "</h3>" +
+      "<div><h2 class=h-sub>" + esc(m.titolo) + "</h2>" +
       '<p class="tl-sub">' + esc(m.sottotitolo) + " · " + esc(m.settimane) + " · " + esc(m.durata) + "</p>" +
       "<p>" + esc(m.obiettivo) + "</p>" +
       '<div class="tl-meta"><span class="badge badge-blue">Tappa ' + m.n + "</span>" +
@@ -35,11 +35,11 @@
         (done ? '<span class="badge badge-green">Completata</span>' : "") + "</div>" +
       '<button type="button" class="module-toggle" aria-expanded="false">' + A.icon("chevron") + "Contenuti, pratica e indicatore</button>" +
       '<div class="module-body">' +
-        "<h4>Che cosa si fa</h4><ul>" + m.contenuti.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul>" +
-        "<h4>Pratica tra le sedute</h4><p>" + esc(m.pratica) + "</p>" +
-        "<h4>Indicatore di progresso</h4><p>" + esc(m.indicatore) + "</p>" +
+        "<h3 class=h-sub-sm>Che cosa si fa</h3><ul>" + m.contenuti.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul>" +
+        "<h3 class=h-sub-sm>Pratica tra le sedute</h3><p>" + esc(m.pratica) + "</p>" +
+        "<h3 class=h-sub-sm>Indicatore di progresso</h3><p>" + esc(m.indicatore) + "</p>" +
         '<div class="callout warn"><p>' + esc(m.nota) + "</p></div>" +
-        '<h4>Esercizi collegati</h4><div class="pill-row">' + m.esercizi.map(function (id) {
+        '<h3 class=h-sub-sm>Esercizi collegati</h3><div class="pill-row">' + m.esercizi.map(function (id) {
           const ex = P.esercizi.filter(function (e) { return e.id === id; })[0];
           return ex ? '<a class="chip" href="#/esercizi/' + ex.id + '">' + esc(ex.titolo) + "</a>" : "";
         }).join("") + "</div>" +
@@ -60,8 +60,8 @@
       '<div class="callout info"><p><strong>Come leggerlo.</strong> ' + esc(P.premessa) + "</p></div>" +
       '<div class="course-progress"><div class="progress"><div class="progress-meta"><span>Completate <strong>' + doneCount + " di " + P.moduli.length + "</strong></span><span>" + pct + '%</span></div><div class="progress-track"><div class="progress-bar" style="width:' + pct + '%"></div></div></div></div>' +
       '<div class="grid grid-2 mt-2">' +
-        '<div class="card"><h3>Le regole del percorso</h3><ul class="list-check">' + P.regole.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul></div>" +
-        '<div class="card"><h3>Prima di iniziare</h3><p class="text-small">Se non hai ancora fatto il colloquio, parti da lì: le tappe funzionano meglio quando sai quale area vuoi lavorare.</p>' +
+        '<div class="card"><h2 class=h-sub>Le regole del percorso</h2><ul class="list-check">' + P.regole.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul></div>" +
+        '<div class="card"><h2 class=h-sub>Prima di iniziare</h2><p class="text-small">Se non hai ancora fatto il colloquio, parti da lì: le tappe funzionano meglio quando sai quale area vuoi lavorare.</p>' +
           '<div class="pill-row"><a class="chip" href="#/colloquio">Colloquio</a><a class="chip" href="#/valutazione">Questionari</a><a class="chip" href="#/sedute">Protocolli di seduta</a></div>' +
           '<p class="text-small muted mt-2">Se il rischio è alto, il percorso autonomo non è la strada: serve una valutazione professionale.</p></div>' +
       "</div>" +
@@ -94,7 +94,7 @@
         '<p class="lead">Come si struttura un incontro di 45-60 minuti, cosa si fa in ciascuna fase e quali domande aiutano. È un modello per il professionista e una mappa per chi vuole capire cosa aspettarsi.</p></div>' +
       '<div class="callout warn"><p><strong>Questi protocolli non sono una terapia fai-da-te.</strong> Descrivono una cornice di lavoro clinico. La conduzione richiede formazione, supervisione e responsabilità professionale.</p></div>' +
       '<div class="grid grid-2 mt-2">' + P.sedute.map(function (s) {
-        return '<article class="card exercise-card"><h3>' + s.n + ". " + esc(s.titolo) + "</h3>" +
+        return '<article class="card exercise-card"><h2 class=h-sub>' + s.n + ". " + esc(s.titolo) + "</h2>" +
           '<p class="text-small muted">' + esc(s.durata) + " · " + esc(s.quando) + "</p>" +
           '<p><strong>Obiettivi.</strong></p><ul class="text-small">' + s.obiettivi.map(function (o) { return "<li>" + esc(o) + "</li>"; }).join("") + "</ul>" +
           '<div class="agenda">' + s.agenda.map(function (a) {
@@ -114,7 +114,7 @@
   function exerciseCard(ex) {
     return '<a class="card card-link exercise-card" href="#/esercizi/' + ex.id + '">' +
       '<div class="card-icon">' + A.icon("activity") + "</div>" +
-      "<h3>" + esc(ex.titolo) + "</h3>" +
+      "<h2 class=h-sub>" + esc(ex.titolo) + "</h2>" +
       '<p class="text-small muted">' + esc(ex.durata) + "</p>" +
       "<p>" + esc(ex.scopo) + "</p>" +
       '<span class="go">Apri ' + A.icon("arrow") + "</span></a>";
@@ -143,14 +143,14 @@
       '<div class="page-head"><p class="crumbs"><a href="#/esercizi">Esercizi</a><span>›</span>' + esc(ex.durata) + "</p>" +
         "<h1>" + esc(ex.titolo) + "</h1><p class=\"lead\">" + esc(ex.scopo) + "</p></div>" +
       '<div class="grid grid-2">' +
-        '<div class="card"><h3>Quando usarlo</h3><p>' + esc(ex.quando) + "</p>" +
-          "<h3 class=\"mt-2\">Passo per passo</h3><ol class=\"exercise-steps\">" + ex.passo.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ol>" +
+        '<div class="card"><h2 class=h-sub>Quando usarlo</h2><p>' + esc(ex.quando) + "</p>" +
+          "<h2 class=\"mt-2 h-sub\">Passo per passo</h2><ol class=\"exercise-steps\">" + ex.passo.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ol>" +
           '<div class="btn-row mt-2"><button type="button" class="btn btn-soft btn-sm" id="timerBtn">' + A.icon("clock") + "Avvia un timer" + "</button>" +
             '<button type="button" class="btn btn-ghost btn-sm" id="printEx">' + A.icon("print") + "Stampa</button></div>" +
           '<p class="text-small muted mt-2" id="timerOut" aria-live="polite"></p>' +
         "</div>" +
-        '<div class="card"><h3>Variante</h3><p>' + esc(ex.variante || "—") + "</p>" +
-          "<h3 class=\"mt-2\">Da sapere</h3><p>" + esc(ex.nota) + "</p>" +
+        '<div class="card"><h2 class=h-sub>Variante</h2><p>' + esc(ex.variante || "—") + "</p>" +
+          "<h2 class=\"mt-2 h-sub\">Da sapere</h2><p>" + esc(ex.nota) + "</p>" +
           '<div class="callout warn"><p><strong>Non è una cura.</strong> Se l\'ansia o l\'umore restano alti, l\'esercizio non sostituisce una valutazione. Se compare un rischio, chiama il 112.</p></div>' +
           '<div class="pill-row mt-2"><a class="chip" href="#/percorso">Torna al percorso</a><a class="chip" href="#/neura">Chiedi a Neura</a><a class="chip" href="#/diario">Annota nel diario</a></div>' +
         "</div>" +

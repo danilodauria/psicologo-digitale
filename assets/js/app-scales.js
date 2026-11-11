@@ -23,7 +23,7 @@
         esc(band.label) + " · " + rec.score + (s.punteggio.tipo === "scala100" ? "/100" : "/" + s.punteggio.max) + "</span>";
     }
     return '<a class="scale-item" href="#/valutazione/' + s.id + '">' +
-      "<div><h3>" + esc(s.titolo) + "</h3><p>" + esc(s.sigla) + " · " + esc(s.area) + " · " + esc(s.tempo) + "</p>" +
+      "<div><h2 class=h-sub>" + esc(s.titolo) + "</h2><p>" + esc(s.sigla) + " · " + esc(s.area) + " · " + esc(s.tempo) + "</p>" +
       '<div class="scale-meta">' + badge + '<span class="badge badge-blue">' + s.items.length + " item</span></div></div>" +
       '<span class="arrow" aria-hidden="true">' + A.icon("chevron") + "</span></a>";
   }
@@ -172,14 +172,14 @@
             }).join("") + "</div>"
           : "") +
 
-        '<div class="card mt-2"><h3>Come leggere le fasce</h3><div class="bars">' + levels + "</div>" +
+        '<div class="card mt-2"><h2 class=h-sub>Come leggere le fasce</h2><div class="bars">' + levels + "</div>" +
           '<p class="text-small muted mb-0">La tua posizione è ' + esc(band.label.toLowerCase()) + ". Le fasce sono riferimenti di intensità, non soglie diagnostiche.</p></div>" +
 
         '<details class="card mt-2"><summary style="cursor:pointer;font-weight:600">Le tue risposte, una per una</summary><div class="bars mt-2">' + itemsBars + "</div></details>" +
 
         '<div class="grid grid-2 mt-2">' +
-          '<div class="card"><h3>Cosa portare al professionista</h3><ul class="list-check">' + scale.cosaPortare.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" +
-          '<div class="card"><h3>Riferimenti</h3><ul class="text-small muted">' + scale.riferimenti.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" +
+          '<div class="card"><h2 class=h-sub>Cosa portare al professionista</h2><ul class="list-check">' + scale.cosaPortare.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" +
+          '<div class="card"><h2 class=h-sub>Riferimenti</h2><ul class="text-small muted">' + scale.riferimenti.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" +
             "<p class=\"text-small muted mb-0\">" + esc(scale.notaClinica) + "</p></div>" +
         "</div>" +
 
@@ -328,7 +328,7 @@
       '<div class="grid grid-2 mt-2">' +
         NP.data.quiz.categorie.map(function (c) {
           const n = NP.data.quiz.domande.filter(function (q) { return q.cat === c.id; }).length;
-          return '<button type="button" class="card card-link" data-cat="' + c.id + '" style="text-align:left;font-family:inherit;border:1px solid var(--line);cursor:pointer"><h3>' + esc(c.titolo) + "</h3><p>" + n + " domande · tre livelli</p><span class=\"go\">Allena questa area " + A.icon("arrow") + "</span></button>";
+          return '<button type="button" class="card card-link" data-cat="' + c.id + '" style="text-align:left;font-family:inherit;border:1px solid var(--line);cursor:pointer"><h2 class=h-sub>' + esc(c.titolo) + "</h2><p>" + n + " domande · tre livelli</p><span class=\"go\">Allena questa area " + A.icon("arrow") + "</span></button>";
         }).join("") +
       "</div>" +
       '<div class="btn-row mt-3"><button type="button" class="btn btn-primary" id="mixBtn">' + A.icon("spark") + "Sessione mista (10 domande)</button></div>" +

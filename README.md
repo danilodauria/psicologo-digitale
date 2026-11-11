@@ -284,6 +284,7 @@ assets/pdf/                 # Vademecum A5, A4 e libricino imposto (senza dipend
 tests/verify.cjs            # integrità dati, collegamenti, Neura
 tests/dom-test.cjs          # interfaccia con jsdom
 scripts/controlla-collegamenti.cjs  # ogni link, rotta e ancora deve esistere
+scripts/controlla-accessibilita.cjs # contrasto, titoli, testo alternativo
 .github/workflows/pages.yml # test e pubblicazione automatica
 ```
 
@@ -299,6 +300,7 @@ npm test                  # verify + dom + collegamenti
 npm run test:data         # solo integrità
 npm run test:dom          # solo interfaccia
 npm run test:links        # solo collegamenti interni
+npm run test:a11y         # solo accessibilità
 python3 -m http.server 3000 --bind 0.0.0.0   # anteprima con service worker
 ```
 
@@ -321,7 +323,7 @@ Il sito è un *project site* di GitHub Pages: l'applicazione vive in una sottoca
 
 Pages è impostato su **GitHub Actions**. A ogni push su `main` il workflow `.github/workflows/pages.yml` installa le dipendenze con `npm ci` ed esegue `npm test`: se una sola verifica fallisce la pubblicazione non avviene e il sito resta sull'ultima versione buona.
 
-Dentro `npm test` c'è anche `scripts/controlla-collegamenti.cjs`: apre le tre pagine, percorre ogni vista e ogni capitolo e verifica che ogni collegamento abbia una destinazione che esiste — file sul disco, rotta registrata, àncora nella pagina — compreso il fatto che quella pagina viaggi nel pacchetto desktop. Un file rinominato con un pulsante rimasto indietro ferma la pubblicazione. Il workflow **Link di download** fa l'altra metà: ogni giorno, e dopo ogni rilascio, apre i file della release, le pagine del sito e le fonti citate nei contenuti, e se qualcosa non risponde apre una segnalazione che si chiude da sola alla verifica successiva. Se i test passano, i file pubblici vengono copiati in un artefatto (senza test, script e dipendenze) e pubblicati con `actions/deploy-pages`.
+Dentro `npm test` c'è anche `scripts/controlla-collegamenti.cjs`: apre le tre pagine, percorre ogni vista e ogni capitolo e verifica che ogni collegamento abbia una destinazione che esiste — file sul disco, rotta registrata, àncora nella pagina — compreso il fatto che quella pagina viaggi nel pacchetto desktop. Un file rinominato con un pulsante rimasto indietro ferma la pubblicazione. Accanto c'è `scripts/controlla-accessibilita.cjs`: apre le pagine e ogni vista nei due temi, calcola il contrasto reale di ogni testo contro lo sfondo che ha sotto (con il minimo di legge: 4,5:1, oppure 3:1 per i titoli grandi), verifica che i titoli scendano un gradino alla volta e che ogni immagine o pulsante-illustrazione abbia un nome leggibile. Se un colore viene schiarito troppo, o una sezione salta da h1 a h3, la pubblicazione si ferma. Il workflow **Link di download** fa l'altra metà: ogni giorno, e dopo ogni rilascio, apre i file della release, le pagine del sito e le fonti citate nei contenuti, e se qualcosa non risponde apre una segnalazione che si chiude da sola alla verifica successiva. Se i test passano, i file pubblici vengono copiati in un artefatto (senza test, script e dipendenze) e pubblicati con `actions/deploy-pages`.
 
 `.nojekyll` è presente, quindi Jekyll non interferisce con i file del progetto; i percorsi restano relativi e l'app funziona anche nella sottocartella.
 

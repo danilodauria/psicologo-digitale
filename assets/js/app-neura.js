@@ -510,12 +510,12 @@
           "</form>" +
         "</section>" +
         '<aside class="grid" style="gap:1rem">' +
-          '<div class="card"><h3>Che cosa posso chiedere</h3><ul class="text-small">' +
+          '<div class="card"><h2 class=h-sub>Che cosa posso chiedere</h2><ul class="text-small">' +
             "<li>«Che cos'è l'ansia?»</li><li>«Un esercizio per dormire»</li><li>«Come inizio?»</li><li>«Che differenza c'è tra psicologo e psichiatra?»</li><li>«I miei dati sono al sicuro?»</li>" +
           "</ul></div>" +
-          '<div class="card"><h3>Quando non basta</h3><p class="text-small">Se il disagio è intenso, dura da settimane o c\'è un rischio, Neura non è lo strumento giusto: serve una persona.</p>' +
+          '<div class="card"><h2 class=h-sub>Quando non basta</h2><p class="text-small">Se il disagio è intenso, dura da settimane o c\'è un rischio, Neura non è lo strumento giusto: serve una persona.</p>' +
             '<div class="pill-row"><a class="chip" href="#/sicurezza">Numeri utili</a><a class="chip" href="#/colloquio">Colloquio</a></div></div>' +
-          '<div class="card"><h3>Voce</h3><p class="text-small">Il pulsante dell\'altoparlante in alto attiva o disattiva la lettura. Puoi fermarla con Stop, con «Ferma l\'audio» nella barra in alto o con Esc.</p>' +
+          '<div class="card"><h2 class=h-sub>Voce</h2><p class="text-small">Il pulsante dell\'altoparlante in alto attiva o disattiva la lettura. Puoi fermarla con Stop, con «Ferma l\'audio» nella barra in alto o con Esc.</p>' +
             '<div class="form-field"><label class="field-label" for="voiceSelect">Voce del dispositivo</label>' +
               '<select class="input" id="voiceSelect"><option value="">Automatica (consigliata)</option></select></div>' +
             '<div class="form-field voice-ritmo"><label class="field-label" for="voiceRitmo">Velocità di lettura</label>' +
