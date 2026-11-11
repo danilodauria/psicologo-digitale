@@ -185,7 +185,7 @@ npm ci
 npm run dist:linux   # oppure dist:win / dist:mac
 ```
 
-`scripts/prepare-desktop.cjs` copia il sito in `desktop/app` (che resta fuori dal versionamento); `desktop/main.cjs` apre quella cartella con Electron e fa da ponte verso Ollama, così la versione desktop non ha bisogno di `OLLAMA_ORIGINS`. La stessa finestra è un normale Chromium isolato: `contextIsolation`, `sandbox` e nessun accesso a Node dalla pagina.
+`scripts/prepare-desktop.cjs` copia il sito in `desktop/app` (che resta fuori dal versionamento); `desktop/main.cjs` apre quella cartella con Electron e fa da ponte verso Ollama, così la versione desktop non ha bisogno di `OLLAMA_ORIGINS`. La stessa finestra è un normale Chromium isolato: `contextIsolation`, `sandbox` e nessun accesso a Node dalla pagina. Le pagine «Come si installa» e la scheda rapida non prendono il posto dell'app: si aprono in una finestra a parte, che torna davanti se è già aperta, e alla chiusura la schermata principale ritrova i dati del percorso com'erano.
 
 ## Il colloquio, in dettaglio
 

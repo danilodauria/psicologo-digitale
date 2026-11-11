@@ -644,6 +644,11 @@ const controlloTesti = read("scripts/controlla-testi.cjs");
 ok(/function controllaRefusi/.test(controlloTesti) && /function controllaErrori/.test(controlloTesti), "il controllo dei testi cerca refusi e forme sbagliate");
 ok(/function controllaRipetizioni/.test(controlloTesti) && /function controllaConteggi/.test(controlloTesti), "il controllo dei testi cerca ripetizioni e conteggi diversi");
 ok(/controlla-testi\.cjs/.test(read("package.json")), "npm test esegue anche il controllo dei testi");
+// Desktop: le pagine di installazione in una finestra a parte.
+const desktop = read("desktop/main.cjs");
+ok(/function apriPaginaFianco/.test(desktop) && /function nomePaginaFianco/.test(desktop), "il programma apre le pagine di installazione in una finestra a parte");
+ok(/"come-installare\.html"/.test(desktop) && /"scheda-rapida\.html"/.test(desktop), "le due pagine di installazione sono riconosciute");
+ok(/const FINESTRE_PAGINE = new Map\(\)/.test(desktop), "una pagina già aperta torna davanti invece di duplicarsi");
 
 /* Esito ------------------------------------------------------------------- */
 

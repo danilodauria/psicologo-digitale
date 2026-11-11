@@ -15,6 +15,7 @@ const { spawn } = require("child_process");
 const { scompattaMotore } = require("./motore.cjs");
 
 const HOME = path.join(__dirname, "app", "index.html");
+const CARTELLA = path.join(__dirname, "app");
 const OLLAMA = "http://127.0.0.1:11434";
 
 function isExternal(url) {
@@ -540,6 +541,126 @@ function preparaAggiornamenti() {
   setTimeout(() => { autoUpdater.checkForUpdates().catch(() => {}); }, 4000);
 }
 
+/* Le pagine di installazione, in una finestra a parte ---------------------- */
+
+// «Come si installa» e la scheda rapida non devono portare via la schermata
+// principale: si aprono accanto, in una finestra loro, e se sono già aperte
+// tornano davanti invece di duplicarsi.
+const FINESTRE_PAGINE = new Map();
+
+const TITOLI_PAGINE = {
+  "come-installare.html": "Come si installa",
+  "scheda-rapida.html": "Scheda rapida"
+};
+
+function percorsoLocale(url) {
+  try {
+    return fileURLToPath(url);
+  } catch (e) {
+    return null;
+  }
+}
+
+function ancoraDi(url) {
+  try {
+    const frammento = new URL(url).hash.replace(/^#/, "");
+    return frammento || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function nomePaginaFianco(percorso) {
+  const nome = path.basename(String(percorso || "")).toLowerCase();
+  return TITOLI_PAGINE[nome] ? nome : null;
+}
+
+function apriPaginaFianco(nome, ancora, principale) {
+  const file = path.join(CARTELLA, nome);
+  if (!fs.existsSync(file)) return null;
+
+  const gia = FINESTRE_PAGINE.get(nome);
+  if (gia && !gia.isDestroyed()) {
+    if (ancora) gia.loadFile(file, { hash: ancora });
+    if (gia.isMinimized()) gia.restore();
+    gia.focus();
+    return gia;
+  }
+
+  const finestra = new BrowserWindow({
+    width: 1000,
+    height: 840,
+    minWidth: 720,
+    minHeight: 560,
+    backgroundColor: "#f4f2ec",
+    title: TITOLI_PAGINE[nome] + " · Psicologo Digitale",
+    autoHideMenuBar: true,
+    show: false,
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      spellcheck: false
+    }
+  });
+
+  finestra.once("ready-to-show", () => finestra.show());
+  finestra.loadFile(file, ancora ? { hash: ancora } : undefined);
+
+  finestra.webContents.setWindowOpenHandler(({ url }) => {
+    const locale = percorsoLocale(url);
+    const fianco = locale ? nomePaginaFianco(locale) : null;
+    if (fianco) apriPaginaFianco(fianco, ancoraDi(url), principale);
+    else if (isExternal(url)) shell.openExternal(url);
+    return { action: "deny" };
+  });
+
+  // Dentro la finestra laterale restano le due pagine e i loro PDF. Tornare
+  // all'app significa chiudere questa e riportare davanti la principale.
+  finestra.webContents.on("will-navigate", (event, url) => {
+    if (!url.startsWith("file://")) {
+      if (isExternal(url)) shell.openExternal(url);
+      event.preventDefault();
+      return;
+    }
+    const percorso = percorsoLocale(url);
+    if (!percorso) {
+      event.preventDefault();
+      return;
+    }
+    if (path.basename(percorso).toLowerCase() === "index.html") {
+      event.preventDefault();
+      if (principale && !principale.isDestroyed()) {
+        if (principale.isMinimized()) principale.restore();
+        principale.focus();
+      }
+      finestra.close();
+      return;
+    }
+    if (/\.pdf$/i.test(percorso)) {
+      event.preventDefault();
+      shell.openPath(percorso).catch(() => {});
+      return;
+    }
+    const altro = nomePaginaFianco(percorso);
+    if (altro && altro !== nome) {
+      event.preventDefault();
+      apriPaginaFianco(altro, ancoraDi(url), principale);
+      return;
+    }
+    let esiste = false;
+    try { esiste = fs.statSync(percorso).isFile(); } catch (e) { esiste = false; }
+    if (!esiste) {
+      event.preventDefault();
+      finestra.loadFile(file);
+    }
+  });
+
+  finestra.on("closed", () => FINESTRE_PAGINE.delete(nome));
+  FINESTRE_PAGINE.set(nome, finestra);
+  return finestra;
+}
+
 /* Finestra ----------------------------------------------------------------- */
 
 function createWindow() {
@@ -565,26 +686,42 @@ function createWindow() {
   win.loadFile(HOME);
 
   win.webContents.setWindowOpenHandler(({ url }) => {
+    const locale = percorsoLocale(url);
+    const fianco = locale ? nomePaginaFianco(locale) : null;
+    if (fianco) {
+      apriPaginaFianco(fianco, ancoraDi(url), win);
+      return { action: "deny" };
+    }
     if (isExternal(url)) shell.openExternal(url);
     return { action: "deny" };
   });
 
-  // Le pagine locali (Come si installa, scheda rapida) si aprono nella stessa
-  // finestra. Se il file non c'è — o il collegamento punta alla cartella — si
-  // torna al programma, invece di lasciare una finestra vuota. I PDF non si
-  // mostrano qui dentro: li apre il lettore del sistema.
+  // Le pagine di installazione si aprono in una finestra a parte: la schermata
+  // principale, con i dati del percorso, resta com'è. Se il file non c'è — o
+  // il collegamento punta alla cartella — si torna al programma, invece di
+  // lasciare una finestra vuota. I PDF non si mostrano qui dentro: li apre il
+  // lettore del sistema.
   win.webContents.on("will-navigate", (event, url) => {
     if (url.startsWith("file://")) {
-      let percorso = null;
-      try { percorso = fileURLToPath(url); } catch (e) { percorso = null; }
-      let pagina = false;
-      try { pagina = !!percorso && fs.statSync(percorso).isFile(); } catch (e) { pagina = false; }
-      if (pagina && /\.pdf$/i.test(percorso)) {
+      const percorso = percorsoLocale(url);
+      if (!percorso) {
+        event.preventDefault();
+        win.loadFile(HOME);
+        return;
+      }
+      const fianco = nomePaginaFianco(percorso);
+      if (fianco) {
+        event.preventDefault();
+        apriPaginaFianco(fianco, ancoraDi(url), win);
+        return;
+      }
+      if (/\.pdf$/i.test(percorso)) {
         event.preventDefault();
         shell.openPath(percorso).catch(() => {});
         return;
       }
-      if (pagina) return;
+      // Dentro la finestra principale resta solo l'app.
+      if (path.basename(percorso).toLowerCase() === "index.html") return;
       event.preventDefault();
       win.loadFile(HOME);
       return;
