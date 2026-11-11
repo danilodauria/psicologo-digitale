@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.35";
+  const VERSIONE = "1.3.36";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.36",
+      data: "4 novembre 2026",
+      titolo: "Ogni pulsante del programma apre un file che c'è davvero",
+      punti: [
+        "Il controllo dei collegamenti ora costruisce il pacchetto desktop e verifica 430 riferimenti dentro i file veri: pagine, sei PDF, icone, foglio di stile, service worker e i file con cui il programma parte.",
+        "Non si limita agli elenchi di ciò che dovrebbe essere copiato: se un PDF viene rinominato o un'icona resta fuori, la pubblicazione si ferma.",
+        "Tutti i pulsanti e i collegamenti del programma sono stati verificati: nessuno puntava a un file assente, e ora nessuno potrà farlo senza essere notato."
+      ]
+    },
     {
       v: "1.3.35",
       data: "4 novembre 2026",

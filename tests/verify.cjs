@@ -649,6 +649,11 @@ const desktop = read("desktop/main.cjs");
 ok(/function apriPaginaFianco/.test(desktop) && /function nomePaginaFianco/.test(desktop), "il programma apre le pagine di installazione in una finestra a parte");
 ok(/"come-installare\.html"/.test(desktop) && /"scheda-rapida\.html"/.test(desktop), "le due pagine di installazione sono riconosciute");
 ok(/const FINESTRE_PAGINE = new Map\(\)/.test(desktop), "una pagina già aperta torna davanti invece di duplicarsi");
+// Pacchetto: i collegamenti si verificano sul contenuto costruito.
+const controlloPacchetto = read("scripts/controlla-collegamenti.cjs");
+ok(/function costruisciPacchetto/.test(controlloPacchetto), "il controllo costruisce il pacchetto prima di verificarlo");
+ok(/function controllaSfondoDelPacchetto/.test(controlloPacchetto), "il controllo verifica anche icone, foglio di stile e service worker");
+ok(/PACCHETTO/.test(controlloPacchetto) && /desktop", "app"/.test(controlloPacchetto), "l'esistenza dei file si controlla dentro desktop/app");
 
 /* Esito ------------------------------------------------------------------- */
 
