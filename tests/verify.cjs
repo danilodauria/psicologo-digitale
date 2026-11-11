@@ -639,6 +639,11 @@ ok(/function controllaTitoli/.test(accessibilita) && /titolo fuori ordine/.test(
 ok(/function controllaImmagini/.test(accessibilita) && /senza testo alternativo/.test(accessibilita), "l'accessibilità chiede il testo alternativo");
 ok(/controlla-accessibilita\.cjs/.test(read("package.json")), "npm test esegue anche il controllo di accessibilità");
 ok(/html\[data-theme="dark"\]/.test(read("assets/css/styles.css")), "il foglio di stile ha il tema scuro, e il controllo lo misura");
+// Testi: refusi, ripetizioni, conteggi.
+const controlloTesti = read("scripts/controlla-testi.cjs");
+ok(/function controllaRefusi/.test(controlloTesti) && /function controllaErrori/.test(controlloTesti), "il controllo dei testi cerca refusi e forme sbagliate");
+ok(/function controllaRipetizioni/.test(controlloTesti) && /function controllaConteggi/.test(controlloTesti), "il controllo dei testi cerca ripetizioni e conteggi diversi");
+ok(/controlla-testi\.cjs/.test(read("package.json")), "npm test esegue anche il controllo dei testi");
 
 /* Esito ------------------------------------------------------------------- */
 

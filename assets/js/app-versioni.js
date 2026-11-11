@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.33";
+  const VERSIONE = "1.3.34";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.34",
+      data: "4 novembre 2026",
+      titolo: "Anche i testi passano un controllo automatico",
+      punti: [
+        "Un controllo legge le tre pagine e tutte le viste e cerca i refusi meccanici: doppi spazi, parole ripetute due volte, virgolette o parentesi spaiate, punteggiatura doppia, maiuscole dimenticate dopo il punto.",
+        "Segnala le forme italiane sbagliate più frequenti («qual'è», «un'altro», «pò», «sopratutto»), la stessa frase ripetuta nello stesso posto e due frasi quasi identiche di cui una nega l'altra.",
+        "Controlla anche i conteggi: se una pagina dice «sei questionari» e un'altra «cinque», la pubblicazione si ferma e resta online l'ultima versione buona."
+      ]
+    },
     {
       v: "1.3.33",
       data: "4 novembre 2026",

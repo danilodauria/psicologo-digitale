@@ -288,7 +288,7 @@
             ' <span class="badge badge-green" id="modelloBadge" hidden>Installato</span></p>' +
           "<p>" + esc(modello.uso) + "</p>" +
           '<div class="btn-row mt-1"><span class="chip chip-static">Almeno ' + modello.ramMin + " GB di memoria</span></div>" +
-          '<p class="text-small muted mt-2">Per sapere quanta memoria hai davvero: su Windows <em>Impostazioni → Sistema → Informazioni</em>; su macOS menu  → <em>Informazioni su questo Mac</em>; su Linux <code>free -h</code>.</p>' +
+          '<p class="text-small muted mt-2">Per sapere quanta memoria hai davvero: su Windows <em>Impostazioni → Sistema → Informazioni</em>; su macOS menu → <em>Informazioni su questo Mac</em>; su Linux <code>free -h</code>.</p>' +
         "</div>" +
       "</div>" +
 
