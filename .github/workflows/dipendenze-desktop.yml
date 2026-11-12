@@ -25,7 +25,7 @@ concurrency:
 env:
   # Oltre questa soglia il commento avverte: il pacchetto è cresciuto e vale
   # la pena guardare cosa è entrato prima di fondere.
-  SOGLIA_MB: "300"
+  SOGLIA_MB: "50"
 
 jobs:
   rileva:
@@ -182,7 +182,7 @@ jobs:
             giorno=$(date -u -d "$scadenza" "+%d/%m/%Y")
             printf '%s\t%s\t%s\t%s\n' "$nome" "$mb" "$giorno" "$id" >> /tmp/righe.txt
             if awk -v m="$mb" -v s="$SOGLIA_MB" 'BEGIN { exit !(m > s) }'; then
-              pesanti="$pesanti ${nome#pacchetto-},"
+              pesanti="$pesanti, ${nome#pacchetto-}"
               echo "::warning::${nome} pesa ${mb} MB: oltre la soglia di ${SOGLIA_MB} MB." >&2
             fi
             totale_mb=$(awk -v t="$totale_mb" -v m="$mb" 'BEGIN { printf "%.1f", t + m }')
@@ -203,7 +203,7 @@ jobs:
             echo "Totale: ${totale_mb} MB in tutti gli archivi (soglia di avviso: ${SOGLIA_MB} MB per archivio)."
             if [ -n "$pesanti" ]; then
               echo ""
-              echo "> **Attenzione:**${pesanti%,} supera la soglia di ${SOGLIA_MB} MB. Un peso così vuol dire che il pacchetto è cresciuto: conviene guardare cosa è entrato prima di fondere."
+              echo "> **Attenzione:** oltre la soglia di ${SOGLIA_MB} MB:${pesanti}. Un peso così vuol dire che il pacchetto è cresciuto: conviene guardare cosa è entrato prima di fondere."
             fi
             echo ""
             echo "**Impronte SHA-256** (sui file dentro l'archivio, non sul contenitore scaricato):"
