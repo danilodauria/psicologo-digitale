@@ -655,6 +655,8 @@ ok(/function costruisciPacchetto/.test(controlloPacchetto), "il controllo costru
 ok(/function controllaSfondoDelPacchetto/.test(controlloPacchetto), "il controllo verifica anche icone, foglio di stile e service worker");
 ok(/PACCHETTO/.test(controlloPacchetto) && /desktop", "app"/.test(controlloPacchetto), "l'esistenza dei file si controlla dentro desktop/app");
 ok(/controlla-archivi\.cjs/.test(read("desktop/after-pack.cjs")), "la build confronta l'archivio prima di crearlo");
+ok(exists("scripts/controlla-dipendenze.cjs"), "il controllo settimanale delle dipendenze ha il suo script");
+ok(/controlla-dipendenze\.cjs/.test(read("package.json")), "il controllo delle dipendenze si può eseguire a mano");
 
 /* Esito ------------------------------------------------------------------- */
 

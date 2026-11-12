@@ -1,6 +1,6 @@
 {
   "name": "psicologo-digitale",
-  "version": "1.3.37",
+  "version": "1.3.38",
   "private": true,
   "homepage": "https://danilodauria.github.io/psicologo-digitale/",
   "repository": {
@@ -31,6 +31,7 @@
     "test:text": "node scripts/controlla-testi.cjs",
     "test:impronte": "node scripts/controlla-impronte.cjs",
     "test:archivi": "node scripts/controlla-archivi.cjs",
+    "test:dipendenze": "node scripts/controlla-dipendenze.cjs",
     "test:data": "node tests/verify.cjs",
     "test:dom": "node tests/dom-test.cjs"
   },

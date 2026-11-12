@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.37";
+  const VERSIONE = "1.3.38";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.38",
+      data: "12 novembre 2026",
+      titolo: "Le dipendenze si controllano da sole, ogni settimana",
+      punti: [
+        "Ogni lunedì il programma confronta le sue dipendenze con il registro npm: cosa è uscito di nuovo e quali vulnerabilità note riguardano le versioni che sta usando davvero.",
+        "Quando trova qualcosa apre una segnalazione con l'elenco già scritto — pacchetto, versione in uso, ultima disponibile, gravità e se esiste una correzione — e la aggiorna al controllo successivo; quando non trova nulla la chiude da sola.",
+        "Gli aggiornamenti ordinari proposti da Dependabot passano dagli stessi controlli di ogni pubblicazione e vengono fusi senza intervento; un aggiornamento major resta a una persona, perché cambia troppo per affidarlo a un test.",
+        "Il controllo non finge: se il registro non risponde lo dice e si ferma, invece di annunciare che è tutto a posto."
+      ]
+    },
     {
       v: "1.3.37",
       data: "4 novembre 2026",
