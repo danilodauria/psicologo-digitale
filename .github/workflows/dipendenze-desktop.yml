@@ -31,13 +31,16 @@ jobs:
         id: files
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NUMERO: ${{ github.event.pull_request.number }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "toccato=1" >> "$GITHUB_OUTPUT"
             echo "Avvio manuale: si costruisce."
             exit 0
           fi
-          cambi=$(gh pr view "${{ github.event.pull_request.number }}" --json files \
+          # Senza checkout il comando ha bisogno che il repository sia detto.
+          cambi=$(gh pr view "$NUMERO" --repo "$REPO" --json files \
             -q '[.files[].path] | join(" ")')
           # Sono i file che prepare-desktop.cjs mette dentro il programma:
           # pagine, assets, licenze, README, più gli script che lo preparano.
