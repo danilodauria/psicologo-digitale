@@ -94,7 +94,7 @@ jobs:
         run: ls -la desktop/dist
 
   esito:
-    name: Pacchetto desktop: esito
+    name: "Pacchetto desktop: esito"
     needs: [rileva, pacchetto]
     if: always()
     runs-on: ubuntu-latest
