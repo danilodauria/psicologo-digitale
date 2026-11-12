@@ -1,0 +1,72 @@
+name: Dipendenze: controllo settimanale
+
+# Ogni lunedì mattina guarda cosa è uscito di nuovo e quali vulnerabilità
+# note riguardano le versioni in uso. Se trova qualcosa apre (o aggiorna) una
+# segnalazione con l'elenco; se la trova tutto in ordine la chiude.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  controllo:
+    name: Aggiornamenti e vulnerabilità
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Controllo
+        id: controllo
+        run: |
+          set +e
+          node scripts/controlla-dipendenze.cjs --report "$RUNNER_TEMP/report.md"
+          echo "esito=$?" >> "$GITHUB_OUTPUT"
+          set -e
+          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Segnalazione
+        if: steps.controllo.outputs.esito == '1' || steps.controllo.outputs.esito == '2'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          numero=$(gh issue list --label dipendenze --state open --json number,title \
+            -q '[.[] | select(.title == "Dipendenze: aggiornamenti e vulnerabilità")][0].number')
+          if [ -n "$numero" ]; then
+            gh issue comment "$numero" --body-file "$RUNNER_TEMP/report.md"
+          else
+            gh issue create --title "Dipendenze: aggiornamenti e vulnerabilità" \
+              --label dipendenze --body-file "$RUNNER_TEMP/report.md"
+          fi
+
+      - name: Tutto in ordine
+        if: steps.controllo.outputs.esito == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          numero=$(gh issue list --label dipendenze --state open --json number,title \
+            -q '[.[] | select(.title == "Dipendenze: aggiornamenti e vulnerabilità")][0].number')
+          if [ -n "$numero" ]; then
+            gh issue close "$numero" --comment "Nessun aggiornamento e nessuna vulnerabilità: la segnalazione si chiude da sola."
+          fi
+
+      - name: Il registro non ha risposto
+        if: steps.controllo.outputs.esito == '3'
+        run: |
+          echo "::error::Il registro npm non ha risposto: il controllo non ha potuto dire se è tutto in ordine."
+          exit 1
+
+      - name: Vulnerabilità note
+        if: steps.controllo.outputs.esito == '2'
+        run: |
+          echo "::error::Ci sono vulnerabilità note: vedi la segnalazione aperta."
+          exit 1
