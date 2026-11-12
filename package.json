@@ -1,6 +1,6 @@
 {
   "name": "psicologo-digitale",
-  "version": "1.3.38",
+  "version": "1.3.39",
   "private": true,
   "homepage": "https://danilodauria.github.io/psicologo-digitale/",
   "repository": {
@@ -19,7 +19,7 @@
     "PWA",
     "offline"
   ],
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22" },
   "scripts": {
     "serve": "python3 -m http.server 3000 --bind 0.0.0.0",
     "icons": "python3 scripts/make_icons.py",

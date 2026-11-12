@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.38";
+  const VERSIONE = "1.3.39";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.39",
+      data: "12 novembre 2026",
+      titolo: "Electron 45, e una build vera prima di dire sì",
+      punti: [
+        "Il pacchetto desktop passa a Electron 45 e electron-builder 26: le 18 vulnerabilità note nella catena di costruzione si chiudono qui.",
+        "Prima di entrare, ogni aggiornamento è stato provato con una build completa su Linux, Windows e macOS, e gli archivi sono stati aperti e confrontati file per file: non basta che il codice compili.",
+        "Il test dell'interfaccia usa jsdom 31 e i controlli girano su Node 22, la versione che quella libreria richiede; il programma per chi lo usa non cambia.",
+        "Le azioni dei workflow sono all'ultima versione: setup-node 7, upload-artifact 7, configure-pages 6, upload-pages-artifact 5, action-gh-release 3."
+      ]
+    },
     {
       v: "1.3.38",
       data: "12 novembre 2026",
