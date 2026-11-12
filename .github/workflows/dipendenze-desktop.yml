@@ -1,0 +1,68 @@
+name: "Dipendenze: pacchetto desktop"
+
+# Un aggiornamento di Electron o di electron-builder non si giudica dai test
+# del sito: si giudica costruendo il pacchetto. Qui gira su tutti e tre i
+# sistemi, con lo stesso confronto degli archivi della release, prima che
+# qualcuno fonda la pull request. Non pubblica niente.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - "desktop/**"
+      - "scripts/prepare-desktop.cjs"
+      - "scripts/controlla-archivi.cjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "pacchetto-dipendenze-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  pacchetto:
+    name: ${{ matrix.nome }}
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.user.login == 'dependabot[bot]' ||
+      contains(github.event.pull_request.labels.*.name, 'dipendenze')
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            nome: Linux
+            script: dist:linux
+          - os: windows-latest
+            nome: Windows
+            script: dist:win
+          - os: macos-15-intel
+            nome: macOS
+            script: dist:mac
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Pacchetto del sito
+        run: node scripts/prepare-desktop.cjs
+
+      - name: Dipendenze del desktop
+        working-directory: desktop
+        run: npm ci --no-audit --no-fund
+
+      # electron-builder chiama after-pack.cjs, che apre l'asar e lo confronta
+      # con desktop/app: se un file manca o è alterato, il passo fallisce.
+      - name: Costruzione e confronto dell'archivio
+        working-directory: desktop
+        run: npm run ${{ matrix.script }}
+
+      - name: Elenco degli archivi prodotti
+        shell: bash
+        run: ls -la desktop/dist
