@@ -1,4 +1,4 @@
-name: Dipendenze: controllo settimanale
+name: "Dipendenze: controllo settimanale"
 
 # Ogni lunedì mattina guarda cosa è uscito di nuovo e quali vulnerabilità
 # note riguardano le versioni in uso. Se trova qualcosa apre (o aggiorna) una
