@@ -99,5 +99,6 @@
         "AppImage"
       ]
     }
-  }
+  },
+  "//": "prova: la build del pacchetto deve partire su questa pull request"
 }
