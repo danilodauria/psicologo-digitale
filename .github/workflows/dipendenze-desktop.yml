@@ -3,7 +3,8 @@ name: "Pacchetto desktop sulle pull request"
 # Un aggiornamento di Electron o di electron-builder non si giudica dai test
 # del sito: si giudica costruendo il pacchetto. Qui gira su tutti e tre i
 # sistemi, con lo stesso confronto degli archivi della release, prima che
-# qualcuno fonda la pull request. Non pubblica niente.
+# qualcuno fonda la pull request. Non pubblica niente: gli archivi restano
+# allegati all'esecuzione, per provarli a mano, e spariscono dopo una settimana.
 #
 # Il lavoro «esito» gira sempre, anche quando non c'è niente da costruire:
 # è quello che la protezione del ramo pretende verde prima di ogni fusione.
@@ -92,9 +93,24 @@ jobs:
         working-directory: desktop
         run: npm run ${{ matrix.script }}
 
-      - name: Elenco degli archivi prodotti
+      - name: Quali archivi sono usciti
         shell: bash
         run: ls -la desktop/dist
+
+      # Gli archivi restano allegati a questa esecuzione: dalla pull request si
+      # apre «Dettagli» accanto al controllo e si scaricano. Sette giorni, poi
+      # si cancellano da soli: sono prove, non rilasci.
+      - name: Allega gli archivi alla pull request
+        uses: actions/upload-artifact@v7
+        with:
+          name: pacchetto-${{ matrix.nome }}
+          path: |
+            desktop/dist/*.deb
+            desktop/dist/*.AppImage
+            desktop/dist/*.zip
+            desktop/dist/*.dmg
+          if-no-files-found: error
+          retention-days: 7
 
   esito:
     name: "Pacchetto desktop: esito"
