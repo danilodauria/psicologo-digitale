@@ -1,9 +1,11 @@
 name: Dipendenze
 
 # Dependabot propone gli aggiornamenti; qui passano dai controlli veri del
-# progetto e, se sono aggiornamenti ordinari (patch o minor), vengono fusi
-# senza intervento. Un major resta a una persona: cambia troppo per fidarsi
-# di un test automatico, soprattutto per Electron.
+# progetto e, se sono aggiornamenti ordinari (patch o minor) del sito, vengono
+# fusi senza intervento. Un major resta a una persona: cambia troppo per fidarsi
+# di un test automatico, soprattutto per Electron. Un aggiornamento che tocca
+# il pacchetto desktop non viene mai fuso qui: prima deve costruire, in
+# «Dipendenze: pacchetto desktop», su Linux, Windows e macOS.
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
@@ -39,11 +41,27 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Tocca il pacchetto desktop?
+        id: desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cambi=$(gh pr view "${{ github.event.pull_request.number }}" --json files \
+            -q '[.files[].path] | join(" ")')
+          if grep -qE '(^| )desktop/' <<< "$cambi"; then
+            echo "toccato=1" >> "$GITHUB_OUTPUT"
+            echo "La pull request tocca desktop/: la fusione aspetta la build."
+          else
+            echo "toccato=0" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Tutti i controlli
         run: npm test
 
       - name: Fusione automatica
-        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        if: >-
+          steps.meta.outputs.update-type != 'version-update:semver-major' &&
+          steps.desktop.outputs.toccato == '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr merge --auto --squash --delete-branch "${{ github.event.pull_request.number }}"
@@ -52,3 +70,10 @@ jobs:
         if: steps.meta.outputs.update-type == 'version-update:semver-major'
         run: |
           echo "::notice::Aggiornamento major: controlli eseguiti, la fusione resta a una persona."
+
+      - name: Il pacchetto desktop aspetta la sua build
+        if: >-
+          steps.meta.outputs.update-type != 'version-update:semver-major' &&
+          steps.desktop.outputs.toccato == '1'
+        run: |
+          echo "::notice::Aggiornamento del desktop: la fusione aspetta la build dei tre sistemi."
