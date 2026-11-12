@@ -5,7 +5,7 @@ name: "Pacchetto desktop sulle pull request"
 # sistemi, con lo stesso confronto degli archivi della release, prima che
 # qualcuno fonda la pull request. Non pubblica niente: gli archivi restano
 # allegati all'esecuzione e vengono elencati in un commento della pull
-# request, con il link per scaricarli. Sette giorni, poi si cancellano.
+# request, con link e impronta SHA-256. Sette giorni, poi si cancellano.
 #
 # Il lavoro «esito» gira sempre, anche quando non c'è niente da costruire:
 # è quello che la protezione del ramo pretende verde prima di ogni fusione.
@@ -108,6 +108,18 @@ jobs:
         shell: bash
         run: ls -la desktop/dist
 
+      # L'impronta si calcola sui file veri, non sul contenitore caricato: chi
+      # scarica può confrontarla con il proprio archivio estratto.
+      - name: Impronte SHA-256 degli archivi
+        shell: bash
+        run: |
+          {
+            for f in desktop/dist/*.deb desktop/dist/*.zip desktop/dist/*.exe desktop/dist/*.dmg; do
+              [ -e "$f" ] || continue
+              echo "$(sha256sum "$f" | cut -d' ' -f1)  $(basename "$f")"
+            done
+          } | tee "impronte-${{ matrix.nome }}.txt"
+
       - name: Allega gli archivi alla pull request
         uses: actions/upload-artifact@v7
         with:
@@ -120,6 +132,14 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Allega le impronte (pochi byte)
+        uses: actions/upload-artifact@v7
+        with:
+          name: impronte-${{ matrix.nome }}
+          path: impronte-${{ matrix.nome }}.txt
+          if-no-files-found: error
+          retention-days: 7
+
   # Un commento solo, aggiornato a ogni esecuzione invece di uno nuovo ogni
   # volta: si legge scorrendo la pull request senza cercare l'ultimo.
   commento:
@@ -128,6 +148,13 @@ jobs:
     if: needs.rileva.outputs.toccato == '1' && needs.pacchetto.result == 'success' && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
+      - name: Scarica solo le impronte
+        uses: actions/download-artifact@v7
+        with:
+          pattern: impronte-*
+          path: impronte
+          merge-multiple: true
+
       - name: Scrivi e pubblica il commento
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -136,7 +163,7 @@ jobs:
           RUN: ${{ github.run_id }}
         run: |
           righe=$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" \
-            --jq '.artifacts[] | [.name, (.size_in_bytes|tostring), .expires_at, (.id|tostring)] | @tsv')
+            --jq '.artifacts[] | select(.name | startswith("pacchetto-")) | [.name, (.size_in_bytes|tostring), .expires_at, (.id|tostring)] | @tsv')
           {
             echo "<!-- archivi-pr -->"
             echo "### Archivi pronti da provare"
@@ -151,7 +178,13 @@ jobs:
               echo "| ${nome#pacchetto-} | [${nome}](https://github.com/$REPO/actions/runs/$RUN/artifacts/$id) | ${mb} MB | ${giorno} |"
             done <<< "$righe"
             echo ""
-            echo "Per provarli: si scaricano, si installano e si apre il programma. Se qualcosa non torna, va scritto qui prima di fondere."
+            echo "**Impronte SHA-256** (sui file dentro l'archivio, non sul contenitore scaricato):"
+            echo ""
+            echo '```'
+            cat impronte/*.txt | sort -k2
+            echo '```'
+            echo ""
+            echo "Per controllare: \`sha256sum <file>\` su Linux e macOS, \`Get-FileHash <file> -Algorithm SHA256\` su Windows. Se l'impronta non corrisponde, il file non è quello costruito qui."
           } > /tmp/commento.md
 
           esistente=$(gh api "repos/$REPO/issues/$NUMERO/comments" --paginate \
