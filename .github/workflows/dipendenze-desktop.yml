@@ -22,6 +22,11 @@ concurrency:
   group: "pacchetto-pr-${{ github.ref }}"
   cancel-in-progress: true
 
+env:
+  # Oltre questa soglia il commento avverte: il pacchetto è cresciuto e vale
+  # la pena guardare cosa è entrato prima di fondere.
+  SOGLIA_MB: "300"
+
 jobs:
   rileva:
     name: Il pacchetto è toccato?
@@ -162,8 +167,27 @@ jobs:
           NUMERO: ${{ github.event.pull_request.number }}
           RUN: ${{ github.run_id }}
         run: |
+          # L'ordine dell'API non è garantito: si impone Linux, Windows, macOS.
           righe=$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" \
-            --jq '.artifacts[] | select(.name | startswith("pacchetto-")) | [.name, (.size_in_bytes|tostring), .expires_at, (.id|tostring)] | @tsv')
+            --jq '.artifacts[] | select(.name | startswith("pacchetto-")) | [.name, (.size_in_bytes|tostring), .expires_at, (.id|tostring)] | @tsv' \
+            | awk 'BEGIN { FS = OFS = "\t" } { r = 9; if ($1 ~ /-Linux$/) r = 1; else if ($1 ~ /-Windows$/) r = 2; else if ($1 ~ /-macOS$/) r = 3; print r, $0 }' \
+            | sort -n | cut -f2-)
+
+          : > /tmp/righe.txt
+          pesanti=""
+          totale_mb=0
+          while IFS=$'\t' read -r nome byte scadenza id; do
+            [ -n "$nome" ] || continue
+            mb=$(awk -v b="$byte" 'BEGIN { printf "%.1f", b / 1048576 }')
+            giorno=$(date -u -d "$scadenza" "+%d/%m/%Y")
+            printf '%s\t%s\t%s\t%s\n' "$nome" "$mb" "$giorno" "$id" >> /tmp/righe.txt
+            if awk -v m="$mb" -v s="$SOGLIA_MB" 'BEGIN { exit !(m > s) }'; then
+              pesanti="$pesanti ${nome#pacchetto-},"
+              echo "::warning::${nome} pesa ${mb} MB: oltre la soglia di ${SOGLIA_MB} MB." >&2
+            fi
+            totale_mb=$(awk -v t="$totale_mb" -v m="$mb" 'BEGIN { printf "%.1f", t + m }')
+          done <<< "$righe"
+
           {
             echo "<!-- archivi-pr -->"
             echo "### Archivi pronti da provare"
@@ -172,11 +196,15 @@ jobs:
             echo ""
             echo "| Sistema | Archivio | Peso | Scade il |"
             echo "|---|---|---|---|"
-            while IFS=$'\t' read -r nome byte scadenza id; do
-              mb=$(awk -v b="$byte" 'BEGIN { printf "%.1f", b / 1048576 }')
-              giorno=$(date -u -d "$scadenza" "+%d/%m/%Y")
+            while IFS=$'\t' read -r nome mb giorno id; do
               echo "| ${nome#pacchetto-} | [${nome}](https://github.com/$REPO/actions/runs/$RUN/artifacts/$id) | ${mb} MB | ${giorno} |"
-            done <<< "$righe"
+            done < /tmp/righe.txt
+            echo ""
+            echo "Totale: ${totale_mb} MB in tutti gli archivi (soglia di avviso: ${SOGLIA_MB} MB per archivio)."
+            if [ -n "$pesanti" ]; then
+              echo ""
+              echo "> **Attenzione:**${pesanti%,} supera la soglia di ${SOGLIA_MB} MB. Un peso così vuol dire che il pacchetto è cresciuto: conviene guardare cosa è entrato prima di fondere."
+            fi
             echo ""
             echo "**Impronte SHA-256** (sui file dentro l'archivio, non sul contenitore scaricato):"
             echo ""
