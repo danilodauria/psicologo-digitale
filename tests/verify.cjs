@@ -654,6 +654,7 @@ const controlloPacchetto = read("scripts/controlla-collegamenti.cjs");
 ok(/function costruisciPacchetto/.test(controlloPacchetto), "il controllo costruisce il pacchetto prima di verificarlo");
 ok(/function controllaSfondoDelPacchetto/.test(controlloPacchetto), "il controllo verifica anche icone, foglio di stile e service worker");
 ok(/PACCHETTO/.test(controlloPacchetto) && /desktop", "app"/.test(controlloPacchetto), "l'esistenza dei file si controlla dentro desktop/app");
+ok(/controlla-archivi\.cjs/.test(read("desktop/after-pack.cjs")), "la build confronta l'archivio prima di crearlo");
 
 /* Esito ------------------------------------------------------------------- */
 
