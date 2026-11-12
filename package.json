@@ -1,6 +1,6 @@
 {
   "name": "psicologo-digitale",
-  "version": "1.3.36",
+  "version": "1.3.37",
   "private": true,
   "homepage": "https://danilodauria.github.io/psicologo-digitale/",
   "repository": {
@@ -25,10 +25,12 @@
     "icons": "python3 scripts/make_icons.py",
     "vademecum": "node scripts/export-data.cjs && python3 scripts/build_vademecum.py && python3 scripts/build_vademecum_clinico.py",
     "desktop:prepare": "node scripts/prepare-desktop.cjs",
-    "test": "node tests/verify.cjs && node tests/dom-test.cjs && node scripts/controlla-collegamenti.cjs && node scripts/controlla-accessibilita.cjs && node scripts/controlla-testi.cjs",
+    "test": "node tests/verify.cjs && node tests/dom-test.cjs && node scripts/controlla-collegamenti.cjs && node scripts/controlla-accessibilita.cjs && node scripts/controlla-testi.cjs && node scripts/controlla-impronte.cjs",
     "test:links": "node scripts/controlla-collegamenti.cjs",
     "test:a11y": "node scripts/controlla-accessibilita.cjs",
     "test:text": "node scripts/controlla-testi.cjs",
+    "test:impronte": "node scripts/controlla-impronte.cjs",
+    "test:archivi": "node scripts/controlla-archivi.cjs",
     "test:data": "node tests/verify.cjs",
     "test:dom": "node tests/dom-test.cjs"
   },

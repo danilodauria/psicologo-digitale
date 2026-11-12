@@ -1,0 +1,23 @@
+# Gli stessi byte su Windows, macOS e Linux.
+#
+# Senza queste righe, il checkout su Windows converte le fine di riga in CRLF:
+# il pacchetto usciva con HTML, CSS, JS e — cosa più grave — i PDF diversi dal
+# repository, con gli offset interni del PDF sbagliati. Ora i testi sono
+# sempre LF e i file binari non vengono toccati.
+* text=auto eol=lf
+
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.gz binary
+*.dmg binary
+*.exe binary
+*.deb binary
+*.AppImage binary

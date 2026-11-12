@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.36";
+  const VERSIONE = "1.3.37";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.37",
+      data: "4 novembre 2026",
+      titolo: "Il pacchetto installabile viene aperto e confrontato",
+      punti: [
+        "Il controllo apre gli archivi installabili — .deb e ZIP portatile — e confronta ogni file del programma con quello del repository: impronte SHA-256, non solo presenza.",
+        "Ha trovato un difetto vero: su Windows i file uscivano con le fine di riga convertite, PDF compresi, e la tabella interna dei PDF non tornava più. Ora gli stessi byte viaggiano su ogni sistema.",
+        "Le dipendenze si aggiornano da sole: Dependabot propone le versioni nuove, e ogni proposta passa da tutti i controlli prima di arrivare online."
+      ]
+    },
     {
       v: "1.3.36",
       data: "4 novembre 2026",

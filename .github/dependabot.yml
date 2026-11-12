@@ -1,0 +1,36 @@
+# Aggiornamenti delle dipendenze, proposti da soli.
+#
+# Dependabot apre una pull request quando esce una versione nuova di una
+# dipendenza. Ogni proposta passa dai controlli del progetto (`npm test`):
+# se qualcosa si rompe, la richiesta resta lì con l'errore invece di finire
+# online.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "dipendenze"
+    groups:
+      sviluppo:
+        patterns: ["jsdom"]
+
+  # Electron, electron-builder e electron-updater: qui gli aggiornamenti
+  # vanno guardati con calma, perché toccano i pacchetti installabili.
+  - package-ecosystem: npm
+    directory: "/desktop"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "dipendenze desktop"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "azioni"
