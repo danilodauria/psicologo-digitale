@@ -99,7 +99,7 @@ jobs:
           echo "::notice::macOS: firma ad-hoc valida ($firma). Il primo avvio chiede conferma una volta sola."
 
       - name: Carica gli artefatti
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: psicologo-digitale-${{ matrix.artifact }}
           path: |
