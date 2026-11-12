@@ -99,5 +99,6 @@
         "AppImage"
       ]
     }
-  }
+  },
+  "//": "prova: ordine fisso e soglia di peso"
 }
