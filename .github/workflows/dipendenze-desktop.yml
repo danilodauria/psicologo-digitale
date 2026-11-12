@@ -64,12 +64,15 @@ jobs:
         include:
           - os: ubuntu-latest
             nome: Linux
+            sistema: linux
             script: dist:linux
           - os: windows-latest
             nome: Windows
+            sistema: windows
             script: dist:win
           - os: macos-15-intel
             nome: macOS
+            sistema: macos
             script: dist:mac
     steps:
       - name: Checkout
@@ -93,6 +96,13 @@ jobs:
         working-directory: desktop
         run: npm run ${{ matrix.script }}
 
+      # electron-builder produce l'installer, non la cartella portatile: lo ZIP
+      # si crea qui, come fa il workflow dei pacchetti veri.
+      - name: Crea la versione portatile (ZIP)
+        if: matrix.sistema == 'windows'
+        shell: pwsh
+        run: Compress-Archive -Path desktop/dist/win-unpacked/* -DestinationPath "desktop/dist/Psicologo-Digitale-Windows-portatile.zip"
+
       - name: Quali archivi sono usciti
         shell: bash
         run: ls -la desktop/dist
@@ -106,8 +116,8 @@ jobs:
           name: pacchetto-${{ matrix.nome }}
           path: |
             desktop/dist/*.deb
-            desktop/dist/*.AppImage
             desktop/dist/*.zip
+            desktop/dist/*.exe
             desktop/dist/*.dmg
           if-no-files-found: error
           retention-days: 7
