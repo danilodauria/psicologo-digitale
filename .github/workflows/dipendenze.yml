@@ -1,0 +1,53 @@
+name: Dipendenze
+
+# Dependabot propone gli aggiornamenti; qui passano dai controlli veri del
+# progetto e, se sono aggiornamenti ordinari (patch o minor), vengono fusi
+# senza intervento. Un major resta a una persona: cambia troppo per fidarsi
+# di un test automatico, soprattutto per Electron.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: "dipendenze-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  controlla:
+    name: Controlli e fusione
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Dipendenze
+        run: npm ci --no-audit --no-fund
+
+      - name: Che tipo di aggiornamento
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tutti i controlli
+        run: npm test
+
+      - name: Fusione automatica
+        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --squash --delete-branch "${{ github.event.pull_request.number }}"
+
+      - name: Un major aspetta una persona
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        run: echo "::notice::Aggiornamento major (${{ steps.meta.outputs.dependency-names }}): controlli eseguiti, la fusione resta a una persona."
