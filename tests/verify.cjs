@@ -665,3 +665,5 @@ if (fails) {
   console.error("\n" + fails + " verifiche fallite.");
   process.exit(1);
 }
+
+// prova: file non confezionato
