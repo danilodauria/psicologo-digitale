@@ -1,32 +1,58 @@
-name: "Dipendenze: pacchetto desktop"
+name: "Pacchetto desktop sulle pull request"
 
 # Un aggiornamento di Electron o di electron-builder non si giudica dai test
 # del sito: si giudica costruendo il pacchetto. Qui gira su tutti e tre i
 # sistemi, con lo stesso confronto degli archivi della release, prima che
 # qualcuno fonda la pull request. Non pubblica niente.
+#
+# Il lavoro «esito» gira sempre, anche quando non c'è niente da costruire:
+# è quello che la protezione del ramo pretende verde prima di ogni fusione.
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
-    paths:
-      - "desktop/**"
-      - "scripts/prepare-desktop.cjs"
-      - "scripts/controlla-archivi.cjs"
   workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
-  group: "pacchetto-dipendenze-${{ github.ref }}"
+  group: "pacchetto-pr-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
+  rileva:
+    name: Il pacchetto è toccato?
+    runs-on: ubuntu-latest
+    outputs:
+      toccato: ${{ steps.files.outputs.toccato }}
+    steps:
+      - name: Quali file cambia la pull request
+        id: files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "toccato=1" >> "$GITHUB_OUTPUT"
+            echo "Avvio manuale: si costruisce."
+            exit 0
+          fi
+          cambi=$(gh pr view "${{ github.event.pull_request.number }}" --json files \
+            -q '[.files[].path] | join(" ")')
+          # Sono i file che prepare-desktop.cjs mette dentro il programma:
+          # pagine, assets, licenze, README, più gli script che lo preparano.
+          if grep -qE '(^| )(desktop/|assets/|scripts/prepare-desktop\.cjs|scripts/controlla-archivi\.cjs|[^ ]*\.html|sw\.js|manifest\.webmanifest|README\.md|LICENSE|LICENSE-CONTENT\.md)' <<< "$cambi"; then
+            echo "toccato=1" >> "$GITHUB_OUTPUT"
+            echo "Il pacchetto cambia: si costruisce su tre sistemi."
+          else
+            echo "toccato=0" >> "$GITHUB_OUTPUT"
+            echo "Il pacchetto non cambia: niente build."
+          fi
+
   pacchetto:
     name: ${{ matrix.nome }}
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.pull_request.user.login == 'dependabot[bot]' ||
-      contains(github.event.pull_request.labels.*.name, 'dipendenze')
+    needs: rileva
+    if: needs.rileva.outputs.toccato == '1'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -66,3 +92,22 @@ jobs:
       - name: Elenco degli archivi prodotti
         shell: bash
         run: ls -la desktop/dist
+
+  esito:
+    name: Pacchetto desktop: esito
+    needs: [rileva, pacchetto]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Giudizio
+        run: |
+          if [ "${{ needs.rileva.outputs.toccato }}" != "1" ]; then
+            echo "Il pacchetto non è toccato: nessuna build da attendere."
+            exit 0
+          fi
+          if [ "${{ needs.pacchetto.result }}" = "success" ]; then
+            echo "Linux, Windows e macOS hanno costruito e confrontato il pacchetto."
+            exit 0
+          fi
+          echo "::error::La build del pacchetto non è passata: la fusione resta ferma."
+          exit 1
