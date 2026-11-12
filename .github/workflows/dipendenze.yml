@@ -50,4 +50,5 @@ jobs:
 
       - name: Un major aspetta una persona
         if: steps.meta.outputs.update-type == 'version-update:semver-major'
-        run: echo "::notice::Aggiornamento major (${{ steps.meta.outputs.dependency-names }}): controlli eseguiti, la fusione resta a una persona."
+        run: |
+          echo "::notice::Aggiornamento major: controlli eseguiti, la fusione resta a una persona."
