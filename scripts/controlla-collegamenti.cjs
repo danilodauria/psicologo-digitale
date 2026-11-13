@@ -30,8 +30,22 @@ const ESTERNO = /^https?:\/\//i;
 
 let controlli = 0;
 let rotteVisitate = 0;
+let visteContate = 0;
+let elementiAttesi = 0;
+let elementiOrfani = 0;
 const problemi = [];
 const esterni = new Set();
+
+// Ogni controllo lascia il suo rapporto qui: il riepilogo in fondo a `npm test`
+// li mette uno accanto all'altro, così un calo si vede senza leggere tre
+// Outputs diversi.
+function scriviRapporto(nome, rapporto) {
+  try {
+    const cartella = path.join(radice, "artifacts", "copertura");
+    fs.mkdirSync(cartella, { recursive: true });
+    fs.writeFileSync(path.join(cartella, nome + ".json"), JSON.stringify(rapporto, null, 2) + "\n");
+  } catch (e) { /* il riepilogo dirà che manca */ }
+}
 
 function problema(dove, cosa) {
   problemi.push(dove + " → " + cosa);
@@ -216,7 +230,9 @@ function rendiApp(pacchetto, viste) {
   (dati.manuale || []).forEach(function (c) { attesi.push(["capitolo", "#/manuale/" + c.id]); });
   ((dati.percorso && dati.percorso.esercizi) || []).forEach(function (e) { attesi.push(["esercizio", "#/esercizi/" + e.id]); });
   (dati.scales || []).forEach(function (s) { attesi.push(["questionario", "#/valutazione/" + s.id]); });
+  elementiAttesi = attesi.length;
   const orfani = attesi.filter(function (a) { return !visitate.has(a[1]); });
+  elementiOrfani = orfani.length;
   if (orfani.length) {
     problema(
       "collegamenti",
@@ -231,6 +247,7 @@ function rendiApp(pacchetto, viste) {
   const percorse = new Set([
     ...[...visitate].map((r) => r.replace(/^#\/?/, "").split("/")[0] || "home")
   ]);
+  visteContate = Object.keys(NP.app.views).length;
   const fuori = Object.keys(NP.app.views).filter((nome) => !percorse.has(nome));
   if (fuori.length) {
     problema("viste", "mai raggiunte da nessun collegamento, quindi mai verificate: " + fuori.join(", ") + ". Aggiungi un collegamento verso ciascuna, oppure avviale esplicitamente qui sopra.");
@@ -346,3 +363,10 @@ console.log(
   "  ✓ " + controlli + " collegamenti in " + pagine.length + " pagine e " + rotteVisitate +
     " viste, tutti con una destinazione che esiste nel pacchetto desktop (" + esterni.size + " indirizzi esterni annotati)."
 );
+
+scriviRapporto("collegamenti", {
+  pagine: pagine.length,
+  viste: visteContate,
+  dettaglio: controlli + " collegamenti su " + rotteVisitate + " rotte, " + elementiAttesi +
+    " elementi " + (elementiOrfani ? "di cui " + elementiOrfani + " senza porta" : "tutti con una porta")
+});

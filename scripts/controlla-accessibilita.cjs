@@ -41,7 +41,19 @@ let titoliControllati = 0;
 let immaginiControllate = 0;
 let migliorRapporto = 99;
 let nonMisurabili = 0;
+let visteRegistrate = 0;
 const problemi = [];
+
+// Ogni controllo lascia il suo rapporto qui: il riepilogo in fondo a `npm test`
+// li mette uno accanto all'altro, così un calo si vede senza leggere tre
+// Outputs diversi.
+function scriviRapporto(nome, rapporto) {
+  try {
+    const cartella = path.join(radice, "artifacts", "copertura");
+    fs.mkdirSync(cartella, { recursive: true });
+    fs.writeFileSync(path.join(cartella, nome + ".json"), JSON.stringify(rapporto, null, 2) + "\n");
+  } catch (e) { /* il riepilogo dirà che manca */ }
+}
 
 function problema(dove, cosa) {
   problemi.push(dove + " → " + cosa);
@@ -615,6 +627,7 @@ function controllaApp() {
   const percorse = new Set([
     ...[...visitate].map((r) => r.replace(/^#\/?/, "").split("/")[0] || "home")
   ]);
+  visteRegistrate = Object.keys(NP.app.views).length;
   const fuori = Object.keys(NP.app.views).filter((nome) => !percorse.has(nome));
   if (fuori.length) {
     problema("viste", "mai raggiunte da nessun collegamento, quindi mai verificate: " + fuori.join(", ") + ". Aggiungi un collegamento verso ciascuna, oppure avviale esplicitamente qui sopra.");
@@ -640,3 +653,10 @@ if (nonMisurabili) {
   console.log("  · " + nonMisurabili + " testi su sfondo sfumato o semitrasparente, non misurabili con certezza.");
 }
 if (problemi.length) process.exit(1);
+
+scriviRapporto("accessibilita", {
+  pagine: pagine.length,
+  viste: visteRegistrate,
+  dettaglio: testiMisurati + " testi nei due temi, " + titoliControllati + " titoli, contrasto minimo " +
+    migliorRapporto.toFixed(2).replace(".", ",") + ":1"
+});

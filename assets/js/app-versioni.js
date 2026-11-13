@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.48";
+  const VERSIONE = "1.3.49";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.49",
+      data: "13 novembre 2026",
+      titolo: "Tre controlli, un riepilogo",
+      punti: [
+        "In fondo a tutti i test compare un riepilogo unico: quante pagine e quante viste ha letto ciascun controllo, con quello che ha misurato davvero — blocchi di testo, contrasti, collegamenti, elementi con una porta.",
+        "I tre rapporti si confrontano fra loro: se uno legge meno pagine o visita meno viste degli altri, il riepilogo lo dice e la pubblicazione si ferma, invece di lasciare il calo nascosto in un output che nessuno rilegge.",
+        "Il numero delle pagine viene dalla cartella: una pagina nuova deve comparire in tutti e tre i conteggi, altrimenti il riepilogo non torna."
+      ]
+    },
     {
       v: "1.3.48",
       data: "13 novembre 2026",

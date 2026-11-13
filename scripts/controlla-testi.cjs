@@ -39,6 +39,18 @@ const pagine = fs.readdirSync(radice).filter((f) => f.endsWith(".html")).sort();
 let blocchi = 0;
 let frasi = 0;
 let parole = 0;
+let visteRegistrate = 0;
+
+// Ogni controllo lascia il suo rapporto qui: il riepilogo in fondo a `npm test`
+// li mette uno accanto all'altro, così un calo si vede senza leggere tre
+// Outputs.
+function scriviRapporto(nome, rapporto) {
+  try {
+    const cartella = path.join(radice, "artifacts", "copertura");
+    fs.mkdirSync(cartella, { recursive: true });
+    fs.writeFileSync(path.join(cartella, nome + ".json"), JSON.stringify(rapporto, null, 2) + "\n");
+  } catch (e) { /* il riepilogo dirà che manca */ }
+}
 const problemi = [];
 
 function problema(dove, cosa) {
@@ -373,6 +385,7 @@ function testiDellApp() {
   const percorse = new Set([
     ...[...visitate].map((r) => r.replace(/^#\/?/, "").split("/")[0] || "home")
   ]);
+  visteRegistrate = Object.keys(NP.app.views).length;
   const fuori = Object.keys(NP.app.views).filter((nome) => !percorse.has(nome));
   if (fuori.length) {
     problema(
@@ -403,3 +416,9 @@ console.log(
   "  ✓ " + blocchi + " blocchi di testo in " + pagine.length + " pagine e tutte le viste: " +
     frasi + " frasi, nessun refuso, nessuna ripetizione, nessun conteggio in contraddizione."
 );
+
+scriviRapporto("testi", {
+  pagine: pagine.length,
+  viste: visteRegistrate,
+  dettaglio: blocchi + " blocchi di testo, " + frasi + " frasi"
+});
