@@ -733,6 +733,29 @@ setTimeout(async function () {
   ok(NP.app.pianificaCompatta().byte === 0, "senza roba vecchia il conto dice zero");
   ok(NP.app.compattaDati() === false, "una seconda compattazione non fa niente");
 
+  // Spazio finito: un salvataggio fallito non deve passare inosservato.
+  const setItemVero = window.Storage.prototype.setItem;
+  Object.defineProperty(window.Storage.prototype, "setItem", {
+    configurable: true,
+    writable: true,
+    value: function () {
+      const e = new Error("quota");
+      e.name = "QuotaExceededError";
+      throw e;
+    }
+  });
+  ok(NP.app.writeJSON("diario", []) === false, "il salvataggio fallito lo dice a chi lo chiama, invece di sparire");
+  ok(NP.app.salvataggioNonRiuscito() === true, "l'app ricorda che l'ultimo salvataggio non è riuscito");
+  ok(/Non c'è spazio per salvare/.test(document.getElementById("toast").textContent), "compare un messaggio che parla di spazio esaurito");
+  navigate("#/licenze");
+  ok(!!document.getElementById("spazioPienoAvviso"), "la pagina Licenze lo ripete in modo stabile, non solo con un messaggio che passa");
+
+  Object.defineProperty(window.Storage.prototype, "setItem", { configurable: true, writable: true, value: setItemVero });
+  ok(NP.app.writeJSON("diario", NP.app.state.diary) === true, "quando lo spazio torna, il salvataggio riesce");
+  ok(NP.app.salvataggioNonRiuscito() === false, "e l'avviso si spegne da solo");
+  navigate("#/licenze");
+  ok(!document.getElementById("spazioPienoAvviso"), "l'avviso sparisce dalla pagina appena si torna a salvare");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

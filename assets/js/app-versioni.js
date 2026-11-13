@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.56";
+  const VERSIONE = "1.3.57";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.57",
+      data: "13 novembre 2026",
+      titolo: "Se il salvataggio non riesce, lo dice",
+      punti: [
+        "Prima, quando il browser rifiutava una scrittura perché lo spazio era finito, il dato spariva in silenzio. Ora compare un messaggio che lo dice con parole chiare, e in Licenze resta un avviso finché un salvataggio non torna a riuscire.",
+        "Vale per ogni scrittura: colloquio, diario, questionari, percorso, note, schede del pensiero. Ogni salvataggio dice se è andato a buon fine, e chi lo chiama non può più crederlo riuscito per errore.",
+        "Il messaggio non si ripete a raffica: se il browser rifiuta più scritture di seguito, l'avviso compare una volta ogni quindici secondi, così non copre quello che stavi facendo."
+      ]
+    },
     {
       v: "1.3.56",
       data: "13 novembre 2026",

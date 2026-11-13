@@ -18,8 +18,43 @@ NP.app = (function () {
       return raw ? JSON.parse(raw) : fallback;
     } catch (e) { return fallback; }
   }
+  // Il salvataggio può fallire davvero: il browser ha una quota e, quando è
+  // piena, rifiuta di scrivere. Perdere il dato in silenzio è il modo peggiore
+  // di scoprirlo, quindi ogni scrittura dice se è andata e, se non è andata
+  // per spazio, lo fa sapere subito e lascia un avviso nella pagina.
+  let salvataggioFallito = false;
+  let avvisoSpazioAlle = 0;
+
+  function erroreDiSpazio(e) {
+    if (!e) return false;
+    const nome = String(e.name || "");
+    return nome === "QuotaExceededError" || nome === "NS_ERROR_DOM_QUOTA_REACHED" ||
+      e.code === 22 || e.code === 1014;
+  }
+
+  function salvataggioNonRiuscito() { return salvataggioFallito; }
+
+  function avvisaSpazioPieno() {
+    // Se il browser rifiuta ogni scrittura, un avviso per volta basta: senza
+    // questo freno lo schermo si riempirebbe di messaggi identici.
+    const ora = Date.now();
+    if (ora - avvisoSpazioAlle < 15000) return;
+    avvisoSpazioAlle = ora;
+    toast("Non c'è spazio per salvare: il browser ha rifiutato la scrittura. Esporta un backup e compatta i dati vecchi da Licenze. L'ultima modifica non è stata registrata.", 8000);
+  }
+
   function writeJSON(key, value) {
-    try { localStorage.setItem(PREFIX + key, JSON.stringify(value)); } catch (e) { /* spazio pieno o storage negato */ }
+    try {
+      localStorage.setItem(PREFIX + key, JSON.stringify(value));
+      salvataggioFallito = false;
+      return true;
+    } catch (e) {
+      if (erroreDiSpazio(e)) {
+        salvataggioFallito = true;
+        avvisaSpazioPieno();
+      }
+      return false;
+    }
   }
 
   const state = {
@@ -96,13 +131,13 @@ NP.app = (function () {
   }
 
   let toastTimer = null;
-  function toast(msg) {
+  function toast(msg, ms) {
     const el = document.getElementById("toast");
     if (!el) return;
     el.textContent = msg;
     el.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.remove("show"); }, 2800);
+    toastTimer = setTimeout(function () { el.classList.remove("show"); }, ms || 2800);
   }
 
   function go(route) {
@@ -863,6 +898,7 @@ NP.app = (function () {
     impostaCopieMassimo: impostaCopieMassimo,
     spazioCopie: spazioCopie,
     spazioDati: spazioDati,
+    salvataggioNonRiuscito: salvataggioNonRiuscito,
     pianificaCompatta: pianificaCompatta,
     compattaDati: compattaDati,
     fmtBytes: fmtBytes,
