@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.60";
+  const VERSIONE = "1.3.61";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.61",
+      data: "13 novembre 2026",
+      titolo: "Capitolo 3 di 12, anche negli esercizi",
+      punti: [
+        "In cima a ogni capitolo ora si legge «Capitolo 3 di 12»: sapere quanto manca aiuta a scegliere se leggere ancora o fermarsi, in un manuale che non va finito.",
+        "Lo stesso vale per gli esercizi: «Esercizio 5 di 12 · 4 minuti», con la durata accanto alla posizione, così si sa dove si è e quanto impegna.",
+        "Il numero non è scritto a mano: viene dal posto nell'elenco, e un controllo lo confronta su tutti e ventiquattro gli elementi. Se un capitolo viene spostato o aggiunto, un numero rimasto indietro ferma la pubblicazione."
+      ]
+    },
     {
       v: "1.3.60",
       data: "13 novembre 2026",

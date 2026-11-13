@@ -148,12 +148,15 @@
   }
 
   function renderExercise(id) {
-    const ex = P.esercizi.filter(function (e) { return e.id === id; })[0];
+    const elenco = P.esercizi;
+    const posizione = elenco.findIndex(function (e) { return e.id === id; });
+    const ex = elenco[posizione];
     if (!ex) { views.esercizi(); return; }
 
     A.setTitle(ex.titolo);
     A.page(
-      '<div class="page-head"><p class="crumbs"><a href="#/esercizi">Esercizi</a><span>›</span>' + esc(ex.durata) + "</p>" +
+      '<div class="page-head"><p class="crumbs"><a href="#/esercizi">Esercizi</a><span>›</span>Esercizio ' + (posizione + 1) +
+        " di " + elenco.length + " · " + esc(ex.durata) + "</p>" +
         "<h1>" + esc(ex.titolo) + "</h1><p class=\"lead\">" + esc(ex.scopo) + "</p></div>" +
       '<div class="grid grid-2">' +
         '<div class="card"><h2 class=h-sub>Quando usarlo</h2><p>' + esc(ex.quando) + "</p>" +

@@ -118,6 +118,13 @@ ok(!nav("prev"), "il primo capitolo non offre un «precedente»");
 navigate("#/manuale/" + capitoli[capitoli.length - 1].id);
 ok(!nav("next"), "l'ultimo capitolo non offre un «successivo»");
 
+// La posizione in cima deve dire il posto vero, non un numero scritto a mano.
+capitoli.forEach(function (c, i) {
+  navigate("#/manuale/" + c.id);
+  const crumb = document.querySelector("#app .crumbs").textContent;
+  ok(crumb.indexOf("Capitolo " + (i + 1) + " di " + capitoli.length) >= 0, "il capitolo «" + c.id + "» dice di essere il " + (i + 1) + " di " + capitoli.length);
+});
+
 navigate("#/glossario");
 const glossItems = document.querySelectorAll(".glossary-item").length;
 ok(glossItems >= 40, "il glossario mostra tutte le voci (" + glossItems + ")");
@@ -147,6 +154,13 @@ navigate("#/esercizi/" + pratiche[0].id);
 ok(!navEs("prev"), "il primo esercizio non offre un «precedente»");
 navigate("#/esercizi/" + pratiche[pratiche.length - 1].id);
 ok(!navEs("next"), "l'ultimo esercizio non offre un «successivo»");
+
+// La posizione vale anche per gli esercizi, con il posto nell'elenco.
+pratiche.forEach(function (e, i) {
+  navigate("#/esercizi/" + e.id);
+  const crumb = document.querySelector("#app .crumbs").textContent;
+  ok(crumb.indexOf("Esercizio " + (i + 1) + " di " + pratiche.length) >= 0, "l'esercizio «" + e.id + "» dice di essere il " + (i + 1) + " di " + pratiche.length);
+});
 
 /* Colloquio --------------------------------------------------------------- */
 

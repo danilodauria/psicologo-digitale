@@ -42,7 +42,7 @@
 
     A.setTitle(c.titolo);
     A.page(
-      '<div class="page-head"><p class="crumbs"><a href="#/manuale">Manuale</a><span>›</span>Capitolo ' + c.n + "</p>" +
+      '<div class="page-head"><p class="crumbs"><a href="#/manuale">Manuale</a><span>›</span>Capitolo ' + c.n + " di " + list.length + "</p>" +
         "<h1>" + esc(c.titolo) + "</h1>" +
         '<p class="lead">' + esc(c.sommario) + "</p>" +
         '<p class="text-small muted">Tempo di lettura: ' + c.minuti + " minuti</p></div>" +
@@ -427,7 +427,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.60 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.61 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
