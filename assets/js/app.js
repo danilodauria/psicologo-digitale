@@ -790,6 +790,45 @@ NP.app = (function () {
       .sort(function (a, b) { return b.data.localeCompare(a.data); });
   }
 
+  // Il punteggio di un questionario in una certa fotografia dei dati: serve a
+  // dire «oggi 12 su 21, nella copia 16 su 21» invece del solo numero di
+  // questionari compilati. Chi ripristina una copia sta scegliendo anche quale
+  // misura tenere.
+  function punteggioQuestionario(id, scales) {
+    const scale = getScale(id);
+    if (!scale) return null;
+    const rec = (scales || {})[id];
+    const massimo = scaleMax(scale);
+    if (!rec) return { titolo: scale.titolo, punteggio: null, testo: "non compilato" };
+    const completo = !!rec.doneAt;
+    const punti = typeof rec.score === "number" ? rec.score : scaleScore(scale, rec.answers || {});
+    const banda = completo ? (rec.band || (scaleBand(scale, punti) || {}).label || "") : "";
+    return {
+      titolo: scale.titolo,
+      punteggio: punti,
+      testo: punti + " su " + massimo + (banda ? " · " + banda : "") + (completo ? "" : " (in parte)")
+    };
+  }
+
+  // Due questionari compilati oggi e due nella copia possono avere punteggi
+  // diversi: il numero non basta, quindi si confronta questionario per
+  // questionario e si tengono solo quelli che cambierebbero davvero.
+  function confrontoQuestionari(oggiScales, copiaScales) {
+    const a = oggiScales || {}, b = copiaScales || {};
+    return Object.keys(a).concat(Object.keys(b))
+      .filter(function (id, i, elenco) { return elenco.indexOf(id) === i; })
+      .map(function (id) {
+        const ora = punteggioQuestionario(id, a);
+        const prima = punteggioQuestionario(id, b);
+        return {
+          titolo: (ora || prima).titolo,
+          oggi: ora ? ora.testo : "non compilato",
+          copia: prima ? prima.testo : "non compilato"
+        };
+      })
+      .filter(function (q) { return q.oggi !== q.copia; });
+  }
+
   // Cosa cambierebbe ripristinando: si mostrano solo le differenze, perché è
   // quello che serve sapere prima di sostituire i dati di oggi.
   function confrontoCopia(indice) {
@@ -799,14 +838,23 @@ NP.app = (function () {
     const oggi = statoDati(datiOggi);
     const salvato = statoDati(copia.dati);
     const elenchi = { diario: "diary", pensieri: "thoughts" };
-    const voci = CAMPI_COPIA
-      .filter(function (c) { return oggi[c[0]] !== salvato[c[0]]; })
-      .map(function (c) {
-        const voce = { cosa: c[1], ora: oggi[c[0]], copia: salvato[c[0]] };
-        const campo = elenchi[c[0]];
-        if (campo && oggi[c[0]] > salvato[c[0]]) voce.perse = vociPerse(datiOggi[campo], copia.dati[campo], RICONOSCI_VOCI[c[0]]);
-        return voce;
-      });
+    const voci = [];
+    CAMPI_COPIA.forEach(function (c) {
+      const cambiato = oggi[c[0]] !== salvato[c[0]];
+      if (c[0] === "questionari") {
+        const dettaglio = confrontoQuestionari(datiOggi.scales, copia.dati && copia.dati.scales);
+        if (!cambiato && !dettaglio.length) return;
+        const voce = { chiave: c[0], cosa: c[1], ora: oggi[c[0]], copia: salvato[c[0]] };
+        if (dettaglio.length) voce.questionari = dettaglio;
+        voci.push(voce);
+        return;
+      }
+      if (!cambiato) return;
+      const voce = { chiave: c[0], cosa: c[1], ora: oggi[c[0]], copia: salvato[c[0]] };
+      const campo = elenchi[c[0]];
+      if (campo && oggi[c[0]] > salvato[c[0]]) voce.perse = vociPerse(datiOggi[campo], copia.dati[campo], RICONOSCI_VOCI[c[0]]);
+      voci.push(voce);
+    });
     return { quando: copia.quando, voci: voci };
   }
 

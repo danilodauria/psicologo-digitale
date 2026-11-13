@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.57";
+  const VERSIONE = "1.3.58";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.58",
+      data: "13 novembre 2026",
+      titolo: "Anche i punteggi dei questionari nell'anteprima",
+      punti: [
+        "L'anteprima del ripristino non dice più solo quanti questionari sono compilati: per ognuno mostra il punteggio di oggi e quello nella copia, con la fascia — «oggi 12 su 21 · ansia moderata, nella copia 16 su 21 · ansia elevata».",
+        "Compaiono solo i questionari che cambierebbero: un punteggio identico non si vede, così l'elenco resta corto. Un questionario compilato in parte è indicato come tale, invece di sembrare una misura finita.",
+        "Serviva perché due questionari compilati oggi e due nella copia possono dire cose molto diverse: il numero uguale nascondeva punteggi diversi, e ripristinare poteva cambiare in silenzio la misura da portare al professionista."
+      ]
+    },
     {
       v: "1.3.57",
       data: "13 novembre 2026",

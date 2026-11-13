@@ -686,6 +686,24 @@ setTimeout(async function () {
   ok(!!conQuali && /telefonata difficile/.test(conQuali.textContent), "l'anteprima elenca la scheda del pensiero che mancherebbe");
   document.getElementById("copiaAnnulla").click();
 
+  // Ogni questionario con il suo punteggio, non solo il numero di compilati.
+  const scala = NP.data.scales[0];
+  const adesso = new Date().toISOString();
+  NP.app.state.scales = {};
+  NP.app.state.scales[scala.id] = { answers: {}, updatedAt: adesso };
+  NP.app.salvaCopia(true);
+  NP.app.state.scales[scala.id] = { answers: {}, score: 12, band: "lieve", livello: "lieve", doneAt: adesso };
+  const voceQuestionari = NP.app.confrontoCopia(0).voci.filter(function (v) { return v.chiave === "questionari"; })[0];
+  ok(!!voceQuestionari && Array.isArray(voceQuestionari.questionari) && voceQuestionari.questionari.length === 1, "i questionari si confrontano uno per uno, non solo a numero");
+  ok(/^12 su \d+/.test(voceQuestionari.questionari[0].oggi), "l'anteprima dice il punteggio di oggi");
+  ok(/^0 su \d+/.test(voceQuestionari.questionari[0].copia), "e quello che c'era nella copia");
+
+  navigate("#/licenze");
+  document.querySelector("[data-copia]").click();
+  const conPunteggi = document.getElementById("copiaAnteprima");
+  ok(!!conPunteggi && /oggi 12 su/.test(conPunteggi.textContent) && conPunteggi.textContent.indexOf(scala.titolo) >= 0, "l'anteprima in pagina elenca il questionario con i due punteggi");
+  document.getElementById("copiaAnnulla").click();
+
   // Una copia si può anche portare fuori dal browser, come file.
   const fileCopia = NP.app.datiCopia(0);
   ok(!!fileCopia && fileCopia.app === "Psicologo Digitale", "la copia esportata ha la forma di un backup, quindi si reimporta");

@@ -364,6 +364,12 @@
                 (c.voci.length ? "Rispetto a oggi cambierebbe:" : "Rispetto a oggi non cambierebbe nulla.") + "</p>" +
                 (c.voci.length ? '<ul class="text-small">' + c.voci.map(function (v) {
                   const riga = esc(v.cosa) + ": da " + v.ora + " a " + v.copia;
+                  if (v.questionari && v.questionari.length) {
+                    return "<li>" + riga + " — punteggi:" +
+                      '<ul class="text-small">' + v.questionari.map(function (q) {
+                        return "<li>" + esc(q.titolo) + ": oggi " + esc(q.oggi) + ", nella copia " + esc(q.copia) + "</li>";
+                      }).join("") + "</ul></li>";
+                  }
                   if (!v.perse || !v.perse.length) return "<li>" + riga + ".</li>";
                   const mostrate = v.perse.slice(0, 5);
                   const resto = v.perse.length - mostrate.length;
@@ -420,7 +426,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.57 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.58 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
