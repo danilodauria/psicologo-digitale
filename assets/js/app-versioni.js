@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.44";
+  const VERSIONE = "1.3.45";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.45",
+      data: "13 novembre 2026",
+      titolo: "La stessa regola vale anche per accessibilità e collegamenti",
+      punti: [
+        "I controlli di accessibilità e dei collegamenti leggono ora le pagine dalla cartella, come quello dei testi: una pagina nuova entra in tutti e tre da sola, senza elenchi da aggiornare a mano.",
+        "Anche loro partono da ogni collegamento della pagina — menu compreso — e alla fine confrontano le viste registrate con quelle davvero percorse: una vista che nessun collegamento raggiunge fa fallire il controllo e viene nominata.",
+        "I collegamenti verificano anche i menu che nessuno apre durante la prova, e l'accessibilità misura il contrasto nei due temi su ogni vista, non solo su quelle della pagina iniziale."
+      ]
+    },
     {
       v: "1.3.44",
       data: "13 novembre 2026",

@@ -23,7 +23,9 @@ const { execFileSync } = require("child_process");
 const { JSDOM } = require("jsdom");
 
 const radice = path.join(__dirname, "..");
-const pagine = ["index.html", "come-installare.html", "scheda-rapida.html"];
+// Le pagine si leggono dalla cartella, non da un elenco scritto a mano: una
+// pagina nuova non deve poter entrare nel sito senza passare di qui.
+const pagine = fs.readdirSync(radice).filter((f) => f.endsWith(".html")).sort();
 const ESTERNO = /^https?:\/\//i;
 
 let controlli = 0;
@@ -168,7 +170,14 @@ function rendiApp(pacchetto, viste) {
     return;
   }
 
+  // Si parte da ogni collegamento della pagina, non solo da quelli dentro
+  // #app: il menu dell'intestazione porta a viste che altrimenti restano
+  // fuori dal controllo.
   const inCoda = ["#/"];
+  for (const a of documento.querySelectorAll('a[href^="#/"]')) {
+    const destinazione = a.getAttribute("href").split("?")[0];
+    if (inCoda.indexOf(destinazione) < 0) inCoda.push(destinazione);
+  }
   const visitate = new Set();
   while (inCoda.length) {
     const rotta = inCoda.shift();
@@ -197,6 +206,16 @@ function rendiApp(pacchetto, viste) {
         inCoda.push(destinazione.split("?")[0]);
       }
     });
+  }
+
+  // Nessuna vista deve poter restare fuori: si confrontano quelle registrate
+  // con quelle davvero percorse, e ciò che manca va collegato o avviato qui.
+  const percorse = new Set([
+    ...[...visitate].map((r) => r.replace(/^#\/?/, "").split("/")[0] || "home")
+  ]);
+  const fuori = Object.keys(NP.app.views).filter((nome) => !percorse.has(nome));
+  if (fuori.length) {
+    problema("viste", "mai raggiunte da nessun collegamento, quindi mai verificate: " + fuori.join(", ") + ". Aggiungi un collegamento verso ciascuna, oppure avviale esplicitamente qui sopra.");
   }
 }
 
