@@ -147,7 +147,14 @@ function controllaRefusi(b, dove) {
   const raddoppiata = testo.match(/\b([\p{L}]{2,})\s+\1\b/iu);
   if (raddoppiata) problema(dove, "parola ripetuta due volte: «" + raddoppiata[0] + "»");
 
-  if (/['’]\s/.test(testo)) problema(dove, "apostrofo seguito da spazio in «" + scorcia(testo) + "»");
+  // L'apostrofo staccato è un errore («l' amico»), ma esiste il troncamento
+  // legittimo: «un po' di più», «a mo' di». Si saltano solo quelli.
+  for (const m of testo.matchAll(/['’]\s/gu)) {
+    const prima = testo.slice(Math.max(0, m.index - 3), m.index).toLocaleLowerCase("it");
+    if (/(?:^|[^\p{L}])(?:po|mo|be|to)$/u.test(prima)) continue;
+    problema(dove, "apostrofo seguito da spazio in «" + scorcia(testo) + "»");
+    break;
+  }
 
   // Gli elenchi numerati usano «1)» senza parentesi aperta: è una scelta di
   // stile, non un errore.

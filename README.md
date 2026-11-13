@@ -246,7 +246,7 @@ Si scarica in **PDF** (generato sul dispositivo, senza librerie) oppure si stamp
 - Risposte, questionari, diario, note e chat restano nel `localStorage` del browser.
 - Il PDF è costruito sul dispositivo e non viene inviato.
 - Il service worker salva l'applicazione nella cache per l'uso offline.
-- Backup e cancellazione sono nella pagina **Licenze e progetto**, insieme alla copia automatica: una volta al giorno il programma salva da solo colloquio, questionari, diario e note nello stesso browser, tiene le copie degli ultimi giorni — tre, o quante se ne scelgono, da una a sette — e non le tocca quando si azzera. La pagina dice anche quanto spazio occupano, copia per copia, così chi ha un diario lungo sa cosa sta chiedendo al browser. Si ripristinano con un pulsante, senza file da cercare: prima di farlo la pagina dice cosa cambierebbe rispetto ai dati di oggi, voce per voce, e confermare è un secondo clic.
+- Backup e cancellazione sono nella pagina **Licenze e progetto**, insieme alla copia automatica: una volta al giorno il programma salva da solo colloquio, questionari, diario e note nello stesso browser, tiene le copie degli ultimi giorni — tre, o quante se ne scelgono, da una a sette — e non le tocca quando si azzera. La pagina dice anche quanto spazio occupano, copia per copia, così chi ha un diario lungo sa cosa sta chiedendo al browser; accanto c'è il conto di tutti i dati dell'app — colloquio, questionari, diario, note, preferenze e copie — messo a confronto con la quota che un browser concede di solito a un sito. Si ripristinano con un pulsante, senza file da cercare: prima di farlo la pagina dice cosa cambierebbe rispetto ai dati di oggi, voce per voce, e confermare è un secondo clic.
 
 ## Struttura del progetto
 

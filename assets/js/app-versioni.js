@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.49";
+  const VERSIONE = "1.3.50";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.50",
+      data: "13 novembre 2026",
+      titolo: "Quanto spazio occupano tutti i dati",
+      punti: [
+        "Nella pagina Licenze una scheda dice quanto occupano complessivamente colloquio, questionari, diario, note, preferenze e copie automatiche, e quanto pesano rispetto alla quota che un browser concede di solito a un sito.",
+        "Le voci sono in ordine dalla più pesante alla più leggera, con il nome che si usa nel programma — Diario, Questionari — non la chiave tecnica: si vede subito cosa alleggerire.",
+        "Quando lo spazio si avvicina al limite la scheda lo dice per tempo. Il numero è un metro realistico, non una quota letta dal browser, e la pagina lo scrive invece di far finta di conoscerla."
+      ]
+    },
     {
       v: "1.3.49",
       data: "13 novembre 2026",

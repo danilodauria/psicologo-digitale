@@ -288,6 +288,28 @@
         '<button type="button" class="btn btn-danger btn-sm" id="resetBtn">Cancella tutti i dati</button></div>' +
       "</div>" +
 
+      (function () {
+        const d = A.spazioDati();
+        const pct = Math.max(1, Math.min(100, d.quota * 100));
+        const stretto = d.quota >= 0.8;
+        return '<div class="card mt-2" id="spazioDati"><h2 class=h-sub>Cosa occupa spazio</h2>' +
+          '<p>I dati di questa app occupano <strong>' + A.fmtBytes(d.totale) + "</strong> su circa " +
+            A.fmtBytes(d.limite) + ', la quota che un browser concede di solito a un sito: <strong>' +
+            (d.quota * 100).toFixed(1).replace(".", ",") + "%</strong>.</p>" +
+          '<div class="progress-track" aria-hidden="true" style="max-width:22rem"><div class="progress-bar" style="width:' + pct + '%"></div></div>' +
+          '<p class="text-small muted mt-1">' +
+            (stretto
+              ? "Siamo vicini al limite: quando lo spazio finisce il browser rifiuta i salvataggi. Si può ridurre il numero di copie automatiche, o esportare il backup e alleggerire le voci più pesanti."
+              : "La quota è quella tipica, non una misura esatta: browser diversi ne concedono un po' di più o di meno.") +
+          "</p>" +
+          (d.perChiave.length
+            ? '<ul class="text-small">' + d.perChiave.map(function (v) {
+                return "<li>" + esc(v.nome) + ": " + A.fmtBytes(v.byte) + "</li>";
+              }).join("") + "</ul>"
+            : '<p class="text-small muted mb-0">Nessun dato salvato: c\'è solo la struttura del programma.</p>') +
+        "</div>";
+      })() +
+
       '<div class="card mt-2"><h2 class=h-sub>Copia di sicurezza automatica</h2>' +
         '<p>Una copia dei dati resta in questo browser, aggiornata una volta al giorno. Non esce dal dispositivo, non richiede un account e non viene toccata da «Cancella tutti i dati»: serve proprio per un azzeramento fatto per sbaglio.</p>' +
         (function () {
@@ -369,7 +391,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.49 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.50 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

@@ -491,6 +491,47 @@ NP.app = (function () {
     try { return new Blob([testo]).size; } catch (e) { return String(testo).length; }
   }
 
+  // Quanto un browser concede di solito a un sito: non è una quota letta dal
+  // browser (non esiste un modo affidabile per chiederla), ma il tetto che
+  // quasi tutti applicano. Serve come metro, non come promessa.
+  const LIMITE_BROWSER = 5 * 1024 * 1024;
+
+  const NOMI_CHIAVI = {
+    intake: "Colloquio",
+    scales: "Questionari",
+    diary: "Diario",
+    course: "Percorso",
+    quiz: "Palestra",
+    reportNotes: "Note della relazione",
+    thoughts: "Schede del pensiero",
+    chat: "Conversazione con Neura",
+    copie: "Copie automatiche",
+    copieMax: "Preferenze",
+    theme: "Tema",
+    voice: "Voce",
+    voce: "Voce naturale",
+    ritmo: "Velocità della voce"
+  };
+
+  // Tutti i dati dell'app, non solo le copie: chiave per chiave, così si vede
+  // cosa pesa davvero quando lo spazio comincia a scarseggiare.
+  function spazioDati() {
+    const perChiave = [];
+    let totale = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || k.indexOf(PREFIX) !== 0) continue;
+        const nome = k.slice(PREFIX.length);
+        const byte = peso(k + (localStorage.getItem(k) || ""));
+        perChiave.push({ chiave: nome, nome: NOMI_CHIAVI[nome] || nome, byte: byte });
+        totale += byte;
+      }
+    } catch (e) { /* storage negato: resta zero */ }
+    perChiave.sort(function (a, b) { return b.byte - a.byte; });
+    return { totale: totale, perChiave: perChiave, limite: LIMITE_BROWSER, quota: totale / LIMITE_BROWSER };
+  }
+
   // Lo spazio si misura sul contenuto vero, non stimato: chi sceglie quante
   // copie tenere deve vedere quanto costano davvero.
   function spazioCopie() {
@@ -656,6 +697,7 @@ NP.app = (function () {
     copieMassimo: copieMassimo,
     impostaCopieMassimo: impostaCopieMassimo,
     spazioCopie: spazioCopie,
+    spazioDati: spazioDati,
     fmtBytes: fmtBytes,
     confrontoCopia: confrontoCopia,
     ripristinaCopia: ripristinaCopia,

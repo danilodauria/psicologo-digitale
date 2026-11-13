@@ -278,6 +278,8 @@ setTimeout(async function () {
   ok(document.body.textContent.indexOf("CC BY-NC-SA 4.0") >= 0, "la pagina licenze cita la licenza dei contenuti");
   ok(document.getElementById("backupBtn"), "è disponibile l'esportazione del backup");
   ok(!!document.getElementById("copieScelta"), "si sceglie quante copie automatiche tenere");
+  const cartaSpazio = document.getElementById("spazioDati");
+  ok(!!cartaSpazio && /MB/.test(cartaSpazio.textContent), "la pagina dice quanto spazio occupano tutti i dati");
 
   /* Nutrizione e installazione -------------------------------------------- */
 
@@ -551,6 +553,13 @@ setTimeout(async function () {
 
   // Quante copie tenere lo decide chi usa il programma: un diario lungo pesa.
   ok(NP.app.copieMassimo() === 3, "di copie se ne tengono tre, salvo scelta diversa");
+
+  // Lo spazio si conta su tutti i dati, non solo sulle copie.
+  const tutto = NP.app.spazioDati();
+  ok(tutto.totale > 0 && tutto.limite > 0, "si misura lo spazio di tutti i dati dell'app");
+  ok(tutto.totale >= NP.app.spazioCopie().totale, "il totale comprende anche le copie automatiche");
+  ok(tutto.perChiave.length >= 2 && /Colloquio|Diario|Copie/.test(tutto.perChiave.map(function (v) { return v.nome; }).join(" ")), "le voci hanno un nome leggibile, non la chiave tecnica");
+  ok(tutto.quota > 0 && tutto.quota < 1, "la quota rispetto al limite si calcola");
   const spazio = NP.app.spazioCopie();
   ok(spazio.totale > 0 && spazio.pesi.length === 1, "lo spazio occupato si misura sulle copie vere");
   ok(NP.app.fmtBytes(2048) === "2 KB" && NP.app.fmtBytes(3145728) === "3,0 MB", "lo spazio si legge in KB o MB, con la virgola italiana");
