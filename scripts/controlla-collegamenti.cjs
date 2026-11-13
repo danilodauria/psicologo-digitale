@@ -208,6 +208,24 @@ function rendiApp(pacchetto, viste) {
     });
   }
 
+  // Non basta che la vista che elenca sia raggiungibile: ogni capitolo, ogni
+  // esercizio e ogni questionario devono avere un collegamento che li apra,
+  // altrimenti spariscono dal programma restando nei dati.
+  const attesi = [];
+  const dati = (NP.data || {});
+  (dati.manuale || []).forEach(function (c) { attesi.push(["capitolo", "#/manuale/" + c.id]); });
+  ((dati.percorso && dati.percorso.esercizi) || []).forEach(function (e) { attesi.push(["esercizio", "#/esercizi/" + e.id]); });
+  (dati.scales || []).forEach(function (s) { attesi.push(["questionario", "#/valutazione/" + s.id]); });
+  const orfani = attesi.filter(function (a) { return !visitate.has(a[1]); });
+  if (orfani.length) {
+    problema(
+      "collegamenti",
+      "senza nessun collegamento che li apra: " +
+        orfani.map(function (a) { return a[0] + " " + a[1]; }).join(", ") +
+        ". Ognuno deve comparire in un elenco o in un pulsante."
+    );
+  }
+
   // Nessuna vista deve poter restare fuori: si confrontano quelle registrate
   // con quelle davvero percorse, e ciò che manca va collegato o avviato qui.
   const percorse = new Set([

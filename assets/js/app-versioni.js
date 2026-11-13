@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.47";
+  const VERSIONE = "1.3.48";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.48",
+      data: "13 novembre 2026",
+      titolo: "Nessun capitolo, esercizio o questionario senza una porta",
+      punti: [
+        "Il controllo dei collegamenti non si ferma alle viste: verifica che ognuno dei dodici capitoli, dei dodici esercizi e dei sei questionari abbia almeno un collegamento che lo apra.",
+        "Un elemento senza collegamento resta nei dati ma sparisce dal programma: ora il controllo lo nomina e la pubblicazione si ferma, invece di accorgersene chi lo cerca.",
+        "Gli elementi attesi si leggono dai dati, non da un elenco scritto a mano: aggiungerne uno senza collegarlo fa fallire il controllo da solo, senza che nessuno debba ricordarsi di aggiornare una lista."
+      ]
+    },
     {
       v: "1.3.47",
       data: "13 novembre 2026",
