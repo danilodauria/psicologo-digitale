@@ -9,6 +9,7 @@ NP.data = NP.data || {};
 NP.data.manuale = [
   {
     id: "primo-colloquio",
+    esercizioCollegato: "valori-bussola",
     n: 1,
     titolo: "Il primo colloquio: cosa aspettarsi",
     sommario: "Come si svolge un primo incontro con uno psicologo, quanto dura, cosa si dice e cosa non è obbligatorio raccontare.",
@@ -72,6 +73,7 @@ NP.data.manuale = [
   },
   {
     id: "scegliere-professionista",
+    esercizioCollegato: "piano-ricadute",
     n: 2,
     titolo: "Scegliere il professionista giusto",
     sommario: "Psicologo, psicoterapeuta, psichiatra: chi fa cosa, come verificare il titolo e quali domande fare.",
@@ -135,6 +137,7 @@ NP.data.manuale = [
   },
   {
     id: "ansia",
+    esercizioCollegato: "respiro-4-6",
     n: 3,
     titolo: "Ansia: il corpo che suona l'allarme",
     sommario: "Perché l'ansia esiste, come diventa un problema e quali meccanismi la mantengono.",
@@ -199,6 +202,7 @@ NP.data.manuale = [
   },
   {
     id: "umore",
+    esercizioCollegato: "attivazione",
     n: 4,
     titolo: "Umore: quando l'energia si spegne",
     sommario: "Che cos'è la depressione, come si distingue dalla tristezza e quali interventi funzionano.",
@@ -263,6 +267,7 @@ NP.data.manuale = [
   },
   {
     id: "sonno",
+    esercizioCollegato: "igiene-sonno",
     n: 5,
     titolo: "Sonno: la riparazione notturna",
     sommario: "Come funziona il sonno, perché l'insonnia si cronicizza e che cosa la cura davvero.",
@@ -327,6 +332,7 @@ NP.data.manuale = [
   },
   {
     id: "stress",
+    esercizioCollegato: "rilassamento-muscolare",
     n: 6,
     titolo: "Stress e burnout",
     sommario: "Differenza tra pressione utile e carico cronico, segnali da non ignorare e strade di recupero.",

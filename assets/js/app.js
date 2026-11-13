@@ -162,6 +162,22 @@ NP.app = (function () {
 
   /* ---------------------------------------------------------------- Scale */
 
+  // Capitolo e esercizio si rimandano a vicenda: l'abbinamento sta in un solo
+  // campo dei dati (esercizioCollegato), così le due frecce non possono
+  // indicare cose diverse.
+  function eserciziDelPercorso() {
+    return (NP.data.percorso && NP.data.percorso.esercizi) || [];
+  }
+
+  function esercizioDelCapitolo(capitolo) {
+    if (!capitolo || !capitolo.esercizioCollegato) return null;
+    return eserciziDelPercorso().filter(function (e) { return e.id === capitolo.esercizioCollegato; })[0] || null;
+  }
+
+  function capitoloDellEsercizio(id) {
+    return (NP.data.manuale || []).filter(function (c) { return c.esercizioCollegato === id; })[0] || null;
+  }
+
   function getScale(id) {
     return (NP.data.scales || []).filter(function (s) { return s.id === id; })[0] || null;
   }
@@ -984,6 +1000,8 @@ NP.app = (function () {
     cancellaDati: cancellaDati,
     fmtDate: fmtDate,
     fmtDateTime: fmtDateTime,
+    esercizioDelCapitolo: esercizioDelCapitolo,
+    capitoloDellEsercizio: capitoloDellEsercizio,
     getScale: getScale,
     scaleScore: scaleScore,
     scaleBand: scaleBand,

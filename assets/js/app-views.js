@@ -39,6 +39,7 @@
     const c = list[idx];
     if (!c) { views.manuale(); return; }
     const prev = list[idx - 1], next = list[idx + 1];
+    const esercizio = A.esercizioDelCapitolo(c);
 
     A.setTitle(c.titolo);
     A.page(
@@ -52,7 +53,9 @@
             return "<h2>" + esc(s.h) + "</h2>" + s.p.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("");
           }).join("") +
         "</div></article>" +
-        '<div class="card"><h2 class=h-sub>' + A.icon("activity") + " Esercizio</h2><h3 class=h-sub-sm>" + esc(c.esercizio.titolo) + "</h3><p>" + esc(c.esercizio.testo) + "</p></div>" +
+        '<div class="card"><h2 class=h-sub>' + A.icon("activity") + " Esercizio</h2><h3 class=h-sub-sm>" + esc(c.esercizio.titolo) + "</h3><p>" + esc(c.esercizio.testo) + "</p>" +
+          (esercizio ? '<a class="chip" data-esercizio-collegato href="#/esercizi/' + esercizio.id + '">' + esc(esercizio.titolo) + " " + A.icon("arrow") + "</a>" : "") +
+        "</div>" +
         '<div class="card"><h2 class=h-sub>' + A.icon("alert") + " Quando preoccuparsi</h2><h3 class=h-sub-sm>" + esc(c.quando.titolo) + "</h3><p>" + esc(c.quando.testo) + "</p></div>" +
         '<div class="card"><h2 class=h-sub>' + A.icon("spark") + " In sintesi, per Neura</h2><p class=\"text-small\">" + esc((c.neura.sintesi || [])[0]) + "</p>" +
           '<a class="chip" href="#/neura">Chiedi a Neura</a></div>' +
@@ -427,7 +430,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.61 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.62 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

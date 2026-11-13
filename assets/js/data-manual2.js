@@ -9,6 +9,7 @@ NP.data = NP.data || {};
 NP.data.manuale = (NP.data.manuale || []).concat([
   {
     id: "emozioni",
+    esercizioCollegato: "autocompassione",
     n: 7,
     titolo: "Emozioni e regolazione",
     sommario: "A cosa servono le emozioni, perché a volte travolgono e come si impara a reggerle.",
@@ -73,6 +74,7 @@ NP.data.manuale = (NP.data.manuale || []).concat([
   },
   {
     id: "pensieri",
+    esercizioCollegato: "diario-pensieri",
     n: 8,
     titolo: "Pensieri, schemi e distorsioni",
     sommario: "Come la mente interpreta i fatti e perché a volte lo fa in modo poco accurato.",
@@ -137,6 +139,7 @@ NP.data.manuale = (NP.data.manuale || []).concat([
   },
   {
     id: "relazioni",
+    esercizioCollegato: "confini-DESC",
     n: 9,
     titolo: "Relazioni, confini e comunicazione",
     sommario: "Perché alcuni legami pesano, come si mette un limite e come si riparano i conflitti.",
@@ -201,6 +204,7 @@ NP.data.manuale = (NP.data.manuale || []).concat([
   },
   {
     id: "trauma-lutto",
+    esercizioCollegato: "grounding-54321",
     n: 10,
     titolo: "Trauma, lutto e perdita",
     sommario: "Che cosa succede dopo un evento traumatico o una perdita e quando serve un aiuto specifico.",
@@ -265,6 +269,7 @@ NP.data.manuale = (NP.data.manuale || []).concat([
   },
   {
     id: "corpo-abitudini",
+    esercizioCollegato: "camminata-consapevole",
     n: 11,
     titolo: "Corpo, abitudini e sostanze",
     sommario: "Movimento, alimentazione, caffeina, alcol, fumo e sostanze: come influenzano umore e ansia.",
@@ -329,6 +334,7 @@ NP.data.manuale = (NP.data.manuale || []).concat([
   },
   {
     id: "etica-ia",
+    esercizioCollegato: "finestra-preoccupazione",
     n: 12,
     titolo: "Etica, privacy e limiti dell'intelligenza artificiale",
     sommario: "Che cosa può e non può fare questo programma, quali dati restano sul dispositivo e perché la responsabilità resta umana.",

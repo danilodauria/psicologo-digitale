@@ -162,6 +162,24 @@ pratiche.forEach(function (e, i) {
   ok(crumb.indexOf("Esercizio " + (i + 1) + " di " + pratiche.length) >= 0, "l'esercizio «" + e.id + "» dice di essere il " + (i + 1) + " di " + pratiche.length);
 });
 
+// Lettura e pratica si rimandano a vicenda, con lo stesso abbinamento nei dati.
+const abbinati = {};
+capitoli.forEach(function (c) {
+  navigate("#/manuale/" + c.id);
+  const link = document.querySelector("#app [data-esercizio-collegato]");
+  ok(!!link, "il capitolo «" + c.id + "» porta all'esercizio che gli corrisponde");
+  const esercizio = NP.app.esercizioDelCapitolo(c);
+  ok(!!esercizio && !!link && link.getAttribute("href") === "#/esercizi/" + esercizio.id, "il collegamento del capitolo «" + c.id + "» è quello abbinato nei dati");
+  if (esercizio) abbinati[esercizio.id] = (abbinati[esercizio.id] || 0) + 1;
+});
+ok(Object.keys(abbinati).length === pratiche.length, "tutti i " + pratiche.length + " esercizi sono abbinati a un capitolo");
+pratiche.forEach(function (e) {
+  navigate("#/esercizi/" + e.id);
+  const link = document.querySelector("#app [data-capitolo]");
+  const capitolo = NP.app.capitoloDellEsercizio(e.id);
+  ok(!!link && !!capitolo && link.getAttribute("href") === "#/manuale/" + capitolo.id, "l'esercizio «" + e.id + "» riporta al capitolo che lo accompagna");
+});
+
 /* Colloquio --------------------------------------------------------------- */
 
 navigate("#/colloquio");

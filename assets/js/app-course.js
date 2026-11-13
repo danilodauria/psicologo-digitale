@@ -152,6 +152,7 @@
     const posizione = elenco.findIndex(function (e) { return e.id === id; });
     const ex = elenco[posizione];
     if (!ex) { views.esercizi(); return; }
+    const capitolo = A.capitoloDellEsercizio(ex.id);
 
     A.setTitle(ex.titolo);
     A.page(
@@ -168,7 +169,8 @@
         '<div class="card"><h2 class=h-sub>Variante</h2><p>' + esc(ex.variante || "—") + "</p>" +
           "<h2 class=\"mt-2 h-sub\">Da sapere</h2><p>" + esc(ex.nota) + "</p>" +
           '<div class="callout warn"><p><strong>Non è una cura.</strong> Se l\'ansia o l\'umore restano alti, l\'esercizio non sostituisce una valutazione. Se compare un rischio, chiama il 112.</p></div>' +
-          '<div class="pill-row mt-2"><a class="chip" href="#/percorso">Torna al percorso</a><a class="chip" href="#/neura">Chiedi a Neura</a><a class="chip" href="#/diario">Annota nel diario</a></div>' +
+          '<div class="pill-row mt-2">' + (capitolo ? '<a class="chip" data-capitolo href="#/manuale/' + capitolo.id + '">Capitolo: ' + esc(capitolo.titolo) + "</a>" : "") +
+            '<a class="chip" href="#/percorso">Torna al percorso</a><a class="chip" href="#/neura">Chiedi a Neura</a><a class="chip" href="#/diario">Annota nel diario</a></div>' +
         "</div>" +
       "</div>" +
       navEsercizi(ex)

@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.61";
+  const VERSIONE = "1.3.62";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.62",
+      data: "13 novembre 2026",
+      titolo: "Dal capitolo all'esercizio, e ritorno",
+      punti: [
+        "In fondo a ogni capitolo, nella card dell'esercizio, un collegamento apre l'esercizio completo che gli corrisponde: si passa dalla lettura alla pratica senza tornare all'elenco.",
+        "Viceversa, in fondo a ogni esercizio il primo collegamento riporta al capitolo che lo accompagna, con il suo titolo: chi arriva dalla pratica trova il contesto da cui viene.",
+        "L'abbinamento sta in un solo campo dei dati, quindi i due collegamenti non possono indicare cose diverse. Un controllo apre tutti e ventiquattro gli elementi e verifica che ogni capitolo punti al proprio esercizio, che ogni esercizio torni al proprio capitolo e che nessuno dei dodici esercizi resti fuori."
+      ]
+    },
     {
       v: "1.3.61",
       data: "13 novembre 2026",
