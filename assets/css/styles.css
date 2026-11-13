@@ -920,6 +920,19 @@ html[data-theme="dark"] .intake-stage { color: #e2bd82; }
   border-top: 1px solid var(--line);
   flex-wrap: wrap;
 }
+
+/* Azzerare si deve poter fare da dove si sta lavorando, senza cercare la
+   pagina Licenze: il pulsante sta sotto la scheda, discreto ma raggiungibile. */
+.intake-reset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  margin-top: 1.2rem;
+  text-align: center;
+}
+.intake-reset .text-small { max-width: 34rem; }
+
 .intake-actions .hint { font-size: .8rem; color: var(--text-faint); }
 
 .intake-map { display: flex; flex-wrap: wrap; gap: .3rem; margin: .6rem 0 0; padding: 0; list-style: none; }

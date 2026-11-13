@@ -416,6 +416,30 @@ NP.app = (function () {
     );
   };
 
+  /* ----------------------------------------------------- Cancellare i dati */
+
+  // Un solo posto per l'azzeramento: lo usano la pagina Licenze e il colloquio,
+  // così le due strade cancellano esattamente le stesse cose. Due conferme,
+  // perché non si torna indietro.
+  function cancellaDati() {
+    if (!confirm("Cancellare colloquio, questionari, diario e note da questo dispositivo? L'operazione non si può annullare.")) return false;
+    if (!confirm("Ultima conferma: vuoi davvero cancellare tutti i dati?")) return false;
+    try {
+      Object.keys(localStorage).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.removeItem(k);
+      });
+    } catch (e) { /* storage negato: la memoria si azzera lo stesso */ }
+    state.intake = { answers: {}, started: false, completedAt: null, consent: false, updatedAt: null, index: 0 };
+    state.scales = {};
+    state.diary = [];
+    state.course = { done: [], notes: {} };
+    state.quizStats = { played: 0, best: 0, correct: 0, total: 0, byCat: {} };
+    state.reportNotes = { note: "", clinician: "" };
+    state.chat = [];
+    toast("Dati cancellati.");
+    return true;
+  }
+
   return {
     state: state,
     views: views,
@@ -436,6 +460,7 @@ NP.app = (function () {
     saveQuizStats: saveQuizStats,
     saveReportNotes: saveReportNotes,
     saveChat: saveChat,
+    cancellaDati: cancellaDati,
     fmtDate: fmtDate,
     fmtDateTime: fmtDateTime,
     getScale: getScale,

@@ -516,6 +516,25 @@ setTimeout(async function () {
   document.querySelector('#app a[href^="tel:"]').dispatchEvent(clicTelBrowser);
   ok(!clicTelBrowser.defaultPrevented, "nel browser il numero resta un collegamento telefonico");
 
+  /* Azzerare i dati, dal colloquio --------------------------------------- */
+
+  // Azzerare non deve richiedere di cercare la pagina Licenze: il pulsante sta
+  // sotto la domanda, e chiama la stessa funzione che usa quella pagina.
+  navigate("#/colloquio");
+  const azzera = document.getElementById("restartBtn");
+  ok(!!azzera, "il colloquio offre un pulsante per azzerare i dati");
+  ok(/Azzera e ricomincia/.test(azzera.textContent), "il pulsante dice cosa fa");
+  ok(typeof NP.app.cancellaDati === "function", "l'azzeramento è una funzione sola, condivisa con la pagina Licenze");
+  const diarioPrima = NP.app.state.diary.length;
+  const rispostePrima = Object.keys(NP.app.state.intake.answers).length;
+  ok(diarioPrima >= 1 && rispostePrima >= 1, "prima di azzerare ci sono dati da cancellare");
+  azzera.click();
+  ok(Object.keys(NP.app.state.intake.answers).length === 0, "azzerare svuota le risposte del colloquio");
+  ok(NP.app.state.diary.length === 0, "azzerare cancella anche il diario");
+  const rimaste = Object.keys(window.localStorage).filter(function (k) { return k.indexOf(NP.app.PREFIX) === 0; });
+  ok(rimaste.length === 0, "azzerare toglie le chiavi salvate nel browser (" + rimaste.length + ")");
+  ok(!!document.getElementById("consentBox"), "dopo l'azzeramento si riparte dalla prima domanda");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

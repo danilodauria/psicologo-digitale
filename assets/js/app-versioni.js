@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.39";
+  const VERSIONE = "1.3.40";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.40",
+      data: "13 novembre 2026",
+      titolo: "Un pulsante per ricominciare da capo",
+      punti: [
+        "Il colloquio ha un pulsante in fondo alla scheda, sotto ogni domanda: azzera le risposte e riparte dalla prima, senza dover cercare la pagina delle licenze.",
+        "Prima di cancellare chiede due conferme e dice cosa sparisce: colloquio, questionari, diario e note. Il pulsante c'è anche nella restituzione, quando il colloquio è già finito.",
+        "La pagina Licenze usa la stessa funzione, quindi le due strade cancellano esattamente le stesse cose: un test lo verifica, perché due copie della stessa cancellazione prima o poi divergono."
+      ]
+    },
     {
       v: "1.3.39",
       data: "12 novembre 2026",

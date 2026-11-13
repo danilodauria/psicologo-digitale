@@ -34,6 +34,24 @@
       (opt.nota ? "<small>" + esc(opt.nota) + "</small>" : "") + "</span></label>";
   }
 
+  // Azzerare si deve poter fare da dove si sta lavorando, non solo dalla
+  // pagina Licenze: il pulsante è lo stesso in ogni domanda e nella
+  // restituzione, e chiama la funzione unica di A.cancellaDati.
+  function resetHTML(id) {
+    return '<div class="intake-reset">' +
+      '<button type="button" class="btn btn-ghost btn-sm" id="' + id + '">' + A.icon("refresh") + "Azzera e ricomincia</button>" +
+      '<span class="text-small muted">Cancella colloquio, questionari e diario da questo dispositivo e riparte dalla prima domanda.</span>' +
+      "</div>";
+  }
+
+  function bindReset(id) {
+    const b = document.getElementById(id);
+    if (!b) return;
+    b.addEventListener("click", function () {
+      if (A.cancellaDati()) A.render();
+    });
+  }
+
   function questionBody(q, value) {
     if (q.tipo === "consenso") {
       return '<label class="choice' + (value === true ? " is-selected" : "") + '">' +
@@ -122,10 +140,12 @@
           "</div>" +
         "</div>" +
         '<p class="text-small muted mt-2">Se in qualsiasi momento vuoi interrompere, chiudi la pagina: le risposte restano salvate. <a href="#/sicurezza">Numeri utili</a></p>' +
+        resetHTML("restartBtn") +
       "</div>"
     );
 
     mount(q, i);
+    bindReset("restartBtn");
   }
 
   function mount(q, i) {
@@ -339,6 +359,7 @@
             '<a class="btn btn-primary" href="#/relazione">Genera la relazione PDF →</a>' +
           "</div>" +
         "</div>" +
+        resetHTML("restartResultBtn") +
         '<h2 class="mt-3">Un passo successivo, se ti va</h2>' +
         '<div class="grid grid-3 mt-2">' + scaleCards +
           '<a class="card card-link" href="#/percorso"><h2 class=h-sub>Percorso in otto tappe</h2><p>Obiettivi, pratiche e tempi per lavorare sulle aree emerse.</p><span class="go">Vedi il percorso ' + A.icon("arrow") + "</span></a>" +
@@ -346,6 +367,8 @@
         '<p class="text-small muted mt-2">Se i segnali di rischio riguardano la tua sicurezza, non aspettare la relazione: chiama il 112 o uno dei numeri nella sezione <a href="#/sicurezza">Sicurezza</a>.</p>' +
       "</div>"
     );
+
+    bindReset("restartResultBtn");
 
     const review = document.getElementById("reviewBtn");
     if (review) review.addEventListener("click", function (e) {

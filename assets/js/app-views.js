@@ -318,7 +318,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.39 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.40 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -376,22 +376,9 @@
 
     const reset = document.getElementById("resetBtn");
     if (reset) reset.addEventListener("click", function () {
-      if (!confirm("Cancellare colloquio, questionari, diario e note da questo dispositivo? L'operazione non si può annullare.")) return;
-      if (!confirm("Ultima conferma: vuoi davvero cancellare tutti i dati?")) return;
-      try {
-        Object.keys(localStorage).forEach(function (k) {
-          if (k.indexOf(A.PREFIX) === 0) localStorage.removeItem(k);
-        });
-      } catch (e) {}
-      state.intake = { answers: {}, started: false, completedAt: null, consent: false, updatedAt: null, index: 0 };
-      state.scales = {};
-      state.diary = [];
-      state.course = { done: [], notes: {} };
-      state.quizStats = { played: 0, best: 0, correct: 0, total: 0, byCat: {} };
-      state.reportNotes = { note: "", clinician: "" };
-      state.chat = [];
-      A.toast("Dati cancellati.");
-      A.go("");
+      // La stessa funzione che usa il pulsante dentro il colloquio: qui, dopo
+      // aver cancellato, si torna alla pagina iniziale.
+      if (A.cancellaDati()) A.go("");
     });
   };
 })();
