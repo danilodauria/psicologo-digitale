@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.53";
+  const VERSIONE = "1.3.54";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.54",
+      data: "13 novembre 2026",
+      titolo: "Precedente e successivo, anche negli esercizi",
+      punti: [
+        "Le pagine degli esercizi hanno ora i pulsanti «precedente» e «successivo», come i capitoli del manuale: si passa da una pratica all'altra senza tornare all'elenco ogni volta.",
+        "Ogni pulsante dice il titolo di ciò che apre, e il primo e l'ultimo elemento non mostrano il pulsante che non avrebbe destinazione: nessun collegamento che porta al vuoto.",
+        "Un controllo automatico, dentro la verifica dei collegamenti, apre tutti i dodici capitoli e i dodici esercizi e confronta ogni pulsante con l'elemento adiacente: se un indice sbaglia, la pubblicazione si ferma prima di arrivare sul sito."
+      ]
+    },
     {
       v: "1.3.53",
       data: "13 novembre 2026",

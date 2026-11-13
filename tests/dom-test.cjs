@@ -106,6 +106,18 @@ ok(document.querySelectorAll('a[href^="#/manuale/"]').length === 12, "l'elenco d
 navigate("#/manuale/ansia");
 ok(document.body.textContent.indexOf("allarme") >= 0, "il capitolo sull'ansia è leggibile");
 
+// Precedente e successivo: al capitolo adiacente, non a uno qualsiasi.
+const capitoli = NP.data.manuale;
+const nav = function (verso) { return document.querySelector('#app [data-nav="' + verso + '"]'); };
+navigate("#/manuale/" + capitoli[1].id);
+ok(!!nav("prev") && nav("prev").getAttribute("href") === "#/manuale/" + capitoli[0].id, "«precedente» porta al capitolo prima");
+ok(!!nav("next") && nav("next").getAttribute("href") === "#/manuale/" + capitoli[2].id, "«successivo» porta al capitolo dopo");
+ok(nav("next").textContent.indexOf(capitoli[2].titolo) >= 0, "il pulsante dice il titolo del capitolo che apre");
+navigate("#/manuale/" + capitoli[0].id);
+ok(!nav("prev"), "il primo capitolo non offre un «precedente»");
+navigate("#/manuale/" + capitoli[capitoli.length - 1].id);
+ok(!nav("next"), "l'ultimo capitolo non offre un «successivo»");
+
 navigate("#/glossario");
 const glossItems = document.querySelectorAll(".glossary-item").length;
 ok(glossItems >= 40, "il glossario mostra tutte le voci (" + glossItems + ")");
@@ -124,6 +136,17 @@ ok(document.querySelectorAll('a[href^="#/esercizi/"]').length >= 10, "la pagina 
 navigate("#/esercizi/respiro-4-6");
 ok(document.body.textContent.indexOf("Inspira") >= 0, "l'esercizio guidato mostra i passi");
 ok(document.getElementById("timerBtn"), "l'esercizio offre un timer");
+
+const pratiche = NP.data.percorso.esercizi;
+const navEs = function (verso) { return document.querySelector('#app [data-nav="' + verso + '"]'); };
+navigate("#/esercizi/" + pratiche[1].id);
+ok(!!navEs("prev") && navEs("prev").getAttribute("href") === "#/esercizi/" + pratiche[0].id, "negli esercizi «precedente» porta a quello prima");
+ok(!!navEs("next") && navEs("next").getAttribute("href") === "#/esercizi/" + pratiche[2].id, "negli esercizi «successivo» porta a quello dopo");
+ok(navEs("next").textContent.indexOf(pratiche[2].titolo) >= 0, "il pulsante dice il titolo dell'esercizio che apre");
+navigate("#/esercizi/" + pratiche[0].id);
+ok(!navEs("prev"), "il primo esercizio non offre un «precedente»");
+navigate("#/esercizi/" + pratiche[pratiche.length - 1].id);
+ok(!navEs("next"), "l'ultimo esercizio non offre un «successivo»");
 
 /* Colloquio --------------------------------------------------------------- */
 

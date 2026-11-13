@@ -134,6 +134,19 @@
     );
   };
 
+  // Precedente e successivo nell'ordine del percorso: lo stesso gesto che si
+  // fa nel manuale, così non si torna all'elenco solo per andare avanti.
+  function navEsercizi(ex) {
+    const elenco = P.esercizi;
+    const i = elenco.findIndex(function (e) { return e.id === ex.id; });
+    const prev = elenco[i - 1], next = elenco[i + 1];
+    return '<div class="btn-row mt-3">' +
+      (prev ? '<a class="btn btn-ghost" data-nav="prev" href="#/esercizi/' + prev.id + '">← ' + esc(prev.titolo) + "</a>" : "") +
+      '<a class="btn btn-soft" href="#/esercizi">Tutti gli esercizi</a>' +
+      (next ? '<a class="btn btn-ghost" data-nav="next" href="#/esercizi/' + next.id + '">' + esc(next.titolo) + " →</a>" : "") +
+      "</div>";
+  }
+
   function renderExercise(id) {
     const ex = P.esercizi.filter(function (e) { return e.id === id; })[0];
     if (!ex) { views.esercizi(); return; }
@@ -154,7 +167,8 @@
           '<div class="callout warn"><p><strong>Non è una cura.</strong> Se l\'ansia o l\'umore restano alti, l\'esercizio non sostituisce una valutazione. Se compare un rischio, chiama il 112.</p></div>' +
           '<div class="pill-row mt-2"><a class="chip" href="#/percorso">Torna al percorso</a><a class="chip" href="#/neura">Chiedi a Neura</a><a class="chip" href="#/diario">Annota nel diario</a></div>' +
         "</div>" +
-      "</div>"
+      "</div>" +
+      navEsercizi(ex)
     );
 
     const printBtn = document.getElementById("printEx");

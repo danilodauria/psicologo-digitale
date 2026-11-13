@@ -33,6 +33,7 @@ let rotteVisitate = 0;
 let visteContate = 0;
 let elementiAttesi = 0;
 let elementiOrfani = 0;
+let navControllati = 0;
 const problemi = [];
 const esterni = new Set();
 
@@ -242,6 +243,42 @@ function rendiApp(pacchetto, viste) {
     );
   }
 
+  // Precedente e successivo: non basta che la destinazione esista, deve essere
+  // davvero il capitolo o l'esercizio adiacente, con l'etichetta giusta, e
+  // deve mancare sul primo e sull'ultimo. Un errore di indice qui si vede
+  // subito, senza aprire uno per uno tutti i ventiquattro gli elementi.
+  const serie = [
+    ["capitolo", "#/manuale/", dati.manuale || []],
+    ["esercizio", "#/esercizi/", (dati.percorso && dati.percorso.esercizi) || []]
+  ];
+  for (const s of serie) {
+    const nome = s[0], base = s[1], elenco = s[2];
+    if (elenco.length < 2) problema(nome + "i", "l'elenco è vuoto o ha una voce sola: la navigazione non si può verificare");
+    elenco.forEach(function (voce, i) {
+      finestra.location.hash = base + voce.id;
+      try {
+        NP.app.render();
+      } catch (e) {
+        problema(nome + " " + voce.id, "la vista non si apre: " + e.message);
+        return;
+      }
+      [["prev", elenco[i - 1]], ["next", elenco[i + 1]]].forEach(function (coppia) {
+        const verso = coppia[0], atteso = coppia[1];
+        const dove = nome + " " + voce.id + " · " + (verso === "prev" ? "precedente" : "successivo");
+        const link = documento.querySelector('#app [data-nav="' + verso + '"]');
+        if (!atteso) {
+          if (link) problema(dove, "c'è un collegamento, ma qui non c'è niente " + (verso === "prev" ? "prima" : "dopo"));
+          return;
+        }
+        navControllati++;
+        if (!link) { problema(dove, "il collegamento manca"); return; }
+        const href = link.getAttribute("href") || "";
+        if (href !== base + atteso.id) problema(dove, "punta a " + href + " invece che a " + base + atteso.id);
+        if (link.textContent.indexOf(atteso.titolo) < 0) problema(dove, "l'etichetta non dice «" + atteso.titolo + "»");
+      });
+    });
+  }
+
   // Nessuna vista deve poter restare fuori: si confrontano quelle registrate
   // con quelle davvero percorse, e ciò che manca va collegato o avviato qui.
   const percorse = new Set([
@@ -361,12 +398,14 @@ if (problemi.length) {
 }
 console.log(
   "  ✓ " + controlli + " collegamenti in " + pagine.length + " pagine e " + rotteVisitate +
-    " viste, tutti con una destinazione che esiste nel pacchetto desktop (" + esterni.size + " indirizzi esterni annotati)."
+    " viste, tutti con una destinazione che esiste nel pacchetto desktop (" + esterni.size +
+    " indirizzi esterni annotati); " + navControllati + " collegamenti precedente/successivo puntano all'elemento adiacente."
 );
 
 scriviRapporto("collegamenti", {
   pagine: pagine.length,
   viste: visteContate,
   dettaglio: controlli + " collegamenti su " + rotteVisitate + " rotte, " + elementiAttesi +
-    " elementi " + (elementiOrfani ? "di cui " + elementiOrfani + " senza porta" : "tutti con una porta")
+    " elementi " + (elementiOrfani ? "di cui " + elementiOrfani + " senza porta" : "tutti con una porta") +
+    ", " + navControllati + " precedente/successivo"
 });

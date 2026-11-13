@@ -60,9 +60,9 @@
       '<div class="callout warn mt-2"><p><strong>Avviso.</strong> ' + esc(c.neura.avviso) + "</p></div>" +
       '<div class="card mt-2"><h2 class=h-sub>Riferimenti</h2><ul class="text-small muted">' + c.fonti.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></div>" +
       '<div class="btn-row mt-3">' +
-        (prev ? '<a class="btn btn-ghost" href="#/manuale/' + prev.id + '">← ' + esc(prev.titolo) + "</a>" : "") +
+        (prev ? '<a class="btn btn-ghost" data-nav="prev" href="#/manuale/' + prev.id + '">← ' + esc(prev.titolo) + "</a>" : "") +
         '<a class="btn btn-soft" href="#/manuale">Tutti i capitoli</a>' +
-        (next ? '<a class="btn btn-ghost" href="#/manuale/' + next.id + '">' + esc(next.titolo) + " →</a>" : "") +
+        (next ? '<a class="btn btn-ghost" data-nav="next" href="#/manuale/' + next.id + '">' + esc(next.titolo) + " →</a>" : "") +
       "</div>"
     );
   }
@@ -404,7 +404,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.53 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.54 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
