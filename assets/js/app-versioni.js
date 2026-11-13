@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.54";
+  const VERSIONE = "1.3.55";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.55",
+      data: "13 novembre 2026",
+      titolo: "Il riepilogo dice anche quanti elementi",
+      punti: [
+        "Il riepilogo in fondo a «npm test» affianca pagine e viste un'altra colonna: quanti elementi ha esaminato ciascun controllo, con la sua unità — 2022 blocchi di testo, 5902 testi misurati, 486 collegamenti. Sapere dove si è guardato non basta: conta anche quanto.",
+        "Una riga a parte dice gli elementi del programma — 12 capitoli, 12 esercizi, 6 questionari — e che ognuno ha un collegamento che lo apre, così un elemento rimasto orfano si vede nel riepilogo e non solo nell'output del controllo dei collegamenti.",
+        "Il riepilogo si ferma se un rapporto non dichiara i suoi elementi o se qualcuno dei 30 resta senza porta. Provato togliendo il dato a un rapporto e fingendo due elementi orfani: in entrambi i casi esce con errore e dice quale controllo è rimasto indietro."
+      ]
+    },
     {
       v: "1.3.54",
       data: "13 novembre 2026",

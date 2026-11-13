@@ -427,5 +427,10 @@ console.log(
 scriviRapporto("testi", {
   pagine: pagine.length,
   viste: visteRegistrate,
+  // «Elementi» è ciò che questo controllo ha davvero esaminato, non un conteggio
+  // generico: il riepilogo in fondo a npm test lo mette accanto agli altri due.
+  elementi: blocchi,
+  unita: "blocchi di testo",
+  extra: frasi + " frasi",
   dettaglio: blocchi + " blocchi di testo, " + frasi + " frasi"
 });

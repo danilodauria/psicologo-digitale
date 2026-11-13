@@ -657,6 +657,9 @@ if (problemi.length) process.exit(1);
 scriviRapporto("accessibilita", {
   pagine: pagine.length,
   viste: visteRegistrate,
+  elementi: testiMisurati,
+  unita: "testi misurati",
+  extra: "contrasto minimo " + migliorRapporto.toFixed(2).replace(".", ",") + ":1, " + titoliControllati + " titoli",
   dettaglio: testiMisurati + " testi nei due temi, " + titoliControllati + " titoli, contrasto minimo " +
     migliorRapporto.toFixed(2).replace(".", ",") + ":1"
 });

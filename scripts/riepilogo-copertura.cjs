@@ -43,7 +43,15 @@ const mancanti = [];
 for (const [file, nome] of CONTROLLI) {
   try {
     const letto = JSON.parse(fs.readFileSync(path.join(cartella, file + ".json"), "utf8"));
-    rapporti.push({ nome: nome, pagine: letto.pagine, viste: letto.viste, dettaglio: letto.dettaglio });
+    rapporti.push({
+      nome: nome,
+      pagine: letto.pagine,
+      viste: letto.viste,
+      elementi: letto.elementi,
+      unita: letto.unita || "elementi",
+      extra: letto.extra || letto.dettaglio || "",
+      programma: letto.elementiDelProgramma || null
+    });
   } catch (e) {
     mancanti.push(nome);
   }
@@ -62,6 +70,29 @@ if (mancanti.length) {
 const problemi = [];
 const pagine = [...new Set(rapporti.map((r) => r.pagine))];
 const viste = [...new Set(rapporti.map((r) => r.viste))];
+
+// Pagine e viste dicono dove si è guardato; gli elementi dicono quanto. Un
+// controllo che dichiara zero elementi non ha misurato niente, anche se ha
+// attraversato tutte le viste.
+for (const r of rapporti) {
+  if (!(Number.isFinite(r.elementi) && r.elementi > 0)) {
+    problemi.push(
+      "il rapporto di " + r.nome + " non dichiara quanti elementi ha coperto: il riepilogo non può attestarlo."
+    );
+  }
+}
+
+// Gli stessi elementi del programma — capitoli, esercizi, questionari — visti
+// dai collegamenti: se uno resta senza porta d'ingresso, non basta che le
+// pagine siano state lette tutte.
+const programma = rapporti.map((r) => r.programma).filter(Boolean)[0] || null;
+if (!programma || !(programma.attesi > 0)) {
+  problemi.push("nessun rapporto dice quanti elementi del programma sono stati coperti (capitoli, esercizi, questionari).");
+} else if (programma.senzaPorta > 0) {
+  problemi.push(
+    programma.senzaPorta + " elementi del programma restano senza un collegamento che li apra, su " + programma.attesi + "."
+  );
+}
 
 if (pagine.length > 1) {
   problemi.push(
@@ -85,7 +116,20 @@ const larghezza = Math.max(...rapporti.map((r) => r.nome.length));
 for (const r of rapporti) {
   console.log(
     "  " + r.nome.padEnd(larghezza) + "  " + String(r.pagine).padStart(2) + " pagine · " +
-      String(r.viste).padStart(2) + " viste · " + r.dettaglio
+      String(r.viste).padStart(2) + " viste · " + String(r.elementi).padStart(4) + " " + r.unita +
+      (r.extra ? " · " + r.extra : "")
+  );
+}
+
+if (programma && programma.attesi > 0 && !programma.senzaPorta) {
+  const PLURALI = { capitolo: "capitoli", esercizio: "esercizi", questionario: "questionari" };
+  const tipi = Object.keys(programma.perTipo || {}).map(
+    (t) => programma.perTipo[t] + " " + (PLURALI[t] || t)
+  );
+  console.log(
+    "  Elementi del programma  " + " ".repeat(Math.max(0, larghezza - "Elementi del programma".length)) +
+      programma.attesi + " su " + programma.attesi + " con un collegamento che li apre" +
+      (tipi.length ? " (" + tipi.join(", ") + ")" : "") + "."
   );
 }
 
@@ -97,5 +141,5 @@ if (problemi.length) {
 
 console.log(
   "  ✓ Tutti e tre hanno letto le stesse " + pagineNellaCartella + " pagine e le stesse " + viste[0] +
-    " viste: nessuna è rimasta fuori."
+    " viste, e ognuno dice quanti elementi ha coperto: nessuno è rimasto fuori."
 );
