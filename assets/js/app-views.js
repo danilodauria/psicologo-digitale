@@ -327,7 +327,8 @@
           "</div>" +
           '<p class="text-small muted mt-1">Occupano <strong>' + A.fmtBytes(spazio.totale) + "</strong>" +
             (copie.length ? " in " + copie.length + (copie.length === 1 ? " copia" : " copie") : "") +
-            ". Il browser concede in genere 5 MB a questo sito: quando lo spazio finisce, si tengono meno copie invece di perdere quella nuova.</p>";
+            ". Il browser concede in genere 5 MB a questo sito: quando lo spazio finisce, si tengono meno copie invece di perdere quella nuova.</p>" +
+          '<p class="text-small muted">«Esporta» scarica quella copia come file JSON: si conserva fuori dal browser e si rimette a posto con «Importa backup».</p>';
           if (!copie.length) return html + '<p class="text-small muted mb-0">Nessuna copia ancora: arriva al prossimo avvio, se ci sono dati da salvare.</p>';
           html += '<ul class="text-small">' + copie.map(function (c, i) {
             const d = c.dati || {};
@@ -335,7 +336,8 @@
             const voci = d.diary ? d.diary.length : 0;
             return '<li>' + esc(A.fmtDateTime(c.quando)) + " — " + risposte + (risposte === 1 ? " risposta" : " risposte") +
               ", " + voci + (voci === 1 ? " voce di diario" : " voci di diario") + " · " + A.fmtBytes(spazio.pesi[i] || 0) +
-              ' <button type="button" class="btn btn-ghost btn-sm" data-copia="' + i + '">Ripristina</button></li>';
+              ' <button type="button" class="btn btn-ghost btn-sm" data-copia="' + i + '">Ripristina</button>' +
+              ' <button type="button" class="btn btn-ghost btn-sm" data-copia-esporta="' + i + '">Esporta</button></li>';
           }).join("") + "</ul>";
           // Anteprima: prima di sostituire i dati si vede cosa cambierebbe,
           // e se non cambierebbe niente lo dice invece di fingere un rischio.
@@ -402,7 +404,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.52 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.53 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -455,6 +457,12 @@
       b.addEventListener("click", function () {
         copiaInEsame = Number(b.getAttribute("data-copia"));
         A.render();
+      });
+    });
+
+    document.querySelectorAll("[data-copia-esporta]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        A.esportaCopia(Number(b.getAttribute("data-copia-esporta")));
       });
     });
 

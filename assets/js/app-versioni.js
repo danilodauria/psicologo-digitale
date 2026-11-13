@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.52";
+  const VERSIONE = "1.3.53";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.53",
+      data: "13 novembre 2026",
+      titolo: "Anche una copia si può salvare come file",
+      punti: [
+        "Accanto a «Ripristina» ogni copia ha «Esporta»: scarica quella copia come file JSON, con giorno e ora nel nome, così due copie scaricate a distanza di ore non si sovrascrivono nella cartella dei download.",
+        "Il file ha la stessa forma di un backup, quindi si rimette a posto con «Importa backup»: porta una copia su un altro dispositivo o in una cartella esterna senza esportare i dati di oggi.",
+        "Serve proprio quando lo spazio del browser si avvicina al limite: si conserva su disco una versione precisa e la si toglie dal browser, invece di scegliere fra tutto e niente."
+      ]
+    },
     {
       v: "1.3.52",
       data: "13 novembre 2026",

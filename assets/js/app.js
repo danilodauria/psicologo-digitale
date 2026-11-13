@@ -436,18 +436,59 @@ NP.app = (function () {
     };
   }
 
-  function esportaBackup() {
-    const data = raccogliDati();
+  function scaricaJSON(data, nome) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "psicologo-digitale-backup.json";
+    a.download = nome;
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 800);
+  }
+
+  function esportaBackup() {
+    scaricaJSON(raccogliDati(), "psicologo-digitale-backup.json");
     toast("Backup esportato.");
+  }
+
+  // Un nome che distingue le copie fra loro: due esportazioni nello stesso
+  // giorno, fatte a ore diverse, non devono sovrascriversi nella cartella.
+  function nomeFileCopia(quando) {
+    const d = new Date(quando);
+    if (isNaN(d.getTime())) return "psicologo-digitale-copia.json";
+    const due = function (n) { return String(n).padStart(2, "0"); };
+    return "psicologo-digitale-copia-" + d.getFullYear() + "-" + due(d.getMonth() + 1) + "-" + due(d.getDate()) +
+      "-" + due(d.getHours()) + due(d.getMinutes()) + ".json";
+  }
+
+  // Il contenuto di una copia, nella stessa forma di un backup: così il file
+  // esportato si reimporta con «Importa backup» senza passaggi in più.
+  function datiCopia(indice) {
+    const copia = copieAutomatiche()[indice || 0];
+    if (!copia || !copia.dati) return null;
+    const d = copia.dati;
+    return {
+      app: "Psicologo Digitale",
+      version: 1,
+      exportedAt: copia.quando,
+      copiaAutomatica: true,
+      intake: d.intake || {}, scales: d.scales || {}, diary: d.diary || [],
+      thoughts: Array.isArray(d.thoughts) ? d.thoughts : [],
+      course: d.course || { done: [], notes: {} },
+      quizStats: d.quizStats || { played: 0, best: 0, correct: 0, total: 0, byCat: {} },
+      reportNotes: d.reportNotes || { note: "", clinician: "" }
+    };
+  }
+
+  function esportaCopia(indice) {
+    const copia = copieAutomatiche()[indice || 0];
+    const data = datiCopia(indice);
+    if (!copia || !data) return false;
+    scaricaJSON(data, nomeFileCopia(copia.quando));
+    toast("Copia del " + fmtDateTime(copia.quando) + " esportata.");
+    return true;
   }
 
   /* ------------------------------------------- Copia automatica nel browser */
@@ -739,6 +780,9 @@ NP.app = (function () {
     saveReportNotes: saveReportNotes,
     saveChat: saveChat,
     esportaBackup: esportaBackup,
+    esportaCopia: esportaCopia,
+    datiCopia: datiCopia,
+    nomeFileCopia: nomeFileCopia,
     salvaCopia: salvaCopia,
     copieAutomatiche: copieAutomatiche,
     copieMassimo: copieMassimo,

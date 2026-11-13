@@ -663,6 +663,24 @@ setTimeout(async function () {
   ok(!!conQuali && /telefonata difficile/.test(conQuali.textContent), "l'anteprima elenca la scheda del pensiero che mancherebbe");
   document.getElementById("copiaAnnulla").click();
 
+  // Una copia si può anche portare fuori dal browser, come file.
+  const fileCopia = NP.app.datiCopia(0);
+  ok(!!fileCopia && fileCopia.app === "Psicologo Digitale", "la copia esportata ha la forma di un backup, quindi si reimporta");
+  ok(Array.isArray(fileCopia.diary) && !!fileCopia.intake && !!fileCopia.quizStats, "la copia esportata porta con sé colloquio, diario e quiz");
+  ok(fileCopia.copiaAutomatica === true, "il file dice che viene da una copia automatica");
+  const quandoCopia = NP.app.copieAutomatiche()[0].quando;
+  ok(/^psicologo-digitale-copia-\d{4}-\d{2}-\d{2}-\d{4}\.json$/.test(NP.app.nomeFileCopia(quandoCopia)), "il nome del file dice giorno e ora, così due copie non si sovrascrivono");
+  ok(NP.app.esportaCopia(99) === false, "se la copia non c'è, non s'esporta niente");
+
+  const bottoneEsporta = document.querySelector("[data-copia-esporta]");
+  ok(!!bottoneEsporta, "ogni copia ha il pulsante Esporta accanto a Ripristina");
+  let esportataQuale = null;
+  const esportaVero = NP.app.esportaCopia;
+  NP.app.esportaCopia = function (i) { esportataQuale = i; return true; };
+  bottoneEsporta.click();
+  NP.app.esportaCopia = esportaVero;
+  ok(esportataQuale === 0, "«Esporta» esporta proprio la copia a cui sta accanto");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");
