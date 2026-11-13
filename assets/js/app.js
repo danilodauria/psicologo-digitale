@@ -421,8 +421,8 @@ NP.app = (function () {
   // Un posto solo anche per il backup: lo usano la pagina Licenze e il
   // colloquio prima di cancellare, così il file è sempre lo stesso e si
   // reimporta senza sorprese.
-  function esportaBackup() {
-    const data = {
+  function raccogliDati() {
+    return {
       app: "Psicologo Digitale",
       version: 1,
       exportedAt: new Date().toISOString(),
@@ -434,6 +434,10 @@ NP.app = (function () {
       quizStats: state.quizStats,
       reportNotes: state.reportNotes
     };
+  }
+
+  function esportaBackup() {
+    const data = raccogliDati();
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -446,6 +450,67 @@ NP.app = (function () {
     toast("Backup esportato.");
   }
 
+  /* ------------------------------------------- Copia automatica nel browser */
+
+  // Una copia al giorno, dentro lo stesso browser: se si azzera per sbaglio,
+  // quella di ieri è ancora lì. Restano le ultime tre, e la chiave sopravvive
+  // proprio all'azzeramento, che altrimenti porterebbe via anche la rete.
+  const CHIAVE_COPIE = "copie";
+  const MAX_COPIE = 3;
+
+  function haDati(d) {
+    return !!d && !!(
+      (d.intake && d.intake.answers && Object.keys(d.intake.answers).length) ||
+      (d.scales && Object.keys(d.scales).length) ||
+      (d.diary && d.diary.length) ||
+      (d.thoughts && d.thoughts.length)
+    );
+  }
+
+  function copieAutomatiche() {
+    const elenco = readJSON(CHIAVE_COPIE, []);
+    return Array.isArray(elenco) ? elenco : [];
+  }
+
+  function scriviCopie(elenco) {
+    try { localStorage.setItem(PREFIX + CHIAVE_COPIE, JSON.stringify(elenco)); return true; }
+    catch (e) { return false; }
+  }
+
+  // `forza` la usano gli azzeramenti: la copia si prende comunque, anche se
+  // oggi è già stata fatta, perché è l'ultimo momento utile per averla.
+  function salvaCopia(forza) {
+    const oggi = new Date().toISOString().slice(0, 10);
+    const copie = copieAutomatiche();
+    const giaOggi = copie.length > 0 && String(copie[0].quando).slice(0, 10) === oggi;
+    if (giaOggi && !forza) return false;
+    const dati = raccogliDati();
+    if (!haDati(dati)) return false;
+    const voce = { quando: new Date().toISOString(), dati: dati };
+    const aggiornate = giaOggi ? [voce].concat(copie.slice(1)) : [voce].concat(copie);
+    // Se lo spazio è finito si tengono meno copie, invece di perdere quella nuova.
+    for (let n = Math.min(aggiornate.length, MAX_COPIE); n >= 1; n--) {
+      if (scriviCopie(aggiornate.slice(0, n))) return true;
+    }
+    return false;
+  }
+
+  function ripristinaCopia(indice) {
+    const copia = copieAutomatiche()[indice || 0];
+    if (!copia || !copia.dati) return false;
+    const d = copia.dati;
+    state.intake = d.intake || state.intake;
+    state.scales = d.scales || {};
+    state.diary = d.diary || [];
+    state.course = d.course || { done: [], notes: {} };
+    state.quizStats = d.quizStats || state.quizStats;
+    state.reportNotes = d.reportNotes || { note: "", clinician: "" };
+    writeJSON("thoughts", Array.isArray(d.thoughts) ? d.thoughts : []);
+    saveIntake(); saveScales(); saveDiary(); saveCourse(); saveQuizStats(); saveReportNotes();
+    toast("Copia del " + fmtDate(copia.quando) + " ripristinata.");
+    return true;
+  }
+
   /* --------------------------------------------- Cancellare solo il colloquio */
 
   // Rifare il colloquio non deve costare i questionari già compilati né il
@@ -454,6 +519,7 @@ NP.app = (function () {
   // quello che si è appena accettato.
   function cancellaColloquio() {
     if (!confirm("Azzerare il colloquio e ricominciare dalla prima domanda? Questionari e diario restano.")) return false;
+    salvaCopia(true);
     state.intake = { answers: {}, started: false, completedAt: null, consent: false, updatedAt: null, index: 0 };
     saveIntake();
     toast("Colloquio azzerato: questionari e diario sono rimasti.");
@@ -468,9 +534,12 @@ NP.app = (function () {
   function cancellaDati() {
     if (!confirm("Cancellare colloquio, questionari, diario e note da questo dispositivo? L'operazione non si può annullare.")) return false;
     if (!confirm("Ultima conferma: vuoi davvero cancellare tutti i dati?")) return false;
+    // Prima di cancellare: è l'ultimo momento in cui i dati ci sono ancora.
+    salvaCopia(true);
     try {
       Object.keys(localStorage).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.removeItem(k);
+        // La copia automatica non si tocca: è la rete sotto l'azzeramento.
+        if (k.indexOf(PREFIX) === 0 && k !== PREFIX + CHIAVE_COPIE) localStorage.removeItem(k);
       });
     } catch (e) { /* storage negato: la memoria si azzera lo stesso */ }
     state.intake = { answers: {}, started: false, completedAt: null, consent: false, updatedAt: null, index: 0 };
@@ -505,6 +574,9 @@ NP.app = (function () {
     saveReportNotes: saveReportNotes,
     saveChat: saveChat,
     esportaBackup: esportaBackup,
+    salvaCopia: salvaCopia,
+    copieAutomatiche: copieAutomatiche,
+    ripristinaCopia: ripristinaCopia,
     cancellaColloquio: cancellaColloquio,
     cancellaDati: cancellaDati,
     fmtDate: fmtDate,

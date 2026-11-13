@@ -541,6 +541,13 @@ setTimeout(async function () {
   ok(scelta.hidden === true && document.getElementById("restartBtn").hidden === false, "«Annulla» richiude la scelta senza cancellare");
   ok(Object.keys(NP.app.state.intake.answers).length === rispostePrima, "annullare non tocca i dati");
 
+  /* Copia automatica nel browser ----------------------------------------- */
+
+  ok(typeof NP.app.salvaCopia === "function" && typeof NP.app.copieAutomatiche === "function", "c'è una copia automatica dei dati");
+  ok(NP.app.salvaCopia(false) === true, "la copia del giorno si crea al primo avvio con dei dati");
+  ok(NP.app.salvaCopia(false) === false, "nello stesso giorno non si ripete");
+  ok(NP.app.copieAutomatiche().length === 1, "una copia al giorno, non una a ogni clic");
+
   // Rifare il colloquio capita più spesso che cancellare tutto: deve costare
   // solo il colloquio, non il diario e i questionari già compilati.
   document.getElementById("restartBtn").click();
@@ -569,8 +576,16 @@ setTimeout(async function () {
   ok(Object.keys(NP.app.state.intake.answers).length === 0, "dopo il backup le risposte vengono azzerate");
   ok(NP.app.state.diary.length === 0, "il diario sparisce con le risposte");
   const rimaste = Object.keys(window.localStorage).filter(function (k) { return k.indexOf(NP.app.PREFIX) === 0; });
-  ok(rimaste.length === 0, "azzerare toglie le chiavi salvate nel browser (" + rimaste.length + ")");
+  ok(rimaste.length === 1 && rimaste[0] === NP.app.PREFIX + "copie", "azzerare toglie i dati e lascia solo la copia automatica (" + rimaste.length + ")");
   ok(!!document.getElementById("consentBox"), "dopo l'azzeramento si riparte dalla prima domanda");
+
+  // La rete sotto l'azzeramento: la copia sopravvive e riporta indietro i dati.
+  ok(NP.app.copieAutomatiche().length >= 1, "l'azzeramento non porta via la copia automatica");
+  ok(NP.app.copieAutomatiche()[0].dati.diary.length === diarioPrima, "la copia contiene i dati com'erano prima dell'azzeramento");
+  ok(NP.app.ripristinaCopia(0) === true, "la copia si può ripristinare");
+  ok(NP.app.state.diary.length === diarioPrima, "ripristinare riporta il diario");
+  navigate("#/licenze");
+  ok(!!document.querySelector("[data-copia]"), "il ripristino si raggiunge dalla pagina Licenze");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {

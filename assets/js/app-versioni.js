@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.42";
+  const VERSIONE = "1.3.43";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.43",
+      data: "13 novembre 2026",
+      titolo: "Una copia di sicurezza, ogni giorno, senza fare niente",
+      punti: [
+        "Il programma salva da solo una copia dei dati nel browser una volta al giorno: colloquio, questionari, diario e note. Restano le ultime tre, una per giorno.",
+        "Non esce dal dispositivo, non richiede un account e non viene toccata da «Cancella tutti i dati»: anzi, proprio l'azzeramento ne prepara una prima di procedere, anche quando si sceglie di non scaricare il file.",
+        "Nella pagina Licenze ogni copia dice quando è stata presa, quante risposte e quante voci di diario contiene, e si ripristina con un pulsante; un test verifica che il diario torni al suo posto."
+      ]
+    },
     {
       v: "1.3.42",
       data: "13 novembre 2026",

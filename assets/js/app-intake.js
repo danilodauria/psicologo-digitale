@@ -54,6 +54,7 @@
         // pulsante è separato, così non si cancella di più di quanto serviva.
         '<p class="text-small muted mt-2 mb-0">Vuoi rifare solo il colloquio, senza perdere questionari e diario? ' +
           '<button type="button" class="btn btn-ghost btn-sm" id="' + id + 'Solo">Azzera solo il colloquio</button></p>' +
+        '<p class="text-small muted mt-1 mb-0">La copia automatica di oggi resta comunque nel browser: se qualcosa va storto si ripristina dalla pagina <a href="#/licenze">Licenze</a>.</p>' +
       "</div>" +
       "</div>";
   }

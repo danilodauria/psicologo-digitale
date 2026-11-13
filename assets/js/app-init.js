@@ -130,6 +130,10 @@
   A.setTitle("");
   A.render();
 
+  // La copia automatica si prende all'avvio, una volta al giorno: è il momento
+  // in cui i dati delle volte precedenti sono ancora tutti lì.
+  A.salvaCopia(false);
+
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("sw.js").catch(function () { /* offline non disponibile */ });

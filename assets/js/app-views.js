@@ -284,6 +284,22 @@
         '<button type="button" class="btn btn-danger btn-sm" id="resetBtn">Cancella tutti i dati</button></div>' +
       "</div>" +
 
+      '<div class="card mt-2"><h2 class=h-sub>Copia di sicurezza automatica</h2>' +
+        '<p>Una copia dei dati resta in questo browser, aggiornata una volta al giorno: le ultime tre. Non esce dal dispositivo, non richiede un account e non viene toccata da «Cancella tutti i dati»: serve proprio per un azzeramento fatto per sbaglio.</p>' +
+        (function () {
+          const copie = A.copieAutomatiche();
+          if (!copie.length) return '<p class="text-small muted mb-0">Nessuna copia ancora: arriva al prossimo avvio, se ci sono dati da salvare.</p>';
+          return '<ul class="text-small">' + copie.map(function (c, i) {
+            const d = c.dati || {};
+            const risposte = d.intake && d.intake.answers ? Object.keys(d.intake.answers).length : 0;
+            const voci = d.diary ? d.diary.length : 0;
+            return '<li>' + esc(A.fmtDateTime(c.quando)) + " — " + risposte + (risposte === 1 ? " risposta" : " risposte") +
+              ", " + voci + (voci === 1 ? " voce di diario" : " voci di diario") +
+              ' <button type="button" class="btn btn-ghost btn-sm" data-copia="' + i + '">Ripristina</button></li>';
+          }).join("") + "</ul>";
+        })() +
+      "</div>" +
+
       '<div class="card mt-2"><h2 class=h-sub>Limiti dichiarati</h2><ul class="text-small">' +
         "<li>Non è un dispositivo medico ai sensi del Regolamento UE 2017/745.</li>" +
         "<li>Non formula diagnosi, non prescrive terapie, non gestisce emergenze.</li>" +
@@ -318,7 +334,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.42 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.43 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -358,6 +374,16 @@
       // La stessa funzione che usa il pulsante dentro il colloquio: qui, dopo
       // aver cancellato, si torna alla pagina iniziale.
       if (A.cancellaDati()) A.go("");
+    });
+
+    document.querySelectorAll("[data-copia]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const i = Number(b.getAttribute("data-copia"));
+        const copia = A.copieAutomatiche()[i];
+        if (!copia) return;
+        if (!confirm("Ripristinare la copia del " + A.fmtDateTime(copia.quando) + "? I dati attuali verranno sostituiti.")) return;
+        if (A.ripristinaCopia(i)) A.render();
+      });
     });
   };
 })();

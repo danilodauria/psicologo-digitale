@@ -246,7 +246,7 @@ Si scarica in **PDF** (generato sul dispositivo, senza librerie) oppure si stamp
 - Risposte, questionari, diario, note e chat restano nel `localStorage` del browser.
 - Il PDF è costruito sul dispositivo e non viene inviato.
 - Il service worker salva l'applicazione nella cache per l'uso offline.
-- Backup e cancellazione sono nella pagina **Licenze e progetto**.
+- Backup e cancellazione sono nella pagina **Licenze e progetto**, insieme alla copia automatica: una volta al giorno il programma salva da solo colloquio, questionari, diario e note nello stesso browser, tiene le ultime tre copie e non le tocca quando si azzera. Si ripristinano con un pulsante, senza file da cercare.
 
 ## Struttura del progetto
 
@@ -418,7 +418,7 @@ Un 404 appena dopo un ri-caricamento viene ritentato tre volte prima di essere s
 - Non è una terapia e non sostituisce una visita.
 - I questionari non sono strumenti diagnostici validati: sono indicatori divulgativi ispirati a costrutti noti.
 - Neura è un motore di regole e recupero, non un'IA generativa: non risponde fuori dal corpus e non apprende.
-- Il programma non raccoglie dati, quindi non sincronizza tra dispositivi: il backup JSON serve a questo.
+- Il programma non raccoglie dati, quindi non sincronizza tra dispositivi: il backup JSON serve a questo, e la copia automatica resta comunque dentro quel browser soltanto.
 - La sintesi vocale dipende dalle voci installate sul dispositivo; la dettatura dipende dal browser.
 - Il PDF è volutamente essenziale: testo, tabelle e firme. Non è un documento con valore medico-legale.
 - I protocolli di seduta sono un modello didattico, non un manuale di condotta clinica.
