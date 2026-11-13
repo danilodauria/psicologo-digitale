@@ -446,6 +446,20 @@ NP.app = (function () {
     toast("Backup esportato.");
   }
 
+  /* --------------------------------------------- Cancellare solo il colloquio */
+
+  // Rifare il colloquio non deve costare i questionari già compilati né il
+  // diario: si azzera ciò che appartiene al colloquio, e nient'altro. Il
+  // consenso torna da confermare, perché le domande che seguono dipendono da
+  // quello che si è appena accettato.
+  function cancellaColloquio() {
+    if (!confirm("Azzerare il colloquio e ricominciare dalla prima domanda? Questionari e diario restano.")) return false;
+    state.intake = { answers: {}, started: false, completedAt: null, consent: false, updatedAt: null, index: 0 };
+    saveIntake();
+    toast("Colloquio azzerato: questionari e diario sono rimasti.");
+    return true;
+  }
+
   /* ----------------------------------------------------- Cancellare i dati */
 
   // Un solo posto per l'azzeramento: lo usano la pagina Licenze e il colloquio,
@@ -491,6 +505,7 @@ NP.app = (function () {
     saveReportNotes: saveReportNotes,
     saveChat: saveChat,
     esportaBackup: esportaBackup,
+    cancellaColloquio: cancellaColloquio,
     cancellaDati: cancellaDati,
     fmtDate: fmtDate,
     fmtDateTime: fmtDateTime,

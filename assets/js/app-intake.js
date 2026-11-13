@@ -50,6 +50,10 @@
           '<button type="button" class="btn btn-danger btn-sm" id="' + id + 'Senza">Azzera senza backup</button>' +
           '<button type="button" class="btn btn-ghost btn-sm" id="' + id + 'Annulla">Annulla</button>' +
         "</div>" +
+        // Azzerare tutto è raro: rifare il colloquio, invece, capita. Qui il
+        // pulsante è separato, così non si cancella di più di quanto serviva.
+        '<p class="text-small muted mt-2 mb-0">Vuoi rifare solo il colloquio, senza perdere questionari e diario? ' +
+          '<button type="button" class="btn btn-ghost btn-sm" id="' + id + 'Solo">Azzera solo il colloquio</button></p>' +
       "</div>" +
       "</div>";
   }
@@ -90,6 +94,11 @@
     const senza = document.getElementById(id + "Senza");
     if (senza) senza.addEventListener("click", function () {
       if (A.cancellaDati()) A.render();
+    });
+
+    const solo = document.getElementById(id + "Solo");
+    if (solo) solo.addEventListener("click", function () {
+      if (A.cancellaColloquio()) A.render();
     });
   }
 

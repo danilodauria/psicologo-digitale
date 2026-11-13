@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.41";
+  const VERSIONE = "1.3.42";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.42",
+      data: "13 novembre 2026",
+      titolo: "Rifare il colloquio senza perdere il resto",
+      punti: [
+        "Nel riquadro dell'azzeramento c'è una scelta in più: «Azzera solo il colloquio», che riporta alla prima domanda lasciando intatti i questionari già compilati e il diario.",
+        "Il consenso torna da confermare: le domande che seguono dipendono da quello che si accetta all'inizio, e ripartire dal mezzo darebbe un quadro falsato.",
+        "L'azzeramento parziale è una funzione sua, separata da quella che cancella tutto, e un test verifica che il diario sopravviva mentre le risposte spariscono."
+      ]
+    },
     {
       v: "1.3.41",
       data: "13 novembre 2026",

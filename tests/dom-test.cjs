@@ -541,11 +541,26 @@ setTimeout(async function () {
   ok(scelta.hidden === true && document.getElementById("restartBtn").hidden === false, "«Annulla» richiude la scelta senza cancellare");
   ok(Object.keys(NP.app.state.intake.answers).length === rispostePrima, "annullare non tocca i dati");
 
+  // Rifare il colloquio capita più spesso che cancellare tutto: deve costare
+  // solo il colloquio, non il diario e i questionari già compilati.
+  document.getElementById("restartBtn").click();
+  const soloColloquio = document.getElementById("restartBtnSolo");
+  ok(!!soloColloquio && /Azzera solo il colloquio/.test(soloColloquio.textContent), "si può azzerare solo il colloquio");
+  ok(typeof NP.app.cancellaColloquio === "function", "anche questo azzeramento è una funzione sola");
+  soloColloquio.click();
+  ok(Object.keys(NP.app.state.intake.answers).length === 0, "azzerare solo il colloquio svuota le risposte");
+  ok(NP.app.state.diary.length === diarioPrima, "il diario resta intatto");
+  ok(!!document.getElementById("consentBox"), "il colloquio riparte dal consenso, da confermare di nuovo");
+  const consensoDopo = document.getElementById("consentBox");
+  consensoDopo.checked = true;
+  consensoDopo.dispatchEvent(new window.Event("change", { bubbles: true }));
+  ok(Object.keys(NP.app.state.intake.answers).length === 1, "il colloquio si ricomincia subito, senza altri passaggi");
+
   const blobPreparati = [];
   window.URL.createObjectURL = function (blob) { blobPreparati.push(blob); return "blob:finto"; };
   window.URL.revokeObjectURL = function () {};
 
-  azzera.click();
+  document.getElementById("restartBtn").click();
   const scarica = document.getElementById("restartBtnBackup");
   ok(!!scarica && /Scarica il backup e azzera/.test(scarica.textContent), "la scelta offre di scaricare il backup e poi azzerare");
   ok(!!document.getElementById("restartBtnSenza"), "si può anche azzerare senza backup, e il pulsante lo dice");
