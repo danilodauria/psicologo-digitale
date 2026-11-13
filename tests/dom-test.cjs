@@ -638,13 +638,30 @@ setTimeout(async function () {
   ok(perPercorso.voci.some(function (v) { return v.cosa === "Esercizi completati" && v.ora === 2 && v.copia === 0; }), "l'anteprima dice che si perderebbero gli esercizi completati");
   ok(perPercorso.voci.some(function (v) { return v.cosa === "Risposte ai quiz" && v.ora === 6 && v.copia === 0; }), "l'anteprima dice che si perderebbero le risposte ai quiz");
 
-  // «Cosa cambierebbe» è più utile se dice quali voci, non solo quante.
+  // «Cosa cambierebbe» serve se dice quali voci, non solo quante: si devono
+  // riconoscere la pagina di diario e la scheda del pensiero che si perdono.
+  const schedaPensiero = function (id, date, situation) {
+    return { id: id, date: date, situation: situation, thought: "non sono capace", emotion: "ansia", intensity: 7, alternative: "" };
+  };
   NP.app.state.diary = [{ id: "d1", date: "2026-11-10T09:00:00.000Z", mood: 3, anxiety: 4, sleep: 6, energy: 5, note: "prima" }];
+  NP.app.writeJSON("thoughts", [schedaPensiero("t1", "2026-11-11T10:00:00.000Z", "colloquio di lavoro")]);
   NP.app.salvaCopia(true);
   NP.app.state.diary.push({ id: "d2", date: "2026-11-12T09:00:00.000Z", mood: 4, anxiety: 3, sleep: 7, energy: 6, note: "dopo" });
-  const voceDiario = NP.app.confrontoCopia(0).voci.filter(function (v) { return v.cosa === "Voci di diario"; })[0];
+  NP.app.writeJSON("thoughts", [schedaPensiero("t1", "2026-11-11T10:00:00.000Z", "colloquio di lavoro"), schedaPensiero("t2", "2026-11-12T10:00:00.000Z", "telefonata difficile")]);
+  const quali = NP.app.confrontoCopia(0).voci;
+  const voceDiario = quali.filter(function (v) { return v.cosa === "Voci di diario"; })[0];
   ok(!!voceDiario && voceDiario.ora === 2 && voceDiario.copia === 1, "il diario si confronta voce per voce");
-  ok(!!voceDiario.perse && voceDiario.perse.length === 1 && voceDiario.perse[0].indexOf("2026-11-12") === 0, "si dice quale voce sparirebbe, non solo quante");
+  ok(!!voceDiario.perse && voceDiario.perse.length === 1 && voceDiario.perse[0].data.indexOf("2026-11-12") === 0, "si dice la data della voce che sparirebbe");
+  ok(voceDiario.perse[0].testo === "dopo", "della voce si dice anche il testo, non solo la data");
+  const vocePensieri = quali.filter(function (v) { return v.cosa === "Schede del pensiero"; })[0];
+  ok(!!vocePensieri && vocePensieri.perse.length === 1 && vocePensieri.perse[0].testo === "telefonata difficile", "la scheda del pensiero si riconosce dalla situazione, non dal numero");
+
+  navigate("#/licenze");
+  document.querySelector("[data-copia]").click();
+  const conQuali = document.getElementById("copiaAnteprima");
+  ok(!!conQuali && /12 novembre 2026/.test(conQuali.textContent) && /dopo/.test(conQuali.textContent), "l'anteprima elenca la voce di diario che mancherebbe");
+  ok(!!conQuali && /telefonata difficile/.test(conQuali.textContent), "l'anteprima elenca la scheda del pensiero che mancherebbe");
+  document.getElementById("copiaAnnulla").click();
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {

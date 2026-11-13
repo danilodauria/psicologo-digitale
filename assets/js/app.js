@@ -609,16 +609,35 @@ NP.app = (function () {
 
   // Le voci che ci sono oggi e non nella copia: sono quelle che si perderebbero,
   // e vederle per data è più utile di un conto che non dice quali.
-  function vociPerse(oggi, copia) {
+  function accorcia(testo, max) {
+    const t = String(testo || "").replace(/\s+/g, " ").trim();
+    if (t.length <= max) return t;
+    return t.slice(0, max).replace(/[\s,;:.]+$/, "") + "…";
+  }
+
+  // Come si riconosce una voce in elenco: la data da sola non basta, perché
+  // nello stesso giorno possono esserci più voci e due schede diverse.
+  const RICONOSCI_VOCI = {
+    diario: function (v) {
+      return accorcia(v.note, 60) || (v.mood ? "umore " + v.mood + "/5" : "voce senza nota");
+    },
+    pensieri: function (v) {
+      return accorcia(v.situation, 60) || accorcia(v.thought, 60) || "scheda senza titolo";
+    }
+  };
+
+  function vociPerse(oggi, copia, riconosci) {
     const firma = function (v) { return JSON.stringify(v); };
     const salvate = {};
     (copia || []).forEach(function (v) { salvate[firma(v)] = true; });
     return (oggi || [])
-      .filter(function (v) { return !salvate[firma(v)]; })
-      .map(function (v) { return v && v.date ? v.date : ""; })
-      .filter(Boolean)
-      .sort()
-      .reverse();
+      .filter(function (v) { return !salvate[firma(v)] && v && v.date; })
+      .map(function (v) {
+        let testo = "";
+        try { testo = riconosci ? riconosci(v) : ""; } catch (e) { testo = ""; }
+        return { data: v.date, testo: testo };
+      })
+      .sort(function (a, b) { return b.data.localeCompare(a.data); });
   }
 
   // Cosa cambierebbe ripristinando: si mostrano solo le differenze, perché è
@@ -635,7 +654,7 @@ NP.app = (function () {
       .map(function (c) {
         const voce = { cosa: c[1], ora: oggi[c[0]], copia: salvato[c[0]] };
         const campo = elenchi[c[0]];
-        if (campo && oggi[c[0]] > salvato[c[0]]) voce.perse = vociPerse(datiOggi[campo], copia.dati[campo]);
+        if (campo && oggi[c[0]] > salvato[c[0]]) voce.perse = vociPerse(datiOggi[campo], copia.dati[campo], RICONOSCI_VOCI[c[0]]);
         return voce;
       });
     return { quando: copia.quando, voci: voci };

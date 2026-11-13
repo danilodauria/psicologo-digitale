@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.51";
+  const VERSIONE = "1.3.52";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.52",
+      data: "13 novembre 2026",
+      titolo: "Quali voci mancherebbero, una per una",
+      punti: [
+        "L'anteprima del ripristino non dice più soltanto quante voci si perderebbero: elenca una per una le voci di diario e le schede del pensiero che mancherebbero rispetto alla copia, con la data e con il testo che le rende riconoscibili.",
+        "Per il diario compare la nota scritta, per le schede del pensiero la situazione; se la voce è senza testo si mostra almeno l'umore, così non resta un numero anonimo.",
+        "Oltre cinque voci l'elenco si ferma e dice quante altre ce ne sono: l'anteprima resta leggibile anche con mesi di diario, e il testo di ogni voce è accorciato perché serve a riconoscerla, non a rileggerla."
+      ]
+    },
     {
       v: "1.3.51",
       data: "13 novembre 2026",

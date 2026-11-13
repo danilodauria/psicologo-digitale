@@ -345,14 +345,17 @@
               html += '<div class="callout info" id="copiaAnteprima"><p><strong>Copia del ' + esc(A.fmtDateTime(c.quando)) + ".</strong> " +
                 (c.voci.length ? "Rispetto a oggi cambierebbe:" : "Rispetto a oggi non cambierebbe nulla.") + "</p>" +
                 (c.voci.length ? '<ul class="text-small">' + c.voci.map(function (v) {
-                  let riga = esc(v.cosa) + ": da " + v.ora + " a " + v.copia;
-                  if (v.perse && v.perse.length) {
-                    const quando = esc(A.fmtDate(v.perse[0]));
-                    riga += v.perse.length === 1
-                      ? " — sparirebbe la voce del " + quando
-                      : " — sparirebbero " + v.perse.length + " voci, fra cui quella del " + quando;
-                  }
-                  return "<li>" + riga + ".</li>";
+                  const riga = esc(v.cosa) + ": da " + v.ora + " a " + v.copia;
+                  if (!v.perse || !v.perse.length) return "<li>" + riga + ".</li>";
+                  const mostrate = v.perse.slice(0, 5);
+                  const resto = v.perse.length - mostrate.length;
+                  return "<li>" + riga +
+                    (v.perse.length === 1 ? " — mancherebbe questa voce:" : " — mancherebbero " + v.perse.length + " voci:") +
+                    '<ul class="text-small">' + mostrate.map(function (p) {
+                      return "<li>" + esc(A.fmtDate(p.data)) + " — " + esc(p.testo) + "</li>";
+                    }).join("") +
+                    (resto > 0 ? "<li>e altre " + resto + " voci.</li>" : "") +
+                    "</ul></li>";
                 }).join("") + "</ul>" : "") +
                 '<p class="text-small muted">Tema e numero di copie restano come sono adesso: il ripristino non li tocca.</p>' +
                 '<div class="btn-row">' +
@@ -399,7 +402,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.51 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.52 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
