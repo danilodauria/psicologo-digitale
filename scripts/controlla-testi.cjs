@@ -32,7 +32,9 @@ const path = require("path");
 const { JSDOM } = require("jsdom");
 
 const radice = path.join(__dirname, "..");
-const pagine = ["index.html", "come-installare.html", "scheda-rapida.html"];
+// Le pagine si leggono dalla cartella, non da un elenco scritto a mano: una
+// pagina nuova non deve poter entrare nel sito senza passare di qui.
+const pagine = fs.readdirSync(radice).filter((f) => f.endsWith(".html")).sort();
 
 let blocchi = 0;
 let frasi = 0;
@@ -364,6 +366,23 @@ function testiDellApp() {
       if (!visitate.has(destinazione) && inCoda.length < 400) inCoda.push(destinazione);
     }
   }
+  // Nessuna vista deve poter restare fuori. Il giro segue i collegamenti, ma
+  // un collegamento può mancare — è così che la pagina delle versioni è
+  // rimasta non letta per mesi: si confrontano le viste registrate con quelle
+  // davvero percorse, e ciò che manca va collegato o avviato qui apposta.
+  const percorse = new Set([
+    ...[...visitate].map((r) => r.replace(/^#\/?/, "").split("/")[0] || "home")
+  ]);
+  const fuori = Object.keys(NP.app.views).filter((nome) => !percorse.has(nome));
+  if (fuori.length) {
+    problema(
+      "viste",
+      "mai raggiunte da nessun collegamento, quindi mai controllate: " +
+        fuori.join(", ") +
+        ". Aggiungi un collegamento verso ciascuna, oppure avviale esplicitamente qui sopra."
+    );
+  }
+
   return testi;
 }
 
