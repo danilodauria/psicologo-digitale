@@ -40,14 +40,55 @@
   function resetHTML(id) {
     return '<div class="intake-reset">' +
       '<button type="button" class="btn btn-ghost btn-sm" id="' + id + '">' + A.icon("refresh") + "Azzera e ricomincia</button>" +
-      '<span class="text-small muted">Cancella colloquio, questionari e diario da questo dispositivo e riparte dalla prima domanda.</span>' +
+      '<span class="text-small muted" id="' + id + 'Nota">Cancella colloquio, questionari e diario da questo dispositivo e riparte dalla prima domanda.</span>' +
+      // Chi azzera ha appena raccontato cose che gli sono costate: il backup
+      // si offre prima, non si consiglia dopo.
+      '<div class="reset-scelta" id="' + id + 'Scelta" hidden>' +
+        '<p class="text-small"><strong>Prima di cancellare, un backup?</strong> Il file raccoglie colloquio, questionari, diario e note: si reimporta quando vuoi dalla pagina <a href="#/licenze">Licenze</a>.</p>' +
+        '<div class="btn-row">' +
+          '<button type="button" class="btn btn-soft btn-sm" id="' + id + 'Backup">' + A.icon("download") + "Scarica il backup e azzera</button>" +
+          '<button type="button" class="btn btn-danger btn-sm" id="' + id + 'Senza">Azzera senza backup</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" id="' + id + 'Annulla">Annulla</button>' +
+        "</div>" +
+      "</div>" +
       "</div>";
   }
 
   function bindReset(id) {
-    const b = document.getElementById(id);
-    if (!b) return;
-    b.addEventListener("click", function () {
+    const bottone = document.getElementById(id);
+    if (!bottone) return;
+    const scelta = document.getElementById(id + "Scelta");
+    const nota = document.getElementById(id + "Nota");
+
+    function apri() {
+      bottone.hidden = true;
+      if (nota) nota.hidden = true;
+      if (!scelta) return;
+      scelta.hidden = false;
+      const primo = document.getElementById(id + "Backup");
+      if (primo) primo.focus();
+    }
+
+    function chiudi() {
+      if (scelta) scelta.hidden = true;
+      bottone.hidden = false;
+      if (nota) nota.hidden = false;
+      bottone.focus();
+    }
+
+    bottone.addEventListener("click", apri);
+
+    const annulla = document.getElementById(id + "Annulla");
+    if (annulla) annulla.addEventListener("click", chiudi);
+
+    const conBackup = document.getElementById(id + "Backup");
+    if (conBackup) conBackup.addEventListener("click", function () {
+      A.esportaBackup();
+      if (A.cancellaDati()) A.render();
+    });
+
+    const senza = document.getElementById(id + "Senza");
+    if (senza) senza.addEventListener("click", function () {
       if (A.cancellaDati()) A.render();
     });
   }

@@ -525,12 +525,34 @@ setTimeout(async function () {
   ok(!!azzera, "il colloquio offre un pulsante per azzerare i dati");
   ok(/Azzera e ricomincia/.test(azzera.textContent), "il pulsante dice cosa fa");
   ok(typeof NP.app.cancellaDati === "function", "l'azzeramento è una funzione sola, condivisa con la pagina Licenze");
+  ok(typeof NP.app.esportaBackup === "function", "il backup è una funzione sola, condivisa con la pagina Licenze");
   const diarioPrima = NP.app.state.diary.length;
   const rispostePrima = Object.keys(NP.app.state.intake.answers).length;
   ok(diarioPrima >= 1 && rispostePrima >= 1, "prima di azzerare ci sono dati da cancellare");
+
+  // Azzerare non deve cancellare senza domanda: prima si offre il backup.
   azzera.click();
-  ok(Object.keys(NP.app.state.intake.answers).length === 0, "azzerare svuota le risposte del colloquio");
-  ok(NP.app.state.diary.length === 0, "azzerare cancella anche il diario");
+  const scelta = document.getElementById("restartBtnScelta");
+  ok(!!scelta && scelta.hidden === false, "azzerare chiede prima se salvare un backup");
+  ok(/backup/i.test(scelta.textContent) && /reimporta/.test(scelta.textContent), "la scelta spiega cosa contiene il file e dove si reimporta");
+  ok(Object.keys(NP.app.state.intake.answers).length === rispostePrima, "finché non si sceglie, le risposte restano");
+
+  document.getElementById("restartBtnAnnulla").click();
+  ok(scelta.hidden === true && document.getElementById("restartBtn").hidden === false, "«Annulla» richiude la scelta senza cancellare");
+  ok(Object.keys(NP.app.state.intake.answers).length === rispostePrima, "annullare non tocca i dati");
+
+  const blobPreparati = [];
+  window.URL.createObjectURL = function (blob) { blobPreparati.push(blob); return "blob:finto"; };
+  window.URL.revokeObjectURL = function () {};
+
+  azzera.click();
+  const scarica = document.getElementById("restartBtnBackup");
+  ok(!!scarica && /Scarica il backup e azzera/.test(scarica.textContent), "la scelta offre di scaricare il backup e poi azzerare");
+  ok(!!document.getElementById("restartBtnSenza"), "si può anche azzerare senza backup, e il pulsante lo dice");
+  scarica.click();
+  ok(blobPreparati.length === 1, "il backup viene davvero preparato come file");
+  ok(Object.keys(NP.app.state.intake.answers).length === 0, "dopo il backup le risposte vengono azzerate");
+  ok(NP.app.state.diary.length === 0, "il diario sparisce con le risposte");
   const rimaste = Object.keys(window.localStorage).filter(function (k) { return k.indexOf(NP.app.PREFIX) === 0; });
   ok(rimaste.length === 0, "azzerare toglie le chiavi salvate nel browser (" + rimaste.length + ")");
   ok(!!document.getElementById("consentBox"), "dopo l'azzeramento si riparte dalla prima domanda");

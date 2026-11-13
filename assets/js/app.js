@@ -416,6 +416,36 @@ NP.app = (function () {
     );
   };
 
+  /* ------------------------------------------------------------ Backup */
+
+  // Un posto solo anche per il backup: lo usano la pagina Licenze e il
+  // colloquio prima di cancellare, così il file è sempre lo stesso e si
+  // reimporta senza sorprese.
+  function esportaBackup() {
+    const data = {
+      app: "Psicologo Digitale",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      intake: state.intake,
+      scales: state.scales,
+      diary: state.diary,
+      thoughts: readJSON("thoughts", []),
+      course: state.course,
+      quizStats: state.quizStats,
+      reportNotes: state.reportNotes
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "psicologo-digitale-backup.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 800);
+    toast("Backup esportato.");
+  }
+
   /* ----------------------------------------------------- Cancellare i dati */
 
   // Un solo posto per l'azzeramento: lo usano la pagina Licenze e il colloquio,
@@ -460,6 +490,7 @@ NP.app = (function () {
     saveQuizStats: saveQuizStats,
     saveReportNotes: saveReportNotes,
     saveChat: saveChat,
+    esportaBackup: esportaBackup,
     cancellaDati: cancellaDati,
     fmtDate: fmtDate,
     fmtDateTime: fmtDateTime,

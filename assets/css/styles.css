@@ -932,6 +932,17 @@ html[data-theme="dark"] .intake-stage { color: #e2bd82; }
   text-align: center;
 }
 .intake-reset .text-small { max-width: 34rem; }
+.intake-reset .reset-scelta {
+  width: 100%;
+  max-width: 40rem;
+  padding: .9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-2);
+  text-align: left;
+}
+.intake-reset .reset-scelta p { margin-bottom: .7rem; }
+.intake-reset .reset-scelta .btn-row { justify-content: flex-start; }
 
 .intake-actions .hint { font-size: .8rem; color: var(--text-faint); }
 

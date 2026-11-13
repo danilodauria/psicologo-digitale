@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.40";
+  const VERSIONE = "1.3.41";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.41",
+      data: "13 novembre 2026",
+      titolo: "Prima di azzerare, un backup",
+      punti: [
+        "«Azzera e ricomincia» ora si ferma un istante: prima di cancellare chiede se vuoi salvare un backup di colloquio, questionari, diario e note in un file che si reimporta dalla pagina Licenze.",
+        "Le scelte sono esplicite — «Scarica il backup e azzera», «Azzera senza backup», «Annulla» — e dicono ciascuna cosa sta per succedere, invece di affidarsi a un sì o no.",
+        "Il backup è la stessa funzione della pagina Licenze: un test verifica che il file venga preparato davvero prima che le risposte spariscano.",
+        "Il controllo dei testi ora legge anche le viste che si aprono solo dal menu: la pagina che stai leggendo era l'unica rimasta fuori, e appena inclusa ha fatto trovare una frase da sistemare."
+      ]
+    },
     {
       v: "1.3.40",
       data: "13 novembre 2026",
@@ -265,7 +276,7 @@
       titolo: "Il foglio di installazione in PDF",
       punti: [
         "La pagina Come si installa ha un pulsante Scarica il PDF: quattro pagine da allegare a un'email, senza dover stampare dal browser.",
-        "Il PDF non è una seconda copia del testo: è generato leggendo la pagina, quindi quando la pagina cambia cambia anche il foglio.",
+        "Il PDF non è una seconda copia del testo: è generato leggendo la pagina: quando la pagina cambia, cambia anche il foglio.",
         "Anche il PDF è allegato alla pagina della versione, con le altre cose da scaricare."
       ]
     },

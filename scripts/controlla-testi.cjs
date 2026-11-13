@@ -178,6 +178,10 @@ function controllaErrori(b, dove) {
   for (const [modello, giusto] of ERRORI) {
     const trovato = b.testo.match(modello);
     if (!trovato) continue;
+    // Fra caporali la forma è citata, non scritta: la pagina delle versioni
+    // elenca apposta gli errori che questo controllo cerca. Fuori dalle
+    // virgolette resta un refuso come gli altri.
+    if (b.testo.indexOf("«" + trovato[0] + "»") >= 0) continue;
     problema(dove, "«" + trovato[0] + "» si scrive «" + giusto + "»");
   }
 }
@@ -321,7 +325,15 @@ function testiDellApp() {
   }
 
   const testi = [];
+  // Si parte da ogni collegamento della pagina, non solo da quelli dentro
+  // #app: il menu dell'intestazione porta a viste che altrimenti restano
+  // fuori dal controllo. È così che la pagina delle versioni, raggiungibile
+  // solo dal menu e dal piè di pagina delle licenze, non veniva letta affatto.
   const inCoda = ["#/"];
+  for (const a of documento.querySelectorAll('a[href^="#/"]')) {
+    const destinazione = a.getAttribute("href").split("?")[0];
+    if (inCoda.indexOf(destinazione) < 0) inCoda.push(destinazione);
+  }
   const visitate = new Set();
   while (inCoda.length) {
     const rotta = inCoda.shift();

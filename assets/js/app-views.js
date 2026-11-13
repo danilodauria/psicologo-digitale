@@ -318,33 +318,12 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.40 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.41 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
     if (backup) backup.addEventListener("click", function () {
-      const data = {
-        app: "Psicologo Digitale",
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        intake: state.intake,
-        scales: state.scales,
-        diary: state.diary,
-        thoughts: A.readJSON("thoughts", []),
-        course: state.course,
-        quizStats: state.quizStats,
-        reportNotes: state.reportNotes
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "psicologo-digitale-backup.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(function () { URL.revokeObjectURL(url); }, 800);
-      A.toast("Backup esportato.");
+      A.esportaBackup();
     });
 
     const imp = document.getElementById("importFile");
