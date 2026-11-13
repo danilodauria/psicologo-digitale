@@ -582,15 +582,43 @@ NP.app = (function () {
     return false;
   }
 
+  // Un solo elenco per due cose: che cosa il ripristino riscrive e che cosa
+  // l'anteprima racconta. Se stessero in due posti diversi, prima o poi
+  // l'anteprima tacerebbe su un dato che cambia davvero: è già successo con
+  // percorso e quiz, riscritti dal ripristino e mai nominati nell'anteprima.
+  const CAMPI_COPIA = [
+    ["risposte", "Risposte del colloquio", "intake", function (d) { return d.intake && d.intake.answers ? Object.keys(d.intake.answers).length : 0; }],
+    ["questionari", "Questionari compilati", "scales", function (d) { return d.scales ? Object.keys(d.scales).length : 0; }],
+    ["diario", "Voci di diario", "diary", function (d) { return d.diary ? d.diary.length : 0; }],
+    ["pensieri", "Schede del pensiero", "thoughts", function (d) { return d.thoughts ? d.thoughts.length : 0; }],
+    ["esercizi", "Esercizi completati", "course", function (d) { return d.course && d.course.done ? d.course.done.length : 0; }],
+    ["quiz", "Risposte ai quiz", "quizStats", function (d) { return d.quizStats ? d.quizStats.total || 0 : 0; }],
+    ["note", "Note della relazione", "reportNotes", function (d) { return d.reportNotes && (d.reportNotes.note || d.reportNotes.clinician) ? 1 : 0; }]
+  ];
+
+  // I campi che il ripristino tocca: il controllo automatico confronta questo
+  // elenco con quello sopra, così nessuno dei due può restare indietro.
+  const RIPRISTINATI = ["intake", "scales", "diary", "thoughts", "course", "quizStats", "reportNotes"];
+
   function statoDati(d) {
     const x = d || {};
-    return {
-      risposte: x.intake && x.intake.answers ? Object.keys(x.intake.answers).length : 0,
-      questionari: x.scales ? Object.keys(x.scales).length : 0,
-      diario: x.diary ? x.diary.length : 0,
-      pensieri: x.thoughts ? x.thoughts.length : 0,
-      note: x.reportNotes && (x.reportNotes.note || x.reportNotes.clinician) ? 1 : 0
-    };
+    const out = {};
+    CAMPI_COPIA.forEach(function (c) { out[c[0]] = c[3](x); });
+    return out;
+  }
+
+  // Le voci che ci sono oggi e non nella copia: sono quelle che si perderebbero,
+  // e vederle per data è più utile di un conto che non dice quali.
+  function vociPerse(oggi, copia) {
+    const firma = function (v) { return JSON.stringify(v); };
+    const salvate = {};
+    (copia || []).forEach(function (v) { salvate[firma(v)] = true; });
+    return (oggi || [])
+      .filter(function (v) { return !salvate[firma(v)]; })
+      .map(function (v) { return v && v.date ? v.date : ""; })
+      .filter(Boolean)
+      .sort()
+      .reverse();
   }
 
   // Cosa cambierebbe ripristinando: si mostrano solo le differenze, perché è
@@ -598,18 +626,18 @@ NP.app = (function () {
   function confrontoCopia(indice) {
     const copia = copieAutomatiche()[indice || 0];
     if (!copia || !copia.dati) return null;
-    const oggi = statoDati(raccogliDati());
+    const datiOggi = raccogliDati();
+    const oggi = statoDati(datiOggi);
     const salvato = statoDati(copia.dati);
-    const etichette = [
-      ["risposte", "Risposte del colloquio"],
-      ["questionari", "Questionari compilati"],
-      ["diario", "Voci di diario"],
-      ["pensieri", "Schede del pensiero"],
-      ["note", "Note della relazione"]
-    ];
-    const voci = etichette
-      .filter(function (e) { return oggi[e[0]] !== salvato[e[0]]; })
-      .map(function (e) { return { cosa: e[1], ora: oggi[e[0]], copia: salvato[e[0]] }; });
+    const elenchi = { diario: "diary", pensieri: "thoughts" };
+    const voci = CAMPI_COPIA
+      .filter(function (c) { return oggi[c[0]] !== salvato[c[0]]; })
+      .map(function (c) {
+        const voce = { cosa: c[1], ora: oggi[c[0]], copia: salvato[c[0]] };
+        const campo = elenchi[c[0]];
+        if (campo && oggi[c[0]] > salvato[c[0]]) voce.perse = vociPerse(datiOggi[campo], copia.dati[campo]);
+        return voce;
+      });
     return { quando: copia.quando, voci: voci };
   }
 
@@ -699,6 +727,9 @@ NP.app = (function () {
     spazioCopie: spazioCopie,
     spazioDati: spazioDati,
     fmtBytes: fmtBytes,
+    statoDati: statoDati,
+    campiCopia: CAMPI_COPIA,
+    campiRipristinati: RIPRISTINATI,
     confrontoCopia: confrontoCopia,
     ripristinaCopia: ripristinaCopia,
     cancellaColloquio: cancellaColloquio,

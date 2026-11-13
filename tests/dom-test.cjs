@@ -608,17 +608,43 @@ setTimeout(async function () {
   ok(!!confronto && Array.isArray(confronto.voci), "la copia si confronta con i dati attuali");
   ok(confronto.voci.some(function (v) { return v.cosa === "Voci di diario" && v.ora === 0 && v.copia === diarioPrima; }), "il confronto dice che il diario passerebbe da 0 a " + diarioPrima);
 
+  // L'anteprima non deve tacere su niente di ciò che il ripristino riscrive.
+  const campiCoperti = NP.app.campiCopia.map(function (c) { return c[2]; });
+  NP.app.campiRipristinati.forEach(function (campo) {
+    ok(campiCoperti.indexOf(campo) >= 0, "l'anteprima nomina anche «" + campo + "»");
+  });
+
   navigate("#/licenze");
   ok(!!document.querySelector("[data-copia]"), "il ripristino si raggiunge dalla pagina Licenze");
   document.querySelector("[data-copia]").click();
   const anteprima = document.getElementById("copiaAnteprima");
   ok(!!anteprima, "prima di ripristinare compare l'anteprima");
   ok(/da 0 a 1/.test(anteprima.textContent), "l'anteprima dice cosa cambierebbe");
+  ok(/Tema e numero di copie restano/.test(anteprima.textContent), "l'anteprima dice anche cosa il ripristino non tocca");
   document.getElementById("copiaAnnulla").click();
   ok(!document.getElementById("copiaAnteprima") && NP.app.state.diary.length === 0, "«Annulla» chiude l'anteprima senza toccare i dati");
   document.querySelector("[data-copia]").click();
   document.getElementById("copiaConferma").click();
   ok(NP.app.state.diary.length === diarioPrima, "confermando, i dati tornano al loro posto");
+
+  // Percorso e quiz li riscrive il ripristino: se l'anteprima non li nominasse,
+  // si perderebbero esercizi fatti e risposte ai quiz senza vederlo prima.
+  NP.app.state.course = { done: [], notes: {} };
+  NP.app.state.quizStats = { played: 0, best: 0, correct: 0, total: 0, byCat: {} };
+  NP.app.salvaCopia(true);
+  NP.app.state.course = { done: ["es-1", "es-2"], notes: {} };
+  NP.app.state.quizStats = { played: 1, best: 66, correct: 4, total: 6, byCat: {} };
+  const perPercorso = NP.app.confrontoCopia(0);
+  ok(perPercorso.voci.some(function (v) { return v.cosa === "Esercizi completati" && v.ora === 2 && v.copia === 0; }), "l'anteprima dice che si perderebbero gli esercizi completati");
+  ok(perPercorso.voci.some(function (v) { return v.cosa === "Risposte ai quiz" && v.ora === 6 && v.copia === 0; }), "l'anteprima dice che si perderebbero le risposte ai quiz");
+
+  // «Cosa cambierebbe» è più utile se dice quali voci, non solo quante.
+  NP.app.state.diary = [{ id: "d1", date: "2026-11-10T09:00:00.000Z", mood: 3, anxiety: 4, sleep: 6, energy: 5, note: "prima" }];
+  NP.app.salvaCopia(true);
+  NP.app.state.diary.push({ id: "d2", date: "2026-11-12T09:00:00.000Z", mood: 4, anxiety: 3, sleep: 7, energy: 6, note: "dopo" });
+  const voceDiario = NP.app.confrontoCopia(0).voci.filter(function (v) { return v.cosa === "Voci di diario"; })[0];
+  ok(!!voceDiario && voceDiario.ora === 2 && voceDiario.copia === 1, "il diario si confronta voce per voce");
+  ok(!!voceDiario.perse && voceDiario.perse.length === 1 && voceDiario.perse[0].indexOf("2026-11-12") === 0, "si dice quale voce sparirebbe, non solo quante");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {

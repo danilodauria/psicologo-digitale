@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.50";
+  const VERSIONE = "1.3.51";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.51",
+      data: "13 novembre 2026",
+      titolo: "L'anteprima del ripristino dice tutto",
+      punti: [
+        "L'anteprima ora elenca anche percorso, esercizi completati e risposte ai quiz: prima il ripristino li riscriveva senza dirlo, e chi tornava a una copia vecchia perdeva il percorso fatto senza vederlo.",
+        "Quando una voce sparirebbe l'anteprima dice quale: «sparirebbe la voce del 12 novembre», non solo quante sono, così si riconosce a colpo d'occhio il diario che si sta lasciando indietro.",
+        "Una riga dice quello che il ripristino non tocca — tema e numero di copie — e un controllo automatico confronta le voci dell'anteprima con i dati che il ripristino riscrive: se qualcuno ne aggiunge uno senza nominarlo, il controllo si ferma."
+      ]
+    },
     {
       v: "1.3.50",
       data: "13 novembre 2026",
