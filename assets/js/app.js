@@ -861,7 +861,12 @@ NP.app = (function () {
   function ripristinaCopia(indice) {
     const copia = copieAutomatiche()[indice || 0];
     if (!copia || !copia.dati) return false;
+    // La copia da ripristinare si prende prima: salvando i dati di oggi, gli
+    // indici cambiano e quella scelta non è più al suo posto.
     const d = copia.dati;
+    // Un ripristino sbagliato deve potersi annullare: i dati di adesso
+    // diventano una copia, così si torna indietro con un altro ripristino.
+    const salvata = salvaCopia(true);
     state.intake = d.intake || state.intake;
     state.scales = d.scales || {};
     state.diary = d.diary || [];
@@ -870,7 +875,8 @@ NP.app = (function () {
     state.reportNotes = d.reportNotes || { note: "", clinician: "" };
     writeJSON("thoughts", Array.isArray(d.thoughts) ? d.thoughts : []);
     saveIntake(); saveScales(); saveDiary(); saveCourse(); saveQuizStats(); saveReportNotes();
-    toast("Copia del " + fmtDate(copia.quando) + " ripristinata.");
+    toast("Copia del " + fmtDate(copia.quando) + " ripristinata." +
+      (salvata ? " I dati di prima sono nella copia di oggi." : ""), 5000);
     return true;
   }
 

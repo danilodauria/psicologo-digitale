@@ -643,12 +643,26 @@ setTimeout(async function () {
   const anteprima = document.getElementById("copiaAnteprima");
   ok(!!anteprima, "prima di ripristinare compare l'anteprima");
   ok(/da 0 a 1/.test(anteprima.textContent), "l'anteprima dice cosa cambierebbe");
-  ok(/Tema e numero di copie restano/.test(anteprima.textContent), "l'anteprima dice anche cosa il ripristino non tocca");
+  ok(/i dati di adesso diventano una copia/.test(anteprima.textContent), "l'anteprima promette la copia di sicurezza prima del ripristino");
+  ok(/Tema e numero di copie non vengono toccati/.test(anteprima.textContent), "l'anteprima dice anche cosa il ripristino non tocca");
   document.getElementById("copiaAnnulla").click();
   ok(!document.getElementById("copiaAnteprima") && NP.app.state.diary.length === 0, "«Annulla» chiude l'anteprima senza toccare i dati");
   document.querySelector("[data-copia]").click();
   document.getElementById("copiaConferma").click();
   ok(NP.app.state.diary.length === diarioPrima, "confermando, i dati tornano al loro posto");
+
+  // Un ripristino sbagliato deve potersi annullare: prima di sostituire, i dati
+  // di adesso diventano una copia.
+  const paginaDiario = function (id, giorno, testo) {
+    return { id: id, date: giorno, mood: 3, anxiety: 4, sleep: 6, energy: 5, note: testo };
+  };
+  NP.app.state.diary = [paginaDiario("a1", "2026-11-01T09:00:00.000Z", "prima del ripristino")];
+  NP.app.salvaCopia(true);
+  NP.app.state.diary = [paginaDiario("b1", "2026-11-02T09:00:00.000Z", "dati di adesso")];
+  ok(NP.app.ripristinaCopia(0) === true, "il ripristino si esegue");
+  ok(NP.app.state.diary[0].note === "prima del ripristino", "i dati tornano a quelli della copia scelta");
+  ok(NP.app.copieAutomatiche()[0].dati.diary[0].note === "dati di adesso", "e i dati di prima restano in una copia, non svaniscono");
+  ok(NP.app.ripristinaCopia(0) === true && NP.app.state.diary[0].note === "dati di adesso", "quindi un ripristino sbagliato si annulla con un altro ripristino");
 
   // Percorso e quiz li riscrive il ripristino: se l'anteprima non li nominasse,
   // si perderebbero esercizi fatti e risposte ai quiz senza vederlo prima.

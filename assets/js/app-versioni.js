@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.58";
+  const VERSIONE = "1.3.59";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.59",
+      data: "13 novembre 2026",
+      titolo: "Un ripristino sbagliato si può annullare",
+      punti: [
+        "Prima di sostituire i dati, l'app salva quelli attuali in una copia: se il ripristino non convince, si torna indietro ripristinando quella, senza aver perso niente di ciò che c'era.",
+        "L'anteprima lo dice prima di confermare, e il messaggio dopo il ripristino ricorda dove sono finiti i dati di prima. La copia si prende anche quando si ripristina quella di oggi, che altrimenti sarebbe stata sovrascritta.",
+        "La copia scelta viene letta prima di salvare: salvando, l'elenco si sposta e gli indici cambiano, quindi senza questa attenzione si sarebbe potuta ripristinare la copia sbagliata."
+      ]
+    },
     {
       v: "1.3.58",
       data: "13 novembre 2026",

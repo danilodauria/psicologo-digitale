@@ -381,7 +381,7 @@
                     (resto > 0 ? "<li>e altre " + resto + " voci.</li>" : "") +
                     "</ul></li>";
                 }).join("") + "</ul>" : "") +
-                '<p class="text-small muted">Tema e numero di copie restano come sono adesso: il ripristino non li tocca.</p>' +
+                '<p class="text-small muted">Prima di sostituire, i dati di adesso diventano una copia: se il ripristino non convince, si torna indietro ripristinando quella. Tema e numero di copie non vengono toccati.</p>' +
                 '<div class="btn-row">' +
                   '<button type="button" class="btn btn-primary btn-sm" id="copiaConferma">Ripristina questa copia</button>' +
                   '<button type="button" class="btn btn-ghost btn-sm" id="copiaAnnulla">Annulla</button>' +
@@ -426,7 +426,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.58 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.59 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

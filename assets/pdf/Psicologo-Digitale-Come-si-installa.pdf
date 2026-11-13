@@ -82,7 +82,7 @@ endobj
 endobj
 13 0 obj
 <<
-/Author (Danilo D'Auria) /CreationDate (D:20261113175103+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261113175103+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Danilo D'Auria) /CreationDate (D:20261113181719+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261113181719+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (Istruzioni di installazione per Windows, macOS e Linux) /Title (Psicologo Digitale \267 Come si installa) /Trapped /False
 >>
 endobj
@@ -101,7 +101,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.58) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.59) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -132,7 +132,7 @@ q
 1 0 0 1 57.02362 634.7276 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (Il PDF \350 ricavato da questa stessa pagina a ogni versione: se il foglio dice 1.3.58, il sito dice lo stesso. Non \350 una) Tj T* (copia lasciata l\354 a invecchiare.) Tj T* ET
+BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (Il PDF \350 ricavato da questa stessa pagina a ogni versione: se il foglio dice 1.3.59, il sito dice lo stesso. Non \350 una) Tj T* (copia lasciata l\354 a invecchiare.) Tj T* ET
 Q
 Q
 q
@@ -395,7 +395,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.58) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.59) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -701,7 +701,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.58) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.59) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -1064,7 +1064,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.58) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.3.59) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -1141,7 +1141,7 @@ q
 1 0 0 1 57.02362 634.3276 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 3.4 Tm /F1 9.2 Tf 12.6 TL (Aggiornata alla versione 1.3.58 \267 novembre 2026 \267 Codice MIT \267 Contenuti CC BY-NC-SA 4.0 \267 \251 Danilo D'Auria.) Tj T* ET
+BT 1 0 0 1 0 3.4 Tm /F1 9.2 Tf 12.6 TL (Aggiornata alla versione 1.3.59 \267 novembre 2026 \267 Codice MIT \267 Contenuti CC BY-NC-SA 4.0 \267 \251 Danilo D'Auria.) Tj T* ET
 Q
 Q
 q
@@ -1186,7 +1186,7 @@ xref
 trailer
 <<
 /ID 
-[<e3bda597fb15ebf1694d7a8fef295b69><e3bda597fb15ebf1694d7a8fef295b69>]
+[<437eec32fbaa280f1be330231e054d9e><437eec32fbaa280f1be330231e054d9e>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 13 0 R
