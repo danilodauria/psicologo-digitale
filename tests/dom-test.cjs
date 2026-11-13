@@ -594,10 +594,22 @@ setTimeout(async function () {
   // La rete sotto l'azzeramento: la copia sopravvive e riporta indietro i dati.
   ok(NP.app.copieAutomatiche().length >= 1, "l'azzeramento non porta via la copia automatica");
   ok(NP.app.copieAutomatiche()[0].dati.diary.length === diarioPrima, "la copia contiene i dati com'erano prima dell'azzeramento");
-  ok(NP.app.ripristinaCopia(0) === true, "la copia si può ripristinare");
-  ok(NP.app.state.diary.length === diarioPrima, "ripristinare riporta il diario");
+  // Prima di sostituire i dati si vede cosa cambierebbe.
+  const confronto = NP.app.confrontoCopia(0);
+  ok(!!confronto && Array.isArray(confronto.voci), "la copia si confronta con i dati attuali");
+  ok(confronto.voci.some(function (v) { return v.cosa === "Voci di diario" && v.ora === 0 && v.copia === diarioPrima; }), "il confronto dice che il diario passerebbe da 0 a " + diarioPrima);
+
   navigate("#/licenze");
   ok(!!document.querySelector("[data-copia]"), "il ripristino si raggiunge dalla pagina Licenze");
+  document.querySelector("[data-copia]").click();
+  const anteprima = document.getElementById("copiaAnteprima");
+  ok(!!anteprima, "prima di ripristinare compare l'anteprima");
+  ok(/da 0 a 1/.test(anteprima.textContent), "l'anteprima dice cosa cambierebbe");
+  document.getElementById("copiaAnnulla").click();
+  ok(!document.getElementById("copiaAnteprima") && NP.app.state.diary.length === 0, "«Annulla» chiude l'anteprima senza toccare i dati");
+  document.querySelector("[data-copia]").click();
+  document.getElementById("copiaConferma").click();
+  ok(NP.app.state.diary.length === diarioPrima, "confermando, i dati tornano al loro posto");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {

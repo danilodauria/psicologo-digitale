@@ -541,6 +541,37 @@ NP.app = (function () {
     return false;
   }
 
+  function statoDati(d) {
+    const x = d || {};
+    return {
+      risposte: x.intake && x.intake.answers ? Object.keys(x.intake.answers).length : 0,
+      questionari: x.scales ? Object.keys(x.scales).length : 0,
+      diario: x.diary ? x.diary.length : 0,
+      pensieri: x.thoughts ? x.thoughts.length : 0,
+      note: x.reportNotes && (x.reportNotes.note || x.reportNotes.clinician) ? 1 : 0
+    };
+  }
+
+  // Cosa cambierebbe ripristinando: si mostrano solo le differenze, perché è
+  // quello che serve sapere prima di sostituire i dati di oggi.
+  function confrontoCopia(indice) {
+    const copia = copieAutomatiche()[indice || 0];
+    if (!copia || !copia.dati) return null;
+    const oggi = statoDati(raccogliDati());
+    const salvato = statoDati(copia.dati);
+    const etichette = [
+      ["risposte", "Risposte del colloquio"],
+      ["questionari", "Questionari compilati"],
+      ["diario", "Voci di diario"],
+      ["pensieri", "Schede del pensiero"],
+      ["note", "Note della relazione"]
+    ];
+    const voci = etichette
+      .filter(function (e) { return oggi[e[0]] !== salvato[e[0]]; })
+      .map(function (e) { return { cosa: e[1], ora: oggi[e[0]], copia: salvato[e[0]] }; });
+    return { quando: copia.quando, voci: voci };
+  }
+
   function ripristinaCopia(indice) {
     const copia = copieAutomatiche()[indice || 0];
     if (!copia || !copia.dati) return false;
@@ -626,6 +657,7 @@ NP.app = (function () {
     impostaCopieMassimo: impostaCopieMassimo,
     spazioCopie: spazioCopie,
     fmtBytes: fmtBytes,
+    confrontoCopia: confrontoCopia,
     ripristinaCopia: ripristinaCopia,
     cancellaColloquio: cancellaColloquio,
     cancellaDati: cancellaDati,

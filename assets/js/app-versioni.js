@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.46";
+  const VERSIONE = "1.3.47";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.47",
+      data: "13 novembre 2026",
+      titolo: "Prima di ripristinare, cosa cambia",
+      punti: [
+        "«Ripristina» non sostituisce più i dati alla cieca: apre un riepilogo che dice cosa cambierebbe rispetto a oggi — risposte del colloquio, questionari compilati, voci di diario, schede del pensiero, note della relazione.",
+        "Si vedono solo le differenze, con il numero di oggi e quello della copia; se la copia è identica ai dati attuali lo dice, invece di far finta che ci sia qualcosa a rischio.",
+        "Confermare richiede un secondo clic esplicito e «Annulla» chiude il riepilogo senza toccare niente: un test segue tutti e tre i passaggi."
+      ]
+    },
     {
       v: "1.3.46",
       data: "13 novembre 2026",

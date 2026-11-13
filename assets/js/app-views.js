@@ -256,6 +256,10 @@
 
   /* ------------------------------------------------------------------ Licenze */
 
+  // Quale copia si sta guardando prima di ripristinarla: sta qui perché la
+  // vista si ridisegna a ogni scelta, e la scelta deve restare.
+  let copiaInEsame = null;
+
   views.licenze = function () {
     A.setTitle("Licenze e progetto");
     A.page(
@@ -303,7 +307,7 @@
             (copie.length ? " in " + copie.length + (copie.length === 1 ? " copia" : " copie") : "") +
             ". Il browser concede in genere 5 MB a questo sito: quando lo spazio finisce, si tengono meno copie invece di perdere quella nuova.</p>";
           if (!copie.length) return html + '<p class="text-small muted mb-0">Nessuna copia ancora: arriva al prossimo avvio, se ci sono dati da salvare.</p>';
-          return html + '<ul class="text-small">' + copie.map(function (c, i) {
+          html += '<ul class="text-small">' + copie.map(function (c, i) {
             const d = c.dati || {};
             const risposte = d.intake && d.intake.answers ? Object.keys(d.intake.answers).length : 0;
             const voci = d.diary ? d.diary.length : 0;
@@ -311,6 +315,23 @@
               ", " + voci + (voci === 1 ? " voce di diario" : " voci di diario") + " · " + A.fmtBytes(spazio.pesi[i] || 0) +
               ' <button type="button" class="btn btn-ghost btn-sm" data-copia="' + i + '">Ripristina</button></li>';
           }).join("") + "</ul>";
+          // Anteprima: prima di sostituire i dati si vede cosa cambierebbe,
+          // e se non cambierebbe niente lo dice invece di fingere un rischio.
+          if (copiaInEsame !== null) {
+            const c = A.confrontoCopia(copiaInEsame);
+            if (c) {
+              html += '<div class="callout info" id="copiaAnteprima"><p><strong>Copia del ' + esc(A.fmtDateTime(c.quando)) + ".</strong> " +
+                (c.voci.length ? "Rispetto a oggi cambierebbe:" : "Rispetto a oggi non cambierebbe nulla.") + "</p>" +
+                (c.voci.length ? '<ul class="text-small">' + c.voci.map(function (v) {
+                  return "<li>" + esc(v.cosa) + ": da " + v.ora + " a " + v.copia + ".</li>";
+                }).join("") + "</ul>" : "") +
+                '<div class="btn-row">' +
+                  '<button type="button" class="btn btn-primary btn-sm" id="copiaConferma">Ripristina questa copia</button>' +
+                  '<button type="button" class="btn btn-ghost btn-sm" id="copiaAnnulla">Annulla</button>' +
+                "</div></div>";
+            }
+          }
+          return html;
         })() +
       "</div>" +
 
@@ -348,7 +369,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.46 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.47 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -399,12 +420,22 @@
 
     document.querySelectorAll("[data-copia]").forEach(function (b) {
       b.addEventListener("click", function () {
-        const i = Number(b.getAttribute("data-copia"));
-        const copia = A.copieAutomatiche()[i];
-        if (!copia) return;
-        if (!confirm("Ripristinare la copia del " + A.fmtDateTime(copia.quando) + "? I dati attuali verranno sostituiti.")) return;
-        if (A.ripristinaCopia(i)) A.render();
+        copiaInEsame = Number(b.getAttribute("data-copia"));
+        A.render();
       });
+    });
+
+    const confermaCopia = document.getElementById("copiaConferma");
+    if (confermaCopia) confermaCopia.addEventListener("click", function () {
+      const i = copiaInEsame;
+      copiaInEsame = null;
+      if (A.ripristinaCopia(i)) A.render();
+    });
+
+    const annullaCopia = document.getElementById("copiaAnnulla");
+    if (annullaCopia) annullaCopia.addEventListener("click", function () {
+      copiaInEsame = null;
+      A.render();
     });
   };
 })();
