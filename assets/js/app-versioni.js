@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.59";
+  const VERSIONE = "1.3.60";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.60",
+      data: "13 novembre 2026",
+      titolo: "Si può cancellare una copia sola",
+      punti: [
+        "Accanto a «Ripristina» ed «Esporta» ogni copia ha «Cancella»: toglie quella copia e lascia stare le altre e i dati di oggi. Prima si poteva solo ridurre il numero di copie tenute, e si perdeva sempre la più vecchia.",
+        "Serve per liberare spazio tenendo la copia più recente, o per togliere una copia palesemente sbagliata senza rinunciare alle altre.",
+        "La conferma dice la data della copia e che i dati attuali non vengono toccati; se la scrittura non riesce, l'app lo dice invece di far finta di aver cancellato."
+      ]
+    },
     {
       v: "1.3.59",
       data: "13 novembre 2026",

@@ -353,7 +353,8 @@
             return '<li>' + esc(A.fmtDateTime(c.quando)) + " — " + risposte + (risposte === 1 ? " risposta" : " risposte") +
               ", " + voci + (voci === 1 ? " voce di diario" : " voci di diario") + " · " + A.fmtBytes(spazio.pesi[i] || 0) +
               ' <button type="button" class="btn btn-ghost btn-sm" data-copia="' + i + '">Ripristina</button>' +
-              ' <button type="button" class="btn btn-ghost btn-sm" data-copia-esporta="' + i + '">Esporta</button></li>';
+              ' <button type="button" class="btn btn-ghost btn-sm" data-copia-esporta="' + i + '">Esporta</button>' +
+              ' <button type="button" class="btn btn-ghost btn-sm" data-copia-cancella="' + i + '">Cancella</button></li>';
           }).join("") + "</ul>";
           // Anteprima: prima di sostituire i dati si vede cosa cambierebbe,
           // e se non cambierebbe niente lo dice invece di fingere un rischio.
@@ -426,7 +427,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.59 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.60 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -490,6 +491,14 @@
     document.querySelectorAll("[data-copia-esporta]").forEach(function (b) {
       b.addEventListener("click", function () {
         A.esportaCopia(Number(b.getAttribute("data-copia-esporta")));
+      });
+    });
+
+    document.querySelectorAll("[data-copia-cancella]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (!A.cancellaCopia(Number(b.getAttribute("data-copia-cancella")))) return;
+        copiaInEsame = null;
+        A.render();
       });
     });
 

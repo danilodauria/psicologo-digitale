@@ -858,6 +858,24 @@ NP.app = (function () {
     return { quando: copia.quando, voci: voci };
   }
 
+  // Una copia si può togliere da sola, senza toccare le altre né i dati di
+  // oggi: serve quando lo spazio scarseggia e si vuole tenere solo la più
+  // recente, o quando una copia è palesemente sbagliata.
+  function cancellaCopia(indice) {
+    const copie = copieAutomatiche();
+    const i = Number(indice);
+    if (!(i >= 0) || i >= copie.length) return false;
+    const copia = copie[i];
+    if (!confirm("Cancellare la copia del " + fmtDateTime(copia.quando) + "? I dati attuali non vengono toccati, ma questa copia non si recupera.")) return false;
+    const restanti = copie.filter(function (_, n) { return n !== i; });
+    if (!scriviCopie(restanti)) {
+      toast("Non è stato possibile cancellare la copia.", 5000);
+      return false;
+    }
+    toast("Copia del " + fmtDate(copia.quando) + " cancellata.");
+    return true;
+  }
+
   function ripristinaCopia(indice) {
     const copia = copieAutomatiche()[indice || 0];
     if (!copia || !copia.dati) return false;
@@ -960,6 +978,7 @@ NP.app = (function () {
     campiCopia: CAMPI_COPIA,
     campiRipristinati: RIPRISTINATI,
     confrontoCopia: confrontoCopia,
+    cancellaCopia: cancellaCopia,
     ripristinaCopia: ripristinaCopia,
     cancellaColloquio: cancellaColloquio,
     cancellaDati: cancellaDati,

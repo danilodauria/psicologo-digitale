@@ -736,6 +736,30 @@ setTimeout(async function () {
   NP.app.esportaCopia = esportaVero;
   ok(esportataQuale === 0, "«Esporta» esporta proprio la copia a cui sta accanto");
 
+  // Una copia si può togliere da sola: le altre restano, i dati di oggi pure.
+  const copiaFinta = function (giorno, nota) {
+    return { quando: giorno + "T09:00:00.000Z", dati: { diary: [paginaDiario("c" + giorno, giorno + "T09:00:00.000Z", nota)] } };
+  };
+  NP.app.writeJSON("copie", [copiaFinta("2026-11-07", "recente"), copiaFinta("2026-11-06", "da cancellare"), copiaFinta("2026-11-05", "vecchia")]);
+  const datiPrimaDellaCancellazione = JSON.stringify(NP.app.state.diary);
+  ok(NP.app.cancellaCopia(99) === false, "un indice che non esiste non cancella niente");
+  ok(NP.app.cancellaCopia(1) === true, "si cancella una copia sola");
+  const copieDopo = NP.app.copieAutomatiche();
+  ok(copieDopo.length === 2, "le copie passano da tre a due");
+  const noteCopie = copieDopo.map(function (c) { return c.dati.diary[0].note; });
+  ok(noteCopie.indexOf("da cancellare") < 0 && noteCopie.indexOf("recente") >= 0 && noteCopie.indexOf("vecchia") >= 0, "sparisce proprio quella scelta, le altre restano");
+  ok(JSON.stringify(NP.app.state.diary) === datiPrimaDellaCancellazione, "i dati attuali non vengono toccati");
+
+  navigate("#/licenze");
+  const bottoneCancella = document.querySelector("[data-copia-cancella]");
+  ok(!!bottoneCancella, "ogni copia ha il pulsante Cancella accanto agli altri");
+  let cancellataQuale = null;
+  const cancellaVero = NP.app.cancellaCopia;
+  NP.app.cancellaCopia = function (i) { cancellataQuale = i; return false; };
+  bottoneCancella.click();
+  NP.app.cancellaCopia = cancellaVero;
+  ok(cancellataQuale === 0, "«Cancella» cancella proprio la copia a cui sta accanto");
+
   // Compattare: prima si dice quanto libera, e si tocca solo ciò che è vecchio.
   const vecchioISO = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
   const recenteISO = new Date().toISOString();
