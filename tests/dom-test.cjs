@@ -704,6 +704,35 @@ setTimeout(async function () {
   NP.app.esportaCopia = esportaVero;
   ok(esportataQuale === 0, "«Esporta» esporta proprio la copia a cui sta accanto");
 
+  // Compattare: prima si dice quanto libera, e si tocca solo ciò che è vecchio.
+  const vecchioISO = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+  const recenteISO = new Date().toISOString();
+  NP.app.state.chat = [{ role: "utente", testo: "ciao" }, { role: "neura", testo: "ciao a te" }];
+  const schede = [];
+  for (let i = 0; i < 15; i++) {
+    schede.push({ id: "v" + i, date: vecchioISO, situation: "vecchia " + i, thought: "pensiero", emotion: "ansia", intensity: 5, alternative: "" });
+  }
+  schede.push({ id: "r1", date: recenteISO, situation: "recente", thought: "pensiero", emotion: "calma", intensity: 3, alternative: "" });
+  NP.app.writeJSON("thoughts", schede);
+  const piano = NP.app.pianificaCompatta();
+  ok(piano.byte > 0, "prima di compattare si dice quanto spazio si libera");
+  ok(piano.messaggi === 2, "il conto dice quanti messaggi con Neura si tolgono");
+  ok(piano.pensieri === 6, "si tolgono solo le schede vecchie oltre le ultime dieci");
+  ok(piano.restano === 10, "restano sempre le ultime dieci schede");
+
+  navigate("#/licenze");
+  const scatolaCompatta = document.getElementById("compattaBox");
+  ok(!!scatolaCompatta && /Compatta e libera/.test(scatolaCompatta.textContent), "la pagina mostra quanto libererebbe, nel pulsante stesso");
+
+  const spazioPrima = NP.app.spazioDati().totale;
+  ok(NP.app.compattaDati() === true, "la compattazione si può eseguire");
+  ok(NP.app.state.chat.length === 0, "le conversazioni con Neura spariscono");
+  const dopoSchede = NP.app.readJSON("thoughts", []);
+  ok(dopoSchede.length === 10 && dopoSchede[9].situation === "recente", "restano le dieci schede più recenti, con la più nuova in coda");
+  ok(NP.app.spazioDati().totale < spazioPrima, "dopo la compattazione lo spazio occupato cala davvero");
+  ok(NP.app.pianificaCompatta().byte === 0, "senza roba vecchia il conto dice zero");
+  ok(NP.app.compattaDati() === false, "una seconda compattazione non fa niente");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

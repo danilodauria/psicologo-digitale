@@ -586,6 +586,80 @@ NP.app = (function () {
     };
   }
 
+  /* ------------------------------------------------- Compattare i dati vecchi */
+
+  // Le due cose che crescono senza che nessuno le rilegga: la conversazione con
+  // Neura, che non entra nel backup, e le schede del pensiero vecchie. Il resto
+  // — colloquio, questionari, diario, note — non si tocca mai da qui.
+  const COMPATTA_GIORNI = 30;
+  const COMPATTA_MINIME = 10;
+
+  function firmaVoce(v) { return JSON.stringify(v); }
+
+  // Divide le schede in «restano» e «vecchie» in un posto solo: il conto che si
+  // mostra e quello che si esegue devono venire dalla stessa regola.
+  function dividiPensieri() {
+    const elenco = readJSON("thoughts", []);
+    const lista = Array.isArray(elenco) ? elenco : [];
+    const soglia = Date.now() - COMPATTA_GIORNI * 24 * 60 * 60 * 1000;
+    const recenti = {};
+    lista.slice(-COMPATTA_MINIME).forEach(function (v) { recenti[firmaVoce(v)] = true; });
+    const tenuti = [], vecchi = [];
+    lista.forEach(function (v) {
+      const t = new Date(v && v.date).getTime();
+      const vecchia = !recenti[firmaVoce(v)] && isFinite(t) && t < soglia;
+      (vecchia ? vecchi : tenuti).push(v);
+    });
+    return { tenuti: tenuti, vecchi: vecchi };
+  }
+
+  function chatSalvata() {
+    if (Array.isArray(state.chat) && state.chat.length) return state.chat;
+    const salvata = readJSON("chat", []);
+    return Array.isArray(salvata) ? salvata : [];
+  }
+
+  // Cosa si toglierebbe e quanto libererebbe: si mostra prima di farlo, perché
+  // «compatta» non deve mai essere una parola che sorprende.
+  function pianificaCompatta() {
+    const chat = chatSalvata();
+    const divisi = dividiPensieri();
+    return {
+      messaggi: chat.length,
+      pensieri: divisi.vecchi.length,
+      restano: divisi.tenuti.length,
+      // Un elenco vuoto pesa comunque due byte di parentesi: se non c'è
+      // niente da togliere, il conto deve dire zero e non «2 B».
+      byte: (chat.length ? peso(JSON.stringify(chat)) : 0) +
+        (divisi.vecchi.length ? peso(JSON.stringify(divisi.vecchi)) : 0),
+      giorni: COMPATTA_GIORNI,
+      minime: COMPATTA_MINIME
+    };
+  }
+
+  function compattaDati() {
+    const piano = pianificaCompatta();
+    if (!piano.byte) return false;
+    const parti = [];
+    if (piano.messaggi) parti.push(piano.messaggi + (piano.messaggi === 1 ? " messaggio" : " messaggi") + " con Neura");
+    if (piano.pensieri) {
+      parti.push(piano.pensieri + (piano.pensieri === 1 ? " scheda del pensiero" : " schede del pensiero") +
+        " più vecchie di " + piano.giorni + " giorni");
+    }
+    if (!confirm("Compattare i dati? Si tolgono " + parti.join(" e ") + ", circa " + fmtBytes(piano.byte) +
+      " liberati. Diario, colloquio, questionari e note restano.\n\nNon si torna indietro: le conversazioni con Neura non sono dentro il backup e le schede tolte non si recuperano da qui.")) return false;
+    // Qui non si prende una copia, e non è una dimenticanza: la copia
+    // conterrebbe proprio le schede vecchie che si stanno togliendo, e lo
+    // spazio liberato finirebbe occupato di nuovo. Chi compatta sta già
+    // scegliendo cosa perdere.
+    const divisi = dividiPensieri();
+    state.chat = [];
+    saveChat();
+    writeJSON("thoughts", divisi.tenuti);
+    toast("Liberati " + fmtBytes(piano.byte) + ": conversazione con Neura e schede vecchie tolte.");
+    return true;
+  }
+
   function haDati(d) {
     return !!d && !!(
       (d.intake && d.intake.answers && Object.keys(d.intake.answers).length) ||
@@ -789,6 +863,8 @@ NP.app = (function () {
     impostaCopieMassimo: impostaCopieMassimo,
     spazioCopie: spazioCopie,
     spazioDati: spazioDati,
+    pianificaCompatta: pianificaCompatta,
+    compattaDati: compattaDati,
     fmtBytes: fmtBytes,
     statoDati: statoDati,
     campiCopia: CAMPI_COPIA,

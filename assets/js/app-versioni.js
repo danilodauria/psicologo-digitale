@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.55";
+  const VERSIONE = "1.3.56";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.56",
+      data: "13 novembre 2026",
+      titolo: "Compattare i dati vecchi, sapendo quanto libera",
+      punti: [
+        "Nella scheda dello spazio, in Licenze, c'è un pulsante che dice quanto libererebbe prima di farlo: «Compatta e libera 180 KB». Sopra, in chiaro, cosa si toglie e cosa resta.",
+        "Si tolgono la conversazione con Neura e le schede del pensiero più vecchie di trenta giorni, tenendo sempre le ultime dieci: una pausa lunga non deve portarsi via il lavoro fatto prima. Colloquio, questionari, diario e note non si toccano mai.",
+        "La compattazione non prende una copia prima, ed è voluto: la copia conterrebbe proprio le schede che si stanno togliendo, e lo spazio liberato finirebbe occupato di nuovo. La conferma lo dice senza giri di parole: non si torna indietro."
+      ]
+    },
     {
       v: "1.3.55",
       data: "13 novembre 2026",

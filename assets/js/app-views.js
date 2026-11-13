@@ -307,6 +307,19 @@
                 return "<li>" + esc(v.nome) + ": " + A.fmtBytes(v.byte) + "</li>";
               }).join("") + "</ul>"
             : '<p class="text-small muted mb-0">Nessun dato salvato: c\'è solo la struttura del programma.</p>') +
+          (function () {
+            const piano = A.pianificaCompatta();
+            if (!piano.byte) {
+              return '<p class="text-small muted mt-2 mb-0">Niente da compattare: nessuna conversazione salvata e nessuna scheda del pensiero più vecchia di ' + piano.giorni + ' giorni.</p>';
+            }
+            const cose = [];
+            if (piano.messaggi) cose.push(piano.messaggi + (piano.messaggi === 1 ? " messaggio con Neura" : " messaggi con Neura"));
+            if (piano.pensieri) cose.push(piano.pensieri + (piano.pensieri === 1 ? " scheda del pensiero" : " schede del pensiero") + " più vecchie di " + piano.giorni + " giorni");
+            return '<div class="mt-2" id="compattaBox"><h3 class="h-sub-sm">Compattare i dati vecchi</h3>' +
+              '<p class="text-small">Si toglierebbero ' + cose.join(" e ") + ": circa <strong>" + A.fmtBytes(piano.byte) + "</strong> liberati. Colloquio, questionari, diario e note non si toccano" +
+                (piano.pensieri ? ", e restano comunque le ultime " + piano.minime + " schede" : "") + ".</p>" +
+              '<div class="btn-row"><button type="button" class="btn btn-soft btn-sm" id="compattaBtn">Compatta e libera ' + A.fmtBytes(piano.byte) + "</button></div></div>";
+          })() +
         "</div>";
       })() +
 
@@ -404,12 +417,17 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.55 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.56 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
     if (backup) backup.addEventListener("click", function () {
       A.esportaBackup();
+    });
+
+    const compatta = document.getElementById("compattaBtn");
+    if (compatta) compatta.addEventListener("click", function () {
+      if (A.compattaDati()) A.render();
     });
 
     const imp = document.getElementById("importFile");
