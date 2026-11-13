@@ -277,6 +277,7 @@ setTimeout(async function () {
   ok(document.body.textContent.indexOf("Danilo D'Auria") >= 0, "la pagina licenze attribuisce l'opera");
   ok(document.body.textContent.indexOf("CC BY-NC-SA 4.0") >= 0, "la pagina licenze cita la licenza dei contenuti");
   ok(document.getElementById("backupBtn"), "è disponibile l'esportazione del backup");
+  ok(!!document.getElementById("copieScelta"), "si sceglie quante copie automatiche tenere");
 
   /* Nutrizione e installazione -------------------------------------------- */
 
@@ -548,6 +549,16 @@ setTimeout(async function () {
   ok(NP.app.salvaCopia(false) === false, "nello stesso giorno non si ripete");
   ok(NP.app.copieAutomatiche().length === 1, "una copia al giorno, non una a ogni clic");
 
+  // Quante copie tenere lo decide chi usa il programma: un diario lungo pesa.
+  ok(NP.app.copieMassimo() === 3, "di copie se ne tengono tre, salvo scelta diversa");
+  const spazio = NP.app.spazioCopie();
+  ok(spazio.totale > 0 && spazio.pesi.length === 1, "lo spazio occupato si misura sulle copie vere");
+  ok(NP.app.fmtBytes(2048) === "2 KB" && NP.app.fmtBytes(3145728) === "3,0 MB", "lo spazio si legge in KB o MB, con la virgola italiana");
+  ok(NP.app.impostaCopieMassimo(7) === 7 && NP.app.copieMassimo() === 7, "il numero di copie si può cambiare");
+  ok(NP.app.impostaCopieMassimo(99) === 7, "il numero resta dentro il massimo consentito");
+  ok(NP.app.impostaCopieMassimo(1) === 1 && NP.app.copieAutomatiche().length === 1, "riducendo il numero, le copie in più si tolgono subito");
+  ok(NP.app.impostaCopieMassimo(3) === 3 && NP.app.copieMassimo() === 3, "si può tornare a tre");
+
   // Rifare il colloquio capita più spesso che cancellare tutto: deve costare
   // solo il colloquio, non il diario e i questionari già compilati.
   document.getElementById("restartBtn").click();
@@ -575,8 +586,9 @@ setTimeout(async function () {
   ok(blobPreparati.length === 1, "il backup viene davvero preparato come file");
   ok(Object.keys(NP.app.state.intake.answers).length === 0, "dopo il backup le risposte vengono azzerate");
   ok(NP.app.state.diary.length === 0, "il diario sparisce con le risposte");
-  const rimaste = Object.keys(window.localStorage).filter(function (k) { return k.indexOf(NP.app.PREFIX) === 0; });
-  ok(rimaste.length === 1 && rimaste[0] === NP.app.PREFIX + "copie", "azzerare toglie i dati e lascia solo la copia automatica (" + rimaste.length + ")");
+  const rimaste = Object.keys(window.localStorage).filter(function (k) { return k.indexOf(NP.app.PREFIX) === 0; }).sort();
+  const attese = [NP.app.PREFIX + "copie", NP.app.PREFIX + "copieMax"].sort();
+  ok(rimaste.join(",") === attese.join(","), "azzerare toglie i dati e lascia solo le copie e la preferenza (" + rimaste.length + " chiavi)");
   ok(!!document.getElementById("consentBox"), "dopo l'azzeramento si riparte dalla prima domanda");
 
   // La rete sotto l'azzeramento: la copia sopravvive e riporta indietro i dati.

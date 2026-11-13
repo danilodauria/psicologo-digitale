@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.45";
+  const VERSIONE = "1.3.46";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.46",
+      data: "13 novembre 2026",
+      titolo: "Quante copie tenere, e quanto pesano",
+      punti: [
+        "Nella pagina Licenze si sceglie da una a sette copie automatiche; il valore iniziale resta tre. Se si abbassa il numero, le copie in più vengono tolte subito invece di restare fino al giorno dopo.",
+        "Accanto alla scelta c'è lo spazio occupato davvero: copia per copia e in totale, con il limite che il browser concede di solito a un sito. Chi ha un diario lungo sa così cosa sta chiedendo.",
+        "La preferenza sopravvive all'azzeramento, come le copie: una copia sola per chi vuole restare leggero, una settimana di margine per chi preferisce averne."
+      ]
+    },
     {
       v: "1.3.45",
       data: "13 novembre 2026",

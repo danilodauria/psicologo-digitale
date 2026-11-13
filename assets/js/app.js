@@ -456,7 +456,53 @@ NP.app = (function () {
   // quella di ieri è ancora lì. Restano le ultime tre, e la chiave sopravvive
   // proprio all'azzeramento, che altrimenti porterebbe via anche la rete.
   const CHIAVE_COPIE = "copie";
-  const MAX_COPIE = 3;
+  const CHIAVE_COPIE_MAX = "copieMax";
+  const COPIE_MIN = 1;
+  const COPIE_MAX = 7;
+  const COPIE_PREDEFINITE = 3;
+
+  // Quante copie tenere lo decide chi usa il programma: un diario lungo pesa,
+  // e lo spazio del browser non è infinito. Il numero resta dentro un minimo
+  // e un massimo, così la scelta non può svuotare la rete né mangiare tutto.
+  function copieMassimo() {
+    const n = Number(readJSON(CHIAVE_COPIE_MAX, COPIE_PREDEFINITE));
+    if (!isFinite(n)) return COPIE_PREDEFINITE;
+    return Math.max(COPIE_MIN, Math.min(COPIE_MAX, Math.round(n)));
+  }
+
+  function impostaCopieMassimo(n) {
+    const pulito = Math.max(COPIE_MIN, Math.min(COPIE_MAX, Math.round(Number(n) || COPIE_PREDEFINITE)));
+    writeJSON(CHIAVE_COPIE_MAX, pulito);
+    // Riducendo il numero, le copie in più si tolgono subito invece di
+    // restare lì fino al giorno dopo.
+    const copie = copieAutomatiche();
+    if (copie.length > pulito) scriviCopie(copie.slice(0, pulito));
+    return pulito;
+  }
+
+  function fmtBytes(byte) {
+    const b = Number(byte) || 0;
+    if (b < 1024) return b + " B";
+    if (b < 1048576) return Math.round(b / 1024) + " KB";
+    return (b / 1048576).toFixed(1).replace(".", ",") + " MB";
+  }
+
+  function peso(testo) {
+    try { return new Blob([testo]).size; } catch (e) { return String(testo).length; }
+  }
+
+  // Lo spazio si misura sul contenuto vero, non stimato: chi sceglie quante
+  // copie tenere deve vedere quanto costano davvero.
+  function spazioCopie() {
+    const copie = copieAutomatiche();
+    const pesi = copie.map(function (c) { return peso(JSON.stringify(c)); });
+    return {
+      pesi: pesi,
+      totale: pesi.reduce(function (a, b) { return a + b; }, 0),
+      totaleArchivio: peso(localStorage.getItem(PREFIX + CHIAVE_COPIE) || "[]"),
+      massimo: copieMassimo()
+    };
+  }
 
   function haDati(d) {
     return !!d && !!(
@@ -489,7 +535,7 @@ NP.app = (function () {
     const voce = { quando: new Date().toISOString(), dati: dati };
     const aggiornate = giaOggi ? [voce].concat(copie.slice(1)) : [voce].concat(copie);
     // Se lo spazio è finito si tengono meno copie, invece di perdere quella nuova.
-    for (let n = Math.min(aggiornate.length, MAX_COPIE); n >= 1; n--) {
+    for (let n = Math.min(aggiornate.length, copieMassimo()); n >= 1; n--) {
       if (scriviCopie(aggiornate.slice(0, n))) return true;
     }
     return false;
@@ -539,7 +585,7 @@ NP.app = (function () {
     try {
       Object.keys(localStorage).forEach(function (k) {
         // La copia automatica non si tocca: è la rete sotto l'azzeramento.
-        if (k.indexOf(PREFIX) === 0 && k !== PREFIX + CHIAVE_COPIE) localStorage.removeItem(k);
+        if (k.indexOf(PREFIX) === 0 && k !== PREFIX + CHIAVE_COPIE && k !== PREFIX + CHIAVE_COPIE_MAX) localStorage.removeItem(k);
       });
     } catch (e) { /* storage negato: la memoria si azzera lo stesso */ }
     state.intake = { answers: {}, started: false, completedAt: null, consent: false, updatedAt: null, index: 0 };
@@ -576,6 +622,10 @@ NP.app = (function () {
     esportaBackup: esportaBackup,
     salvaCopia: salvaCopia,
     copieAutomatiche: copieAutomatiche,
+    copieMassimo: copieMassimo,
+    impostaCopieMassimo: impostaCopieMassimo,
+    spazioCopie: spazioCopie,
+    fmtBytes: fmtBytes,
     ripristinaCopia: ripristinaCopia,
     cancellaColloquio: cancellaColloquio,
     cancellaDati: cancellaDati,

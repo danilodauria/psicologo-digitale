@@ -285,16 +285,30 @@
       "</div>" +
 
       '<div class="card mt-2"><h2 class=h-sub>Copia di sicurezza automatica</h2>' +
-        '<p>Una copia dei dati resta in questo browser, aggiornata una volta al giorno: le ultime tre. Non esce dal dispositivo, non richiede un account e non viene toccata da «Cancella tutti i dati»: serve proprio per un azzeramento fatto per sbaglio.</p>' +
+        '<p>Una copia dei dati resta in questo browser, aggiornata una volta al giorno. Non esce dal dispositivo, non richiede un account e non viene toccata da «Cancella tutti i dati»: serve proprio per un azzeramento fatto per sbaglio.</p>' +
         (function () {
+          const massimo = A.copieMassimo();
+          const spazio = A.spazioCopie();
           const copie = A.copieAutomatiche();
-          if (!copie.length) return '<p class="text-small muted mb-0">Nessuna copia ancora: arriva al prossimo avvio, se ci sono dati da salvare.</p>';
-          return '<ul class="text-small">' + copie.map(function (c, i) {
+          let html = '<div class="btn-row mb-0">' +
+            '<label class="text-small" for="copieScelta">Copie da tenere</label>' +
+            '<select id="copieScelta" style="width:auto;padding:.35rem .6rem;font-size:.85rem">' +
+              [1, 2, 3, 4, 5, 6, 7].map(function (n) {
+                return '<option value="' + n + '"' + (n === massimo ? " selected" : "") + ">" + n + (n === 1 ? " copia" : " copie") + "</option>";
+              }).join("") +
+            "</select>" +
+            '<span class="text-small muted">una al giorno' + (massimo === 1 ? ", sempre la stessa" : "") + "</span>" +
+          "</div>" +
+          '<p class="text-small muted mt-1">Occupano <strong>' + A.fmtBytes(spazio.totale) + "</strong>" +
+            (copie.length ? " in " + copie.length + (copie.length === 1 ? " copia" : " copie") : "") +
+            ". Il browser concede in genere 5 MB a questo sito: quando lo spazio finisce, si tengono meno copie invece di perdere quella nuova.</p>";
+          if (!copie.length) return html + '<p class="text-small muted mb-0">Nessuna copia ancora: arriva al prossimo avvio, se ci sono dati da salvare.</p>';
+          return html + '<ul class="text-small">' + copie.map(function (c, i) {
             const d = c.dati || {};
             const risposte = d.intake && d.intake.answers ? Object.keys(d.intake.answers).length : 0;
             const voci = d.diary ? d.diary.length : 0;
             return '<li>' + esc(A.fmtDateTime(c.quando)) + " — " + risposte + (risposte === 1 ? " risposta" : " risposte") +
-              ", " + voci + (voci === 1 ? " voce di diario" : " voci di diario") +
+              ", " + voci + (voci === 1 ? " voce di diario" : " voci di diario") + " · " + A.fmtBytes(spazio.pesi[i] || 0) +
               ' <button type="button" class="btn btn-ghost btn-sm" data-copia="' + i + '">Ripristina</button></li>';
           }).join("") + "</ul>";
         })() +
@@ -334,7 +348,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.45 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.46 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -374,6 +388,13 @@
       // La stessa funzione che usa il pulsante dentro il colloquio: qui, dopo
       // aver cancellato, si torna alla pagina iniziale.
       if (A.cancellaDati()) A.go("");
+    });
+
+    const sceltaCopie = document.getElementById("copieScelta");
+    if (sceltaCopie) sceltaCopie.addEventListener("change", function () {
+      const n = A.impostaCopieMassimo(Number(sceltaCopie.value));
+      A.toast("Copie automatiche da tenere: " + n + ".");
+      A.render();
     });
 
     document.querySelectorAll("[data-copia]").forEach(function (b) {
