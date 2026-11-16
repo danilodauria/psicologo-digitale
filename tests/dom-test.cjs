@@ -842,8 +842,17 @@ setTimeout(async function () {
   };
   NP.app.writeJSON("copie", [copiaFinta("2026-11-07", "recente"), copiaFinta("2026-11-06", "da cancellare"), copiaFinta("2026-11-05", "vecchia")]);
   const datiPrimaDellaCancellazione = JSON.stringify(NP.app.state.diary);
+
+  // Ogni copia dice quanto spazio libererebbe, e quel numero deve essere quello
+  // vero: si misura l'archivio prima e dopo la cancellazione.
+  const spazioTre = NP.app.spazioCopie();
+  ok(spazioTre.liberabili.length === 3 && spazioTre.liberabili.every(function (b) { return b > 0; }), "ogni copia dice quanto spazio libera se la cancelli");
+  const archivioPrima = spazioTre.totaleArchivio;
+
   ok(NP.app.cancellaCopia(99) === false, "un indice che non esiste non cancella niente");
   ok(NP.app.cancellaCopia(1) === true, "si cancella una copia sola");
+  ok(archivioPrima - NP.app.spazioCopie().totaleArchivio === spazioTre.liberabili[1],
+    "lo spazio promesso accanto alla copia è quello guadagnato davvero, non una stima");
   const copieDopo = NP.app.copieAutomatiche();
   ok(copieDopo.length === 2, "le copie passano da tre a due");
   ok(/liberati/.test(document.getElementById("toast").textContent) && /\d+ (B|KB|MB) liberati/.test(document.getElementById("toast").textContent), "il messaggio dice quanto spazio è stato liberato");
@@ -854,6 +863,9 @@ setTimeout(async function () {
   navigate("#/licenze");
   const bottoneCancella = document.querySelector("[data-copia-cancella]");
   ok(!!bottoneCancella, "ogni copia ha il pulsante Cancella accanto agli altri");
+  const righeCopie = document.querySelectorAll("[data-copia-cancella]");
+  ok(Array.prototype.every.call(righeCopie, function (b) { return /cancellandola liberi/.test(b.parentNode.textContent); }),
+    "nell'elenco ogni copia mostra lo spazio che libera se la cancelli");
   let cancellataQuale = null;
   const cancellaVero = NP.app.cancellaCopia;
   NP.app.cancellaCopia = function (i) { cancellataQuale = i; return false; };

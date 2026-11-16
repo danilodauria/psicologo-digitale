@@ -704,11 +704,23 @@ NP.app = (function () {
 
   // Lo spazio si misura sul contenuto vero, non stimato: chi sceglie quante
   // copie tenere deve vedere quanto costano davvero.
+  // Quanto libera davvero cancellare una copia: non è la dimensione della copia
+  // da sola, perché togliendone una cambia anche la punteggiatura dell'elenco.
+  // Si misura l'archivio intero con e senza, così il numero mostrato accanto
+  // alla copia è quello che il browser guadagna davvero — e lo stesso che il
+  // messaggio di conferma promette.
+  function spazioLiberato(copie, indice) {
+    const i = Number(indice);
+    const senza = copie.filter(function (_, n) { return n !== i; });
+    return Math.max(0, peso(JSON.stringify(copie)) - peso(JSON.stringify(senza)));
+  }
+
   function spazioCopie() {
     const copie = copieAutomatiche();
     const pesi = copie.map(function (c) { return peso(JSON.stringify(c)); });
     return {
       pesi: pesi,
+      liberabili: copie.map(function (c, i) { return spazioLiberato(copie, i); }),
       totale: pesi.reduce(function (a, b) { return a + b; }, 0),
       totaleArchivio: peso(localStorage.getItem(PREFIX + CHIAVE_COPIE) || "[]"),
       massimo: copieMassimo()
@@ -1065,7 +1077,7 @@ NP.app = (function () {
     const copia = copie[i];
     // Lo spazio liberato si dice prima e dopo: è il motivo per cui si cancella
     // una copia sola, e il numero è lo stesso che la riga mostra accanto.
-    const byte = peso(JSON.stringify(copia));
+    const byte = spazioLiberato(copie, i);
     if (!confirm("Cancellare la copia del " + fmtDateTime(copia.quando) + "? Libera circa " + fmtBytes(byte) +
       ". I dati attuali non vengono toccati, ma questa copia non si recupera.")) return false;
     const restanti = copie.filter(function (_, n) { return n !== i; });

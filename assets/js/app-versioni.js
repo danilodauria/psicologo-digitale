@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.74";
+  const VERSIONE = "1.3.75";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.75",
+      data: "13 novembre 2026",
+      titolo: "Ogni copia dice quanto spazio libera se la cancelli",
+      punti: [
+        "Per scegliere quale copia togliere bisognava ricordare quanto spazio occupavano le altre: l'elenco diceva la dimensione di ciascuna, non quanto avrebbe liberato cancellarla.",
+        "Ora accanto a ogni copia c'è il numero: «4,1 kB · cancellandola liberi 4,2 kB» — lo stesso che compare nella richiesta di conferma e nel messaggio finale.",
+        "Il numero è misurato, non stimato: si pesa l'archivio delle copie con e senza quella voce, perché togliendone una cambia anche la punteggiatura dell'elenco. Un test confronta il valore promesso con lo spazio guadagnato davvero."
+      ]
+    },
     {
       v: "1.3.74",
       data: "13 novembre 2026",
