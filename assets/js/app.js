@@ -1074,19 +1074,19 @@ NP.app = (function () {
     return true;
   }
 
-  function ripristinaCopia(indice) {
-    const copia = copieAutomatiche()[indice || 0];
-    if (!copia || !copia.dati) return false;
-    // La copia da ripristinare si prende prima: salvando i dati di oggi, gli
-    // indici cambiano e quella scelta non è più al suo posto.
-    const d = copia.dati;
-    // Un ripristino sbagliato deve potersi annullare: i dati di adesso
-    // diventano una copia, così si torna indietro con un altro ripristino.
-    const salvata = salvaCopia(true);
-    // Se c'era qualcosa da salvare e la copia non è riuscita (spazio pieno),
-    // la promessa «si può annullare» sarebbe falsa: si chiede prima.
-    if (!salvata && haDati(raccogliDati()) &&
-      !confirm("Non è stato possibile salvare una copia dei dati attuali, probabilmente per spazio esaurito. Il ripristino non potrà essere annullato. Procedere lo stesso?")) return false;
+  // L'ultimo ripristino resta annullabile con un clic. L'ancora è in memoria e
+  // non nel browser: serve a rimediare all'errore appena fatto, non a tenere un
+  // secondo archivio di copie. Vale anche se la copia di sicurezza non è
+  // riuscita — in quel caso i dati di prima sono solo qui.
+  let ripristinoAnnullabile = null;
+
+  function ripristinoDaAnnullare() {
+    return ripristinoAnnullabile ? { ripristinata: ripristinoAnnullabile.ripristinata } : null;
+  }
+
+  // Un solo punto che scrive uno stato: lo usano sia il ripristino sia
+  // l'annullamento, così le due strade non possono divergere su cosa toccare.
+  function applicaDati(d) {
     state.intake = d.intake || state.intake;
     state.scales = d.scales || {};
     state.diary = d.diary || [];
@@ -1095,8 +1095,38 @@ NP.app = (function () {
     state.reportNotes = d.reportNotes || { note: "", clinician: "" };
     writeJSON("thoughts", Array.isArray(d.thoughts) ? d.thoughts : []);
     saveIntake(); saveScales(); saveDiary(); saveCourse(); saveQuizStats(); saveReportNotes();
+  }
+
+  function annullaRipristino() {
+    if (!ripristinoAnnullabile) return false;
+    applicaDati(ripristinoAnnullabile.dati);
+    const copia = ripristinoAnnullabile.ripristinata;
+    ripristinoAnnullabile = null;
+    toast("Ripristino annullato: sono tornati i dati di prima, quelli che c'erano prima della copia del " +
+      fmtDate(copia) + ".", 6000);
+    return true;
+  }
+
+  function ripristinaCopia(indice) {
+    const copia = copieAutomatiche()[indice || 0];
+    if (!copia || !copia.dati) return false;
+    // La copia da ripristinare si prende prima: salvando i dati di oggi, gli
+    // indici cambiano e quella scelta non è più al suo posto.
+    const d = copia.dati;
+    // Un ripristino sbagliato deve potersi annullare: i dati di adesso
+    // diventano una copia, così si torna indietro con un altro ripristino.
+    // I dati di prima si tengono in mano, non solo nella copia: se la copia
+    // non riesce, l'annullamento deve funzionare lo stesso.
+    const prima = raccogliDati();
+    const salvata = salvaCopia(true);
+    // Se c'era qualcosa da salvare e la copia non è riuscita (spazio pieno),
+    // la promessa «si può annullare» sarebbe falsa: si chiede prima.
+    if (!salvata && haDati(prima) &&
+      !confirm("Non è stato possibile salvare una copia dei dati attuali, probabilmente per spazio esaurito. Il ripristino non potrà essere annullato dalla lista delle copie. Procedere lo stesso?")) return false;
+    applicaDati(d);
+    ripristinoAnnullabile = haDati(prima) ? { dati: prima, ripristinata: copia.quando } : null;
     toast("Copia del " + fmtDate(copia.quando) + " ripristinata." +
-      (salvata ? " I dati di prima sono nella copia di oggi." : ""), 5000);
+      (ripristinoAnnullabile ? " Si può annullare con un clic da Licenze." : ""), 6000);
     return true;
   }
 
@@ -1182,6 +1212,8 @@ NP.app = (function () {
     registraPunteggio: registraPunteggio,
     raccogliDati: raccogliDati,
     riprovaSalvataggi: riprovaSalvataggi,
+    annullaRipristino: annullaRipristino,
+    ripristinoDaAnnullare: ripristinoDaAnnullare,
     salvataggiPendenti: salvataggiPendenti,
     compattaScelte: compattaScelte,
     impostaGiorniCompatta: impostaGiorniCompatta,

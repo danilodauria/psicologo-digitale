@@ -730,6 +730,19 @@ setTimeout(async function () {
   ok(NP.app.copieAutomatiche()[0].dati.diary[0].note === "dati di adesso", "e i dati di prima restano in una copia, non svaniscono");
   ok(NP.app.ripristinaCopia(0) === true && NP.app.state.diary[0].note === "dati di adesso", "quindi un ripristino sbagliato si annulla con un altro ripristino");
 
+  // L'avviso con «Annulla il ripristino»: un clic e si torna ai dati di prima,
+  // senza dover riconoscere la copia giusta nell'elenco.
+  navigate("#/licenze");
+  const avvisoRipristino = document.getElementById("ripristinoAvviso");
+  ok(!!avvisoRipristino, "dopo un ripristino compare un avviso con la via d'uscita");
+  ok(/Annulla il ripristino/.test(avvisoRipristino.textContent), "l'avviso porta il pulsante per annullarlo");
+  ok(/Hai appena ripristinato la copia del/.test(avvisoRipristino.textContent), "e dice quale copia è stata ripristinata");
+  document.getElementById("annullaRipristinoBtn").click();
+  ok(NP.app.state.diary[0].note === "prima del ripristino", "annullando, i dati tornano a quelli che c'erano prima del ripristino");
+  ok(!document.getElementById("ripristinoAvviso"), "e l'avviso sparisce: non c'è più niente da annullare");
+  ok(NP.app.annullaRipristino() === false, "un secondo tentativo non fa niente");
+  ok(NP.app.ripristinoDaAnnullare() === null, "e non resta un'ancora appesa");
+
 
   // Percorso e quiz li riscrive il ripristino: se l'anteprima non li nominasse,
   // si perderebbero esercizi fatti e risposte ai quiz senza vederlo prima.
@@ -1028,6 +1041,9 @@ setTimeout(async function () {
   ok(NP.app.state.diary[0].note === "attuale", "rifiutando, i dati restano come sono");
   window.confirm = function () { return true; };
   ok(NP.app.ripristinaCopia(0) === true, "accettando, il ripristino procede lo stesso");
+  ok(!!NP.app.ripristinoDaAnnullare(), "e resta annullabile anche senza una copia di sicurezza riuscita");
+  ok(NP.app.annullaRipristino() === true, "l'annullamento funziona lo stesso, perché i dati di prima sono tenuti in mano");
+  ok(NP.app.state.diary[0].note === "attuale", "riportando esattamente i dati che c'erano prima");
   window.confirm = confirmVero;
   Object.defineProperty(window.Storage.prototype, "setItem", { configurable: true, writable: true, value: setItemPieno });
 

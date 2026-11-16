@@ -376,6 +376,13 @@
       })() +
 
       '<div class="card mt-2"><h2 class=h-sub>Copia di sicurezza automatica</h2>' +
+        (function () {
+          const appena = A.ripristinoDaAnnullare();
+          if (!appena) return "";
+          return '<div class="callout info" id="ripristinoAvviso"><p><strong>Hai appena ripristinato la copia del ' +
+            esc(A.fmtDate(appena.ripristinata)) + '.</strong> I dati che c\'erano prima sono ancora qui: si torna indietro con un clic, senza cercare la copia giusta nell\'elenco.</p>' +
+            '<div class="btn-row"><button type="button" class="btn btn-soft btn-sm" id="annullaRipristinoBtn">Annulla il ripristino</button></div></div>';
+        })() +
         '<p>Una copia dei dati resta in questo browser, aggiornata una volta al giorno. Non esce dal dispositivo, non richiede un account e non viene toccata da «Cancella tutti i dati»: serve proprio per un azzeramento fatto per sbaglio.</p>' +
         (function () {
           const massimo = A.copieMassimo();
@@ -476,7 +483,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.72 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.73 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -570,6 +577,11 @@
       const i = copiaInEsame;
       copiaInEsame = null;
       if (A.ripristinaCopia(i)) A.render();
+    });
+
+    const annullaRipristinoBtn = document.getElementById("annullaRipristinoBtn");
+    if (annullaRipristinoBtn) annullaRipristinoBtn.addEventListener("click", function () {
+      if (A.annullaRipristino()) A.render();
     });
 
     const annullaCopia = document.getElementById("copiaAnnulla");

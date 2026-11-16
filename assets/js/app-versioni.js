@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.72";
+  const VERSIONE = "1.3.73";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.73",
+      data: "13 novembre 2026",
+      titolo: "Annullare un ripristino con un clic",
+      punti: [
+        "Annullare un ripristino sbagliato era possibile, ma bisognava capire quale copia fosse quella di prima e ripristinarla a sua volta: una via d'uscita che richiede di ragionare proprio nel momento in cui si è appena sbagliato.",
+        "Dopo un ripristino, in Licenze compare un avviso con il pulsante «Annulla il ripristino»: un clic riporta i dati a com'erano prima, senza scegliere niente dall'elenco. L'avviso sparisce quando l'annullamento è fatto.",
+        "L'ancora vale anche se la copia di sicurezza non era riuscita per spazio pieno, perché i dati di prima sono tenuti in mano e non solo scritti: in quel caso il ripristino resta annullabile lo stesso."
+      ]
+    },
     {
       v: "1.3.72",
       data: "13 novembre 2026",
