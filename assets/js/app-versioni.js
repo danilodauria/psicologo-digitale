@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.68";
+  const VERSIONE = "1.3.69";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.69",
+      data: "13 novembre 2026",
+      titolo: "Il backup si esporta dall'avviso stesso",
+      punti: [
+        "Quando il browser rifiuta un salvataggio, l'avviso diceva di andare in Licenze a esportare un backup. Chi ha appena perso una modifica deve invece poter mettere al sicuro quello che ha già scritto, subito e da dove si trova.",
+        "L'avviso ora porta un pulsante «Esporta backup ora»: il file si scarica con un clic, senza cambiare pagina, e il messaggio si chiude da solo. Lo stesso pulsante compare nell'avviso stabile in Licenze, che resta finché un salvataggio non riesce.",
+        "L'avviso resta un'area viva per i lettori di schermo, e il pulsante è raggiungibile da tastiera: il clic si conta nei test, insieme al fatto che il messaggio non rimandi più a un'altra pagina."
+      ]
+    },
     {
       v: "1.3.68",
       data: "13 novembre 2026",

@@ -40,7 +40,17 @@ NP.app = (function () {
     const ora = Date.now();
     if (ora - avvisoSpazioAlle < 15000) return;
     avvisoSpazioAlle = ora;
-    toast("Non c'è spazio per salvare: il browser ha rifiutato la scrittura. Esporta un backup e compatta i dati vecchi da Licenze. L'ultima modifica non è stata registrata.", 8000);
+    // Il pulsante sta dove il problema si vede, non in un'altra pagina: chi
+    // perde una modifica deve poter mettere al sicuro quello che ha già
+    // scritto prima di pensare a dove andare.
+    toast("Non c'è spazio per salvare: l'ultima modifica non è registrata.", 12000, {
+      etichetta: "Esporta backup ora",
+      fai: function () {
+        esportaBackup();
+        const el = document.getElementById("toast");
+        if (el) { el.classList.remove("show"); el.style.pointerEvents = ""; }
+      }
+    });
   }
 
   function writeJSON(key, value) {
@@ -131,13 +141,32 @@ NP.app = (function () {
   }
 
   let toastTimer = null;
-  function toast(msg, ms) {
+  // Un messaggio può portare con sé un'azione: un pulsante dentro l'avviso,
+  // invece di una frase che rimanda altrove. L'avviso è un'area viva
+  // (role=status), quindi anche il pulsante viene annunciato.
+  function toast(msg, ms, azione) {
     const el = document.getElementById("toast");
     if (!el) return;
     el.textContent = msg;
+    if (azione) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "toast-azione";
+      b.textContent = azione.etichetta;
+      b.addEventListener("click", function () { azione.fai(); });
+      el.appendChild(b);
+      // Senza questo il pulsante sarebbe visibile ma non cliccabile: l'avviso
+      // nasce con pointer-events: none per non rubare i clic alla pagina.
+      el.style.pointerEvents = "auto";
+    } else {
+      el.style.pointerEvents = "";
+    }
     el.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.remove("show"); }, ms || 2800);
+    toastTimer = setTimeout(function () {
+      el.classList.remove("show");
+      el.style.pointerEvents = "";
+    }, ms || 2800);
   }
 
   function go(route) {

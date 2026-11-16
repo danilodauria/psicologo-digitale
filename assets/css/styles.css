@@ -1559,6 +1559,22 @@ html[data-theme="dark"] .emergency-box h2, html[data-theme="dark"] .emergency-bo
   text-align: center;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+/* Il pulsante dentro l'avviso: chiaro sul fondo scuro, perché deve leggersi
+   come un'azione e non come parte del messaggio. */
+.toast .toast-azione {
+  display: block;
+  margin: .6rem auto 0;
+  padding: .45rem .95rem;
+  border: 0;
+  border-radius: 8px;
+  background: #f7f5ee;
+  color: var(--indaco-800);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.toast .toast-azione:hover { background: #fff; }
+.toast .toast-azione:focus-visible { outline: 3px solid #f7f5ee; outline-offset: 2px; }
 
 .loading-shell {
   min-height: 46vh;

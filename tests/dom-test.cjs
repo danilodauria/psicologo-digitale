@@ -887,9 +887,37 @@ setTimeout(async function () {
   });
   ok(NP.app.writeJSON("diario", []) === false, "il salvataggio fallito lo dice a chi lo chiama, invece di sparire");
   ok(NP.app.salvataggioNonRiuscito() === true, "l'app ricorda che l'ultimo salvataggio non è riuscito");
-  ok(/Non c'è spazio per salvare/.test(document.getElementById("toast").textContent), "compare un messaggio che parla di spazio esaurito");
+  const toastPieno = document.getElementById("toast");
+  ok(/Non c'è spazio per salvare/.test(toastPieno.textContent), "compare un messaggio che parla di spazio esaurito");
+
+  // Il pulsante deve stare proprio dove il problema si vede: chi perde una
+  // modifica non deve andare a cercare un'altra pagina.
+  const pulsanteToast = toastPieno.querySelector("button.toast-azione");
+  ok(!!pulsanteToast, "l'avviso porta un pulsante, non solo una frase");
+  ok(/Esporta backup/.test(pulsanteToast.textContent), "che propone subito l'esportazione del backup");
+  ok(!/Licenz/.test(toastPieno.textContent), "e non rimanda alla pagina Licenze");
+
+  // Si conta il clic sull'ancora che l'esportazione crea: se il pulsante non
+  // arrivasse davvero a scaricare, questo numero resterebbe zero.
+  const clickVero = window.HTMLAnchorElement.prototype.click;
+  const avevaCreaURL = Object.prototype.hasOwnProperty.call(window.URL, "createObjectURL");
+  const creaURLVero = window.URL.createObjectURL;
+  let scaricati = 0;
+  window.HTMLAnchorElement.prototype.click = function () { scaricati++; };
+  window.URL.createObjectURL = function () { return "blob:finto"; };
+  pulsanteToast.click();
+  ok(scaricati === 1, "cliccandolo si scarica davvero il backup");
+
   navigate("#/licenze");
   ok(!!document.getElementById("spazioPienoAvviso"), "la pagina Licenze lo ripete in modo stabile, non solo con un messaggio che passa");
+  ok(!!document.getElementById("spazioPienoEsporta"), "e anche l'avviso stabile ha il suo pulsante di esportazione");
+  scaricati = 0;
+  document.getElementById("spazioPienoEsporta").click();
+  ok(scaricati === 1, "quel pulsante esporta il backup con un clic");
+
+  window.HTMLAnchorElement.prototype.click = clickVero;
+  if (avevaCreaURL) window.URL.createObjectURL = creaURLVero;
+  else delete window.URL.createObjectURL;
 
   Object.defineProperty(window.Storage.prototype, "setItem", { configurable: true, writable: true, value: setItemVero });
   ok(NP.app.writeJSON("diario", NP.app.state.diary) === true, "quando lo spazio torna, il salvataggio riesce");
