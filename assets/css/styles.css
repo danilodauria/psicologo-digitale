@@ -1561,6 +1561,17 @@ html[data-theme="dark"] .emergency-box h2, html[data-theme="dark"] .emergency-bo
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 /* Confronto fra oggi e una copia: due barre sulla stessa scala, così la
    differenza si vede a colpo d'occhio senza leggere i punteggi. */
+/* Storico dei punteggi: una riga per misurazione, dal più vecchio al più
+   recente. Le cifre sono scritte accanto alle barre, che restano decorative. */
+.storico-punteggi { margin-top: .5rem; max-width: 22rem; }
+.storico-righe { margin-top: .3rem; }
+.storico-riga { display: grid; grid-template-columns: 4.2rem 1fr 2rem; align-items: center; gap: .45rem; margin-bottom: .2rem; }
+.storico-data { font-size: .74rem; color: var(--text-soft); }
+.storico-punti { font-size: .78rem; font-variant-numeric: tabular-nums; text-align: right; color: var(--text-soft); }
+.storico-barra { display: block; height: 7px; border-radius: 99px; background: var(--indaco-100); overflow: hidden; }
+html[data-theme="dark"] .storico-barra { background: #1d2b45; }
+.storico-barra > span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--salvia), var(--indaco-500)); }
+
 .confronto-grafico { margin-top: .45rem; max-width: 26rem; }
 .confronto-grafico p { margin-bottom: .15rem; }
 .confronto-riga { display: grid; grid-template-columns: 5.5rem 1fr; align-items: center; gap: .5rem; margin-bottom: .2rem; }

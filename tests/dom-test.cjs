@@ -249,6 +249,40 @@ ok(document.body.textContent.indexOf("Grave") >= 0, "il risultato mostra la fasc
 ok(document.body.textContent.indexOf("112") >= 0, "il risultato con item di rischio mostra il 112");
 ok(document.querySelector(".result-hero"), "il risultato è visualizzato");
 
+/* Storico dei punteggi ---------------------------------------------------- */
+
+ok(NP.app.storicoDi("umore").length === 1 && NP.app.storicoDi("umore")[0].punti === 27,
+  "completare un questionario lascia un punto nello storico, con il punteggio di allora");
+const scalaUmore = NP.data.scales.filter(function (s) { return s.id === "umore"; })[0];
+ok(NP.app.storicoDi("umore")[0].massimo === NP.app.scaleMax(scalaUmore),
+  "il punto conserva anche il massimo vero della scala, così le barre non sono disegnate a occhio");
+
+navigate("#/valutazione");
+ok(!document.querySelector(".storico-punteggi"), "con una sola misurazione non si finge una serie nel tempo");
+
+// Rifarlo non deve sostituire il punteggio nella memoria del tempo: si aggiunge.
+navigate("#/valutazione/umore");
+document.querySelector('a[href="#/valutazione/umore"]').click();
+document.querySelectorAll('.item-block input[value="0"]').forEach(function (input) {
+  input.checked = true;
+  input.dispatchEvent(new window.Event("change", { bubbles: true }));
+});
+document.getElementById("scaleSubmit").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+const serie = NP.app.storicoDi("umore");
+ok(serie.length === 2, "rifacendolo, lo storico cresce invece di sostituire il punteggio precedente");
+ok(serie[1].punti < serie[0].punti, "il secondo punto è quello nuovo, con il suo punteggio");
+ok(!!serie[1].quando && new Date(serie[1].quando) >= new Date(serie[0].quando), "e porta la data della misurazione");
+ok(/Come cambia nel tempo/.test(document.body.textContent), "il risultato mostra come cambia nel tempo");
+ok(document.querySelectorAll(".storico-righe .storico-riga").length === 2, "con una riga per misurazione");
+
+navigate("#/valutazione");
+ok(document.querySelectorAll(".storico-righe .storico-riga").length === 2,
+  "la pagina Valutazione mostra lo storico accanto al questionario");
+ok(/punti sotto la prima|punti sopra la prima/.test(document.body.textContent),
+  "e dice se l'ultimo punteggio sta sopra o sotto la prima misurazione");
+ok(NP.app.raccogliDati().storicoPunteggi.umore.length === 2, "lo storico entra nel backup, insieme agli altri dati");
+
 /* Relazione --------------------------------------------------------------- */
 
 navigate("#/relazione");

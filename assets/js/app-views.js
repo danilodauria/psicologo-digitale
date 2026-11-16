@@ -476,7 +476,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.71 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.72 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -518,6 +518,8 @@
           state.quizStats = data.quizStats || state.quizStats;
           state.reportNotes = data.reportNotes || { note: "", clinician: "" };
           A.writeJSON("thoughts", Array.isArray(data.thoughts) ? data.thoughts : []);
+          A.writeJSON("storicoPunteggi", data.storicoPunteggi && typeof data.storicoPunteggi === "object" &&
+            !Array.isArray(data.storicoPunteggi) ? data.storicoPunteggi : {});
           A.saveIntake(); A.saveScales(); A.saveDiary(); A.saveCourse(); A.saveQuizStats(); A.saveReportNotes();
           A.toast("Backup importato.");
           A.render();

@@ -13,6 +13,35 @@
 
   /* ------------------------------------------------------- Elenco questionari */
 
+  // La serie dei punteggi, dal più vecchio al più recente: le stesse cifre che
+  // stanno accanto alle barre, così chi non vede le barre non perde nulla.
+  function fmtDataBreve(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString("it-IT", { day: "2-digit", month: "short" });
+  }
+
+  function storicoHTML(scale, limite) {
+    const elenco = A.storicoDi(scale.id);
+    if (elenco.length < 2) return "";
+    const mostrati = limite ? elenco.slice(-limite) : elenco;
+    const max = A.scaleMax(scale);
+    const primo = elenco[0].punti;
+    const ultimo = elenco[elenco.length - 1].punti;
+    const differenza = ultimo - primo;
+    const verso = differenza === 0
+      ? "uguale alla prima"
+      : (differenza < 0 ? Math.abs(differenza) + " punti sotto la prima" : differenza + " punti sopra la prima");
+    return '<div class="storico-punteggi"><p class="text-small mb-0"><strong>Nel tempo</strong> — ' +
+      elenco.length + (elenco.length === 1 ? " misurazione" : " misurazioni") + ", l\'ultima " + verso + ".</p>" +
+      '<div class="storico-righe">' + mostrati.map(function (v) {
+        const pct = max > 0 ? Math.max(0, Math.min(100, (v.punti / max) * 100)) : 0;
+        return '<div class="storico-riga"><span class="storico-data">' + esc(fmtDataBreve(v.quando)) + "</span>" +
+          '<span class="storico-barra" aria-hidden="true"><span style="width:' + pct.toFixed(1) + '%"></span></span>' +
+          '<span class="storico-punti">' + v.punti + "</span></div>";
+      }).join("") + "</div></div>";
+  }
+
   function scaleCard(s) {
     const done = A.scaleDone(s.id);
     const rec = state.scales[s.id];
@@ -24,7 +53,8 @@
     }
     return '<a class="scale-item" href="#/valutazione/' + s.id + '">' +
       "<div><h2 class=h-sub>" + esc(s.titolo) + "</h2><p>" + esc(s.sigla) + " · " + esc(s.area) + " · " + esc(s.tempo) + "</p>" +
-      '<div class="scale-meta">' + badge + '<span class="badge badge-blue">' + s.items.length + " item</span></div></div>" +
+      '<div class="scale-meta">' + badge + '<span class="badge badge-blue">' + s.items.length + " item</span></div>" +
+      storicoHTML(s, 6) + "</div>" +
       '<span class="arrow" aria-hidden="true">' + A.icon("chevron") + "</span></a>";
   }
 
@@ -126,6 +156,9 @@
         doneAt: new Date().toISOString()
       };
       A.saveScales();
+      // Il risultato appena calcolato entra nello storico: è l'unico punto in
+      // cui una compilazione diventa una misurazione.
+      A.registraPunteggio(scale.id, score, A.scaleMax(scale), band.label);
       renderResult(scale, state.scales[scale.id]);
     });
 
@@ -171,6 +204,14 @@
               return '<div class="emergency-num"><b><a href="tel:' + n.tel + '">' + esc(n.numero) + "</a></b><span>" + esc(n.nome) + "</span></div>";
             }).join("") + "</div>"
           : "") +
+
+        (function () {
+          const serie = storicoHTML(scale);
+          if (!serie) return "";
+          return '<div class="card mt-2"><h2 class=h-sub>Come cambia nel tempo</h2>' + serie +
+            '<p class="text-small muted mb-0 mt-1">Ogni compilazione completata lascia un punto: le bozze intermedie no. ' +
+            "Un punteggio che scende o sale non è un giudizio: è un dato da guardare insieme a come stavano le cose in quelle settimane.</p></div>";
+        })() +
 
         '<div class="card mt-2"><h2 class=h-sub>Come leggere le fasce</h2><div class="bars">' + levels + "</div>" +
           '<p class="text-small muted mb-0">La tua posizione è ' + esc(band.label.toLowerCase()) + ". Le fasce sono riferimenti di intensità, non soglie diagnostiche.</p></div>" +

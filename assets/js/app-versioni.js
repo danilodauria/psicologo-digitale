@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.71";
+  const VERSIONE = "1.3.72";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.72",
+      data: "13 novembre 2026",
+      titolo: "Lo storico dei punteggi: come cambia un questionario nel tempo",
+      punti: [
+        "Rifacendo un questionario il punteggio precedente spariva: restava solo l'ultimo, e non c'era modo di sapere se un'area stava migliorando o peggiorando. La pagina Valutazione diceva anzi «i punteggi precedenti vengono sostituiti».",
+        "Ora ogni compilazione completata lascia un punto nello storico, con data e punteggio: accanto al questionario si vedono le ultime sei misurazioni a barre, e nella pagina del risultato la serie intera, con il confronto fra l'ultima e la prima.",
+        "Le bozze intermedie non contano, e la frase resta neutra — «27 punti sopra la prima», non «peggiorato»: su una scala di sintomi il numero non dice da solo come stanno le cose. Lo storico entra nel backup ed è nel conteggio dello spazio occupato."
+      ]
+    },
     {
       v: "1.3.71",
       data: "13 novembre 2026",

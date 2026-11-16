@@ -550,7 +550,11 @@ NP.app = (function () {
       thoughts: readJSON("thoughts", []),
       course: state.course,
       quizStats: state.quizStats,
-      reportNotes: state.reportNotes
+      reportNotes: state.reportNotes,
+    // Lo storico viaggia con il backup: è un dato dell'utente come gli altri.
+    // Le copie automatiche lo contengono pure, ma il ripristino non lo riscrive:
+    // una copia rimette a posto lo stato, non riscrive il passato delle misure.
+    storicoPunteggi: storicoPunteggi()
     };
   }
 
@@ -670,6 +674,7 @@ NP.app = (function () {
     chat: "Conversazione con Neura",
     copie: "Copie automatiche",
     copieMax: "Preferenze",
+    storicoPunteggi: "Storico dei punteggi",
     compattaGiorni: "Soglia di compattazione",
     liberato: "Spazio liberato in tutto",
     theme: "Tema",
@@ -881,6 +886,43 @@ NP.app = (function () {
   // l'anteprima racconta. Se stessero in due posti diversi, prima o poi
   // l'anteprima tacerebbe su un dato che cambia davvero: è già successo con
   // percorso e quiz, riscritti dal ripristino e mai nominati nell'anteprima.
+  /* ------------------------------------------------ Storico dei punteggi */
+
+  // `scales` tiene solo l'ultimo risultato: rifacendo un questionario il
+  // punteggio precedente sparisce. Senza una serie nel tempo non si può vedere
+  // se un'area migliora o peggiora, che è l'unica domanda utile da farsi su un
+  // punteggio che si ripete nel tempo.
+  const STORICO_MASSIMO = 24;
+
+  function storicoPunteggi() {
+    const letto = readJSON("storicoPunteggi", {});
+    return letto && typeof letto === "object" && !Array.isArray(letto) ? letto : {};
+  }
+
+  function storicoDi(id) {
+    const elenco = storicoPunteggi()[id];
+    if (!Array.isArray(elenco)) return [];
+    return elenco.filter(function (v) {
+      return v && typeof v.punti === "number" && isFinite(new Date(v.quando).getTime());
+    });
+  }
+
+  // Un punto per ogni compilazione completata, non per ogni risposta data: le
+  // bozze salvate mentre si compila non sono misurazioni.
+  function registraPunteggio(id, punti, massimo, banda) {
+    if (!id || typeof punti !== "number" || !isFinite(punti)) return storicoDi(id);
+    const tutto = storicoPunteggi();
+    const elenco = (Array.isArray(tutto[id]) ? tutto[id] : []).concat([{
+      quando: new Date().toISOString(),
+      punti: punti,
+      massimo: typeof massimo === "number" ? massimo : null,
+      banda: banda || ""
+    }]);
+    tutto[id] = elenco.slice(-STORICO_MASSIMO);
+    writeJSON("storicoPunteggi", tutto);
+    return tutto[id];
+  }
+
   const CAMPI_COPIA = [
     ["risposte", "Risposte del colloquio", "intake", function (d) { return d.intake && d.intake.answers ? Object.keys(d.intake.answers).length : 0; }],
     ["questionari", "Questionari compilati", "scales", function (d) { return d.scales ? Object.keys(d.scales).length : 0; }],
@@ -1135,6 +1177,10 @@ NP.app = (function () {
     compattaDati: compattaDati,
     giorniCompatta: giorniCompatta,
     liberatoTotale: liberatoTotale,
+    storicoDi: storicoDi,
+    storicoPunteggi: storicoPunteggi,
+    registraPunteggio: registraPunteggio,
+    raccogliDati: raccogliDati,
     riprovaSalvataggi: riprovaSalvataggi,
     salvataggiPendenti: salvataggiPendenti,
     compattaScelte: compattaScelte,
