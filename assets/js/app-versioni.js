@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.73";
+  const VERSIONE = "1.3.74";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.74",
+      data: "13 novembre 2026",
+      titolo: "La copia di prima del ripristino si riconosce nell'elenco",
+      punti: [
+        "La copia presa automaticamente prima di un ripristino era identica alle altre nell'elenco: stesso aspetto, stessa data, nessun modo di sapere che quella era il punto in cui si torna se il ripristino era sbagliato.",
+        "Ora porta il segno «Punto di ritorno» e la frase che dice a cosa si riferisce — «Prima del ripristino del 12 novembre 2026» — così si trova senza aprire le copie una per una. Le copie di routine restano senza etichetta.",
+        "L'etichetta è un campo della copia, non un testo calcolato al volo: viene salvata con i dati e resta leggibile anche dopo aver chiuso l'app."
+      ]
+    },
     {
       v: "1.3.73",
       data: "13 novembre 2026",

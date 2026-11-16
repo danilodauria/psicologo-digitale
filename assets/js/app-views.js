@@ -406,7 +406,9 @@
             const d = c.dati || {};
             const risposte = d.intake && d.intake.answers ? Object.keys(d.intake.answers).length : 0;
             const voci = d.diary ? d.diary.length : 0;
-            return '<li>' + esc(A.fmtDateTime(c.quando)) + " — " + risposte + (risposte === 1 ? " risposta" : " risposte") +
+            return '<li>' + (c.etichetta ? '<span class="badge badge-blue">Punto di ritorno</span> ' : "") +
+              esc(A.fmtDateTime(c.quando)) + (c.etichetta ? ' <span class="text-small muted">' + esc(c.etichetta) + "</span>" : "") +
+              " — " + risposte + (risposte === 1 ? " risposta" : " risposte") +
               ", " + voci + (voci === 1 ? " voce di diario" : " voci di diario") + " · " + A.fmtBytes(spazio.pesi[i] || 0) +
               ' <button type="button" class="btn btn-ghost btn-sm" data-copia="' + i + '">Ripristina</button>' +
               ' <button type="button" class="btn btn-ghost btn-sm" data-copia-esporta="' + i + '">Esporta</button>' +
@@ -483,7 +485,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.73 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.74 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

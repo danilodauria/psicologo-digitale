@@ -728,6 +728,14 @@ setTimeout(async function () {
   ok(NP.app.ripristinaCopia(0) === true, "il ripristino si esegue");
   ok(NP.app.state.diary[0].note === "prima del ripristino", "i dati tornano a quelli della copia scelta");
   ok(NP.app.copieAutomatiche()[0].dati.diary[0].note === "dati di adesso", "e i dati di prima restano in una copia, non svaniscono");
+
+  // Quella copia non è una copia di routine: nell'elenco deve riconoscersi come
+  // il punto in cui si torna se il ripristino era sbagliato.
+  ok(/Prima del ripristino del/.test(NP.app.copieAutomatiche()[0].etichetta), "la copia presa prima di un ripristino porta un'etichetta che la spiega");
+  ok(NP.app.copieAutomatiche().slice(1).every(function (c) { return !c.etichetta; }), "e le copie di routine restano senza etichetta");
+  navigate("#/licenze");
+  ok(/Punto di ritorno/.test(document.body.textContent), "nell'elenco quella copia si riconosce come punto di ritorno");
+  ok(/Prima del ripristino del/.test(document.body.textContent), "con la data del ripristino a cui si riferisce");
   ok(NP.app.ripristinaCopia(0) === true && NP.app.state.diary[0].note === "dati di adesso", "quindi un ripristino sbagliato si annulla con un altro ripristino");
 
   // L'avviso con «Annulla il ripristino»: un clic e si torna ai dati di prima,

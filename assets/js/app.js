@@ -866,14 +866,17 @@ NP.app = (function () {
 
   // `forza` la usano gli azzeramenti: la copia si prende comunque, anche se
   // oggi è già stata fatta, perché è l'ultimo momento utile per averla.
-  function salvaCopia(forza) {
+  // `etichetta` serve a una copia che non è una routine: quella presa prima di
+  // un ripristino. Nell'elenco delle copie deve riconoscersi a colpo d'occhio,
+  // perché è il punto in cui si torna quando il ripristino era sbagliato.
+  function salvaCopia(forza, etichetta) {
     const oggi = new Date().toISOString().slice(0, 10);
     const copie = copieAutomatiche();
     const giaOggi = copie.length > 0 && String(copie[0].quando).slice(0, 10) === oggi;
     if (giaOggi && !forza) return false;
     const dati = raccogliDati();
     if (!haDati(dati)) return false;
-    const voce = { quando: new Date().toISOString(), dati: dati };
+    const voce = { quando: new Date().toISOString(), dati: dati, etichetta: etichetta || "" };
     const aggiornate = giaOggi ? [voce].concat(copie.slice(1)) : [voce].concat(copie);
     // Se lo spazio è finito si tengono meno copie, invece di perdere quella nuova.
     for (let n = Math.min(aggiornate.length, copieMassimo()); n >= 1; n--) {
@@ -1118,7 +1121,7 @@ NP.app = (function () {
     // I dati di prima si tengono in mano, non solo nella copia: se la copia
     // non riesce, l'annullamento deve funzionare lo stesso.
     const prima = raccogliDati();
-    const salvata = salvaCopia(true);
+    const salvata = salvaCopia(true, "Prima del ripristino del " + fmtDate(copia.quando));
     // Se c'era qualcosa da salvare e la copia non è riuscita (spazio pieno),
     // la promessa «si può annullare» sarebbe falsa: si chiede prima.
     if (!salvata && haDati(prima) &&
