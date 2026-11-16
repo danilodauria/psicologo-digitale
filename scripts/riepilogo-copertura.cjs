@@ -57,6 +57,42 @@ for (const [file, nome] of CONTROLLI) {
   }
 }
 
+// Il riepilogo stampato scorre via con il terminale. Accanto ai tre rapporti
+// JSON se ne lascia uno leggibile, che resta in `artifacts/copertura/` anche a
+// esecuzione finita: serve a rispondere a «cosa hanno controllato l'ultima
+// volta, e con quali numeri?» senza rilanciare tutto. Si scrive anche quando
+// qualcosa non torna, perché il motivo del rosso è la cosa più utile da
+// ritrovare.
+const righe = [];
+let rapportoSegnato = false;
+function scriviRapportoLeggibile(esito) {
+  if (rapportoSegnato) return;
+  rapportoSegnato = true;
+  let versione = "?";
+  try {
+    versione = JSON.parse(fs.readFileSync(path.join(radice, "package.json"), "utf8")).version || versione;
+  } catch (e) {}
+  const righeFinali = [
+    "# Riepilogo di copertura dei controlli",
+    "",
+    "Versione " + versione + " · " + new Date().toLocaleString("it-IT") + " · esito: " + esito,
+    "",
+    ...righe,
+    ""
+  ];
+  try {
+    fs.mkdirSync(cartella, { recursive: true });
+    fs.writeFileSync(
+      path.join(cartella, "riepilogo.md"),
+      righeFinali.join("\n").replace(/\n{3,}/g, "\n\n"),
+      "utf8"
+    );
+    console.log("  · riepilogo scritto in artifacts/copertura/riepilogo.md");
+  } catch (e) {
+    console.error("  ✗ non è stato possibile scrivere artifacts/copertura/riepilogo.md: " + e.message);
+  }
+}
+
 console.log("\nCopertura dei controlli");
 
 if (mancanti.length) {
@@ -64,8 +100,12 @@ if (mancanti.length) {
     "  ✗ manca il rapporto di: " + mancanti.join(", ") +
       ". I controlli girano in ordine dentro `npm test`: se un rapporto manca, quel controllo non è arrivato in fondo."
   );
+  righe.push("Manca il rapporto di: " + mancanti.join(", ") + ".");
+  scriviRapportoLeggibile("da sistemare");
   process.exit(1);
 }
+
+righe.push("| Controllo | Pagine | Viste | Elementi | Dettaglio |", "| --- | ---: | ---: | ---: | --- |");
 
 const problemi = [];
 const pagine = [...new Set(rapporti.map((r) => r.pagine))];
@@ -133,6 +173,10 @@ for (const r of rapporti) {
       String(r.viste).padStart(2) + " viste · " + String(r.elementi).padStart(4) + " " + r.unita +
       (r.extra ? " · " + r.extra : "")
   );
+  righe.push(
+    "| " + r.nome + " | " + r.pagine + " | " + r.viste + " | " + r.elementi + " " + r.unita + " | " +
+      (r.extra || "—") + " |"
+  );
 }
 
 const conElementi = rapporti.filter((r) => r.programma && r.programma.attesi > 0);
@@ -149,11 +193,21 @@ if (conElementi.length) {
       letti + " su " + quanti + " letti da " + conElementi.map((r) => r.nome.toLowerCase()).join(", ") +
       (tipi.length ? " (" + tipi.join(", ") + ")" : "") + "."
   );
+  righe.push(
+    "",
+    "**Elementi del programma: " + letti + " su " + quanti + "** letti da " +
+      conElementi.map((r) => r.nome.toLowerCase()).join(", ") +
+      (tipi.length ? " (" + tipi.join(", ") + ")" : "") + ".",
+    ""
+  );
 }
 
 if (problemi.length) {
   problemi.forEach((p) => console.error("  ✗ " + p));
   console.error("\n" + problemi.length + " punti da sistemare nel riepilogo.");
+  righe.push("", "## Da sistemare", "");
+  problemi.forEach((p) => righe.push("- " + p));
+  scriviRapportoLeggibile("da sistemare");
   process.exit(1);
 }
 
@@ -161,3 +215,10 @@ console.log(
   "  ✓ Tutti e tre hanno letto le stesse " + pagineNellaCartella + " pagine e le stesse " + viste[0] +
     " viste, e ognuno dice quanti elementi ha coperto: nessuno è rimasto fuori."
 );
+righe.push(
+  "",
+  "Tutti e tre i controlli hanno letto le stesse " + pagineNellaCartella + " pagine e le stesse " +
+    viste[0] + " viste, e ognuno dichiara quanti elementi ha coperto.",
+  ""
+);
+scriviRapportoLeggibile("verde");

@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.65";
+  const VERSIONE = "1.3.66";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.66",
+      data: "13 novembre 2026",
+      titolo: "Il riepilogo dei controlli resta in un file leggibile",
+      punti: [
+        "Il riepilogo che appare in fondo a «npm test» scorreva via con il terminale: per sapere cosa avevano controllato l'ultima volta i tre controlli bisognava rilanciare tutto.",
+        "Ora lo stesso riepilogo viene scritto in «artifacts/copertura/riepilogo.md»: una tabella con pagine, viste ed elementi di ciascun controllo, la riga degli elementi del programma, la data e l'esito.",
+        "Il file si scrive anche quando qualcosa non torna, con l'elenco dei punti da sistemare: il motivo di un rosso è la cosa più utile da ritrovare dopo."
+      ]
+    },
     {
       v: "1.3.65",
       data: "13 novembre 2026",
