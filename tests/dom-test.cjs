@@ -778,6 +778,7 @@ setTimeout(async function () {
   ok(NP.app.cancellaCopia(1) === true, "si cancella una copia sola");
   const copieDopo = NP.app.copieAutomatiche();
   ok(copieDopo.length === 2, "le copie passano da tre a due");
+  ok(/liberati/.test(document.getElementById("toast").textContent) && /\d+ (B|KB|MB) liberati/.test(document.getElementById("toast").textContent), "il messaggio dice quanto spazio è stato liberato");
   const noteCopie = copieDopo.map(function (c) { return c.dati.diary[0].note; });
   ok(noteCopie.indexOf("da cancellare") < 0 && noteCopie.indexOf("recente") >= 0 && noteCopie.indexOf("vecchia") >= 0, "sparisce proprio quella scelta, le altre restano");
   ok(JSON.stringify(NP.app.state.diary) === datiPrimaDellaCancellazione, "i dati attuali non vengono toccati");

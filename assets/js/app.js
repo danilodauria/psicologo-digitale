@@ -882,13 +882,17 @@ NP.app = (function () {
     const i = Number(indice);
     if (!(i >= 0) || i >= copie.length) return false;
     const copia = copie[i];
-    if (!confirm("Cancellare la copia del " + fmtDateTime(copia.quando) + "? I dati attuali non vengono toccati, ma questa copia non si recupera.")) return false;
+    // Lo spazio liberato si dice prima e dopo: è il motivo per cui si cancella
+    // una copia sola, e il numero è lo stesso che la riga mostra accanto.
+    const byte = peso(JSON.stringify(copia));
+    if (!confirm("Cancellare la copia del " + fmtDateTime(copia.quando) + "? Libera circa " + fmtBytes(byte) +
+      ". I dati attuali non vengono toccati, ma questa copia non si recupera.")) return false;
     const restanti = copie.filter(function (_, n) { return n !== i; });
     if (!scriviCopie(restanti)) {
       toast("Non è stato possibile cancellare la copia.", 5000);
       return false;
     }
-    toast("Copia del " + fmtDate(copia.quando) + " cancellata.");
+    toast("Copia del " + fmtDate(copia.quando) + " cancellata: " + fmtBytes(byte) + " liberati.");
     return true;
   }
 
