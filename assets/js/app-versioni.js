@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.75";
+  const VERSIONE = "1.3.76";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.76",
+      data: "13 novembre 2026",
+      titolo: "Tenere solo la copia più recente, con un pulsante",
+      punti: [
+        "Quando le copie si accumulano, quella che serve è quasi sempre l'ultima: cancellare le altre una per una significava ripetere lo stesso gesto e rifare il conto ogni volta.",
+        "Ora c'è un pulsante che dice quello che fa: «Tieni solo la più recente e libera 8,2 kB». Accanto c'è quante copie spariscono e la data di quella che resta.",
+        "Funziona come le altre cancellazioni: chiede conferma, dice quali tocca, e lo spazio promesso è quello guadagnato davvero. Con una copia sola il pulsante non compare, perché non c'è niente da pulire."
+      ]
+    },
     {
       v: "1.3.75",
       data: "13 novembre 2026",

@@ -873,6 +873,40 @@ setTimeout(async function () {
   NP.app.cancellaCopia = cancellaVero;
   ok(cancellataQuale === 0, "«Cancella» cancella proprio la copia a cui sta accanto");
 
+  // Pulizia in un gesto: tenere solo la più recente, sapendo quanto si libera.
+  const copiaCon = function (giorno, nota) {
+    return { quando: giorno + "T09:00:00.000Z", dati: { diary: [paginaDiario("p" + giorno, giorno + "T09:00:00.000Z", nota)] } };
+  };
+  NP.app.writeJSON("copie", [copiaCon("2026-11-09", "la più recente"), copiaCon("2026-11-08", "vecchia"), copiaCon("2026-11-07", "più vecchia")]);
+  const contoPulizia = NP.app.copieDaTenere();
+  ok(contoPulizia.quante === 2 && contoPulizia.byte > 0, "la pulizia sa quante copie togliere e quanto libera");
+  ok(contoPulizia.resta && contoPulizia.resta.dati.diary[0].note === "la più recente", "e che resta la più recente, non una qualsiasi");
+  const archivioPulizia = NP.app.spazioCopie().totaleArchivio;
+  const confirmVeroPulizia = window.confirm;
+  let chiestoPulizia = "";
+  window.confirm = function (msg) { chiestoPulizia = msg; return true; };
+  ok(NP.app.cancellaCopieVecchie() === true, "la pulizia si esegue");
+  window.confirm = confirmVeroPulizia;
+  ok(/2 copie/.test(chiestoPulizia) && /Libera/.test(chiestoPulizia), "la conferma dice quante copie toglie e quanto libera");
+  ok(NP.app.copieAutomatiche().length === 1, "resta una copia sola");
+  ok(NP.app.copieAutomatiche()[0].dati.diary[0].note === "la più recente", "ed è proprio la più recente");
+  ok(archivioPulizia - NP.app.spazioCopie().totaleArchivio === contoPulizia.byte, "lo spazio liberato è quello promesso, non una stima");
+  ok(/liberati/.test(document.getElementById("toast").textContent), "il messaggio dice quanto è stato liberato");
+  ok(NP.app.cancellaCopieVecchie() === false, "con una copia sola non c'è niente da pulire");
+
+  // Il pulsante in pagina: dice il conto e fa quello che dice.
+  NP.app.writeJSON("copie", [copiaCon("2026-11-12", "recentissima"), copiaCon("2026-11-11", "media")]);
+  navigate("#/licenze");
+  const bottonePulizia = document.getElementById("cancellaCopieVecchie");
+  ok(!!bottonePulizia && /libera/.test(bottonePulizia.textContent), "la pagina offre la pulizia con il conto dentro il pulsante");
+  ok(/copie più vecchie spariscono|più vecchia sparisce/.test(document.getElementById("pulisciCopie").textContent), "e dice quante copie spariscono");
+  window.confirm = function () { return true; };
+  bottonePulizia.click();
+  window.confirm = confirmVeroPulizia;
+  ok(NP.app.copieAutomatiche().length === 1 && NP.app.copieAutomatiche()[0].dati.diary[0].note === "recentissima",
+    "cliccandolo resta solo la più recente");
+  ok(!document.getElementById("cancellaCopieVecchie"), "e il pulsante sparisce quando non c'è più niente da togliere");
+
   // Compattare: prima si dice quanto libera, e si tocca solo ciò che è vecchio.
   // Quanto è «vecchio» lo sceglie chi usa l'app, fra 30, 60 e 90 giorni.
   const giorniFa = (n) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();

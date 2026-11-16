@@ -709,10 +709,13 @@ NP.app = (function () {
   // Si misura l'archivio intero con e senza, così il numero mostrato accanto
   // alla copia è quello che il browser guadagna davvero — e lo stesso che il
   // messaggio di conferma promette.
+  function byteLiberati(copie, restanti) {
+    return Math.max(0, peso(JSON.stringify(copie)) - peso(JSON.stringify(restanti)));
+  }
+
   function spazioLiberato(copie, indice) {
     const i = Number(indice);
-    const senza = copie.filter(function (_, n) { return n !== i; });
-    return Math.max(0, peso(JSON.stringify(copie)) - peso(JSON.stringify(senza)));
+    return byteLiberati(copie, copie.filter(function (_, n) { return n !== i; }));
   }
 
   function spazioCopie() {
@@ -1070,6 +1073,31 @@ NP.app = (function () {
   // Una copia si può togliere da sola, senza toccare le altre né i dati di
   // oggi: serve quando lo spazio scarseggia e si vuole tenere solo la più
   // recente, o quando una copia è palesemente sbagliata.
+  // Tenere solo la più recente: è la pulizia che serve quando le copie si sono
+  // accumulate. Il conto si fa prima, perché è la ragione del gesto.
+  function copieDaTenere() {
+    const copie = copieAutomatiche();
+    const restanti = copie.slice(0, 1);
+    return { quante: Math.max(0, copie.length - 1), byte: byteLiberati(copie, restanti), resta: restanti[0] || null };
+  }
+
+  function cancellaCopieVecchie() {
+    const copie = copieAutomatiche();
+    if (copie.length < 2) return false;
+    const conto = copieDaTenere();
+    if (!confirm("Tenere solo la copia più recente e cancellare le altre " + conto.quante +
+      (conto.quante === 1 ? " copia" : " copie") +
+      "? Libera " + fmtBytes(conto.byte) + ". Resta la copia del " + fmtDateTime(copie[0].quando) +
+      "; le altre non si recuperano.")) return false;
+    if (!scriviCopie(copie.slice(0, 1))) {
+      toast("Non è stato possibile cancellare le copie.", 5000);
+      return false;
+    }
+    toast(conto.quante + (conto.quante === 1 ? " copia cancellata: " : " copie cancellate: ") +
+      fmtBytes(conto.byte) + " liberati. Resta quella del " + fmtDate(copie[0].quando) + ".", 6000);
+    return true;
+  }
+
   function cancellaCopia(indice) {
     const copie = copieAutomatiche();
     const i = Number(indice);
@@ -1238,6 +1266,8 @@ NP.app = (function () {
     campiRipristinati: RIPRISTINATI,
     confrontoCopia: confrontoCopia,
     cancellaCopia: cancellaCopia,
+    copieDaTenere: copieDaTenere,
+    cancellaCopieVecchie: cancellaCopieVecchie,
     ripristinaCopia: ripristinaCopia,
     cancellaColloquio: cancellaColloquio,
     cancellaDati: cancellaDati,

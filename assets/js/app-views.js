@@ -415,6 +415,17 @@
               ' <button type="button" class="btn btn-ghost btn-sm" data-copia-esporta="' + i + '">Esporta</button>' +
               ' <button type="button" class="btn btn-ghost btn-sm" data-copia-cancella="' + i + '">Cancella</button></li>';
           }).join("") + "</ul>";
+          // Pulizia in un gesto: quando le copie si sono accumulate, quella che
+          // serve è quasi sempre solo l'ultima. Il conto sta nel pulsante.
+          const contoVecchie = A.copieDaTenere();
+          if (contoVecchie.quante > 0) {
+            html += '<div class="btn-row mt-2" id="pulisciCopie">' +
+              '<button type="button" class="btn btn-soft btn-sm" id="cancellaCopieVecchie">Tieni solo la più recente e libera ' +
+                A.fmtBytes(contoVecchie.byte) + "</button>" +
+              '<span class="text-small muted">' + contoVecchie.quante +
+                (contoVecchie.quante === 1 ? " copia più vecchia sparisce" : " copie più vecchie spariscono") +
+                ", quella del " + esc(A.fmtDate(contoVecchie.resta.quando)) + " resta.</span></div>";
+          }
           // Anteprima: prima di sostituire i dati si vede cosa cambierebbe,
           // e se non cambierebbe niente lo dice invece di fingere un rischio.
           if (copiaInEsame !== null) {
@@ -486,7 +497,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.75 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.76 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -580,6 +591,14 @@
       const i = copiaInEsame;
       copiaInEsame = null;
       if (A.ripristinaCopia(i)) A.render();
+    });
+
+    const pulisciCopie = document.getElementById("cancellaCopieVecchie");
+    if (pulisciCopie) pulisciCopie.addEventListener("click", function () {
+      if (A.cancellaCopieVecchie()) {
+        copiaInEsame = null;
+        A.render();
+      }
     });
 
     const annullaRipristinoBtn = document.getElementById("annullaRipristinoBtn");
