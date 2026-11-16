@@ -63,7 +63,9 @@
       '<div class="page-head"><p class="crumbs"><a href="#/manuale">Manuale</a><span>›</span>Capitolo ' + c.n + " di " + list.length + "</p>" +
         "<h1>" + esc(c.titolo) + "</h1>" +
         '<p class="lead">' + esc(c.sommario) + "</p>" +
-        '<p class="text-small muted">Tempo di lettura: ' + c.minuti + " minuti</p></div>" +
+        '<p class="text-small muted">Tempo di lettura: ' + c.minuti + " minuti</p>" +
+        '<div class="btn-row mt-1"><button type="button" class="btn btn-ghost btn-sm" id="ascoltaCapitolo">' +
+          A.icon("wave") + "Ascolta il capitolo</button></div></div>" +
       '<div class="grid grid-3">' +
         '<article class="card" style="grid-column:1/-1"><div class="prose">' +
           c.sezioni.map(function (s) {
@@ -85,6 +87,14 @@
         (next ? '<a class="btn btn-ghost" data-nav="next" href="#/manuale/' + next.id + '">' + esc(next.titolo) + " →</a>" : "") +
       "</div>"
     );
+
+    const ascolta = document.getElementById("ascoltaCapitolo");
+    if (ascolta) ascolta.addEventListener("click", function () {
+      const testo = c.titolo + ". " + c.sommario + " " + c.sezioni.map(function (s) {
+        return s.h + ". " + s.p.join(" ");
+      }).join(" ");
+      A.leggiCapitolo(testo);
+    });
   }
 
   /* ---------------------------------------------------------------- Glossario */
@@ -303,6 +313,22 @@
         "<li>Il PDF viene generato sul dispositivo: non viene inviato da nessuna parte.</li>" +
         "<li>Se cancelli i dati del browser, i dati spariscono. Esporta un backup se vuoi conservarli.</li>" +
       "</ul>" +
+      // I dati stanno solo qui: se non escono mai, una svuotata del browser li
+      // porta via. Il promemoria è la cosa più utile che questa pagina può dire.
+      (function () {
+        const giorni = A.giorniSenzaBackup();
+        const quando = A.ultimoBackup();
+        const haRoba = A.haDati(A.raccogliDati());
+        if (!haRoba) return "";
+        if (giorni === null) {
+          return '<div class="callout warn mt-2" id="backupPromemoria"><p><strong>Non hai ancora esportato un backup.</strong> I dati vivono solo in questo browser: basta svuotare i dati del sito, cambiare browser o perdere il telefono e non restano. Un file di pochi kB li mette al sicuro.</p></div>';
+        }
+        if (giorni >= 30) {
+          return '<div class="callout warn mt-2" id="backupPromemoria"><p><strong>L\'ultimo backup è di ' + giorni + ' giorni fa.</strong> Da allora i dati sono cresciuti e il file non li contiene. Esportarne uno adesso costa pochi secondi.</p></div>';
+        }
+        return '<p class="text-small muted mt-1" id="backupPromemoria">Ultima esportazione: ' + esc(A.fmtDate(quando)) +
+          (giorni === 0 ? " (oggi)." : " (" + giorni + (giorni === 1 ? " giorno fa)." : " giorni fa).")) + "</p>";
+      })() +
       '<div class="btn-row mt-2"><button type="button" class="btn btn-soft btn-sm" id="backupBtn">' + A.icon("download") + "Esporta backup</button>" +
         '<label class="btn btn-ghost btn-sm" for="importFile">' + A.icon("refresh") + 'Importa backup</label><input type="file" id="importFile" accept="application/json,.json" hidden>' +
         '<button type="button" class="btn btn-danger btn-sm" id="resetBtn">Cancella tutti i dati</button></div>' +
@@ -374,6 +400,18 @@
           })() +
         "</div>";
       })() +
+
+      '<div class="card mt-2" id="letturaPrivacy"><h2 class=h-sub>Lettura e privacy</h2>' +
+        '<div class="btn-row"><label class="text-small" for="testoScelta">Dimensione del testo</label>' +
+          '<select id="testoScelta" style="width:auto;padding:.35rem .6rem;font-size:.85rem">' +
+            A.testiScelte().map(function (n) {
+              return '<option value="' + n + '"' + (n === A.testoScelto() ? " selected" : "") + ">" + n + "%</option>";
+            }).join("") +
+          "</select>" +
+          '<span class="text-small muted">vale per tutta l\'app, non solo per questa pagina</span></div>' +
+        '<div class="btn-row mt-1"><button type="button" class="btn btn-soft btn-sm" id="discretoToggle">' +
+          (A.discretoAttivo() ? "Mostra i contenuti sensibili" : "Attiva la modalità discreta") + "</button>" +
+          '<span class="text-small muted">copre i contenuti finché non li scopri: utile in un posto affollato</span></div></div>' +
 
       '<div class="card mt-2"><h2 class=h-sub>Copia di sicurezza automatica</h2>' +
         (function () {
@@ -497,12 +535,23 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.76 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.4.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
     if (backup) backup.addEventListener("click", function () {
       A.esportaBackup();
+    });
+
+    const testoScelta = document.getElementById("testoScelta");
+    if (testoScelta) testoScelta.addEventListener("change", function () {
+      A.impostaTesto(testoScelta.value);
+    });
+
+    const discretoToggle = document.getElementById("discretoToggle");
+    if (discretoToggle) discretoToggle.addEventListener("click", function () {
+      A.impostaDiscreto(!A.discretoAttivo());
+      A.render();
     });
 
     const esportaSubito = document.getElementById("spazioPienoEsporta");
@@ -529,8 +578,13 @@
       const reader = new FileReader();
       reader.onload = function () {
         try {
-          const data = JSON.parse(reader.result);
-          if (!data || data.app !== "Psicologo Digitale") throw new Error("Formato non valido");
+          const letto = JSON.parse(reader.result);
+          if (!letto || letto.app !== "Psicologo Digitale") throw new Error("Formato non valido");
+          // Un file vecchio si completa prima di leggerlo: importare un formato
+          // che nel frattempo è cambiato sarebbe una perdita silenziosa.
+          const esito = A.migraBackup(letto);
+          if (esito.errore) { A.toast(esito.errore, 8000); return; }
+          const data = esito.dati;
           if (!confirm("Importare il backup? I dati attuali verranno sostituiti.")) return;
           state.intake = data.intake || state.intake;
           state.scales = data.scales || {};
@@ -542,7 +596,7 @@
           A.writeJSON("storicoPunteggi", data.storicoPunteggi && typeof data.storicoPunteggi === "object" &&
             !Array.isArray(data.storicoPunteggi) ? data.storicoPunteggi : {});
           A.saveIntake(); A.saveScales(); A.saveDiary(); A.saveCourse(); A.saveQuizStats(); A.saveReportNotes();
-          A.toast("Backup importato.");
+          A.toast("Backup importato" + (esito.migrato ? " e aggiornato al formato attuale." : "."));
           A.render();
         } catch (e) {
           alert("Il file non sembra un backup valido di Psicologo Digitale.");
@@ -610,6 +664,107 @@
     if (annullaCopia) annullaCopia.addEventListener("click", function () {
       copiaInEsame = null;
       A.render();
+    });
+  };
+
+  /* ------------------------------------------------------------- Riepilogo */
+
+  // I dati sono già tutti nel dispositivo: il riepilogo non li interpreta, li
+  // mette in fila. Due settimane affiancate dicono più di un numero solo.
+  views.riepilogo = function () {
+    const ora = A.statistichePeriodo(7, 0);
+    const prima = A.statistichePeriodo(7, 7);
+    const vuoto = !ora.voci && !ora.schede && !ora.misure && !prima.voci && !prima.schede && !prima.misure;
+    const num = function (n) { return n === null ? "—" : (Math.round(n * 10) / 10).toString().replace(".", ","); };
+    const diff = function (a, b) {
+      if (a === null || b === null) return "—";
+      const d = Math.round((a - b) * 10) / 10;
+      if (d === 0) return "uguale";
+      return (d > 0 ? "+" : "−") + Math.abs(d).toString().replace(".", ",");
+    };
+    const riga = function (etichetta, campo) {
+      return '<tr><th scope="row">' + etichetta + "</th><td>" + num(ora.media[campo]) + "</td><td>" +
+        num(prima.media[campo]) + "</td><td>" + diff(ora.media[campo], prima.media[campo]) + "</td></tr>";
+    };
+
+    A.setTitle("Riepilogo dei periodi");
+    A.page(
+      '<div class="page-head"><p class="eyebrow">Riepilogo</p><h1>Gli ultimi sette giorni, accanto ai sette prima</h1>' +
+        '<p class="lead">Le stesse misure in due periodi vicini. Non è un giudizio: è il modo più semplice per vedere se una direzione c\'è.</p></div>' +
+      (vuoto
+        ? '<div class="callout info"><p><strong>Non ci sono ancora dati in questi quattordici giorni.</strong> Bastano una voce di diario o un questionario perché il confronto abbia qualcosa da dire.</p></div>'
+        : '<div class="card"><h2 class="h-sub">Medie del diario</h2>' +
+          '<table class="text-small"><thead><tr><th scope="col">Voce</th><th scope="col">Ultimi 7 giorni</th><th scope="col">7 giorni prima</th><th scope="col">Differenza</th></tr></thead><tbody>' +
+            riga("Umore", "umore") + riga("Ansia", "ansia") + riga("Sonno", "sonno") + riga("Energia", "energia") +
+          '</tbody></table>' +
+          '<p class="text-small muted mb-0">Differenza calcolata sulla media dei valori inseriti, da 0 a 10. Con poche voci una media si muove facilmente: vale come traccia, non come prova.</p></div>' +
+        '<div class="grid grid-2 mt-2">' +
+          '<div class="card"><h2 class="h-sub">Cosa hai fatto</h2><ul class="list-check">' +
+            "<li>" + ora.voci + (ora.voci === 1 ? " voce di diario" : " voci di diario") + " (prima: " + prima.voci + ")</li>" +
+            "<li>" + ora.schede + (ora.schede === 1 ? " scheda del pensiero" : " schede del pensiero") + " (prima: " + prima.schede + ")</li>" +
+            "<li>" + ora.misure + (ora.misure === 1 ? " questionario compilato" : " questionari compilati") + " (prima: " + prima.misure + ")</li>" +
+          "</ul></div>" +
+          '<div class="card"><h2 class="h-sub">Cosa farne</h2><p class="text-small">Scegli una cosa sola da portare al prossimo colloquio: una voce di diario, un punteggio che si è mosso, o una scheda che si ripete. Il resto può aspettare.</p>' +
+            '<div class="btn-row"><a class="btn btn-ghost btn-sm" href="#/diario">Apri il diario</a><a class="btn btn-ghost btn-sm" href="#/valutazione">Questionari</a></div></div>' +
+        "</div>") +
+      '<p class="mt-3"><a class="btn btn-soft" href="#/">Torna alla home</a></p>'
+    );
+  };
+
+  /* ---------------------------------------------------------------- Cerca */
+
+  // Cercare dentro i contenuti: dodici capitoli, glossario ed esercizi sono
+  // troppi per essere attraversati a mano quando si cerca una parola sola.
+  function indiceContenuti() {
+    const voci = [];
+    (NP.data.manuale || []).forEach(function (c) {
+      const testo = [c.titolo, c.sommario].concat(c.sezioni.map(function (s) { return s.h + " " + s.p.join(" "); })).join(" ");
+      voci.push({ tipo: "Capitolo " + c.n, titolo: c.titolo, testo: testo, rotta: "#/manuale/" + c.id });
+    });
+    (NP.data.glossario || []).forEach(function (v) {
+      voci.push({ tipo: "Glossario", titolo: v.t, testo: v.d, rotta: "#/glossario" });
+    });
+    const esercizi = (NP.data.percorso && Array.isArray(NP.data.percorso.esercizi)) ? NP.data.percorso.esercizi : [];
+    esercizi.forEach(function (e) {
+      if (!e || typeof e !== "object" || !e.id) return;
+      voci.push({ tipo: "Esercizio", titolo: e.titolo || e.id, testo: [e.titolo, e.testo, e.durata].join(" "), rotta: "#/esercizi/" + e.id });
+    });
+    return voci;
+  }
+
+  views.cerca = function (params) {
+    const q = (params && params[0]) ? String(params[0]).trim() : "";
+    const parole = q.toLowerCase().split(/\s+/).filter(function (p) { return p.length > 1; });
+    const risultati = !parole.length ? [] : indiceContenuti().filter(function (v) {
+      const testo = (v.titolo + " " + v.testo).toLowerCase();
+      return parole.every(function (p) { return testo.indexOf(p) >= 0; });
+    }).slice(0, 40);
+
+    A.setTitle("Cerca");
+    A.page(
+      '<div class="page-head"><p class="eyebrow">Ricerca</p><h1>Cerca nei contenuti</h1>' +
+        '<p class="lead">Capitoli del manuale, voci di glossario ed esercizi guidati. La ricerca avviene qui, sul dispositivo: nessuna parola esce da qui.</p></div>' +
+      '<form class="card" id="cercaForm"><label class="text-small" for="cercaInput">Parole da cercare</label>' +
+        '<div class="btn-row"><input id="cercaInput" name="q" type="search" value="' + esc(q) + '" placeholder="per esempio: sonno, rimuginio, respiro" style="flex:1;min-width:12rem;padding:.5rem .7rem">' +
+        '<button type="submit" class="btn btn-primary btn-sm">' + A.icon("list") + "Cerca</button></div>" +
+        '<p class="text-small muted mb-0">Si possono cercare più parole: vengono cercate tutte insieme.</p></form>' +
+      (q && !risultati.length
+        ? '<div class="callout info mt-2"><p><strong>Nessun risultato per «' + esc(q) + '».</strong> Prova una parola più corta, o il termine clinico invece di quello comune.</p></div>'
+        : "") +
+      (risultati.length
+        ? '<div class="card mt-2"><h2 class="h-sub">' + risultati.length + (risultati.length === 1 ? " risultato" : " risultati") + '</h2><ul class="text-small">' +
+          risultati.map(function (v) {
+            return '<li><a href="' + v.rotta + '"><strong>' + esc(v.titolo) + "</strong></a> — " + esc(v.tipo) + "</li>";
+          }).join("") + "</ul></div>"
+        : "") +
+      '<div class="card mt-2"><h2 class="h-sub">Non è un motore di ricerca</h2><p class="text-small mb-0">La ricerca confronta le parole con i testi del programma: se non trova niente, non significa che l\'argomento non esista, ma che non è scritto con quella parola. Per una domanda aperta c\'è Neura.</p></div>'
+    );
+
+    const modulo = document.getElementById("cercaForm");
+    if (modulo) modulo.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const valore = (document.getElementById("cercaInput").value || "").trim();
+      A.go(valore ? "cerca/" + encodeURIComponent(valore) : "cerca");
     });
   };
 })();

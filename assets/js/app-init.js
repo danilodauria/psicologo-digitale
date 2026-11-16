@@ -117,6 +117,11 @@
     }).catch(function () { A.toast("Chiama il " + numero); });
   });
 
+  /* Modalità discreta ------------------------------------------------------ */
+
+  const mostraDiscreto = document.getElementById("mostraDiscreto");
+  if (mostraDiscreto) mostraDiscreto.addEventListener("click", function () { A.svelaContenuti(); });
+
   /* Routing --------------------------------------------------------------- */
 
   window.addEventListener("hashchange", function () { A.render(); });

@@ -426,6 +426,48 @@ function testiDellApp() {
     );
   }
 
+  // Due schermate non hanno una rotta propria e restavano fuori da tutto: il
+  // risultato di un questionario (che appare al posto del modulo) e l'anteprima
+  // di un ripristino (che si apre con un clic). Sono le più dense di testo:
+  // si seminano dati veri e si legge #app come per le altre.
+  const leggiExtra = function (dove) {
+    const contenitore = documento.getElementById("app");
+    if (!contenitore) return;
+    const testiVista = [];
+    for (const b of blocchiDiTesto(contenitore)) {
+      blocchi++;
+      testiVista.push(b.testo);
+      controllaRefusi(b, dove);
+      controllaErrori(b, dove);
+    }
+    controllaRipetizioni(testiVista, dove);
+    testi.push(...testiVista);
+  };
+
+  const scalaProva = (NP.data.scales || [])[0];
+  if (scalaProva) {
+    const punti = Math.round(NP.app.scaleMax(scalaProva) / 2);
+    NP.app.state.scales[scalaProva.id] = {
+      answers: {}, score: punti, band: (NP.app.scaleBand(scalaProva, punti) || {}).label || "",
+      livello: "lieve", doneAt: new Date().toISOString()
+    };
+    finestra.location.hash = "#/valutazione/" + scalaProva.id;
+    NP.app.render();
+    leggiExtra("risultato di un questionario");
+  }
+
+  NP.app.writeJSON("copie", [{
+    quando: new Date().toISOString(), etichetta: "Prima del ripristino del 12 novembre 2026",
+    dati: { diary: [], scales: {}, thoughts: [], intake: { answers: {} }, course: { done: [], notes: {} }, quizStats: {} }
+  }]);
+  finestra.location.hash = "#/licenze";
+  NP.app.render();
+  const apriAnteprima = documento.querySelector("[data-copia]");
+  if (apriAnteprima) {
+    apriAnteprima.click();
+    leggiExtra("anteprima di un ripristino");
+  }
+
   return testi;
 }
 

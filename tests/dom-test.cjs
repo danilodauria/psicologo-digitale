@@ -1101,6 +1101,133 @@ setTimeout(async function () {
   window.confirm = confirmVero;
   Object.defineProperty(window.Storage.prototype, "setItem", { configurable: true, writable: true, value: setItemPieno });
 
+  /* ------------------------------------------------- Chiusura del progetto */
+
+  // Il backup ha una forma dichiarata: un file vecchio si completa, uno di una
+  // versione futura si rifiuta. Importare alla cieca è una perdita silenziosa.
+  console.log("\nFormato del backup");
+  ok(NP.app.versioneBackup === 2, "il formato del backup ha una versione dichiarata");
+  const raccolto = NP.app.raccogliDati();
+  ok(raccolto.version === 2, "ogni file esportato dice quale formato ha");
+  ok(!!raccolto.storicoPunteggi && typeof raccolto.storicoPunteggi === "object", "e porta con sé lo storico delle misure");
+  const vecchio = NP.app.migraBackup({ app: "Psicologo Digitale", diary: [] });
+  ok(!vecchio.errore && vecchio.dati.version === 2, "un file senza versione viene riconosciuto come il primo formato e portato a quello attuale");
+  ok(vecchio.migrato === true, "e la migrazione lo dice, invece di avvenire di nascosto");
+  ok(!!vecchio.dati.storicoPunteggi && Object.keys(vecchio.dati.storicoPunteggi).length === 0, "completando i campi che allora non esistevano, vuoti e non inventati");
+  const futuro = NP.app.migraBackup({ app: "Psicologo Digitale", version: 9 });
+  ok(!!futuro.errore, "un file di una versione più recente viene rifiutato, invece di essere letto male");
+  ok(/più recente/.test(futuro.errore), "e il messaggio dice perché, così si sa cosa fare");
+
+  console.log("\nPromemoria dell'esportazione");
+  window.localStorage.removeItem("psicologo-digitale:v1:ultimoBackup");
+  ok(NP.app.ultimoBackup() === null, "senza esportazioni la data non c'è");
+  ok(NP.app.giorniSenzaBackup() === null, "e non si inventa un numero di giorni");
+  NP.app.state.diary = [paginaDiario("v1", giorniFa(1), "ieri")];
+  navigate("#/licenze");
+  ok(!!document.getElementById("backupPromemoria"), "la pagina Licenze ricorda che manca un backup");
+  ok(/Non hai ancora esportato/.test(document.getElementById("backupPromemoria").textContent), "con una frase, non solo un'icona");
+  NP.app.segnaBackup();
+  ok(!!NP.app.ultimoBackup(), "esportare registra la data");
+  ok(NP.app.giorniSenzaBackup() === 0, "e il conto dei giorni riparte da zero");
+  navigate("#/licenze");
+  ok(/Ultima esportazione/.test(document.getElementById("backupPromemoria").textContent), "la pagina mostra quando è stato fatto l'ultimo backup");
+  ok(/oggi/.test(document.getElementById("backupPromemoria").textContent), "e dice «oggi» quando è di oggi");
+  window.localStorage.setItem("psicologo-digitale:v1:ultimoBackup", JSON.stringify(giorniFa(40)));
+  ok(NP.app.giorniSenzaBackup() === 40, "il conto dei giorni usa la data salvata");
+  navigate("#/licenze");
+  ok(/40 giorni fa/.test(document.getElementById("backupPromemoria").textContent), "dopo un mese il promemoria torna a farsi sentire");
+  ok(!document.getElementById("spazioPienoAvviso") || document.getElementById("backupPromemoria") !== document.getElementById("spazioPienoAvviso"), "e resta un avviso suo, non il posto dell'avviso sullo spazio pieno");
+
+  // Due settimane affiancate dicono più di un numero solo, e il confronto è
+  // aritmetica sui dati della persona, non un'interpretazione.
+  console.log("\nRiepilogo dei periodi");
+  const voce = function (id, giorni, umore) {
+    return { id: id, date: giorniFa(giorni), mood: umore, anxiety: 4, sleep: 6, energy: 5, note: "prova" };
+  };
+  NP.app.state.diary = [voce("s1", 2, 6), voce("s2", 3, 4), voce("s3", 9, 3), voce("s4", 10, 3)];
+  NP.app.writeJSON("thoughts", []);
+  const questa = NP.app.statistichePeriodo(7, 0);
+  const scorsa = NP.app.statistichePeriodo(7, 7);
+  ok(questa.voci === 2 && scorsa.voci === 2, "le voci finiscono ciascuna nel periodo giusto");
+  ok(Math.abs(questa.media.umore - 5) < 0.001, "la media dell'umore è quella delle voci del periodo");
+  ok(Math.abs(scorsa.media.umore - 3) < 0.001, "e quella della settimana prima non si mescola");
+  navigate("#/riepilogo");
+  ok(/Riepilogo/.test(document.title), "la pagina del riepilogo ha un titolo");
+  ok(document.querySelectorAll("#app table tbody tr").length === 4, "mostra le quattro misure del diario affiancate");
+  ok(/\+2/.test(document.getElementById("app").textContent), "e la differenza rispetto alla settimana prima, con il segno");
+  ok(/non è un giudizio/i.test(document.getElementById("app").textContent), "dichiarando che non è un giudizio");
+  ok(/traccia, non come prova/i.test(document.getElementById("app").textContent), "e che con poche voci una media si muove facilmente");
+  NP.app.state.diary = [];
+  navigate("#/riepilogo");
+  ok(/Non ci sono ancora dati/.test(document.getElementById("app").textContent), "senza dati lo dice, invece di mostrare una tabella di trattini");
+
+  // La ricerca confronta parole con i testi del programma, tutto sul dispositivo.
+  console.log("\nCerca nei contenuti");
+  navigate("#/cerca");
+  ok(!!document.getElementById("cercaInput"), "la ricerca ha un campo dove scrivere");
+  navigate("#/cerca/sonno");
+  ok(/\d+ risultat/.test(document.getElementById("app").textContent), "cercando «sonno» escono risultati");
+  ok(document.querySelectorAll('#app a[href^="#/manuale/"], #app a[href^="#/esercizi/"]').length > 0, "che portano a capitoli o esercizi");
+  navigate("#/cerca/zxqv");
+  ok(/Nessun risultato/.test(document.getElementById("app").textContent), "una parola che non c'è lo dice, invece di una pagina vuota");
+  ok(/nessuna parola esce da qui/i.test(document.getElementById("app").textContent), "e ricorda che la ricerca non manda niente fuori");
+
+  // In una pagina che si ridisegna da sola, chi ascolta deve sapere che è
+  // cambiata, e chi naviga da tastiera deve ritrovarsi in cima.
+  console.log("\nCambio di pagina");
+  navigate("#/diario");
+  const titoloDiario = document.querySelector("#app h1");
+  ok(titoloDiario.getAttribute("tabindex") === "-1", "il titolo della pagina può ricevere il focus");
+  ok(document.activeElement === titoloDiario, "e lo riceve davvero al cambio pagina");
+  ok(/Pagina caricata/.test(document.getElementById("annuncioRotta").textContent), "un annuncio dice a chi ascolta che la pagina è cambiata");
+
+  console.log("\nDimensione del testo");
+  ok(NP.app.testoScelto() === 100, "di partenza il testo è alla dimensione normale");
+  ok(NP.app.impostaTesto(125) === true, "si può ingrandire");
+  ok(document.documentElement.getAttribute("data-testo") === "125", "e la scelta si applica alla radice, così vale per tutta l'app");
+  ok(NP.app.testoScelto() === 125, "la scelta resta salvata per la prossima volta");
+  ok(NP.app.impostaTesto(37) === false, "valori inventati vengono rifiutati");
+  ok(NP.app.impostaTesto(100) === true && !document.documentElement.hasAttribute("data-testo"), "tornando a 100 l'attributo sparisce, invece di restare con un valore inutile");
+  navigate("#/licenze");
+  const sceltaTesto = document.getElementById("testoScelta");
+  ok(!!sceltaTesto && sceltaTesto.options.length === 3, "la pagina Licenze offre le tre dimensioni");
+
+  console.log("\nModalità discreta");
+  ok(NP.app.discretoAttivo() === false, "la modalità discreta parte spenta");
+  ok(NP.app.impostaDiscreto(true) === true, "si può accendere");
+  ok(document.documentElement.getAttribute("data-discreto") === "1", "coprendo i contenuti a livello di radice, così nessuna pagina la scappa");
+  navigate("#/licenze");
+  ok(document.getElementById("avvisoDiscreto").hidden === false, "con una barra che spiega cosa sta succedendo");
+  document.getElementById("mostraDiscreto").click();
+  ok(document.getElementById("app").classList.contains("svelato"), "e un pulsante che scopre i contenuti quando serve");
+  navigate("#/diario");
+  ok(!document.getElementById("app").classList.contains("svelato"), "cambiando pagina i contenuti tornano coperti");
+  ok(NP.app.impostaDiscreto(false) === true && !document.documentElement.hasAttribute("data-discreto"), "si può spegnere");
+
+  // L'invito non è una serie da mantenere: dice un fatto e apre una porta.
+  console.log("\nInviti gentili");
+  NP.app.state.diary = [paginaDiario("g1", giorniFa(9), "vecchia")];
+  navigate("#/");
+  ok(!!document.getElementById("invitoDiario"), "se il diario è fermo da giorni la home lo nota");
+  ok(/fermo da 9 giorni/.test(document.getElementById("app").textContent), "dicendo da quanto, senza rimproveri");
+  ok(!/serie|streak|giorni di fila/i.test(document.getElementById("app").textContent), "e senza serie da mantenere");
+  ok(/una riga su oggi basta/i.test(document.getElementById("app").textContent), "la richiesta è piccola, non un programma");
+  ok(/La tua settimana/.test(document.getElementById("app").textContent), "la home riassume anche la settimana, quando c'è qualcosa da dire");
+  NP.app.state.diary = [paginaDiario("g2", giorniFa(1), "ieri")];
+  navigate("#/");
+  ok(!document.getElementById("invitoDiario"), "se il diario è recente non dice niente");
+
+  // Un capitolo si può ascoltare con la stessa voce del resto dell'app.
+  console.log("\nAscoltare un capitolo");
+  navigate("#/manuale/" + NP.data.manuale[0].id);
+  ok(!!document.getElementById("ascoltaCapitolo"), "un capitolo ha il pulsante per ascoltarlo");
+  const speakVero = window.speechSynthesis.speak;
+  let parlato = 0;
+  window.speechSynthesis.speak = function () { parlato++; };
+  document.getElementById("ascoltaCapitolo").click();
+  ok(parlato >= 1, "premendolo la voce parte davvero");
+  window.speechSynthesis.speak = speakVero;
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

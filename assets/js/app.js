@@ -434,8 +434,25 @@ NP.app = (function () {
     });
   }
 
+  let ultimaRotta = null;
+
+  // Il focus si sposta solo quando cambia la pagina: spostarlo a ogni ridisegno
+  // (dopo aver salvato una voce, dopo un toast) porterebbe via il cursore a chi
+  // sta scrivendo.
+  function annunciaRotta() {
+    const titolo = app.querySelector("h1");
+    if (!titolo) return;
+    titolo.setAttribute("tabindex", "-1");
+    try { titolo.focus({ preventScroll: true }); } catch (e) { titolo.focus(); }
+    const annuncio = document.getElementById("annuncioRotta");
+    if (annuncio) annuncio.textContent = titolo.textContent + ". Pagina caricata.";
+  }
+
   function render() {
     const r = parseHash();
+    const nomeRotta = location.hash || "#/";
+    const cambiata = nomeRotta !== ultimaRotta;
+    ultimaRotta = nomeRotta;
     const name = views[r.name] ? r.name : "home";
     const view = views[name];
     try {
@@ -452,6 +469,15 @@ NP.app = (function () {
     if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
     const more = document.getElementById("moreMenu");
     if (more) more.hidden = true;
+
+    // Modalità discreta: i contenuti restano coperti finché non si chiede di
+    // vederli, e tornano coperti appena si cambia pagina.
+    const avviso = document.getElementById("avvisoDiscreto");
+    if (avviso) avviso.hidden = !discretoAttivo();
+    if (cambiata) {
+      app.classList.remove("svelato");
+      annunciaRotta();
+    }
   }
 
   /* ------------------------------------------------------------------ Home */
@@ -471,6 +497,34 @@ NP.app = (function () {
         (doneScales ? "Questionari completati: " + doneScales + ". " : "") +
         "I dati restano su questo dispositivo.</p></div>" +
         '<a class="btn btn-soft btn-sm" href="' + (prog.pct < 100 ? "#/colloquio" : "#/relazione") + '">' + (prog.pct < 100 ? "Riprendi il colloquio" : "Apri la relazione") + "</a></div></div>"
+      : "";
+
+    // Riepilogo e invito: calcolati qui una volta sola, senza chiedere altro.
+    const settimana = statistichePeriodo(7, 0);
+    const settimanaPrima = statistichePeriodo(7, 7);
+    const haRiepilogo = settimana.voci || settimana.schede || settimana.misure ||
+      settimanaPrima.voci || settimanaPrima.schede || settimanaPrima.misure;
+    const cardRiepilogo = haRiepilogo
+      ? '<div class="card card-soft mt-2"><h2 class="h-sub" style="margin-bottom:.2rem">La tua settimana</h2>' +
+        '<p class="mb-0 text-small">' + settimana.voci + (settimana.voci === 1 ? " voce di diario" : " voci di diario") + ", " +
+        settimana.schede + (settimana.schede === 1 ? " scheda del pensiero" : " schede del pensiero") + " e " +
+        settimana.misure + (settimana.misure === 1 ? " questionario compilato" : " questionari compilati") +
+        " negli ultimi sette giorni.</p>" +
+        '<div class="btn-row mt-1"><a class="btn btn-soft btn-sm" href="#/riepilogo">Confronta con la settimana prima</a></div></div>'
+      : "";
+
+    // Invito gentile, non una serie da mantenere: nessun conteggio dei giorni
+    // saltati, nessun rimprovero. Solo una porta aperta.
+    const giorniDiario = (Array.isArray(state.diary) ? state.diary : [])
+      .map(function (v) { return new Date(v.date).getTime(); })
+      .filter(function (t) { return isFinite(t); });
+    const fermoDa = giorniDiario.length
+      ? Math.floor((Date.now() - Math.max.apply(null, giorniDiario)) / 86400000)
+      : null;
+    const invitoDiario = (fermoDa !== null && fermoDa >= 5)
+      ? '<div class="card card-soft mt-2" id="invitoDiario"><p class="mb-0"><strong>Il diario è fermo da ' + fermoDa +
+        " giorni.</strong> Non c'è niente da recuperare: una riga su oggi basta.</p>" +
+        '<div class="btn-row mt-1"><a class="btn btn-soft btn-sm" href="#/diario">Scrivi una riga</a></div></div>'
       : "";
 
     setTitle("La stanza d'ascolto");
@@ -495,6 +549,8 @@ NP.app = (function () {
       '<div class="disclaimer-band">' + icon("alert") +
         "<p><strong>Non sostituisce uno psicologo.</strong> Questo programma è educativo e di orientamento: aiuta a preparare un colloquio, non formula diagnosi e non prescrive cure. In caso di emergenza chiama il <strong>112</strong>.</p></div>" +
       resume +
+      cardRiepilogo +
+      invitoDiario +
       "</section>" +
 
       '<section class="section"><div class="section-head"><p class="eyebrow">Da dove iniziare</p><h2>Quattro porte, nessun ordine obbligato</h2><p>Scegli quella che ti somiglia di più. Puoi cambiare strada quando vuoi: i dati restano.</p></div>' +
@@ -542,7 +598,6 @@ NP.app = (function () {
   function raccogliDati() {
     return {
       app: "Psicologo Digitale",
-      version: 1,
       exportedAt: new Date().toISOString(),
       intake: state.intake,
       scales: state.scales,
@@ -551,6 +606,9 @@ NP.app = (function () {
       course: state.course,
       quizStats: state.quizStats,
       reportNotes: state.reportNotes,
+    // Ogni file dichiara la forma che ha: all'import si controlla, invece di
+    // leggere alla cieca un formato che nel frattempo è cambiato.
+    version: VERSIONE_BACKUP,
     // Lo storico viaggia con il backup: è un dato dell'utente come gli altri.
     // Le copie automatiche lo contengono pure, ma il ripristino non lo riscrive:
     // una copia rimette a posto lo stato, non riscrive il passato delle misure.
@@ -570,8 +628,156 @@ NP.app = (function () {
     setTimeout(function () { URL.revokeObjectURL(url); }, 800);
   }
 
+  /* --------------------------------------------- Promemoria e preferenze */
+
+  // I dati vivono in un solo posto, il browser: una svuotata dei dati del sito
+  // e non resta niente. L'app sa esportare, ma non lo ricordava mai.
+  // Serve a non dire "esporta un backup" a chi non ha ancora niente da salvare.
+  function haDati(d) {
+    if (!d) return false;
+    const diario = Array.isArray(d.diary) ? d.diary.length : 0;
+    const schede = Array.isArray(d.thoughts) ? d.thoughts.length : 0;
+    const scale = d.scales && typeof d.scales === "object" ? Object.keys(d.scales).length : 0;
+    const colloquio = d.intake && d.intake.answers && typeof d.intake.answers === "object"
+      ? Object.keys(d.intake.answers).length : 0;
+    return Boolean(diario || schede || scale || colloquio);
+  }
+
+  const VERSIONE_BACKUP = 2;
+
+  // Un backup vecchio si completa invece di essere letto alla cieca: la forma
+  // del file è cambiata nel tempo (versione 1 = senza campo `version` né
+  // storico), e un import sbagliato è una perdita silenziosa.
+  const MIGRAZIONI = {
+    1: function (d) {
+      return Object.assign({}, d, { version: 2, storicoPunteggi: d.storicoPunteggi || {} });
+    }
+  };
+
+  function migraBackup(dati) {
+    let d = dati;
+    let v = parseInt(d && d.version, 10);
+    if (!isFinite(v) || v < 1) v = 1;
+    if (v > VERSIONE_BACKUP) {
+      return { errore: "Il file viene da una versione più recente dell'app (formato " + v + "). Aggiorna l'app e riprova." };
+    }
+    while (v < VERSIONE_BACKUP) {
+      const passo = MIGRAZIONI[v];
+      if (!passo) return { errore: "Il file ha un formato che questa versione non sa leggere (" + v + ")." };
+      d = passo(d);
+      v = parseInt(d.version, 10) || v + 1;
+    }
+    return { dati: d, migrato: v > 1 };
+  }
+
+  function ultimoBackup() {
+    const quando = readJSON("ultimoBackup", null);
+    const t = new Date(quando).getTime();
+    return isFinite(t) ? quando : null;
+  }
+
+  function giorniSenzaBackup() {
+    const quando = ultimoBackup();
+    if (!quando) return null;
+    return Math.floor((Date.now() - new Date(quando).getTime()) / (24 * 60 * 60 * 1000));
+  }
+
+  // La data dell'esportazione è un promemoria, non un dato della persona: se
+  // non si riesce a scriverla non deve entrare in coda come una modifica
+  // rimasta fuori, altrimenti il prossimo salvataggio vero si confonde.
+  function segnaBackup() {
+    try {
+      localStorage.setItem(PREFIX + "ultimoBackup", JSON.stringify(new Date().toISOString()));
+    } catch (e) { /* si riproverà alla prossima esportazione */ }
+  }
+
+  // Quanto grande si vuole leggere: il tema c'era, la dimensione no.
+  const TESTI = [100, 112, 125];
+  function testoScelto() {
+    const n = parseInt(localStorage.getItem(PREFIX + "testo"), 10);
+    return TESTI.indexOf(n) >= 0 ? n : 100;
+  }
+  function impostaTesto(pct) {
+    const n = parseInt(pct, 10);
+    if (TESTI.indexOf(n) < 0) return false;
+    try { localStorage.setItem(PREFIX + "testo", String(n)); } catch (e) { return false; }
+    applicaTesto();
+    return true;
+  }
+  function applicaTesto() {
+    const n = testoScelto();
+    const radice = document.documentElement;
+    if (n === 100) radice.removeAttribute("data-testo");
+    else radice.setAttribute("data-testo", String(n));
+  }
+
+  // Modalità discreta: i contenuti restano coperti finché non li si scopre.
+  // Serve a chi apre il diario in un posto affollato.
+  function discretoAttivo() {
+    try { return localStorage.getItem(PREFIX + "discreto") === "1"; } catch (e) { return false; }
+  }
+  function impostaDiscreto(attivo) {
+    try { localStorage.setItem(PREFIX + "discreto", attivo ? "1" : "0"); } catch (e) { return false; }
+    applicaDiscreto();
+    return true;
+  }
+  function applicaDiscreto() {
+    const radice = document.documentElement;
+    if (discretoAttivo()) radice.setAttribute("data-discreto", "1");
+    else radice.removeAttribute("data-discreto");
+  }
+
+  /* ------------------------------------------------ Riepilogo dei periodi */
+
+  // Un periodo di N giorni e quello precedente: le stesse misure affiancate,
+  // così il confronto non richiede di fare i conti a mente.
+  function statistichePeriodo(giorni, scostamento) {
+    const fine = Date.now() - (scostamento || 0) * 24 * 60 * 60 * 1000;
+    const inizio = fine - giorni * 24 * 60 * 60 * 1000;
+    const dentro = function (iso) {
+      const t = new Date(iso).getTime();
+      return isFinite(t) && t > inizio && t <= fine;
+    };
+    const voci = (Array.isArray(state.diary) ? state.diary : []).filter(function (v) { return dentro(v.date); });
+    const pensieri = readJSON("thoughts", []);
+    const schede = (Array.isArray(pensieri) ? pensieri : []).filter(function (v) { return dentro(v.date); });
+    let misure = 0;
+    Object.keys(storicoPunteggi()).forEach(function (id) {
+      storicoDi(id).forEach(function (m) { if (dentro(m.quando)) misure++; });
+    });
+    const media = function (campo) {
+      const valori = voci.map(function (v) { return Number(v[campo]); }).filter(function (n) { return isFinite(n); });
+      return valori.length ? valori.reduce(function (a, b) { return a + b; }, 0) / valori.length : null;
+    };
+    return {
+      giorni: giorni,
+      voci: voci.length,
+      schede: schede.length,
+      misure: misure,
+      media: { umore: media("mood"), ansia: media("anxiety"), sonno: media("sleep"), energia: media("energy") }
+    };
+  }
+
+  // Leggere un capitolo: la voce è una sola in tutta l'app, quella di Neura.
+  // Passare da lì significa che scelta della voce, ritmo e pulsante Stop
+  // valgono anche qui, invece di avere un secondo modo di parlare.
+  function leggiCapitolo(testo) {
+    const ui = NP.neuraUI;
+    if (!ui || !window.speechSynthesis) {
+      toast("Questo browser non sa leggere ad alta voce.");
+      return false;
+    }
+    if (!ui.voiceOn()) {
+      toast("La voce è spenta: accendila con l'altoparlante in alto, poi riprova.", 6000);
+      return false;
+    }
+    ui.speak(testo);
+    return true;
+  }
+
   function esportaBackup() {
     scaricaJSON(raccogliDati(), "psicologo-digitale-backup.json");
+    segnaBackup();
     // Il file è al sicuro: se c'era una modifica rimasta fuori, si ritenta ora.
     const recupero = riprovaSalvataggi();
     toast(recupero
@@ -1254,6 +1460,20 @@ NP.app = (function () {
     storicoPunteggi: storicoPunteggi,
     registraPunteggio: registraPunteggio,
     raccogliDati: raccogliDati,
+    migraBackup: migraBackup,
+    haDati: haDati,
+    versioneBackup: VERSIONE_BACKUP,
+    ultimoBackup: ultimoBackup,
+    giorniSenzaBackup: giorniSenzaBackup,
+    segnaBackup: segnaBackup,
+    testoScelto: testoScelto,
+    testiScelte: function () { return TESTI.slice(); },
+    impostaTesto: impostaTesto,
+    discretoAttivo: discretoAttivo,
+    impostaDiscreto: impostaDiscreto,
+    statistichePeriodo: statistichePeriodo,
+    leggiCapitolo: leggiCapitolo,
+    svelaContenuti: function () { app.classList.add("svelato"); },
     riprovaSalvataggi: riprovaSalvataggi,
     annullaRipristino: annullaRipristino,
     ripristinoDaAnnullare: ripristinoDaAnnullare,

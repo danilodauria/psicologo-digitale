@@ -380,6 +380,16 @@ La pagina **Versioni e novità** (`#/versioni`, nel menu *Altro*) elenca le rele
 
 L'elenco vive in `assets/js/app-versioni.js`, in due punti: la costante `VERSIONE`, che deve coincidere con `package.json`, e l'array `NOVITA`, da aggiornare a ogni release. I test confrontano la costante con il campo `version` di `package.json`: se resta indietro, la build diventa rossa prima di pubblicare una pagina che annuncia la versione sbagliata.
 
+### Riepilogo, ricerca e preferenze
+
+`#/riepilogo` mette gli ultimi sette giorni accanto ai sette precedenti: medie di umore, ansia, sonno ed energia, quante voci di diario, quante schede del pensiero, quanti questionari compilati, con la differenza e il segno. `NP.app.statistichePeriodo(giorni, scostamento)` è l'unico punto che calcola quei numeri: la home, la pagina del riepilogo e i test leggono da lì, quindi la stessa media non può essere calcolata in due modi diversi.
+
+`#/cerca/<parole>` confronta le parole con i capitoli del manuale, il glossario e gli esercizi, tutto sul dispositivo; più parole si cercano tutte insieme. L'indice si costruisce dai dati già in memoria (`indiceContenuti`), non da un file a parte, così non può restare indietro rispetto ai contenuti.
+
+Le preferenze di lettura stanno in *Licenze e progetto*: dimensione del testo (`data-testo` su `<html>`, valori 100, 112 e 125) e modalità discreta (`data-discreto`, che sfoca `#app` finché non si preme *Mostra i contenuti*, e la ricopre al cambio pagina). Entrambe si scrivono in `localStorage` con il prefisso `psicologo-digitale:v1:` e vengono riapplicate all'avvio dallo script in testa a `index.html`, prima del primo disegno, per non far lampeggiare la pagina.
+
+Il backup dichiara il proprio formato (`version`, attualmente 2): `migraBackup()` completa un file vecchio e rifiuta un file di una versione più recente, invece di leggerlo alla cieca e perdere quello che non conosce. `segnaBackup()` registra la data dell'ultima esportazione: è un promemoria, non un dato della persona, quindi non entra nella coda dei salvataggi rimasti fuori.
+
 ## Come si installa: la pagina pubblica
 
 `come-installare.html` è una pagina del sito, non una schermata del programma: si apre nel browser senza avviare nulla, e serve soprattutto a chi il programma non ce l'ha ancora o non riesce ad aprirlo. Contiene il file giusto per ogni sistema, i passaggi del primo avvio con le parole esatte degli avvisi di Windows e macOS, la verifica dell'impronta SHA-256 con il comando adatto a ciascun sistema, e il rimando al backup dei sorgenti.
@@ -393,6 +403,10 @@ C'è anche il PDF, per chi deve mandarlo per email: `assets/pdf/Psicologo-Digita
 La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sistema, e da lì *Salva come PDF* dà un file da allegare o da consegnare; funziona anche `Ctrl+P` / `⌘P`, quindi senza JavaScript. Il foglio non è una fotografia della pagina: le regole `@media print` in `assets/css/styles.css` (blocco `.pagina-installa`) tolgono menu, pulsanti, ombre e colori pieni, portano il testo in una colonna sola e non spezzano i riquadri a metà, mentre `.solo-stampa` aggiunge in testa versione e indirizzo della pagina e in coda l'avvertenza con il 112 — cose che a schermo non servono e su carta sì.
 
 È raggiungibile in tre modi: dal piè di pagina del sito, dalla pagina *Installa l'app*, e dal pannello della barra di stato quando il sistema chiede conferma all'avvio. È nella cache del service worker, quindi resta consultabile anche offline, e non ha bisogno di JavaScript per essere letta: chi ha un browser bloccato o vecchio la vede lo stesso.
+
+## Lasciare il progetto a qualcun altro
+
+`CONSEGNA.md` è il file di consegna: architettura, invarianti da non rompere, comandi della pipeline, che cosa coprono davvero i controlli automatici, limiti noti e prossimi passi. È scritto per chi apre il repository senza la storia della chat — una persona o un'altra IA. Si aggiorna quando cambia la pipeline o un'invariante, non a ogni release.
 
 ## Backup completo nella release
 
@@ -441,4 +455,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.0.0** · ottobre 2026.
+Versione **1.4.0** · novembre 2026.

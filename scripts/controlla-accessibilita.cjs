@@ -654,6 +654,46 @@ function controllaApp() {
         ". Vanno raggiunte da un collegamento o aperte qui apposta."
     );
   }
+
+  // Il risultato di un questionario e l'anteprima di un ripristino non hanno una
+  // rotta propria: si aprono seminando dati veri. Sono le schermate con più
+  // testo e più colori, e restavano fuori dal controllo di contrasto.
+  const verificaExtra = function (dove) {
+    const contenitore = doc.getElementById("app");
+    if (!contenitore) return;
+    controllaImmagini(contenitore, dove);
+    for (const tema of TEMI) {
+      doc.documentElement.setAttribute("data-theme", tema);
+      controllaTesti(contenitore, dove + " (" + tema + ")", TEMI_VALORI[tema]);
+    }
+    doc.documentElement.setAttribute("data-theme", "light");
+    const h1 = controllaTitoli(contenitore, dove);
+    if (h1 > 1) problema(dove, h1 + " titoli principali (h1) nella stessa vista");
+  };
+
+  const scalaProva = (NP.data.scales || [])[0];
+  if (scalaProva) {
+    const punti = Math.round(NP.app.scaleMax(scalaProva) / 2);
+    NP.app.state.scales[scalaProva.id] = {
+      answers: {}, score: punti, band: (NP.app.scaleBand(scalaProva, punti) || {}).label || "",
+      livello: "lieve", doneAt: new Date().toISOString()
+    };
+    finestra.location.hash = "#/valutazione/" + scalaProva.id;
+    NP.app.render();
+    verificaExtra("risultato di un questionario");
+  }
+
+  NP.app.writeJSON("copie", [{
+    quando: new Date().toISOString(), etichetta: "Prima del ripristino del 12 novembre 2026",
+    dati: { diary: [], scales: {}, thoughts: [], intake: { answers: {} }, course: { done: [], notes: {} }, quizStats: {} }
+  }]);
+  finestra.location.hash = "#/licenze";
+  NP.app.render();
+  const apriAnteprima = doc.querySelector("[data-copia]");
+  if (apriAnteprima) {
+    apriAnteprima.click();
+    verificaExtra("anteprima di un ripristino");
+  }
 }
 
 /* Esito -------------------------------------------------------------------- */

@@ -1559,6 +1559,19 @@ html[data-theme="dark"] .emergency-box h2, html[data-theme="dark"] .emergency-bo
   text-align: center;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Dimensione del testo scelta dalla persona: si scala la radice, così tutto
+   cresce insieme senza toccare le singole misure. */
+html[data-testo="112"] { font-size: 18px; }
+html[data-testo="125"] { font-size: 20px; }
+
+/* Modalità discreta: i contenuti restano coperti finché non si chiede di
+   vederli, e tornano coperti al cambio pagina. La barra resta leggibile. */
+html[data-discreto="1"] #app:not(.svelato) { filter: blur(7px); }
+html[data-discreto="1"] #app { transition: filter .18s ease; }
+.avviso-discreto { max-width: 72rem; margin: 1rem auto 0; padding: .7rem 1rem; border-radius: 12px; background: var(--ambra-chiara); color: var(--ambra-scura); display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
+.avviso-discreto p { margin: 0; font-size: .9rem; }
+html[data-theme="dark"] .avviso-discreto { background: #33281a; color: #f0d9b5; }
 /* Confronto fra oggi e una copia: due barre sulla stessa scala, così la
    differenza si vede a colpo d'occhio senza leggere i punteggi. */
 /* Storico dei punteggi: una riga per misurazione, dal più vecchio al più

@@ -13,11 +13,28 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.76";
+  const VERSIONE = "1.4.0";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.4.0",
+      data: "16 novembre 2026",
+      titolo: "Ritrovare le proprie cose: riepilogo, ricerca e un backup che si riconosce",
+      punti: [
+        "Il confronto che mancava. Una pagina nuova mette gli ultimi sette giorni accanto ai sette prima: medie di umore, ansia, sonno ed energia, quante voci di diario, quante schede del pensiero, quanti questionari — e la differenza, con il segno. Non dice se è meglio o peggio: mette due periodi vicini, che è il modo più semplice per accorgersi che una direzione c'è.",
+        "Un backup che si riconosce. Ogni file esportato dichiara il formato che ha. Un file vecchio viene completato prima di essere importato, uno di una versione più recente viene rifiutato con una frase che spiega perché, invece di essere letto alla cieca e perdere quello che non conosce.",
+        "Il promemoria dell'esportazione. Chi non ha mai esportato lo legge in Licenze; chi non lo fa da un mese ritrova l'avviso. Se l'ultimo backup è recente, la stessa riga dice quando è stato fatto: «Ultima esportazione: 12 novembre (4 giorni fa)». Niente notifiche di sistema da autorizzare.",
+        "Cercare dentro il programma. Dodici capitoli, glossario ed esercizi in un campo solo: più parole insieme si cercano tutte, e la ricerca avviene sul dispositivo. Una parola che non c'è lo dice, invece di mostrare una pagina vuota.",
+        "Il testo alla dimensione giusta. Tre scelte in Licenze — normale, grande, più grande — che valgono per tutta l'app, non solo per la pagina in cui le scegli, e restano salvate al prossimo avvio.",
+        "La modalità discreta. Copre i contenuti finché non premi «Mostra i contenuti», e li ricopre appena cambi pagina: serve quando qualcuno passa dietro le spalle, non a nascondere il programma.",
+        "Un capitolo si può ascoltare. Il pulsante «Ascolta il capitolo» usa la stessa voce di Neura, quindi la scelta della voce, il ritmo e il pulsante Stop valgono anche qui: una sola strada per parlare, non due.",
+        "La pagina che cambia lo dice. Al cambio di pagina il titolo riceve il focus e un annuncio letto dai lettori di schermo conferma che la pagina è cambiata: prima, chi non vede lo schermo restava nella pagina precedente.",
+        "Un invito, non una serie. Se il diario è fermo da qualche giorno la home lo nota e propone una riga su oggi. Nessun conteggio dei giorni saltati, nessun premio da difendere: non ci sono serie da mantenere.",
+        "I controlli sono cresciuti con il programma. Le due schermate che non hanno una rotta — il risultato di un questionario e l'anteprima di un ripristino — ora vengono aperte e lette dai controlli automatici, come tutte le altre pagine: 56 verifiche in più nei test, e nessuna pagina che si salva perché nessuno la guarda."
+      ]
+    },
     {
       v: "1.3.76",
       data: "13 novembre 2026",

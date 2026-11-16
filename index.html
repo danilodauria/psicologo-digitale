@@ -25,6 +25,9 @@
         var t = localStorage.getItem("psicologo-digitale:v1:theme");
         if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", t);
+        var n = localStorage.getItem("psicologo-digitale:v1:testo");
+        if (n === "112" || n === "125") document.documentElement.setAttribute("data-testo", n);
+        if (localStorage.getItem("psicologo-digitale:v1:discreto") === "1") document.documentElement.setAttribute("data-discreto", "1");
       } catch (e) {}
     })();
   </script>
@@ -94,6 +97,11 @@
     </div>
   </header>
 
+  <div class="avviso-discreto" id="avvisoDiscreto" hidden>
+    <p><strong>Modalità discreta attiva.</strong> I contenuti sono coperti.</p>
+    <button type="button" class="btn btn-soft btn-sm" id="mostraDiscreto">Mostra i contenuti</button>
+  </div>
+
   <main id="main" tabindex="-1">
     <div id="app" class="app">
       <div class="wrap loading-shell" id="loadingShell">
@@ -128,6 +136,8 @@
           <li><a href="#/manuale">Manuale</a></li>
           <li><a href="#/palestra">Palestra della mente</a></li>
           <li><a href="#/glossario">Glossario</a></li>
+          <li><a href="#/cerca">Cerca nei contenuti</a></li>
+          <li><a href="#/riepilogo">Riepilogo dei periodi</a></li>
           <li><a href="#/nutrizione">Nutrizione e umore</a></li>
           <li><a href="#/sicurezza">Sicurezza e numeri utili</a></li>
           <li><a href="assets/pdf/vademecum-psicologo-digitale.pdf">Vademecum in PDF</a></li>
@@ -146,6 +156,7 @@
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div id="annuncioRotta" class="sr-only" role="status" aria-live="polite"></div>
 
   <script src="assets/js/data-scales.js"></script>
   <script src="assets/js/data-intake.js"></script>
