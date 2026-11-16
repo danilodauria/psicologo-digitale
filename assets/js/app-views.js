@@ -9,6 +9,23 @@
   const A = NP.app;
   const views = A.views;
   const esc = A.esc;
+
+  // Due barre per questionario, sulla stessa scala: la differenza fra oggi e la
+  // copia si vede prima di leggere i numeri. Il grafico è muto per i lettori di
+  // schermo perché gli stessi punteggi sono scritti sopra, in chiaro.
+  function graficoConfronto(questionari) {
+    return '<div class="confronto-grafico" aria-hidden="true">' + questionari.map(function (q) {
+      const larghezza = function (punti) {
+        if (typeof punti !== "number" || !(q.massimo > 0)) return 0;
+        return Math.max(0, Math.min(100, (punti / q.massimo) * 100));
+      };
+      return '<p class="text-small mb-0">' + esc(q.titolo) + "</p>" +
+        '<div class="confronto-riga"><span class="confronto-etichetta">oggi</span>' +
+          '<span class="confronto-barra oggi"><span style="width:' + larghezza(q.oggiPunti).toFixed(1) + '%"></span></span></div>' +
+        '<div class="confronto-riga"><span class="confronto-etichetta">nella copia</span>' +
+          '<span class="confronto-barra copia"><span style="width:' + larghezza(q.copiaPunti).toFixed(1) + '%"></span></span></div>';
+    }).join("") + "</div>";
+  }
   const state = A.state;
 
   /* ------------------------------------------------------------------ Manuale */
@@ -401,7 +418,7 @@
                     return "<li>" + riga + " — punteggi:" +
                       '<ul class="text-small">' + v.questionari.map(function (q) {
                         return "<li>" + esc(q.titolo) + ": oggi " + esc(q.oggi) + ", nella copia " + esc(q.copia) + "</li>";
-                      }).join("") + "</ul></li>";
+                      }).join("") + "</ul>" + graficoConfronto(v.questionari) + "</li>";
                   }
                   if (!v.perse || !v.perse.length) return "<li>" + riga + ".</li>";
                   const mostrate = v.perse.slice(0, 5);
@@ -459,7 +476,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.70 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.71 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

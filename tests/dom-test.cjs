@@ -749,6 +749,18 @@ setTimeout(async function () {
   document.querySelector("[data-copia]").click();
   const conPunteggi = document.getElementById("copiaAnteprima");
   ok(!!conPunteggi && /oggi 12 su/.test(conPunteggi.textContent) && conPunteggi.textContent.indexOf(scala.titolo) >= 0, "l'anteprima in pagina elenca il questionario con i due punteggi");
+
+  // Gli stessi punteggi anche come barre: il confronto si vede prima di leggere.
+  const grafico = conPunteggi.querySelector(".confronto-grafico");
+  ok(!!grafico, "l'anteprima mostra il confronto anche come grafico a barre");
+  ok(grafico.getAttribute("aria-hidden") === "true", "il grafico è muto per i lettori di schermo: i punteggi sono già scritti sopra, in chiaro");
+  const barre = grafico.querySelectorAll(".confronto-barra");
+  ok(barre.length === 2, "due barre per questionario: oggi e nella copia");
+  const massimoScala = parseInt(voceQuestionari.questionari[0].oggi.split(" su ")[1], 10);
+  ok(barre[0].firstElementChild.style.width === ((12 / massimoScala) * 100).toFixed(1) + "%", "la barra di oggi è proporzionale al punteggio, non disegnata a caso");
+  ok(parseFloat(barre[1].firstElementChild.style.width) === 0, "e quella della copia sta a zero, perché lì il questionario era vuoto");
+  ok(grafico.textContent.indexOf(scala.titolo) >= 0, "il grafico dice a quale questionario appartiene");
+  ok(barre[0].className.indexOf("oggi") >= 0 && barre[1].className.indexOf("copia") >= 0, "le due barre si distinguono per colore, non solo per lunghezza");
   document.getElementById("copiaAnnulla").click();
 
   // Una copia si può anche portare fuori dal browser, come file.

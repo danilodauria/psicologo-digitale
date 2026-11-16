@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.70";
+  const VERSIONE = "1.3.71";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.71",
+      data: "13 novembre 2026",
+      titolo: "Il confronto dei punteggi si vede a colpo d'occhio",
+      punti: [
+        "L'anteprima del ripristino elencava i punteggi dei questionari in una lista: «oggi 12 su 21, nella copia 0 su 21». Giusto, ma per capire la differenza bisognava leggere e fare la sottrazione.",
+        "Ora accanto alla lista ci sono due barre per questionario, sulla stessa scala: una per oggi e una per la copia. La differenza si vede prima di leggere i numeri, e i numeri restano scritti sopra, in chiaro.",
+        "Il grafico è muto per i lettori di schermo, proprio perché ripete ciò che è già scritto in parole: nessuna informazione affidata al solo colore. La scala è il massimo vero del questionario, non una stima."
+      ]
+    },
     {
       v: "1.3.70",
       data: "13 novembre 2026",

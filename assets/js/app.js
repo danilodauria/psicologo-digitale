@@ -944,13 +944,17 @@ NP.app = (function () {
     if (!scale) return null;
     const rec = (scales || {})[id];
     const massimo = scaleMax(scale);
-    if (!rec) return { titolo: scale.titolo, punteggio: null, testo: "non compilato" };
+    if (!rec) return { titolo: scale.titolo, punteggio: null, massimo: massimo, testo: "non compilato" };
     const completo = !!rec.doneAt;
     const punti = typeof rec.score === "number" ? rec.score : scaleScore(scale, rec.answers || {});
     const banda = completo ? (rec.band || (scaleBand(scale, punti) || {}).label || "") : "";
     return {
       titolo: scale.titolo,
       punteggio: punti,
+      // Il massimo accompagna il punteggio perché senza di lui il numero non
+      // dice quanto è alto: serve al confronto a barre, che disegna i due
+      // punteggi sulla stessa scala.
+      massimo: massimo,
       testo: punti + " su " + massimo + (banda ? " · " + banda : "") + (completo ? "" : " (in parte)")
     };
   }
@@ -968,7 +972,10 @@ NP.app = (function () {
         return {
           titolo: (ora || prima).titolo,
           oggi: ora ? ora.testo : "non compilato",
-          copia: prima ? prima.testo : "non compilato"
+          copia: prima ? prima.testo : "non compilato",
+          oggiPunti: ora ? ora.punteggio : null,
+          copiaPunti: prima ? prima.punteggio : null,
+          massimo: (ora || prima).massimo
         };
       })
       .filter(function (q) { return q.oggi !== q.copia; });
