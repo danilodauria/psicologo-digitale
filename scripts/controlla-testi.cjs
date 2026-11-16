@@ -40,6 +40,8 @@ let blocchi = 0;
 let frasi = 0;
 let parole = 0;
 let visteRegistrate = 0;
+let elementiAttesi = 0;
+let elementiCoperti = 0;
 
 // Ogni controllo lascia il suo rapporto qui: il riepilogo in fondo a `npm test`
 // li mette uno accanto all'altro, così un calo si vede senza leggere tre
@@ -403,6 +405,27 @@ function testiDellApp() {
     );
   }
 
+  // Le pagine dei singoli elementi — capitoli, esercizi, questionari — non sono
+  // viste a sé: si raggiungono dai loro elenchi. Qui si verifica che il giro le
+  // abbia lette davvero, una per una, invece di fermarsi alle pagine che le
+  // elencano: una pagina senza collegamento resterebbe altrimenti non letta
+  // pur avendo tutte le viste al loro posto.
+  const attesi = [];
+  (NP.data.manuale || []).forEach((c) => attesi.push(["capitolo", "#/manuale/" + c.id]));
+  ((NP.data.percorso && NP.data.percorso.esercizi) || []).forEach((e) => attesi.push(["esercizio", "#/esercizi/" + e.id]));
+  (NP.data.scales || []).forEach((s) => attesi.push(["questionario", "#/valutazione/" + s.id]));
+  elementiAttesi = attesi.length;
+  const mancanti = attesi.filter((a) => !visitate.has(a[1]));
+  elementiCoperti = attesi.length - mancanti.length;
+  if (mancanti.length) {
+    problema(
+      "elementi",
+      "pagine dei singoli elementi mai lette: " +
+        mancanti.map((a) => a[0] + " " + a[1]).join(", ") +
+        ". Vanno raggiunte da un collegamento o aperte qui apposta."
+    );
+  }
+
   return testi;
 }
 
@@ -420,8 +443,9 @@ if (problemi.length) {
   process.exit(1);
 }
 console.log(
-  "  ✓ " + blocchi + " blocchi di testo in " + pagine.length + " pagine e tutte le viste: " +
-    frasi + " frasi, nessun refuso, nessuna ripetizione, nessun conteggio in contraddizione."
+  "  ✓ " + blocchi + " blocchi di testo in " + pagine.length + " pagine, tutte le " + visteRegistrate +
+    " viste e le " + elementiCoperti + " pagine dei singoli elementi: " + frasi +
+    " frasi, nessun refuso, nessuna ripetizione, nessun conteggio in contraddizione."
 );
 
 scriviRapporto("testi", {
@@ -431,6 +455,9 @@ scriviRapporto("testi", {
   // generico: il riepilogo in fondo a npm test lo mette accanto agli altri due.
   elementi: blocchi,
   unita: "blocchi di testo",
-  extra: frasi + " frasi",
+  extra: frasi + " frasi, " + elementiCoperti + " elementi",
+  // Anche testi e accessibilità dichiarano quanti dei 30 elementi hanno letto:
+  // il riepilogo verifica che nessuno dei tre si fermi alle pagine-elenco.
+  elementiDelProgramma: { attesi: elementiAttesi, coperti: elementiCoperti },
   dettaglio: blocchi + " blocchi di testo, " + frasi + " frasi"
 });

@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.64";
+  const VERSIONE = "1.3.65";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.65",
+      data: "13 novembre 2026",
+      titolo: "I controlli dichiarano anche quali pagine hanno letto",
+      punti: [
+        "I controlli di testi e accessibilità leggevano già le pagine dei singoli capitoli, esercizi e questionari, perché il giro segue i collegamenti dagli elenchi. Nessuno però lo verificava: se un collegamento fosse sparito, quelle pagine sarebbero uscite dal controllo in silenzio, con tutte le viste al loro posto.",
+        "Ora ognuno dei tre controlli dichiara quanti dei 30 elementi ha letto davvero, e il riepilogo si ferma se uno ne ha saltato qualcuno: «30 su 30 letti da testi, accessibilità, collegamenti».",
+        "Provato inserendo una pagina attesa che non esiste: il controllo dei testi si ferma e la nomina — «pagine dei singoli elementi mai lette: capitolo #/manuale/capitolo-finto»."
+      ]
+    },
     {
       v: "1.3.64",
       data: "13 novembre 2026",

@@ -42,6 +42,8 @@ let immaginiControllate = 0;
 let migliorRapporto = 99;
 let nonMisurabili = 0;
 let visteRegistrate = 0;
+let elementiAttesi = 0;
+let elementiCoperti = 0;
 const problemi = [];
 
 // Ogni controllo lascia il suo rapporto qui: il riepilogo in fondo a `npm test`
@@ -632,6 +634,26 @@ function controllaApp() {
   if (fuori.length) {
     problema("viste", "mai raggiunte da nessun collegamento, quindi mai verificate: " + fuori.join(", ") + ". Aggiungi un collegamento verso ciascuna, oppure avviale esplicitamente qui sopra.");
   }
+
+  // Le pagine dei singoli elementi si raggiungono dagli elenchi: si verifica
+  // che il giro le abbia aperte davvero, una per una, invece di fermarsi alle
+  // pagine che le elencano. Un contrasto sbagliato in un capitolo è un
+  // problema vero anche se l'elenco dei capitoli è perfetto.
+  const attesi = [];
+  (NP.data.manuale || []).forEach((c) => attesi.push(["capitolo", "#/manuale/" + c.id]));
+  ((NP.data.percorso && NP.data.percorso.esercizi) || []).forEach((e) => attesi.push(["esercizio", "#/esercizi/" + e.id]));
+  (NP.data.scales || []).forEach((s) => attesi.push(["questionario", "#/valutazione/" + s.id]));
+  elementiAttesi = attesi.length;
+  const mancanti = attesi.filter((a) => !visitate.has(a[1]));
+  elementiCoperti = attesi.length - mancanti.length;
+  if (mancanti.length) {
+    problema(
+      "elementi",
+      "pagine dei singoli elementi mai verificate: " +
+        mancanti.map((a) => a[0] + " " + a[1]).join(", ") +
+        ". Vanno raggiunte da un collegamento o aperte qui apposta."
+    );
+  }
 }
 
 /* Esito -------------------------------------------------------------------- */
@@ -646,7 +668,8 @@ if (problemi.length) {
 } else {
   console.log(
     "  ✓ " + testiMisurati + " testi leggibili nei due temi (contrasto minimo " + migliorRapporto.toFixed(2) +
-      ":1), " + titoliControllati + " titoli in ordine, " + immaginiControllate + " immagini e icone con nome."
+      ":1), " + titoliControllati + " titoli in ordine, " + immaginiControllate + " immagini e icone con nome, " +
+      elementiCoperti + " pagine di singoli elementi comprese."
   );
 }
 if (nonMisurabili) {
@@ -659,7 +682,8 @@ scriviRapporto("accessibilita", {
   viste: visteRegistrate,
   elementi: testiMisurati,
   unita: "testi misurati",
-  extra: "contrasto minimo " + migliorRapporto.toFixed(2).replace(".", ",") + ":1, " + titoliControllati + " titoli",
+  extra: "contrasto minimo " + migliorRapporto.toFixed(2).replace(".", ",") + ":1, " + titoliControllati + " titoli, " + elementiCoperti + " elementi",
+  elementiDelProgramma: { attesi: elementiAttesi, coperti: elementiCoperti },
   dettaglio: testiMisurati + " testi nei due temi, " + titoliControllati + " titoli, contrasto minimo " +
     migliorRapporto.toFixed(2).replace(".", ",") + ":1"
 });

@@ -413,7 +413,7 @@ scriviRapporto("collegamenti", {
   extra: rotteVisitate + " rotte, " + navControllati + " precedente/successivo",
   // Gli elementi del programma sono capitoli, esercizi e questionari: il
   // riepilogo verifica che nessuno resti senza una porta d'ingresso.
-  elementiDelProgramma: { attesi: elementiAttesi, senzaPorta: elementiOrfani, perTipo: elementiPerTipo },
+  elementiDelProgramma: { attesi: elementiAttesi, coperti: elementiAttesi - elementiOrfani, senzaPorta: elementiOrfani, perTipo: elementiPerTipo },
   dettaglio: controlli + " collegamenti su " + rotteVisitate + " rotte, " + elementiAttesi +
     " elementi " + (elementiOrfani ? "di cui " + elementiOrfani + " senza porta" : "tutti con una porta") +
     ", " + navControllati + " precedente/successivo"

@@ -82,16 +82,30 @@ for (const r of rapporti) {
   }
 }
 
-// Gli stessi elementi del programma — capitoli, esercizi, questionari — visti
-// dai collegamenti: se uno resta senza porta d'ingresso, non basta che le
-// pagine siano state lette tutte.
-const programma = rapporti.map((r) => r.programma).filter(Boolean)[0] || null;
-if (!programma || !(programma.attesi > 0)) {
+// Gli elementi del programma — capitoli, esercizi, questionari — non sono
+// viste a sé: ognuno ha la sua pagina. Tutti e tre i controlli devono dire
+// quanti ne hanno letto davvero, altrimenti «3 pagine, 17 viste» può voler
+// dire tutto e niente.
+const programmi = rapporti.filter((r) => r.programma);
+if (!programmi.length) {
   problemi.push("nessun rapporto dice quanti elementi del programma sono stati coperti (capitoli, esercizi, questionari).");
-} else if (programma.senzaPorta > 0) {
-  problemi.push(
-    programma.senzaPorta + " elementi del programma restano senza un collegamento che li apra, su " + programma.attesi + "."
-  );
+}
+for (const r of rapporti) {
+  const p = r.programma;
+  if (!p) {
+    problemi.push("il rapporto di " + r.nome + " non dichiara quanti elementi del programma ha letto.");
+    continue;
+  }
+  if (!(p.attesi > 0)) {
+    problemi.push("il rapporto di " + r.nome + " non dice quanti elementi del programma esistono.");
+    continue;
+  }
+  const coperti = typeof p.coperti === "number" ? p.coperti : p.attesi - (p.senzaPorta || 0);
+  if (coperti !== p.attesi) {
+    problemi.push(
+      "il rapporto di " + r.nome + " ha letto " + coperti + " elementi del programma su " + p.attesi + "."
+    );
+  }
 }
 
 if (pagine.length > 1) {
@@ -121,14 +135,18 @@ for (const r of rapporti) {
   );
 }
 
-if (programma && programma.attesi > 0 && !programma.senzaPorta) {
+const conElementi = rapporti.filter((r) => r.programma && r.programma.attesi > 0);
+if (conElementi.length) {
+  const quanti = Math.min(...conElementi.map((r) => r.programma.attesi));
+  const letti = Math.min(...conElementi.map((r) =>
+    typeof r.programma.coperti === "number" ? r.programma.coperti : r.programma.attesi - (r.programma.senzaPorta || 0)
+  ));
+  const perTipo = conElementi.map((r) => r.programma.perTipo).filter(Boolean)[0] || {};
   const PLURALI = { capitolo: "capitoli", esercizio: "esercizi", questionario: "questionari" };
-  const tipi = Object.keys(programma.perTipo || {}).map(
-    (t) => programma.perTipo[t] + " " + (PLURALI[t] || t)
-  );
+  const tipi = Object.keys(perTipo).map((t) => perTipo[t] + " " + (PLURALI[t] || t));
   console.log(
     "  Elementi del programma  " + " ".repeat(Math.max(0, larghezza - "Elementi del programma".length)) +
-      programma.attesi + " su " + programma.attesi + " con un collegamento che li apre" +
+      letti + " su " + quanti + " letti da " + conElementi.map((r) => r.nome.toLowerCase()).join(", ") +
       (tipi.length ? " (" + tipi.join(", ") + ")" : "") + "."
   );
 }
