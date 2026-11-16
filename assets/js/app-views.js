@@ -314,6 +314,16 @@
               }).join("") + "</ul>"
             : '<p class="text-small muted mb-0">Nessun dato salvato: c\'è solo la struttura del programma.</p>') +
           (function () {
+            // Il totale resta anche dopo aver chiuso l'app: chi compatta ogni
+            // tanto deve poter vedere quanto ha liberato in tutto, non solo
+            // l'ultima volta.
+            const liberato = A.liberatoTotale();
+            if (!liberato.volte) return "";
+            return '<p class="text-small mt-1" id="liberatoTotaleSegno">In tutto hai liberato <strong>' +
+              A.fmtBytes(liberato.byte) + "</strong> " +
+              (liberato.volte === 1 ? "con una compattazione." : "con " + liberato.volte + " compattazioni.") + "</p>";
+          })() +
+          (function () {
             // La soglia si sceglie qui: quanto è vecchio «vecchio» dipende da
             // come scrive chi usa l'app, non da un numero deciso per tutti.
             const piano = A.pianificaCompatta();
@@ -446,7 +456,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.67 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.68 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

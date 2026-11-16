@@ -599,6 +599,8 @@ NP.app = (function () {
     chat: "Conversazione con Neura",
     copie: "Copie automatiche",
     copieMax: "Preferenze",
+    compattaGiorni: "Soglia di compattazione",
+    liberato: "Spazio liberato in tutto",
     theme: "Tema",
     voice: "Voce",
     voce: "Voce naturale",
@@ -716,6 +718,28 @@ NP.app = (function () {
     };
   }
 
+  // Quanto si è liberato in tutto: un numero che cresce invece di sparire con
+  // il messaggio di conferma. Serve a rispondere a «ne è valsa la pena?» senza
+  // tenere il conto a mente, e resta anche dopo aver chiuso l'app.
+  function liberatoTotale() {
+    const letto = readJSON("liberato", null);
+    const byte = letto && Number(letto.byte);
+    const volte = letto && Number(letto.volte);
+    return {
+      byte: Number.isFinite(byte) && byte > 0 ? byte : 0,
+      volte: Number.isFinite(volte) && volte > 0 ? Math.floor(volte) : 0
+    };
+  }
+
+  function aggiungiLiberato(byte) {
+    const prima = liberatoTotale();
+    const dopo = { byte: prima.byte + byte, volte: prima.volte + 1 };
+    try {
+      localStorage.setItem(PREFIX + "liberato", JSON.stringify(dopo));
+    } catch (e) { /* spazio pieno: il totale resta quello di prima */ }
+    return dopo;
+  }
+
   function compattaDati() {
     const piano = pianificaCompatta();
     if (!piano.byte) return false;
@@ -735,7 +759,9 @@ NP.app = (function () {
     state.chat = [];
     saveChat();
     writeJSON("thoughts", divisi.tenuti);
-    toast("Liberati " + fmtBytes(piano.byte) + ": conversazione con Neura e schede vecchie tolte.");
+    const totale = aggiungiLiberato(piano.byte);
+    toast("Liberati " + fmtBytes(piano.byte) + ": conversazione con Neura e schede vecchie tolte. In tutto " +
+      fmtBytes(totale.byte) + (totale.volte === 1 ? " con una compattazione." : " con " + totale.volte + " compattazioni."));
     return true;
   }
 
@@ -1026,6 +1052,7 @@ NP.app = (function () {
     pianificaCompatta: pianificaCompatta,
     compattaDati: compattaDati,
     giorniCompatta: giorniCompatta,
+    liberatoTotale: liberatoTotale,
     compattaScelte: compattaScelte,
     impostaGiorniCompatta: impostaGiorniCompatta,
     fmtBytes: fmtBytes,

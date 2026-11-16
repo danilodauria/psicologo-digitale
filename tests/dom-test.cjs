@@ -851,7 +851,28 @@ setTimeout(async function () {
   ok(dopoSchede[dopoSchede.length - 1].id === "d11", "resta in coda la scheda più nuova");
   ok(NP.app.spazioDati().totale < spazioPrima, "dopo la compattazione lo spazio occupato cala davvero");
   ok(NP.app.pianificaCompatta().byte === 0, "senza roba vecchia il conto dice zero");
+
+  // Il totale di quanto si è liberato: cresce a ogni compattazione, non si
+  // azzera alla successiva e non cambia quando non c'è niente da fare.
+  const liberatoPrima = NP.app.liberatoTotale();
+  ok(liberatoPrima.volte === 1 && liberatoPrima.byte > 0, "dopo la prima compattazione il totale dice quanto si è liberato, e in quante volte");
   ok(NP.app.compattaDati() === false, "una seconda compattazione non fa niente");
+  ok(NP.app.liberatoTotale().byte === liberatoPrima.byte && NP.app.liberatoTotale().volte === 1, "una compattazione a vuoto non gonfia il totale");
+
+  // Un'altra compattazione si somma alla prima invece di sostituirla.
+  NP.app.writeJSON("thoughts", [scheda("e0", giorniFa(120), "vecchia"), scheda("e1", giorniFa(120), "vecchia")].concat(NP.app.readJSON("thoughts", [])));
+  const piano2 = NP.app.pianificaCompatta();
+  ok(piano2.pensieri === 2, "le due schede rimesse in testa sono più vecchie della soglia");
+  ok(NP.app.compattaDati() === true, "la seconda compattazione si può eseguire");
+  const liberatoDopo = NP.app.liberatoTotale();
+  ok(liberatoDopo.volte === 2, "il totale conta due compattazioni");
+  ok(liberatoDopo.byte === liberatoPrima.byte + piano2.byte, "e somma i byte di entrambe, invece di tenere solo l'ultima");
+
+  navigate("#/licenze");
+  const segnoLiberato = document.getElementById("liberatoTotaleSegno");
+  ok(!!segnoLiberato, "la pagina Licenze mostra il totale liberato");
+  ok(segnoLiberato.textContent.indexOf(NP.app.fmtBytes(liberatoDopo.byte)) >= 0, "con lo spazio liberato in tutto");
+  ok(/con 2 compattazioni/.test(segnoLiberato.textContent), "e in quante compattazioni è stato liberato");
 
   // Spazio finito: un salvataggio fallito non deve passare inosservato.
   const setItemVero = window.Storage.prototype.setItem;

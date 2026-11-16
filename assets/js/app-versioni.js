@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.67";
+  const VERSIONE = "1.3.68";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.68",
+      data: "13 novembre 2026",
+      titolo: "Quanto spazio hai liberato in tutto",
+      punti: [
+        "Il messaggio di conferma diceva quanto si era liberato quella volta, poi spariva: chi compatta ogni tanto non aveva modo di sapere se ne era valsa la pena.",
+        "Nella card dello spazio compare ora una riga: «In tutto hai liberato 14 kB con 2 compattazioni». Il totale si somma a ogni compattazione e resta anche dopo aver chiuso l'app.",
+        "Una compattazione che non trova niente da togliere non gonfia il conto, e se il browser rifiuta di scrivere il totale resta quello di prima invece di sparire. Nello stesso elenco ora si leggono per nome anche la soglia scelta e il totale, invece della chiave grezza."
+      ]
+    },
     {
       v: "1.3.67",
       data: "13 novembre 2026",
