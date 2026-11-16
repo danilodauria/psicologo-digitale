@@ -875,6 +875,10 @@ setTimeout(async function () {
   ok(/con 2 compattazioni/.test(segnoLiberato.textContent), "e in quante compattazioni è stato liberato");
 
   // Spazio finito: un salvataggio fallito non deve passare inosservato.
+  // Qualche scheda vecchia resta a disposizione per far sì che, dopo, ci sia
+  // davvero qualcosa da compattare quando si prova il ritentativo.
+  NP.app.writeJSON("thoughts", [scheda("f0", giorniFa(120), "vecchia f0"), scheda("f1", giorniFa(120), "vecchia f1"), scheda("f2", giorniFa(120), "vecchia f2")].concat(NP.app.readJSON("thoughts", [])));
+  const perso = [paginaDiario("r1", "2026-11-12T09:00:00.000Z", "recuperata")];
   const setItemVero = window.Storage.prototype.setItem;
   Object.defineProperty(window.Storage.prototype, "setItem", {
     configurable: true,
@@ -885,8 +889,10 @@ setTimeout(async function () {
       throw e;
     }
   });
-  ok(NP.app.writeJSON("diario", []) === false, "il salvataggio fallito lo dice a chi lo chiama, invece di sparire");
+  ok(NP.app.writeJSON("diario", perso) === false, "il salvataggio fallito lo dice a chi lo chiama, invece di sparire");
   ok(NP.app.salvataggioNonRiuscito() === true, "l'app ricorda che l'ultimo salvataggio non è riuscito");
+  ok(NP.app.salvataggiPendenti().length === 1 && NP.app.salvataggiPendenti()[0].chiave === "diario",
+    "la modifica rifiutata resta in attesa, invece di sparire con l'avviso");
   const toastPieno = document.getElementById("toast");
   ok(/Non c'è spazio per salvare/.test(toastPieno.textContent), "compare un messaggio che parla di spazio esaurito");
 
@@ -915,15 +921,51 @@ setTimeout(async function () {
   document.getElementById("spazioPienoEsporta").click();
   ok(scaricati === 1, "quel pulsante esporta il backup con un clic");
 
+  ok(NP.app.salvataggiPendenti().length === 1, "esportare con lo spazio ancora pieno non fa perdere la modifica in attesa");
+
   window.HTMLAnchorElement.prototype.click = clickVero;
   if (avevaCreaURL) window.URL.createObjectURL = creaURLVero;
   else delete window.URL.createObjectURL;
 
+  // Compattando si libera spazio: il salvataggio in sospeso viene ritentato da
+  // solo, senza che l'utente debba sapere che esiste un pulsante per farlo.
   Object.defineProperty(window.Storage.prototype, "setItem", { configurable: true, writable: true, value: setItemVero });
-  ok(NP.app.writeJSON("diario", NP.app.state.diary) === true, "quando lo spazio torna, il salvataggio riesce");
-  ok(NP.app.salvataggioNonRiuscito() === false, "e l'avviso si spegne da solo");
+  ok(NP.app.compattaDati() === true, "la compattazione si può eseguire anche con un salvataggio in sospeso");
+  const diarioRecuperato = NP.app.readJSON("diario", []);
+  ok(diarioRecuperato.length === 1 && diarioRecuperato[0].note === "recuperata",
+    "dopo la compattazione la modifica in sospeso è stata salvata davvero");
+  ok(NP.app.salvataggiPendenti().length === 0, "e non resta più niente in attesa");
+  ok(NP.app.salvataggioNonRiuscito() === false, "l'avviso si spegne da solo");
+  ok(/è stata salvata/.test(document.getElementById("toast").textContent), "e il messaggio dice che la modifica è tornata");
   navigate("#/licenze");
   ok(!document.getElementById("spazioPienoAvviso"), "l'avviso sparisce dalla pagina appena si torna a salvare");
+
+  // Anche esportare ritenta: chi mette al sicuro una copia si aspetta che la
+  // modifica rimasta fuori non resti appesa.
+  const perso2 = [paginaDiario("r2", "2026-11-13T09:00:00.000Z", "recuperata esportando")];
+  Object.defineProperty(window.Storage.prototype, "setItem", {
+    configurable: true, writable: true,
+    value: function () { const e = new Error("quota"); e.name = "QuotaExceededError"; throw e; }
+  });
+  ok(NP.app.writeJSON("diario", perso2) === false, "un secondo salvataggio viene rifiutato");
+  Object.defineProperty(window.Storage.prototype, "setItem", { configurable: true, writable: true, value: setItemVero });
+  navigate("#/licenze");
+  const esportaPieno = document.getElementById("spazioPienoEsporta");
+  ok(!!esportaPieno, "l'avviso in Licenze è di nuovo al suo posto, con il pulsante");
+  scaricati = 0;
+  window.HTMLAnchorElement.prototype.click = function () { scaricati++; };
+  window.URL.createObjectURL = function () { return "blob:finto"; };
+  esportaPieno.click();
+  ok(scaricati === 1, "il pulsante esporta il backup");
+  const dopoEsporta = NP.app.readJSON("diario", []);
+  ok(dopoEsporta.length === 1 && dopoEsporta[0].note === "recuperata esportando",
+    "e l'esportazione fa salvare da sola la modifica che era rimasta fuori");
+  ok(NP.app.salvataggioNonRiuscito() === false, "l'avviso stabile si spegne");
+  navigate("#/licenze");
+  ok(!document.getElementById("spazioPienoAvviso"), "e sparisce dalla pagina");
+  window.HTMLAnchorElement.prototype.click = clickVero;
+  if (avevaCreaURL) window.URL.createObjectURL = creaURLVero;
+  else delete window.URL.createObjectURL;
 
   // Se la copia di sicurezza non si riesce a fare, il ripristino lo chiede prima.
   // Sta in fondo perché provoca di proposito scritture rifiutate.

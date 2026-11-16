@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.69";
+  const VERSIONE = "1.3.70";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.70",
+      data: "13 novembre 2026",
+      titolo: "La modifica rifiutata viene ritentata da sola",
+      punti: [
+        "Quando il browser rifiutava una scrittura, quel testo spariva: l'avviso avvisava, ma la modifica restava persa anche dopo aver liberato spazio.",
+        "Ora il testo rifiutato resta in attesa, per chiave, e viene ritentato automaticamente appena si compatta o si esporta un backup: le due azioni che possono far tornare lo spazio. Riuscendo, il messaggio lo dice.",
+        "Se lo spazio è ancora pieno la modifica resta in attesa per la volta dopo, senza un secondo avviso sopra quello già a schermo. Il ritentativo prende sempre l'ultima versione scritta, non una vecchia."
+      ]
+    },
     {
       v: "1.3.69",
       data: "13 novembre 2026",

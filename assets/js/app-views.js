@@ -304,7 +304,7 @@
             ? '<div class="callout warn" id="spazioPienoAvviso"><p><strong>L\'ultimo salvataggio non è riuscito.</strong> Il browser ha rifiutato di scrivere, quasi sempre perché lo spazio è finito: l\'ultima modifica non è registrata.</p>' +
                 '<div class="btn-row"><button type="button" class="btn btn-soft btn-sm" id="spazioPienoEsporta">' + A.icon("download") +
                 'Esporta backup ora</button></div>' +
-                '<p class="text-small mt-1 mb-0">Poi compatta i dati vecchi qui sotto, e riprova.</p></div>'
+                '<p class="text-small mt-1 mb-0">Poi compatta i dati vecchi qui sotto: appena lo spazio torna, il salvataggio viene ritentato da solo.</p></div>'
             : "") +
           '<p class="text-small muted mt-1">' +
             (stretto
@@ -459,7 +459,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.69 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.70 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

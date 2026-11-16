@@ -53,18 +53,56 @@ NP.app = (function () {
     });
   }
 
+  // Cosa il browser ha rifiutato di scrivere: la modifica resta qui, in attesa,
+  // invece di sparire insieme all'avviso. Non è una copia dei dati — è l'ultimo
+  // testo che non è riuscito a entrare, per chiave, così un ritentativo scrive
+  // la versione più recente e non una vecchia.
+  const salvataggiInSospeso = {};
+
+  function salvataggiPendenti() {
+    return Object.keys(salvataggiInSospeso).map(function (k) { return { chiave: k, byte: peso(salvataggiInSospeso[k]) }; });
+  }
+
   function writeJSON(key, value) {
+    return scriviJSON(key, value, false);
+  }
+
+  // `silenzioso` serve ai ritentativi: se lo spazio non è ancora tornato, non
+  // ha senso un altro avviso identico sopra quello che l'utente sta leggendo.
+  function scriviJSON(key, value, silenzioso) {
     try {
-      localStorage.setItem(PREFIX + key, JSON.stringify(value));
-      salvataggioFallito = false;
+      const testo = JSON.stringify(value);
+      localStorage.setItem(PREFIX + key, testo);
+      delete salvataggiInSospeso[key];
+      salvataggioFallito = Object.keys(salvataggiInSospeso).length > 0;
       return true;
     } catch (e) {
       if (erroreDiSpazio(e)) {
+        try { salvataggiInSospeso[key] = JSON.stringify(value); } catch (e2) { /* cicli: niente da ritentare */ }
         salvataggioFallito = true;
-        avvisaSpazioPieno();
+        if (!silenzioso) avvisaSpazioPieno();
       }
       return false;
     }
+  }
+
+  // Dopo aver liberato spazio — compattando o mettendo al sicuro un backup — si
+  // ritenta da soli: la modifica che sembrava persa non deve restare appesa a
+  // un clic che nessuno sa di dover fare.
+  function riprovaSalvataggi() {
+    const chiavi = Object.keys(salvataggiInSospeso);
+    if (!chiavi.length) return false;
+    let recuperate = 0;
+    chiavi.forEach(function (k) {
+      try {
+        localStorage.setItem(PREFIX + k, salvataggiInSospeso[k]);
+        delete salvataggiInSospeso[k];
+        recuperate++;
+      } catch (e) { /* resta in attesa per la prossima volta */ }
+    });
+    salvataggioFallito = Object.keys(salvataggiInSospeso).length > 0;
+    if (recuperate && typeof render === "function") render();
+    return recuperate > 0;
   }
 
   const state = {
@@ -530,7 +568,11 @@ NP.app = (function () {
 
   function esportaBackup() {
     scaricaJSON(raccogliDati(), "psicologo-digitale-backup.json");
-    toast("Backup esportato.");
+    // Il file è al sicuro: se c'era una modifica rimasta fuori, si ritenta ora.
+    const recupero = riprovaSalvataggi();
+    toast(recupero
+      ? "Backup esportato, e la modifica in sospeso è stata salvata."
+      : "Backup esportato.", recupero ? 6000 : 2800);
   }
 
   // Un nome che distingue le copie fra loro: due esportazioni nello stesso
@@ -789,8 +831,12 @@ NP.app = (function () {
     saveChat();
     writeJSON("thoughts", divisi.tenuti);
     const totale = aggiungiLiberato(piano.byte);
+    // Lo spazio è appena stato liberato: è il momento in cui un salvataggio
+    // fallito può riuscire, quindi si ritenta subito, senza chiedere altro.
+    const recupero = riprovaSalvataggi();
     toast("Liberati " + fmtBytes(piano.byte) + ": conversazione con Neura e schede vecchie tolte. In tutto " +
-      fmtBytes(totale.byte) + (totale.volte === 1 ? " con una compattazione." : " con " + totale.volte + " compattazioni."));
+      fmtBytes(totale.byte) + (totale.volte === 1 ? " con una compattazione." : " con " + totale.volte + " compattazioni.") +
+      (recupero ? " La modifica che era andata persa è stata salvata." : ""), recupero ? 8000 : 2800);
     return true;
   }
 
@@ -1082,6 +1128,8 @@ NP.app = (function () {
     compattaDati: compattaDati,
     giorniCompatta: giorniCompatta,
     liberatoTotale: liberatoTotale,
+    riprovaSalvataggi: riprovaSalvataggi,
+    salvataggiPendenti: salvataggiPendenti,
     compattaScelte: compattaScelte,
     impostaGiorniCompatta: impostaGiorniCompatta,
     fmtBytes: fmtBytes,
