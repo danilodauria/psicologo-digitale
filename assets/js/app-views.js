@@ -314,15 +314,31 @@
               }).join("") + "</ul>"
             : '<p class="text-small muted mb-0">Nessun dato salvato: c\'è solo la struttura del programma.</p>') +
           (function () {
+            // La soglia si sceglie qui: quanto è vecchio «vecchio» dipende da
+            // come scrive chi usa l'app, non da un numero deciso per tutti.
             const piano = A.pianificaCompatta();
+            const scelte = A.compattaScelte();
+            const oltre = scelte.filter(function (g) { return g > piano.giorni; });
+            const html = '<div class="mt-2" id="compattaBox"><h3 class="h-sub-sm">Compattare i dati vecchi</h3>' +
+              '<div class="btn-row">' +
+                '<label class="text-small" for="compattaGiorni">Schede più vecchie di</label>' +
+                '<select id="compattaGiorni" style="width:auto;padding:.35rem .6rem;font-size:.85rem">' +
+                  scelte.map(function (g) {
+                    return '<option value="' + g + '"' + (g === piano.giorni ? " selected" : "") + ">" + g + " giorni</option>";
+                  }).join("") +
+                "</select>" +
+                '<span class="text-small muted">si può cambiare quando si vuole</span>' +
+              "</div>";
             if (!piano.byte) {
-              return '<p class="text-small muted mt-2 mb-0">Niente da compattare: nessuna conversazione salvata e nessuna scheda del pensiero più vecchia di ' + piano.giorni + ' giorni.</p>';
+              return html + '<p class="text-small muted mb-0">Con la soglia di ' + piano.giorni +
+                ' giorni non c\'è niente da togliere: nessuna conversazione salvata e nessuna scheda più vecchia' +
+                (oltre.length ? ". Si può alzare la soglia a " + oltre.join(" o ") + " giorni." : ".") + "</p></div>";
             }
             const cose = [];
             if (piano.messaggi) cose.push(piano.messaggi + (piano.messaggi === 1 ? " messaggio con Neura" : " messaggi con Neura"));
             if (piano.pensieri) cose.push(piano.pensieri + (piano.pensieri === 1 ? " scheda del pensiero" : " schede del pensiero") + " più vecchie di " + piano.giorni + " giorni");
-            return '<div class="mt-2" id="compattaBox"><h3 class="h-sub-sm">Compattare i dati vecchi</h3>' +
-              '<p class="text-small">Si toglierebbero ' + cose.join(" e ") + ": circa <strong>" + A.fmtBytes(piano.byte) + "</strong> liberati. Colloquio, questionari, diario e note non si toccano" +
+            return html +
+              '<p class="text-small mt-1">Si toglierebbero ' + cose.join(" e ") + ": circa <strong>" + A.fmtBytes(piano.byte) + "</strong> liberati. Colloquio, questionari, diario e note non si toccano" +
                 (piano.pensieri ? ", e restano comunque le ultime " + piano.minime + " schede" : "") + ".</p>" +
               '<div class="btn-row"><button type="button" class="btn btn-soft btn-sm" id="compattaBtn">Compatta e libera ' + A.fmtBytes(piano.byte) + "</button></div></div>";
           })() +
@@ -430,7 +446,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.3.66 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.3.67 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -441,6 +457,13 @@
     const compatta = document.getElementById("compattaBtn");
     if (compatta) compatta.addEventListener("click", function () {
       if (A.compattaDati()) A.render();
+    });
+
+    const soglia = document.getElementById("compattaGiorni");
+    if (soglia) soglia.addEventListener("change", function () {
+      // Cambiando soglia cambia il conto: si ridisegna, e la scelta resta
+      // scritta accanto ai dati perché valga anche al prossimo avvio.
+      if (A.impostaGiorniCompatta(soglia.value)) A.render();
     });
 
     const imp = document.getElementById("importFile");

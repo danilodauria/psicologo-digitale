@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.3.66";
+  const VERSIONE = "1.3.67";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.3.67",
+      data: "13 novembre 2026",
+      titolo: "Scegliere quanto vecchie devono essere le schede da togliere",
+      punti: [
+        "La compattazione guardava sempre trenta giorni indietro. Ma quanto è «vecchio» dipende da come si scrive: chi tiene un diario fitto può voler conservare tre mesi e togliere solo il resto.",
+        "Nella card dello spazio c'è ora un selettore — 30, 60 o 90 giorni — e il conto si aggiorna appena lo si cambia: quante schede si toglierebbero, quanto spazio si libererebbe, quante restano.",
+        "La scelta resta scritta accanto ai dati e vale anche al prossimo avvio. Un valore diverso da quelli previsti viene rifiutato, e anteprima e compattazione leggono la soglia dallo stesso punto: non possono guardare due finestre diverse."
+      ]
+    },
     {
       v: "1.3.66",
       data: "13 novembre 2026",

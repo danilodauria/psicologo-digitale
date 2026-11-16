@@ -644,15 +644,42 @@ NP.app = (function () {
   // — colloquio, questionari, diario, note — non si tocca mai da qui.
   const COMPATTA_GIORNI = 30;
   const COMPATTA_MINIME = 10;
+  // Quanto indietro guardare non è uguale per tutti: chi scrive molto può
+  // voler tenere tre mesi e togliere solo il resto, chi è pieno preferisce
+  // liberare subito. Le tre soglie sono le stesse che il browser deve saper
+  // conservare; qualsiasi altro numero viene ignorato, non accettato per buono.
+  const COMPATTA_SCELTE = [30, 60, 90];
+  const CHIAVE_COMPATTA = "compattaGiorni";
+
+  function giorniCompatta() {
+    const salvato = parseInt(localStorage.getItem(PREFIX + CHIAVE_COMPATTA), 10);
+    return COMPATTA_SCELTE.indexOf(salvato) >= 0 ? salvato : COMPATTA_GIORNI;
+  }
+
+  function compattaScelte() { return COMPATTA_SCELTE.slice(); }
+
+  function impostaGiorniCompatta(giorni) {
+    const n = parseInt(giorni, 10);
+    if (COMPATTA_SCELTE.indexOf(n) < 0) return false;
+    try {
+      localStorage.setItem(PREFIX + CHIAVE_COMPATTA, String(n));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   function firmaVoce(v) { return JSON.stringify(v); }
 
   // Divide le schede in «restano» e «vecchie» in un posto solo: il conto che si
-  // mostra e quello che si esegue devono venire dalla stessa regola.
-  function dividiPensieri() {
+  // mostra e quello che si esegue devono venire dalla stessa regola. Anche la
+  // soglia arriva da qui, così anteprima e compattazione non possono guardare
+  // due finestre diverse.
+  function dividiPensieri(giorni) {
     const elenco = readJSON("thoughts", []);
     const lista = Array.isArray(elenco) ? elenco : [];
-    const soglia = Date.now() - COMPATTA_GIORNI * 24 * 60 * 60 * 1000;
+    const g = COMPATTA_SCELTE.indexOf(Number(giorni)) >= 0 ? Number(giorni) : giorniCompatta();
+    const soglia = Date.now() - g * 24 * 60 * 60 * 1000;
     const recenti = {};
     lista.slice(-COMPATTA_MINIME).forEach(function (v) { recenti[firmaVoce(v)] = true; });
     const tenuti = [], vecchi = [];
@@ -683,7 +710,8 @@ NP.app = (function () {
       // niente da togliere, il conto deve dire zero e non «2 B».
       byte: (chat.length ? peso(JSON.stringify(chat)) : 0) +
         (divisi.vecchi.length ? peso(JSON.stringify(divisi.vecchi)) : 0),
-      giorni: COMPATTA_GIORNI,
+      giorni: giorniCompatta(),
+      scelte: COMPATTA_SCELTE.slice(),
       minime: COMPATTA_MINIME
     };
   }
@@ -703,7 +731,7 @@ NP.app = (function () {
     // conterrebbe proprio le schede vecchie che si stanno togliendo, e lo
     // spazio liberato finirebbe occupato di nuovo. Chi compatta sta già
     // scegliendo cosa perdere.
-    const divisi = dividiPensieri();
+    const divisi = dividiPensieri(piano.giorni);
     state.chat = [];
     saveChat();
     writeJSON("thoughts", divisi.tenuti);
@@ -997,6 +1025,9 @@ NP.app = (function () {
     salvataggioNonRiuscito: salvataggioNonRiuscito,
     pianificaCompatta: pianificaCompatta,
     compattaDati: compattaDati,
+    giorniCompatta: giorniCompatta,
+    compattaScelte: compattaScelte,
+    impostaGiorniCompatta: impostaGiorniCompatta,
     fmtBytes: fmtBytes,
     statoDati: statoDati,
     campiCopia: CAMPI_COPIA,

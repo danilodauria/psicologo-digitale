@@ -795,30 +795,60 @@ setTimeout(async function () {
   ok(cancellataQuale === 0, "«Cancella» cancella proprio la copia a cui sta accanto");
 
   // Compattare: prima si dice quanto libera, e si tocca solo ciò che è vecchio.
-  const vecchioISO = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-  const recenteISO = new Date().toISOString();
+  // Quanto è «vecchio» lo sceglie chi usa l'app, fra 30, 60 e 90 giorni.
+  const giorniFa = (n) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
+  const scheda = (id, date, situation) => ({ id: id, date: date, situation: situation, thought: "pensiero", emotion: "ansia", intensity: 5, alternative: "" });
   NP.app.state.chat = [{ role: "utente", testo: "ciao" }, { role: "neura", testo: "ciao a te" }];
   const schede = [];
-  for (let i = 0; i < 15; i++) {
-    schede.push({ id: "v" + i, date: vecchioISO, situation: "vecchia " + i, thought: "pensiero", emotion: "ansia", intensity: 5, alternative: "" });
-  }
-  schede.push({ id: "r1", date: recenteISO, situation: "recente", thought: "pensiero", emotion: "calma", intensity: 3, alternative: "" });
+  for (let i = 0; i < 6; i++) schede.push(scheda("a" + i, giorniFa(120), "di quattro mesi fa " + i));
+  for (let i = 0; i < 4; i++) schede.push(scheda("b" + i, giorniFa(75), "di due mesi e mezzo " + i));
+  for (let i = 0; i < 4; i++) schede.push(scheda("c" + i, giorniFa(45), "di un mese e mezzo " + i));
+  for (let i = 0; i < 12; i++) schede.push(scheda("d" + i, giorniFa(0), "recente " + i));
   NP.app.writeJSON("thoughts", schede);
+
+  ok(NP.app.giorniCompatta() === 30, "senza una scelta la soglia è di trenta giorni");
+  ok(NP.app.compattaScelte().join(",") === "30,60,90", "le soglie offerte sono trenta, sessanta e novanta giorni");
   const piano = NP.app.pianificaCompatta();
   ok(piano.byte > 0, "prima di compattare si dice quanto spazio si libera");
+  ok(piano.giorni === 30 && piano.scelte.join(",") === "30,60,90", "il conto dice con quale soglia sta guardando");
   ok(piano.messaggi === 2, "il conto dice quanti messaggi con Neura si tolgono");
-  ok(piano.pensieri === 6, "si tolgono solo le schede vecchie oltre le ultime dieci");
-  ok(piano.restano === 10, "restano sempre le ultime dieci schede");
+  ok(piano.pensieri === 14, "a trenta giorni si tolgono tutte le schede più vecchie oltre le ultime dieci");
+  ok(piano.restano === 12, "restano sempre le ultime dieci schede, più quelle non ancora vecchie");
+
+  ok(NP.app.impostaGiorniCompatta(45) === false, "una soglia non prevista viene rifiutata");
+  ok(NP.app.giorniCompatta() === 30, "e non cambia quella in uso");
+  ok(NP.app.impostaGiorniCompatta("60") === true, "la soglia si può portare a sessanta giorni");
+  ok(NP.app.giorniCompatta() === 60, "la scelta resta scritta, non solo per questa schermata");
+  ok(NP.app.pianificaCompatta().pensieri === 10, "a sessanta giorni le schede di un mese e mezzo restano");
+  ok(NP.app.impostaGiorniCompatta(90) === true && NP.app.pianificaCompatta().pensieri === 6, "a novanta giorni si tolgono solo quelle di quattro mesi fa");
+  NP.app.impostaGiorniCompatta(60);
 
   navigate("#/licenze");
   const scatolaCompatta = document.getElementById("compattaBox");
   ok(!!scatolaCompatta && /Compatta e libera/.test(scatolaCompatta.textContent), "la pagina mostra quanto libererebbe, nel pulsante stesso");
+  const sceltaGiorni = document.getElementById("compattaGiorni");
+  ok(!!sceltaGiorni && sceltaGiorni.options.length === 3, "la pagina offre un selettore con le tre soglie");
+  ok(sceltaGiorni.value === "60", "il selettore mostra la soglia in uso");
+  ok(/più vecchie di 60 giorni/.test(scatolaCompatta.textContent), "il conto sulla pagina usa quella soglia, non un numero fisso");
+
+  // Il selettore deve contare davvero: cambiandolo cambia il conto, subito.
+  sceltaGiorni.value = "90";
+  sceltaGiorni.dispatchEvent(new window.Event("change"));
+  ok(NP.app.giorniCompatta() === 90, "cambiando il selettore la scelta viene registrata");
+  const dopoCambio = document.getElementById("compattaBox");
+  ok(/più vecchie di 90 giorni/.test(dopoCambio.textContent), "e la pagina si ridisegna con il nuovo conto");
+  const selettoreDopo = document.getElementById("compattaGiorni");
+  selettoreDopo.value = "60";
+  selettoreDopo.dispatchEvent(new window.Event("change"));
 
   const spazioPrima = NP.app.spazioDati().totale;
   ok(NP.app.compattaDati() === true, "la compattazione si può eseguire");
   ok(NP.app.state.chat.length === 0, "le conversazioni con Neura spariscono");
   const dopoSchede = NP.app.readJSON("thoughts", []);
-  ok(dopoSchede.length === 10 && dopoSchede[9].situation === "recente", "restano le dieci schede più recenti, con la più nuova in coda");
+  ok(dopoSchede.length === 16, "a sessanta giorni restano quindici schede recenti più quella più nuova in coda");
+  ok(!dopoSchede.some((s) => s.id === "b0"), "le schede di due mesi e mezzo vengono tolte");
+  ok(dopoSchede.some((s) => s.id === "c0"), "quelle di un mese e mezzo restano, perché la soglia scelta è più larga");
+  ok(dopoSchede[dopoSchede.length - 1].id === "d11", "resta in coda la scheda più nuova");
   ok(NP.app.spazioDati().totale < spazioPrima, "dopo la compattazione lo spazio occupato cala davvero");
   ok(NP.app.pianificaCompatta().byte === 0, "senza roba vecchia il conto dice zero");
   ok(NP.app.compattaDati() === false, "una seconda compattazione non fa niente");
