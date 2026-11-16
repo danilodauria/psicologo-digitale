@@ -905,6 +905,10 @@ NP.app = (function () {
     // Un ripristino sbagliato deve potersi annullare: i dati di adesso
     // diventano una copia, così si torna indietro con un altro ripristino.
     const salvata = salvaCopia(true);
+    // Se c'era qualcosa da salvare e la copia non è riuscita (spazio pieno),
+    // la promessa «si può annullare» sarebbe falsa: si chiede prima.
+    if (!salvata && haDati(raccogliDati()) &&
+      !confirm("Non è stato possibile salvare una copia dei dati attuali, probabilmente per spazio esaurito. Il ripristino non potrà essere annullato. Procedere lo stesso?")) return false;
     state.intake = d.intake || state.intake;
     state.scales = d.scales || {};
     state.diary = d.diary || [];

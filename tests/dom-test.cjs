@@ -696,6 +696,7 @@ setTimeout(async function () {
   ok(NP.app.copieAutomatiche()[0].dati.diary[0].note === "dati di adesso", "e i dati di prima restano in una copia, non svaniscono");
   ok(NP.app.ripristinaCopia(0) === true && NP.app.state.diary[0].note === "dati di adesso", "quindi un ripristino sbagliato si annulla con un altro ripristino");
 
+
   // Percorso e quiz li riscrive il ripristino: se l'anteprima non li nominasse,
   // si perderebbero esercizi fatti e risposte ai quiz senza vederlo prima.
   NP.app.state.course = { done: [], notes: {} };
@@ -844,6 +845,24 @@ setTimeout(async function () {
   ok(NP.app.salvataggioNonRiuscito() === false, "e l'avviso si spegne da solo");
   navigate("#/licenze");
   ok(!document.getElementById("spazioPienoAvviso"), "l'avviso sparisce dalla pagina appena si torna a salvare");
+
+  // Se la copia di sicurezza non si riesce a fare, il ripristino lo chiede prima.
+  // Sta in fondo perché provoca di proposito scritture rifiutate.
+  NP.app.writeJSON("copie", [{ quando: "2026-11-09T09:00:00.000Z", dati: { diary: [paginaDiario("z0", "2026-11-08T09:00:00.000Z", "copia scelta")] } }]);
+  NP.app.state.diary = [paginaDiario("z2", "2026-11-10T09:00:00.000Z", "attuale")];
+  const setItemPieno = window.Storage.prototype.setItem;
+  Object.defineProperty(window.Storage.prototype, "setItem", {
+    configurable: true, writable: true,
+    value: function () { const e = new Error("quota"); e.name = "QuotaExceededError"; throw e; }
+  });
+  const confirmVero = window.confirm;
+  window.confirm = function () { return false; };
+  ok(NP.app.ripristinaCopia(0) === false, "se la copia di sicurezza non riesce, si chiede se procedere");
+  ok(NP.app.state.diary[0].note === "attuale", "rifiutando, i dati restano come sono");
+  window.confirm = function () { return true; };
+  ok(NP.app.ripristinaCopia(0) === true, "accettando, il ripristino procede lo stesso");
+  window.confirm = confirmVero;
+  Object.defineProperty(window.Storage.prototype, "setItem", { configurable: true, writable: true, value: setItemPieno });
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
