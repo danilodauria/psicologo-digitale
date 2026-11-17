@@ -334,7 +334,8 @@ const pdfVersione = [
   "assets/pdf/vademecum-psicologo-digitale-libricino-a4.pdf",
   "assets/pdf/vademecum-clinico-psicologo-digitale.pdf",
   "assets/pdf/Psicologo-Digitale-Come-si-installa.pdf",
-  "assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf"
+  "assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf",
+  "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf"
 ];
 pdfVersione.forEach((f) => {
   const testo = fs.readFileSync(path.join(root, f)).toString("latin1");
@@ -390,6 +391,32 @@ ok(/scheda-rapida\.html/.test(read("come-installare.html")), "la pagina lunga ri
 ok(/scheda rapida/i.test(read("README.md")), "il README parla della scheda");
 ok(exists("scripts/build_scheda_rapida_pdf.py") && /build_come_installare_pdf/.test(read("scripts/build_scheda_rapida_pdf.py")), "la scheda riusa l'impaginatore del foglio lungo");
 ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il service worker tiene offline");
+
+/* Foglio delle prove a mano in PDF ---------------------------------------- */
+
+// Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
+// prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
+// si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
+const proveMd = read("PROVE-A-MANO-1.4.0.md");
+const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
+ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
+const pb = fs.readFileSync(path.join(root, provePdf));
+ok(pb.slice(0, 5).toString("latin1") === "%PDF-", "il foglio delle prove è un PDF");
+const pt = pb.toString("latin1");
+ok(/%%EOF/.test(pt), "il foglio delle prove è chiuso correttamente");
+const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
+ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
+ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
+const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
+ok(etichette.length === 32, "il markdown elenca trentadue prove (" + etichette.length + ")");
+const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
+ok(assenti.length === 0,
+  "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
+ok(/Psicologo-Digitale-Prove-a-mano\.pdf/.test(read("README.md")), "il README indica il foglio delle prove in PDF");
+ok(exists("scripts/build_prove_a_mano_pdf.py"), "il generatore del foglio delle prove è nel progetto");
+const genProve = read("scripts/build_prove_a_mano_pdf.py");
+ok(/PROVE-A-MANO-/.test(genProve), "il generatore parte dal markdown delle prove, non da un testo a parte");
+ok(!/Riepilogo dei periodi|Modalità discreta/.test(genProve), "il generatore non contiene una seconda copia delle prove");
 
 /* Programmi installabili e benvenuto --------------------------------------- */
 
@@ -449,11 +476,13 @@ const installaJs = read("assets/js/app-installa.js");
 const afterPack = read("desktop/after-pack.cjs");
 ok(/afterPack/.test(read("desktop/package.json")), "electron-builder chiama l'hook della firma ad-hoc");
 
-// Il lockfile desktop si aggiorna a ogni release, e una sostituzione globale
+// I due lockfile si aggiornano a ogni release, e una sostituzione globale
 // della versione può toccare anche le versioni delle dipendenze: è successo con
 // `once`, che si è ritrovato a puntare a un file inesistente, e la build dei tre
 // sistemi è fallita dopo il tag. Questi controlli trasformano quel fallimento
-// in una build rossa prima del push.
+// in una build rossa prima del push, e valgono per entrambi i lockfile: quello
+// principale era rimasto indietro a 1.3.37 mentre il programma era alla 1.4.2,
+// senza che nessuno se ne accorgesse perché solo il desktop era controllato.
 const leggiJSON = function (file) {
   try { return JSON.parse(read(file)); } catch (e) { return null; }
 };
@@ -477,7 +506,13 @@ if (lockDesktop) {
       (incoerenti.length ? " (" + incoerenti.slice(0, 4).map(function (n) { return n + ": " + pacchetti[n].resolved; }).join(", ") + ")" : ""));
 }
 const lockRadice = exists("package-lock.json") ? leggiJSON("package-lock.json") : null;
+ok(!!lockRadice, "il lockfile principale è un JSON valido");
 if (lockRadice) {
+  const pkgRadice = leggiJSON("package.json") || {};
+  const versioneRadice = (lockRadice.packages && lockRadice.packages[""] && lockRadice.packages[""].version) || lockRadice.version;
+  ok(lockRadice.version === pkgRadice.version && versioneRadice === pkgRadice.version,
+    "il lockfile principale dichiara la stessa versione di package.json");
+
   const incoerenti = Object.keys(lockRadice.packages || {}).filter(function (nome) {
     const p = lockRadice.packages[nome] || {};
     if (!nome || !p.resolved || !p.version) return false;

@@ -408,6 +408,8 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.4.0 e la 1.4.1 è [PROVE-A-MANO-1.4.0.md](PROVE-A-MANO-1.4.0.md): trentadue controlli su riepilogo dei periodi, ricerca, backup con migrazione, dimensione del testo, modalità discreta e lettura ad alta voce, ognuno con il risultato atteso e una casella da spuntare.
 
+Lo stesso foglio esiste in **PDF A4**, per stamparlo e spuntarlo a penna: [assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf](assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf), quattro pagine, casella per ogni prova e tabella d'esito in fondo, con versione e provenienza nel piè di pagina. Non è una seconda copia del testo: `scripts/build_prove_a_mano_pdf.py` legge il markdown delle prove — il più recente per versione — e lo impagina con la stessa testata degli altri fogli, riusando l'impaginatore di `build_come_installare_pdf.py`. Il file è allegato alla release insieme agli altri PDF (`.github/workflows/foglio.yml`), e `tests/verify.cjs` confronta le prove del markdown con quelle stampate: una prova aggiunta e mai rigenerata diventa una build rossa.
+
 Si fanno sul sito o sull'app installata — i pacchetti si scaricano dalla pagina **Installa l'app** (`#/installa`) e dalle [release](https://github.com/danilodauria/psicologo-digitale/releases/latest) — e prima di iniziare si esporta un backup: alcune prove importano file e sostituiscono i dati.
 
 ## Lasciare il progetto a qualcun altro

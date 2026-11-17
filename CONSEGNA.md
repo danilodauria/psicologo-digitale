@@ -43,7 +43,7 @@ Punti fermi dell'impianto:
 1. **Nessun dato esce dal dispositivo.** Niente richieste di rete con dati della persona, niente analytics, niente chiavi. L'unica chiamata di rete opzionale è verso Ollama su `127.0.0.1:11434`, e solo se l'utente la attiva.
 2. **Nessun segreto nel repository.** Il token di pubblicazione vive nella configurazione git locale, non nei file. Non scrivere mai un token in un comando che finisce in un log o in un file versionato.
 3. **I workflow si toccano solo dall'integrazione GitHub.** Il token di push non ha lo scope `workflow`: un commit che modifica `.github/workflows/` viene rifiutato. Prima di ogni commit: `git reset -q .github/workflows`. Se serve cambiare una GitHub Action, si fa dall'integrazione GitHub, non da qui.
-4. **La versione è una sola, in sette posti.** `package.json`, `desktop/package.json`, `desktop/package-lock.json`, `sw.js` (`psd-vX.Y.Z`), `come-installare.html`, `scheda-rapida.html`, il piè di pagina in `assets/js/app-views.js`, più `VERSIONE` in `assets/js/app-versioni.js`. Un test confronta `VERSIONE` con `package.json`: se restano indietro, la build è rossa. Il lockfile desktop si allinea con `npm install --package-lock-only`, mai con una sostituzione di testo, e `tests/verify.cjs` controlla che ogni pacchetto risolto corrisponda alla versione che dichiara.
+4. **La versione è una sola, nei file che la dichiarano.** `package.json`, `package-lock.json`, `desktop/package.json`, `desktop/package-lock.json`, `sw.js` (`psd-vX.Y.Z`), `come-installare.html`, `scheda-rapida.html`, il piè di pagina in `assets/js/app-views.js`, più `VERSIONE` in `assets/js/app-versioni.js`. Un test confronta `VERSIONE` con `package.json`: se restano indietro, la build è rossa. I due lockfile si allineano con `npm install --package-lock-only`, mai con una sostituzione di testo, e `tests/verify.cjs` controlla per entrambi che dichiarino la stessa versione del proprio `package.json` e che ogni pacchetto risolto corrisponda alla versione che dichiara: il lockfile principale era rimasto a 1.3.37 mentre il programma era alla 1.4.2, perché solo quello desktop era controllato.
 5. **Ogni release ha la sua voce in `NOVITA`** (`assets/js/app-versioni.js`), scritta per chi usa il programma — cosa cambia nella sua giornata — non per chi legge il diff.
 6. **Le promesse nelle pagine sono verificate.** Se *Versioni* o il README dicono che un controllo esiste, quel controllo esiste come script o test che può diventare rosso. Una garanzia non testata è una bugia che invecchia bene.
 7. **Il backup ha un formato dichiarato.** `raccogliDati()` scrive `version` (oggi `2`); `migraBackup()` completa i file vecchi e rifiuta quelli di una versione futura. Cambiando la forma dei dati si incrementa `VERSIONE_BACKUP` e si aggiunge un passo in `MIGRAZIONI`: mai leggere un formato sconosciuto alla cieca. Il campo `migrato` è vero solo se il formato di partenza era diverso da quello di arrivo: un file già aggiornato non deve dichiarare una conversione che non c'è stata, e un test lo blocca.
@@ -63,19 +63,25 @@ npm ci
 python3 -m venv .venv && .venv/bin/pip install -q reportlab pymupdf
 
 # 1. Versione in tutti i file (sostituire X.Y.Z con la precedente).
-#    Il lockfile desktop NON va toccato con sed: contiene le versioni delle
+#    I lockfile NON vanno toccati con sed: contengono le versioni delle
 #    dipendenze, e una sostituzione globale può cambiarle (è successo con `once`,
 #    che ha fatto fallire la build di tutti e tre i sistemi dopo il tag).
 sed -i 's/X\.Y\.Z/NEW.VER/g' package.json desktop/package.json \
   sw.js come-installare.html scheda-rapida.html assets/js/app-views.js
 (cd desktop && npm install --package-lock-only --no-audit --no-fund)
+#   anche il lockfile principale porta la versione: senza questo resta indietro
+#   (è rimasto a 1.3.37 fino alla 1.4.2). Riscrive solo i metadati del pacchetto
+#   radice; se nel diff compare una versione di dipendenza cambiata, fermarsi.
+npm install --package-lock-only --no-audit --no-fund --ignore-scripts
+git diff --stat package-lock.json desktop/package-lock.json
 #   poi a mano: VERSIONE in assets/js/app-versioni.js, nuova voce in NOVITA,
 #   README (versione in fondo + eventuale sezione), questo file se cambiano le regole
 
-# 2. Dati per i PDF, poi i quattro fogli
+# 2. Dati per i PDF, poi i cinque fogli
 node scripts/export-data.cjs
 .venv/bin/python scripts/build_come_installare_pdf.py
 .venv/bin/python scripts/build_scheda_rapida_pdf.py
+.venv/bin/python scripts/build_prove_a_mano_pdf.py
 .venv/bin/python scripts/build_vademecum.py
 .venv/bin/python scripts/build_vademecum_clinico.py
 
@@ -114,8 +120,8 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 
 | Comando | Cosa verifica davvero |
 |---|---|
-| `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 456 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione, riepilogo dei periodi, ricerca, preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
+| `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 485 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi, ricerca, preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -123,7 +129,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | `scripts/controlla-archivi.cjs` | Gli archivi scaricabili si aprono e contengono quello che devono |
 | `scripts/controlla-dipendenze.cjs` | Nessuna dipendenza non dichiarata o non usata |
 | `scripts/riepilogo-copertura.cjs` | Scrive `artifacts/copertura/riepilogo.md`: quante viste, quante pagine di singoli elementi (30), quali controlli sono verdi |
-| `PROVE-A-MANO-<versione>.md` | **Non è automatico**: le prove che una persona deve fare a mano (voce, telefoni, messaggi al momento giusto), con il risultato atteso per ciascuna. Si leggono prima di dichiarare chiusa una release |
+| `PROVE-A-MANO-<versione>.md` | **Non è automatico**: le prove che una persona deve fare a mano (voce, telefoni, messaggi al momento giusto), con il risultato atteso per ciascuna. Si leggono prima di dichiarare chiusa una release. Lo stesso foglio esiste in PDF A4 (`assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`), generato dal markdown da `scripts/build_prove_a_mano_pdf.py`: `verify.cjs` controlla che ogni prova del markdown sia anche nel PDF |
 
 Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono.
 

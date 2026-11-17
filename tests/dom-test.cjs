@@ -1236,6 +1236,111 @@ setTimeout(async function () {
   ok(parlato >= 1, "premendolo la voce parte davvero");
   window.speechSynthesis.speak = speakVero;
 
+  /* ------------------------------------------------ Importare da un file */
+
+  // I test qui sopra chiamano migraBackup; la persona, invece, sceglie un file.
+  // Questo giro — input, FileReader, sostituzione dei dati, frase finale — non
+  // era coperto: la frase è l'unica cosa che si legge, e se mente nessun test
+  // sul formato se ne accorge.
+  console.log("\nImportazione di un backup da file");
+
+  const letture = [];
+  let attesaLettura = null;
+  const FileReaderVero = window.FileReader;
+  function FileReaderSorvegliato() {
+    const lettore = new FileReaderVero();
+    letture.push(lettore);
+    if (attesaLettura) {
+      const risolvi = attesaLettura;
+      attesaLettura = null;
+      // `loadend` arriva dopo `load`: quando la promessa si chiude l'app ha già
+      // letto il file e ridisegnato la pagina.
+      lettore.addEventListener("loadend", function () { risolvi(); });
+    }
+    return lettore;
+  }
+  window.FileReader = FileReaderSorvegliato;
+
+  // Il file si sceglie in un campo vero e si legge da un FileReader vero, con
+  // l'attesa della lettura vera: niente scorciatoie che salterebbero il codice
+  // che si vuole provare.
+  const scegli = async function (contenuto, nome) {
+    const campo = document.getElementById("importFile");
+    const file = new window.File([contenuto], nome, { type: "application/json" });
+    Object.defineProperty(campo, "files", { value: [file], configurable: true });
+    const quante = letture.length;
+    const finito = new Promise(function (risolvi) { attesaLettura = risolvi; });
+    campo.dispatchEvent(new window.Event("change"));
+    ok(letture.length === quante + 1, "«" + nome + "» viene letto da un FileReader, non saltato");
+    const arrivato = await Promise.race([
+      finito.then(function () { return true; }),
+      new Promise(function (risolvi) { setTimeout(function () { risolvi(false); }, 2000); })
+    ]);
+    ok(arrivato, "la lettura di «" + nome + "» arriva a compimento");
+    return document.getElementById("toast").textContent;
+  };
+
+  navigate("#/licenze");
+  const campoFile = document.getElementById("importFile");
+  ok(!!campoFile && campoFile.type === "file", "la pagina Licenze ha il campo per scegliere un file");
+  ok(/json/i.test(campoFile.getAttribute("accept")), "e accetta i file JSON, gli unici che sa leggere");
+
+  // Un file del primo formato: si completa, e la frase lo dice.
+  NP.app.state.diary = [paginaDiario("im1", "2026-11-13T09:00:00.000Z", "dati di prima")];
+  const daFileVecchio = JSON.stringify({
+    app: "Psicologo Digitale",
+    diary: [paginaDiario("im2", "2026-11-14T09:00:00.000Z", "dal file vecchio")]
+  });
+  let chiesto = "";
+  const confermaVeraImport = window.confirm;
+  window.confirm = function (msg) { chiesto = msg; return true; };
+  const esitoVecchio = await scegli(daFileVecchio, "vecchio.json");
+  window.confirm = confermaVeraImport;
+  ok(/Importare il backup\?/.test(chiesto), "prima di sostituire chiede conferma, invece di farlo e basta");
+  ok(esitoVecchio === "Backup importato e aggiornato al formato attuale.", "un file vecchio chiude con la frase che annuncia l'aggiornamento");
+  ok(NP.app.state.diary.length === 1 && NP.app.state.diary[0].note === "dal file vecchio", "e i dati sono davvero quelli del file, non quelli di prima");
+  ok(NP.app.readJSON("diary", [])[0].note === "dal file vecchio", "la frase non promette un salvataggio che poi non c'è: il diario è scritto");
+
+  // Un file già nel formato attuale: stessa strada, frase senza aggiornamento.
+  NP.app.state.diary = [paginaDiario("im3", "2026-11-16T09:00:00.000Z", "dal file attuale")];
+  const fileAttuale = NP.app.raccogliDati();
+  NP.app.state.diary = [paginaDiario("im4", "2026-11-17T09:00:00.000Z", "da sovrascrivere")];
+  const esitoAttuale = await scegli(JSON.stringify(fileAttuale), "attuale.json");
+  ok(esitoAttuale === "Backup importato.", "un file già aggiornato dice solo «Backup importato», senza annunciare una conversione che non c'è stata");
+  ok(NP.app.state.diary[0].note === "dal file attuale", "anche qui i dati sono quelli del file, non restano quelli di prima");
+
+  // Un file di una versione futura: si ferma prima di toccare i dati.
+  const primaDelRifiuto = JSON.stringify(NP.app.state.diary);
+  const esitoFuturo = await scegli(JSON.stringify({
+    app: "Psicologo Digitale", version: 9,
+    diary: [paginaDiario("im5", "2026-11-17T09:00:00.000Z", "inventato")]
+  }), "futuro.json");
+  ok(/versione più recente/.test(esitoFuturo), "un file di una versione futura lo dice nella frase che compare al posto del successo");
+  ok(JSON.stringify(NP.app.state.diary) === primaDelRifiuto, "e non tocca i dati: l'import si ferma prima di sostituire");
+
+  // Un file che non è un backup: lo dice, e la frase di prima non cambia.
+  let avvisato = "";
+  const alertVero = window.alert;
+  window.alert = function (msg) { avvisato = msg; };
+  const esitoRotto = await scegli("qui non c'è nessun backup", "foto.json");
+  window.alert = alertVero;
+  ok(/non sembra un backup valido/.test(avvisato), "un file qualsiasi lo dice con un avviso, non con un errore in console");
+  ok(esitoRotto === esitoFuturo, "il file rotto non lascia una frase di successo al posto dell'errore");
+  ok(JSON.stringify(NP.app.state.diary) === primaDelRifiuto, "e anche qui i dati restano quelli di prima");
+
+  // Se alla conferma si risponde no, non succede niente.
+  const primaDelNo = JSON.stringify(NP.app.state.diary);
+  window.confirm = function () { return false; };
+  const esitoNo = await scegli(JSON.stringify({
+    app: "Psicologo Digitale", version: 2,
+    diary: [paginaDiario("im6", "2026-11-17T09:00:00.000Z", "rifiutato")]
+  }), "rifiutato.json");
+  window.confirm = confermaVeraImport;
+  ok(JSON.stringify(NP.app.state.diary) === primaDelNo, "dicendo no alla conferma, i dati restano quelli di prima");
+  ok(esitoNo === esitoFuturo, "e non compare nessuna frase di backup importato");
+
+  window.FileReader = FileReaderVero;
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

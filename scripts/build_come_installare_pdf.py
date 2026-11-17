@@ -207,6 +207,8 @@ class Foglio(BaseDocTemplate):
         ver,
         titolo="Psicologo Digitale · Come si installa",
         url="danilodauria.github.io/psicologo-digitale/come-installare.html",
+        soggetto="Istruzioni di installazione per Windows, macOS e Linux",
+        creatore="scripts/build_come_installare_pdf.py",
         **kw
     ):
         self.ver = ver
@@ -222,8 +224,8 @@ class Foglio(BaseDocTemplate):
             bottomMargin=18 * mm,
             title=titolo,
             author="Danilo D'Auria",
-            subject="Istruzioni di installazione per Windows, macOS e Linux",
-            creator="scripts/build_come_installare_pdf.py",
+            subject=soggetto,
+            creator=creatore,
             # Il testo resta leggibile nel file: i test possono controllare che
             # la versione dichiarata sia quella di package.json.
             pageCompression=0,

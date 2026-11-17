@@ -4,6 +4,8 @@ Quello che i test automatici non possono vedere: la voce che parte davvero, la p
 
 Vale per la 1.4.0 e per la 1.4.1 (che corregge il messaggio dell'import: qui il risultato atteso è quello corretto, indicato nella prova 3.3).
 
+C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, quattro pagine con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
+
 **Dove si prova.** Sul sito — <https://danilodauria.github.io/psicologo-digitale/> — e nell'app installata. La pagina per scaricare i pacchetti è **Installa l'app** (`#/installa`), che porta alle [release su GitHub](https://github.com/danilodauria/psicologo-digitale/releases/latest); lì c'è anche il backup dei sorgenti. Quando una prova dipende dal dispositivo, è scritto nella riga.
 
 **Cosa serve.** Un browser con i dati del programma già un po' popolati (qualche voce di diario, almeno un questionario compilato). Per le prove su riepilogo e invito al diario serve qualche giorno di dati: si può simulare come spiegato qui sotto, senza aspettare una settimana.
