@@ -43,7 +43,7 @@ Punti fermi dell'impianto:
 1. **Nessun dato esce dal dispositivo.** Niente richieste di rete con dati della persona, niente analytics, niente chiavi. L'unica chiamata di rete opzionale è verso Ollama su `127.0.0.1:11434`, e solo se l'utente la attiva.
 2. **Nessun segreto nel repository.** Il token di pubblicazione vive nella configurazione git locale, non nei file. Non scrivere mai un token in un comando che finisce in un log o in un file versionato.
 3. **I workflow si toccano solo dall'integrazione GitHub.** Il token di push non ha lo scope `workflow`: un commit che modifica `.github/workflows/` viene rifiutato. Prima di ogni commit: `git reset -q .github/workflows`. Se serve cambiare una GitHub Action, si fa dall'integrazione GitHub, non da qui.
-4. **La versione è una sola, in sette posti.** `package.json`, `desktop/package.json`, `desktop/package-lock.json`, `sw.js` (`psd-vX.Y.Z`), `come-installare.html`, `scheda-rapida.html`, il piè di pagina in `assets/js/app-views.js`, più `VERSIONE` in `assets/js/app-versioni.js`. Un test confronta `VERSIONE` con `package.json`: se restano indietro, la build è rossa.
+4. **La versione è una sola, in sette posti.** `package.json`, `desktop/package.json`, `desktop/package-lock.json`, `sw.js` (`psd-vX.Y.Z`), `come-installare.html`, `scheda-rapida.html`, il piè di pagina in `assets/js/app-views.js`, più `VERSIONE` in `assets/js/app-versioni.js`. Un test confronta `VERSIONE` con `package.json`: se restano indietro, la build è rossa. Il lockfile desktop si allinea con `npm install --package-lock-only`, mai con una sostituzione di testo, e `tests/verify.cjs` controlla che ogni pacchetto risolto corrisponda alla versione che dichiara.
 5. **Ogni release ha la sua voce in `NOVITA`** (`assets/js/app-versioni.js`), scritta per chi usa il programma — cosa cambia nella sua giornata — non per chi legge il diff.
 6. **Le promesse nelle pagine sono verificate.** Se *Versioni* o il README dicono che un controllo esiste, quel controllo esiste come script o test che può diventare rosso. Una garanzia non testata è una bugia che invecchia bene.
 7. **Il backup ha un formato dichiarato.** `raccogliDati()` scrive `version` (oggi `2`); `migraBackup()` completa i file vecchi e rifiuta quelli di una versione futura. Cambiando la forma dei dati si incrementa `VERSIONE_BACKUP` e si aggiunge un passo in `MIGRAZIONI`: mai leggere un formato sconosciuto alla cieca. Il campo `migrato` è vero solo se il formato di partenza era diverso da quello di arrivo: un file già aggiornato non deve dichiarare una conversione che non c'è stata, e un test lo blocca.
@@ -62,9 +62,13 @@ Dalla directory del progetto, in quest'ordine. Ogni passo che può fallire deve 
 npm ci
 python3 -m venv .venv && .venv/bin/pip install -q reportlab pymupdf
 
-# 1. Versione in tutti i file (sostituire X.Y.Z con la precedente)
-sed -i 's/X\.Y\.Z/NEW.VER/g' package.json desktop/package.json desktop/package-lock.json \
+# 1. Versione in tutti i file (sostituire X.Y.Z con la precedente).
+#    Il lockfile desktop NON va toccato con sed: contiene le versioni delle
+#    dipendenze, e una sostituzione globale può cambiarle (è successo con `once`,
+#    che ha fatto fallire la build di tutti e tre i sistemi dopo il tag).
+sed -i 's/X\.Y\.Z/NEW.VER/g' package.json desktop/package.json \
   sw.js come-installare.html scheda-rapida.html assets/js/app-views.js
+(cd desktop && npm install --package-lock-only --no-audit --no-fund)
 #   poi a mano: VERSIONE in assets/js/app-versioni.js, nuova voce in NOVITA,
 #   README (versione in fondo + eventuale sezione), questo file se cambiano le regole
 

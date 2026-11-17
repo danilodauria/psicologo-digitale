@@ -448,6 +448,44 @@ const statoJs = read("assets/js/app-status.js");
 const installaJs = read("assets/js/app-installa.js");
 const afterPack = read("desktop/after-pack.cjs");
 ok(/afterPack/.test(read("desktop/package.json")), "electron-builder chiama l'hook della firma ad-hoc");
+
+// Il lockfile desktop si aggiorna a ogni release, e una sostituzione globale
+// della versione può toccare anche le versioni delle dipendenze: è successo con
+// `once`, che si è ritrovato a puntare a un file inesistente, e la build dei tre
+// sistemi è fallita dopo il tag. Questi controlli trasformano quel fallimento
+// in una build rossa prima del push.
+const leggiJSON = function (file) {
+  try { return JSON.parse(read(file)); } catch (e) { return null; }
+};
+const lockDesktop = exists("desktop/package-lock.json") ? leggiJSON("desktop/package-lock.json") : null;
+ok(!!lockDesktop, "il lockfile desktop è un JSON valido");
+if (lockDesktop) {
+  const pkgDesktop = leggiJSON("desktop/package.json") || {};
+  const versioneRadice = (lockDesktop.packages && lockDesktop.packages[""] && lockDesktop.packages[""].version) || lockDesktop.version;
+  ok(lockDesktop.version === pkgDesktop.version && versioneRadice === pkgDesktop.version,
+    "il lockfile desktop dichiara la stessa versione di desktop/package.json");
+
+  const pacchetti = lockDesktop.packages || {};
+  const incoerenti = Object.keys(pacchetti).filter(function (nome) {
+    const p = pacchetti[nome] || {};
+    if (!nome || !p.resolved || !p.version) return false;
+    if (p.resolved.indexOf("://") < 0 || p.resolved.indexOf(".tgz") < 0) return false;
+    return p.resolved.indexOf("-" + p.version + ".tgz") < 0;
+  });
+  ok(incoerenti.length === 0,
+    "nel lockfile desktop ogni pacchetto punta al file della versione che dichiara" +
+      (incoerenti.length ? " (" + incoerenti.slice(0, 4).map(function (n) { return n + ": " + pacchetti[n].resolved; }).join(", ") + ")" : ""));
+}
+const lockRadice = exists("package-lock.json") ? leggiJSON("package-lock.json") : null;
+if (lockRadice) {
+  const incoerenti = Object.keys(lockRadice.packages || {}).filter(function (nome) {
+    const p = lockRadice.packages[nome] || {};
+    if (!nome || !p.resolved || !p.version) return false;
+    if (p.resolved.indexOf("://") < 0 || p.resolved.indexOf(".tgz") < 0) return false;
+    return p.resolved.indexOf("-" + p.version + ".tgz") < 0;
+  });
+  ok(incoerenti.length === 0, "nel lockfile principale ogni pacchetto punta al file della versione che dichiara");
+}
 ok(/codesign", \["--force", "--deep", "--sign", "-"/.test(afterPack), "l'hook firma davvero i pacchetti macOS in ad-hoc");
 ok(!/CSC_LINK|WIN_CSC|APPLE_ID|APPLE_API_KEY|notarize/.test(wf), "la build non chiede certificati né credenziali Apple");
 ok(!/Developer Program|Developer ID|CSC_LINK/.test(readmeTxt), "il README non rimanda più a certificati a pagamento");
