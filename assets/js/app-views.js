@@ -575,7 +575,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.6.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -793,15 +793,41 @@
   // indiceContenuti(): quella conosce solo i testi del programma e non deve
   // sapere niente del diario, delle schede o delle note. I due indici restano
   // divisi apposta, e un test controlla che non si mescolino.
+  // L'estratto è la frase in cui compaiono le parole cercate, non una finestra
+  // fissa di caratteri: quaranta caratteri prima del match lasciano fuori
+  // proprio il pezzo che dice di cosa si sta parlando.
   function estratto(testo, parole) {
     const basso = testo.toLowerCase();
-    let dove = -1;
+    let primo = -1;
+    let ultimo = -1;
     parole.forEach(function (p) {
       const i = basso.indexOf(p);
-      if (i >= 0 && (dove < 0 || i < dove)) dove = i;
+      if (i < 0) return;
+      if (primo < 0 || i < primo) primo = i;
+      if (i + p.length > ultimo) ultimo = i + p.length;
     });
-    const inizio = Math.max(0, (dove < 0 ? 0 : dove) - 40);
-    const pezzo = testo.slice(inizio, inizio + 140);
+    if (primo < 0) { primo = 0; ultimo = 0; }
+    // Punto, punto e virgola, punto esclamativo o interrogativo seguiti da uno
+    // spazio, e l'a capo: sono i posti in cui comincia una frase nuova.
+    const confini = [". ", "! ", "? ", "; ", "\n"];
+    let inizio = 0;
+    confini.forEach(function (c) {
+      const i = testo.lastIndexOf(c, primo);
+      if (i >= 0 && i + c.length > inizio) inizio = i + c.length;
+    });
+    let fine = testo.length;
+    confini.forEach(function (c) {
+      const i = testo.indexOf(c, ultimo);
+      // Il punto fermo resta nella frase, lo spazio dopo no.
+      if (i >= 0 && i + c.length - 1 < fine) fine = i + c.length - 1;
+    });
+    // Una frase lunghissima — un paragrafo senza punti — si taglia lo stesso,
+    // ma sempre lasciando dentro le parole cercate.
+    if (fine - inizio > 220) {
+      inizio = Math.max(inizio, primo - 40);
+      fine = Math.max(ultimo, Math.min(fine, inizio + 180));
+    }
+    const pezzo = testo.slice(inizio, fine).trim();
     const re = new RegExp("(" + parole.map(function (p) {
       return p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }).join("|") + ")", "gi");
@@ -810,7 +836,7 @@
     const html = pezzo.split(re).map(function (parte, i) {
       return i % 2 ? "<mark>" + esc(parte) + "</mark>" : esc(parte);
     }).join("");
-    return (inizio > 0 ? "… " : "") + html + (inizio + 140 < testo.length ? " …" : "");
+    return (inizio > 0 ? "… " : "") + html + (fine < testo.length ? " …" : "");
   }
 
   function cercaPersonale(parole) {
@@ -890,7 +916,8 @@
       (risultati.length
         ? '<div class="card mt-2 cerca-contenuti"><h2 class="h-sub">Nei contenuti · ' + risultati.length + (risultati.length === 1 ? " risultato" : " risultati") + '</h2><ul class="text-small">' +
           risultati.map(function (v) {
-            return '<li><a href="' + v.rotta + '"><strong>' + esc(v.titolo) + "</strong></a> — " + esc(v.tipo) + "</li>";
+            return '<li><a href="' + v.rotta + '"><strong>' + esc(v.titolo) + "</strong></a> — " + esc(v.tipo) +
+              '<p class="text-small muted mb-0">' + estratto(v.testo, parole) + "</p></li>";
           }).join("") + "</ul></div>"
         : "") +
       (personali.length

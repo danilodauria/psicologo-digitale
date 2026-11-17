@@ -1218,9 +1218,21 @@ setTimeout(async function () {
   navigate("#/cerca/sonno");
   ok(/\d+ risultat/.test(document.getElementById("app").textContent), "cercando «sonno» escono risultati");
   ok(document.querySelectorAll('#app a[href^="#/manuale/"], #app a[href^="#/esercizi/"]').length > 0, "che portano a capitoli o esercizi");
+  ok(!!document.querySelector("#app .cerca-contenuti li p mark"), "anche i contenuti portano l'estratto, non solo il titolo");
   navigate("#/cerca/zxqv");
   ok(/Nessun risultato/.test(document.getElementById("app").textContent), "una parola che non c'è lo dice, invece di una pagina vuota");
   ok(/nessuna parola esce da qui/i.test(document.getElementById("app").textContent), "e ricorda che la ricerca non manda niente fuori");
+
+  // L'estratto è la frase che contiene la parola, non una finestra fissa di
+  // caratteri: la frase prima non deve comparire, quella cercata sì, intera.
+  const capitoloProva = NP.data.manuale[0];
+  const paragrafiProva = capitoloProva.sezioni[0].p;
+  capitoloProva.sezioni[0].p = ["Questa frase resta fuori dall'estratto.", "La frase che conta parla di un ottovolante e finisce qui."];
+  navigate("#/cerca/ottovolante");
+  const contenutiProva = document.querySelector("#app .cerca-contenuti");
+  ok(!!contenutiProva && /La frase che conta parla di un <mark>ottovolante<\/mark> e finisce qui\./.test(contenutiProva.innerHTML), "l'estratto è la frase intera che contiene la parola");
+  ok(!!contenutiProva && !/resta fuori/.test(contenutiProva.textContent), "e la frase di prima resta fuori");
+  capitoloProva.sezioni[0].p = paragrafiProva;
 
   // La ricerca copre anche le cose scritte dalla persona, in una sezione sua:
   // diario, schede del pensiero e note del percorso, con un estratto e un
@@ -1250,6 +1262,16 @@ setTimeout(async function () {
   ok(!!document.querySelector('#app a[href="#/diario/voce/pz1"]'), "il risultato del diario porta alla sua voce");
   ok(!!document.querySelector('#app a[href="#/diario/scheda/tz1"]'), "quello della scheda porta alla scheda");
   ok(!!document.querySelector('#app a[href="#/esercizi/' + esercizioNota + '/nota"]'), "quello della nota porta all'esercizio, dove si scrive");
+
+  // Anche nelle cose scritte l'estratto è la frase: una nota di due frasi non
+  // deve portare con sé quella che non c'entra.
+  const diarioPrimaDellaFrase = NP.app.state.diary;
+  NP.app.state.diary = [paginaDiario("pz2", "2026-11-14T09:00:00.000Z", "La prima frase non c'entra. Poi ho visto la libellula sul balcone e mi sono fermato.")];
+  navigate("#/cerca/libellula");
+  const voceFrase = document.querySelector("#app .cerca-voce");
+  ok(!!voceFrase && /Poi ho visto la <mark>libellula<\/mark> sul balcone/.test(voceFrase.innerHTML), "anche nelle tue cose l'estratto è la frase con la parola");
+  ok(!!voceFrase && !/prima frase/.test(voceFrase.textContent), "senza la frase di prima, che non c'entra");
+  NP.app.state.diary = diarioPrimaDellaFrase;
 
   // I collegamenti devono portare davvero alla voce, non a una pagina che la
   // nasconde: la voce cercata può essere più vecchia delle otto in elenco.

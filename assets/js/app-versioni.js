@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.6.0";
+  const VERSIONE = "1.7.0";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.0",
+      data: "17 novembre 2026",
+      titolo: "La ricerca mostra la frase, e l'orbita sa fermarsi",
+      punti: [
+        "Ogni risultato della ricerca ora porta la frase in cui compaiono le parole cercate, con le parole in evidenza, invece di un pezzo tagliato a metà. Vale per i capitoli, il glossario e gli esercizi, e per le cose che hai scritto: una nota di tre frasi mostra quella che contiene la parola, non le altre due.",
+        "Se il sistema è impostato per ridurre il movimento, l'orbita di Neura resta ferma e le transizioni spariscono. Prima l'animazione veniva solo accorciata a un ciclo di un millisecondo: un modo di dire che la preferenza si rispetta senza rispettarla davvero, perché la pagina ruotava comunque una volta.",
+        "L'impostazione è quella del computer o del telefono, non del programma: non c'è un interruttore in più da trovare, e chi ha bisogno di meno movimento lo trova già rispettato alla prima apertura. Quando invece il movimento non dà fastidio, l'orbita continua a respirare come prima."
+      ]
+    },
     {
       v: "1.6.0",
       data: "17 novembre 2026",

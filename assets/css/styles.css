@@ -1395,7 +1395,10 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
 .cerca-voce { border-top: 1px solid var(--line); padding-top: .7rem; }
 .cerca-voce:first-child { border-top: 0; padding-top: 0; }
 .cerca-voce p { margin: .2rem 0 0; }
-.cerca-voce mark { background: #f6e7a8; color: #22345c; padding: 0 .12em; border-radius: .2em; }
+.cerca-voce mark, .cerca-contenuti mark { background: #f6e7a8; color: #22345c; padding: 0 .12em; border-radius: .2em; }
+.cerca-contenuti li { margin-bottom: .55rem; }
+.cerca-contenuti li:last-child { margin-bottom: 0; }
+.cerca-contenuti li p { margin: .15rem 0 0; }
 
 .thought-grid { display: grid; gap: .7rem; }
 .thought-grid .form-field { margin-bottom: .7rem; }
@@ -1739,8 +1742,15 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   .scale-item .arrow { display: none; }
 }
 
+/* Chi ha chiesto al sistema meno movimento lo ha chiesto anche all'orbita di
+   Neura e alle transizioni: non rallentarle a un ciclo di un millisecondo,
+   fermale. L'animazione resta nel foglio — è la preferenza a spegnerla. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  html, body { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* --------------------------------------------------------------------------

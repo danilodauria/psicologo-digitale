@@ -397,7 +397,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.6.0.md");
+const proveMd = read("PROVE-A-MANO-1.7.0.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -408,7 +408,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 40, "il markdown elenca quaranta prove (" + etichette.length + ")");
+ok(etichette.length === 43, "il markdown elenca quarantatré prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -446,6 +446,24 @@ ok(!/state\.|thoughts|course\.notes|readJSON/.test(indiceContenuti), "l'indice d
 ok(/function cercaPersonale/.test(read("assets/js/app-views.js")), "le cose scritte si cercano in una funzione separata");
 ok(/Nelle tue cose/.test(read("assets/js/app-views.js")), "i risultati personali stanno in una sezione loro");
 ok(/nessuna parola esce da qui/.test(read("assets/js/app-views.js")), "la pagina dice che la ricerca resta sul dispositivo");
+
+/* Movimento ridotto e frasi ------------------------------------------------- */
+
+// Chi ha chiesto meno movimento lo ha chiesto anche all'orbita: la regola deve
+// fermare le animazioni, non accorciarle a un ciclo di un millisecondo che
+// ruota comunque la pagina una volta.
+const moto = (read("assets/css/styles.css").match(/@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\n\}/) || [""])[0];
+ok(!!moto, "c'è una regola per chi chiede meno movimento");
+ok(/\*,\s*\*::before,\s*\*::after\s*\{[\s\S]*?animation: none !important/.test(moto), "le animazioni si fermano, invece di rallentare a un ciclo");
+ok(/transition: none !important/.test(moto), "e le transizioni spariscono invece di accorciarsi");
+ok(/animation: orb-breathe 7\.5s/.test(read("assets/css/styles.css")), "l'animazione dell'orbita resta nel foglio: è la preferenza a spegnerla");
+
+// L'estratto è la frase che contiene le parole cercate, non una finestra fissa
+// di caratteri che taglia a metà il pezzo che spiega di cosa si parla.
+const fnEstratto = (read("assets/js/app-views.js").match(/function estratto\(testo, parole\) \{[\s\S]*?\n  \}/) || [""])[0];
+ok(!!fnEstratto && /lastIndexOf\(c, primo\)/.test(fnEstratto), "l'estratto parte dal confine della frase, non da quaranta caratteri prima");
+ok(!!fnEstratto && /indexOf\(c, ultimo\)/.test(fnEstratto), "e finisce alla fine della stessa frase");
+ok(/estratto\(v\.testo, parole\)/.test(read("assets/js/app-views.js")), "anche i risultati nei contenuti mostrano la loro frase");
 
 /* Riepilogo: periodo scelto e stampa ---------------------------------------- */
 
