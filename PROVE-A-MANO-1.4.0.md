@@ -34,7 +34,7 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 |---|---|---|
 | ☐ | 1.1 Dalla home, sotto l'invito, premi **Confronta con la settimana prima** | Si apre `#/riepilogo`, titolo «Gli ultimi sette giorni, accanto ai sette prima»; la scheda in home si chiama «La tua settimana» e dice quante voci di diario, quante schede del pensiero e quanti questionari ci sono negli ultimi sette giorni |
 | ☐ | 1.2 Con i dati preparati sopra, guarda la tabella «Medie del diario» | Quattro righe (Umore, Ansia, Sonno, Energia) e tre colonne: «Ultimi 7 giorni», «7 giorni prima», «Differenza». Numeri con la virgola, tra 0 e 10. La differenza ha il segno (`+2`, `−1,5`) oppure dice «uguale» o «—» |
-| ☐ | 1.3 Controlla una media a mano | La media è la somma dei valori inseriti diviso quante voci hanno quel valore: con 7 e 5 deve dare 6. Se non torna, annota le voci usate |
+| ☐ | 1.3 Controlla una media a mano | La media è la somma dei valori del periodo diviso **quante voci hanno quel valore**: una voce con il campo vuoto non conta e non abbassa la media. Se nella settimana ci sono solo le due copie con 7 e 5, la media è 6; se è rimasta anche la voce di partenza entra nel conto anche lei (per esempio 7, 5 e 8 danno 6,7). Il numero mostrato è arrotondato a una cifra dopo la virgola. Se non torna, annota le voci usate e i valori che avevano |
 | ☐ | 1.4 Guarda «Cosa hai fatto» | Tre righe con il conteggio dei sette giorni e, fra parentesi, quello dei sette prima. Devono coincidere con le voci che hai inserito |
 | ☐ | 1.5 Cancella tutti i dati (Licenze → in fondo) e riapri `#/riepilogo` | Compare solo l'avviso «Non ci sono ancora dati in questi quattordici giorni.» — nessuna tabella di trattini, nessun errore. La scheda «La tua settimana» sparisce dalla home |
 
@@ -67,7 +67,7 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 |---|---|---|
 | ☐ | 4.1 Licenze → **Lettura e privacy** → menu «Dimensione del testo» | Tre voci: 100%, 112%, 125% |
 | ☐ | 4.2 Scegli 125% | Tutto il testo cresce subito — anche menu, piè di pagina e pulsanti — senza sovrapposizioni né righe tagliate. Ricarica: resta 125% |
-| ☐ | 4.3 Scegli 100% | Torna alla dimensione di prima e la pagina non conserva l'attributo `data-testo` (si vede negli strumenti di sviluppo, sull'elemento `<html>`) |
+| ☐ | 4.3 Scegli 100% | Il testo torna alla dimensione di prima e l'attributo `data-testo` sparisce dall'elemento `<html>` (si vede negli strumenti di sviluppo). Non torna nemmeno dopo aver ricaricato: all'avvio la pagina applica solo 112 e 125. Se resta scritto `data-testo="100"` è un difetto, perché quel valore non serve a niente |
 | ☐ | 4.4 Con 125%, su un telefono o con lo zoom al 200% | I menu si aprono, i pulsanti restano raggiungibili e nessun testo esce dallo schermo in orizzontale |
 
 ## 5. Modalità discreta
@@ -85,10 +85,10 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ✓ | Prova | Risultato atteso |
 |---|---|---|
 | ☐ | 6.1 Apri un capitolo del manuale | Sotto il tempo di lettura c'è **Ascolta il capitolo** |
-| ☐ | 6.2 Con l'altoparlante in alto attivo, premi il pulsante | Parte la lettura in italiano del capitolo. Il pulsante Stop della barra in alto (o «Ferma l'audio») la interrompe subito |
+| ☐ | 6.2 Con l'altoparlante in alto attivo, premi il pulsante | Parte la lettura in italiano del capitolo. Si interrompe subito con **Ferma l'audio** nella barra in alto o con **Esc** |
 | ☐ | 6.3 Spegni l'altoparlante in alto e premi di nuovo | Avviso «La voce è spenta: accendila con l'altoparlante in alto, poi riprova.» e nessun audio: non deve partire lo stesso |
 | ☐ | 6.4 Su un dispositivo senza voci italiane (o con una sola voce) | La lettura parte comunque con la voce disponibile; nella sezione Neura → Voce la pagina dice quali voci mancano e come aggiungerle |
-| ☐ | 6.5 Blocca lo schermo o cambia app durante la lettura | La lettura si ferma con il sistema, non resta appesa: tornando nell'app il pulsante Stop non è più attivo |
+| ☐ | 6.5 Blocca lo schermo o cambia app durante la lettura, poi torna | Qui **non c'è una promessa**: dipende dal sistema e dal browser. Su alcuni la voce si interrompe, su altri continua anche a schermo bloccato. Quello che deve valere sempre: tornando nell'app la pagina è al suo posto, la lettura non riparte da sola e **Ferma l'audio** ferma quello che sta ancora suonando. Annota cosa succede sul tuo dispositivo, compreso se la voce si è fermata da sola mentre il pulsante restava attivo: in quel caso il sistema non ha avvisato la pagina |
 
 ---
 

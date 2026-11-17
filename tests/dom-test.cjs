@@ -1159,6 +1159,19 @@ setTimeout(async function () {
   ok(questa.voci === 2 && scorsa.voci === 2, "le voci finiscono ciascuna nel periodo giusto");
   ok(Math.abs(questa.media.umore - 5) < 0.001, "la media dell'umore è quella delle voci del periodo");
   ok(Math.abs(scorsa.media.umore - 3) < 0.001, "e quella della settimana prima non si mescola");
+
+  // Il foglio delle prove promette «diviso quante voci hanno quel valore»: una
+  // voce con il campo vuoto non deve abbassare la media a 4, come farebbe
+  // contandola zero.
+  const diarioRiepilogo = NP.app.state.diary;
+  NP.app.state.diary = [
+    voce("s5", 1, 7), voce("s6", 2, 5),
+    { id: "s7", date: giorniFa(3), anxiety: 4, sleep: 6, energy: 5, note: "senza umore" }
+  ];
+  const conVoceMuta = NP.app.statistichePeriodo(7, 0);
+  ok(conVoceMuta.voci === 3, "una voce senza umore conta lo stesso come voce del diario");
+  ok(Math.abs(conVoceMuta.media.umore - 6) < 0.001, "ma non entra nella media dell'umore: 7 e 5 danno 6, non 4");
+  NP.app.state.diary = diarioRiepilogo;
   navigate("#/riepilogo");
   ok(/Riepilogo/.test(document.title), "la pagina del riepilogo ha un titolo");
   ok(document.querySelectorAll("#app table tbody tr").length === 4, "mostra le quattro misure del diario affiancate");

@@ -419,6 +419,21 @@ const genProve = read("scripts/build_prove_a_mano_pdf.py");
 ok(/PROVE-A-MANO-/.test(genProve), "il generatore parte dal markdown delle prove, non da un testo a parte");
 ok(!/Riepilogo dei periodi|Modalità discreta/.test(genProve), "il generatore non contiene una seconda copia delle prove");
 
+/* Quello che il foglio delle prove promette davvero ------------------------ */
+
+// Il foglio dice che tornando a 100% l'attributo non torna nemmeno dopo un
+// ricaricamento: è vero solo perché all'avvio la pagina applica 112 e 125, e
+// perché tornare a 100 lo toglie invece di lasciarlo scritto con un valore
+// che non serve a niente. Se una delle due cose cambia, il foglio mente.
+ok(/n === "112" \|\| n === "125"/.test(html), "all'avvio la pagina applica solo 112 e 125: con 100 l'attributo data-testo non torna");
+ok(/removeAttribute\("data-testo"\)/.test(read("assets/js/app.js")), "tornare a 100 toglie l'attributo data-testo invece di lasciarlo scritto");
+
+// Il pannello di stato diceva che senza una voce italiana Neura tace: non è
+// vero, legge con la voce disponibile, e la prova 6.4 del foglio si aspetta
+// proprio quello. Una frase falsa nel programma farebbe fallire la prova per
+// il motivo sbagliato.
+ok(/legge con quella disponibile/.test(read("assets/js/app-status.js")), "il pannello di stato non promette che Neura tace senza voce italiana");
+
 /* Programmi installabili e benvenuto --------------------------------------- */
 
 ok(exists("desktop/package.json"), "esiste la configurazione dei pacchetti desktop");
