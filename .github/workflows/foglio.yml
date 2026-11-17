@@ -36,7 +36,8 @@ jobs:
           versione="$(node -p "require('./package.json').version")"
           for foglio in \
             assets/pdf/Psicologo-Digitale-Come-si-installa.pdf \
-            assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf; do
+            assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf \
+            assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf; do
             test -s "$foglio" || { echo "::error::Manca $foglio."; exit 1; }
             if ! grep -aq "versione=$versione" "$foglio"; then
               echo "::error::$foglio dichiara una versione diversa da $versione: rigeneralo con lo script in scripts/."
@@ -51,6 +52,7 @@ jobs:
           files: |
             assets/pdf/Psicologo-Digitale-Come-si-installa.pdf
             assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf
+            assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf
           overwrite_files: true
 
       - name: Verifica che siano nella versione
@@ -62,7 +64,8 @@ jobs:
           for tentativo in $(seq 1 10); do
             presenti="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.assets[].name' 2>/dev/null || true)"
             if grep -qxF "Psicologo-Digitale-Come-si-installa.pdf" <<< "$presenti" \
-              && grep -qxF "Psicologo-Digitale-Scheda-rapida.pdf" <<< "$presenti"; then
+              && grep -qxF "Psicologo-Digitale-Scheda-rapida.pdf" <<< "$presenti" \
+              && grep -qxF "Psicologo-Digitale-Prove-a-mano.pdf" <<< "$presenti"; then
               echo "Fogli allegati alla versione $TAG."
               exit 0
             fi
