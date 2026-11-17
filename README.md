@@ -404,6 +404,12 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 È raggiungibile in tre modi: dal piè di pagina del sito, dalla pagina *Installa l'app*, e dal pannello della barra di stato quando il sistema chiede conferma all'avvio. È nella cache del service worker, quindi resta consultabile anche offline, e non ha bisogno di JavaScript per essere letta: chi ha un browser bloccato o vecchio la vede lo stesso.
 
+## Prove a mano prima di una release
+
+I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.4.0 e la 1.4.1 è [PROVE-A-MANO-1.4.0.md](PROVE-A-MANO-1.4.0.md): trentadue controlli su riepilogo dei periodi, ricerca, backup con migrazione, dimensione del testo, modalità discreta e lettura ad alta voce, ognuno con il risultato atteso e una casella da spuntare.
+
+Si fanno sul sito o sull'app installata — i pacchetti si scaricano dalla pagina **Installa l'app** (`#/installa`) e dalle [release](https://github.com/danilodauria/psicologo-digitale/releases/latest) — e prima di iniziare si esporta un backup: alcune prove importano file e sostituiscono i dati.
+
 ## Lasciare il progetto a qualcun altro
 
 `CONSEGNA.md` è il file di consegna: architettura, invarianti da non rompere, comandi della pipeline, che cosa coprono davvero i controlli automatici, limiti noti e prossimi passi. È scritto per chi apre il repository senza la storia della chat — una persona o un'altra IA. Si aggiorna quando cambia la pipeline o un'invariante, non a ogni release.
@@ -455,4 +461,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.4.1** · novembre 2026.
+Versione **1.4.2** · novembre 2026.

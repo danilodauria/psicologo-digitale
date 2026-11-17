@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.4.1**, 17 novembre 2026.
+Ultimo aggiornamento: versione **1.4.2**, 17 novembre 2026.
 
 ---
 
@@ -123,6 +123,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | `scripts/controlla-archivi.cjs` | Gli archivi scaricabili si aprono e contengono quello che devono |
 | `scripts/controlla-dipendenze.cjs` | Nessuna dipendenza non dichiarata o non usata |
 | `scripts/riepilogo-copertura.cjs` | Scrive `artifacts/copertura/riepilogo.md`: quante viste, quante pagine di singoli elementi (30), quali controlli sono verdi |
+| `PROVE-A-MANO-<versione>.md` | **Non è automatico**: le prove che una persona deve fare a mano (voce, telefoni, messaggi al momento giusto), con il risultato atteso per ciascuna. Si leggono prima di dichiarare chiusa una release |
 
 Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono.
 

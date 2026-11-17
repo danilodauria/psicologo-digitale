@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.4.1";
+  const VERSIONE = "1.4.2";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.4.2",
+      data: "17 novembre 2026",
+      titolo: "Le prove a mano scritte, invece che ricordate",
+      punti: [
+        "I test automatici controllano i conteggi, i contrasti e i testi, ma non possono sentire la voce che parte, vedere un telefono stretto o accorgersi di un messaggio comparso nel momento sbagliato. Quelle prove si facevano a memoria, e a memoria si saltano.",
+        "Ora c'è un foglio per ogni versione: trentadue prove divise per area — riepilogo dei periodi, ricerca, backup con migrazione, dimensione del testo, modalità discreta, lettura ad alta voce — ognuna con i passi, il risultato atteso e una casella da spuntare. In testa c'è come preparare i dati in due minuti, senza aspettare una settimana di diario.",
+        "Il foglio della 1.4.0 sta in PROVE-A-MANO-1.4.0.md, si legge dal repository e si raggiunge dal README; le prove dei pacchetti si fanno sull'app scaricata dalla pagina Installa l'app. Include le verifiche sul messaggio dell'import corretto nella 1.4.1, così chi prova sa quale frase deve vedere.",
+        "In fondo c'è una tabella per l'esito: data, dispositivo, versione, quante prove sono passate, note. E l'avvertenza che conta: mai allegare un backup vero quando si segnala un problema, perché contiene dati personali."
+      ]
+    },
     {
       v: "1.4.1",
       data: "17 novembre 2026",
