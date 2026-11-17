@@ -413,6 +413,7 @@ const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
 ok(/Psicologo-Digitale-Prove-a-mano\.pdf/.test(read("README.md")), "il README indica il foglio delle prove in PDF");
+ok(/Psicologo-Digitale-Prove-a-mano\.pdf/.test(read("assets/js/app-views.js")), "la pagina Licenze collega il foglio delle prove, senza rimandare al repository");
 ok(exists("scripts/build_prove_a_mano_pdf.py"), "il generatore del foglio delle prove è nel progetto");
 const genProve = read("scripts/build_prove_a_mano_pdf.py");
 ok(/PROVE-A-MANO-/.test(genProve), "il generatore parte dal markdown delle prove, non da un testo a parte");

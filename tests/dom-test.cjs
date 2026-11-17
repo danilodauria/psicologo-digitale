@@ -1341,6 +1341,14 @@ setTimeout(async function () {
 
   window.FileReader = FileReaderVero;
 
+  // Il foglio delle prove si raggiunge dall'app, non solo dal repository.
+  console.log("\nFoglio delle prove a mano");
+  navigate("#/licenze");
+  const linkProve = document.querySelector('#app a[href="assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf"]');
+  ok(!!linkProve, "la pagina Licenze collega il foglio delle prove a mano");
+  ok(!!linkProve && linkProve.hasAttribute("download") && !!linkProve.closest(".card"),
+    "il collegamento scarica il PDF e sta dentro una scheda con la sua spiegazione");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

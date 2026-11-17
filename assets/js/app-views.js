@@ -525,6 +525,16 @@
         "</div>" +
         '<p class="text-small muted mt-2">Serve a rendere il primo colloquio più preciso, non a sostituirlo: il documento resta un\'autovalutazione, non un test validato.</p></div>' +
 
+      // Il foglio delle prove non serve a chi usa il programma, ma a chi ne
+      // prepara una versione: sta qui perché è qui che si cercano i documenti,
+      // invece di restare raggiungibile solo dal repository.
+      '<div class="card mt-2"><h2 class=h-sub>Prove a mano</h2>' +
+        '<p>Il foglio di chi prepara una versione nuova: le cose che nessun test automatico può vedere — la voce che parte, la pagina su un telefono stretto, il messaggio che compare al momento giusto — una per riga, con il risultato atteso e una casella da spuntare.</p>' +
+        '<div class="btn-row mt-2">' +
+          '<a class="btn btn-soft btn-sm" href="assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf" download>' + A.icon("check") + "Foglio delle prove · A4</a>" +
+        "</div>" +
+        '<p class="text-small muted mt-2">Si stampa e si compila a penna; in fondo c\'è lo spazio per data, dispositivo ed esito. Nasce dal file delle prove che sta nel repository, quindi le due versioni non possono raccontare cose diverse.</p></div>' +
+
       '<div class="card mt-2"><h2 class=h-sub>Domande frequenti</h2>' +
         NP.data.faq.map(function (f) {
           return '<details style="border-top:1px solid var(--line);padding:.7rem 0"><summary style="cursor:pointer;font-weight:600">' + esc(f.d) + '</summary><p class="text-small mt-1">' + esc(f.r) + "</p></details>";
