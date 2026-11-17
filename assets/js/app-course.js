@@ -202,10 +202,8 @@
     });
 
     // Arrivando dalla ricerca la nota è il motivo della visita: il cursore ci
-    // va dopo il render, che altrimenti sposta il focus sul titolo.
-    if (params && params[1] === "nota" && campoNota) {
-      setTimeout(function () { campoNota.focus(); }, 0);
-    }
+    // va subito, e il router lo lascia lì (vedi annunciaRotta in app.js).
+    if (params && params[1] === "nota" && campoNota) campoNota.focus();
 
     const printBtn = document.getElementById("printEx");
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });

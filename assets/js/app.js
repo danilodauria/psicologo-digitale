@@ -443,7 +443,14 @@ NP.app = (function () {
     const titolo = app.querySelector("h1");
     if (!titolo) return;
     titolo.setAttribute("tabindex", "-1");
-    try { titolo.focus({ preventScroll: true }); } catch (e) { titolo.focus(); }
+    // Se la vista ha già messo il cursore dove serve — la nota di un esercizio
+    // aperta dalla ricerca — non glielo togliamo: portarlo sul titolo sarebbe
+    // un secondo spostamento, e chi ha chiesto quella pagina voleva il campo.
+    const attivo = document.activeElement;
+    const giaDentro = !!attivo && attivo !== titolo && app.contains(attivo);
+    if (!giaDentro) {
+      try { titolo.focus({ preventScroll: true }); } catch (e) { titolo.focus(); }
+    }
     const annuncio = document.getElementById("annuncioRotta");
     if (annuncio) annuncio.textContent = titolo.textContent + ". Pagina caricata.";
   }
