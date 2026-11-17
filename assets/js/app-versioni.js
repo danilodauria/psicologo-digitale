@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.4.2";
+  const VERSIONE = "1.5.0";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.5.0",
+      data: "17 novembre 2026",
+      titolo: "Cercare anche nelle cose che hai scritto",
+      punti: [
+        "La ricerca non si ferma più ai capitoli. Nella stessa pagina c'è una sezione «Nelle tue cose» con le voci di diario, le schede del pensiero e le note degli esercizi che contengono le parole cercate: un estratto per risultato, con le parole in evidenza, e un collegamento che porta alla voce.",
+        "Il risultato porta dove la cosa è scritta: la voce di diario si apre anche quando è più vecchia delle otto in elenco, la scheda del pensiero si legge per intero, la nota riapre l'esercizio con il cursore già nel campo. Ritrovare una cosa scritta mesi prima non richiede più di scorrere il diario.",
+        "Le note del percorso esistevano nei dati ma non c'era un posto per scriverle: ogni esercizio ora ha la sua, «Come è andata», che resta con l'esercizio e viaggia nel backup insieme al percorso.",
+        "Contenuti e cose scritte restano due ricerche separate, con due sezioni distinte: quello che scrivi non entra nell'indice dei capitoli. Tutto avviene sul dispositivo come prima, e un test impedisce che i due indici si mescolino."
+      ]
+    },
     {
       v: "1.4.2",
       data: "17 novembre 2026",

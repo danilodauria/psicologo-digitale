@@ -1193,6 +1193,69 @@ setTimeout(async function () {
   ok(/Nessun risultato/.test(document.getElementById("app").textContent), "una parola che non c'è lo dice, invece di una pagina vuota");
   ok(/nessuna parola esce da qui/i.test(document.getElementById("app").textContent), "e ricorda che la ricerca non manda niente fuori");
 
+  // La ricerca copre anche le cose scritte dalla persona, in una sezione sua:
+  // diario, schede del pensiero e note del percorso, con un estratto e un
+  // collegamento che porta alla voce.
+  const esercizioNota = NP.data.percorso.esercizi[0].id;
+  NP.app.state.diary = [paginaDiario("pz1", "2026-11-12T09:00:00.000Z", "la zanzara sul muro mi ha fatto pensare al colloquio")];
+  NP.app.writeJSON("thoughts", [{
+    id: "tz1", date: "2026-11-13T09:00:00.000Z",
+    situation: "la zanzara in cucina", thought: "non ce la farò",
+    emotion: "ansia", intensity: 6, alternative: "forse è solo stanchezza"
+  }]);
+  NP.app.state.course = { done: [], notes: {} };
+  NP.app.state.course.notes[esercizioNota] = "con la zanzara mi sono distratto subito";
+  NP.app.saveCourse();
+
+  navigate("#/cerca/zanzara");
+  ok(!!document.getElementById("cercaPersonale"), "la ricerca ha una sezione «Nelle tue cose»");
+  ok(/Nelle tue cose · 3 risultati/.test(document.getElementById("cercaPersonale").textContent), "con i tre risultati: diario, scheda e nota del percorso");
+  ok(!document.querySelector("#app .cerca-contenuti"), "una parola che esiste solo nelle cose scritte non produce risultati nei contenuti");
+  ok(!/Nei contenuti ·/.test(document.getElementById("app").textContent), "e la sezione dei contenuti non compare affatto, senza contatori a zero");
+
+  const vociPersonali = document.querySelectorAll("#app .cerca-voce");
+  ok(vociPersonali.length === 3, "un risultato per cosa trovata, non un elenco indistinto");
+  ok(Array.prototype.every.call(vociPersonali, function (li) {
+    return !!li.querySelector("mark") && !!li.querySelector("p.text-small");
+  }), "ogni voce porta il suo estratto, con la parola cercata in evidenza");
+  ok(!!document.querySelector('#app a[href="#/diario/voce/pz1"]'), "il risultato del diario porta alla sua voce");
+  ok(!!document.querySelector('#app a[href="#/diario/scheda/tz1"]'), "quello della scheda porta alla scheda");
+  ok(!!document.querySelector('#app a[href="#/esercizi/' + esercizioNota + '/nota"]'), "quello della nota porta all'esercizio, dove si scrive");
+
+  // I collegamenti devono portare davvero alla voce, non a una pagina che la
+  // nasconde: la voce cercata può essere più vecchia delle otto in elenco.
+  navigate("#/diario/voce/pz1");
+  const voceTrovata = document.getElementById("voceCercata");
+  ok(!!voceTrovata && /zanzara sul muro/.test(voceTrovata.textContent), "aprendo il risultato la voce è in pagina, con il suo testo");
+
+  navigate("#/diario/scheda/tz1");
+  const schedaTrovata = document.getElementById("schedaCercata");
+  ok(!!schedaTrovata && /la zanzara in cucina/.test(schedaTrovata.textContent), "la scheda del pensiero si apre in sola lettura");
+  ok(/non ce la farò/.test(schedaTrovata.textContent) && /forse è solo stanchezza/.test(schedaTrovata.textContent), "con situazione, pensiero e lettura alternativa");
+
+  navigate("#/esercizi/" + esercizioNota + "/nota");
+  ok(document.getElementById("notaEsercizio").value === "con la zanzara mi sono distratto subito", "la nota del percorso si apre già scritta nell'esercizio");
+  // La rotta cambia due volte (hash e render esplicito): si rilegge il campo
+  // quando la pagina si è fermata, o si guarderebbe un elemento staccato.
+  await new Promise(function (r) { setTimeout(r, 30); });
+  const campoNota = document.getElementById("notaEsercizio");
+  ok(document.activeElement === campoNota, "e il cursore è nella nota, che è il motivo della visita");
+
+  campoNota.value = "nota nuova sulla zanzara";
+  document.getElementById("salvaNota").click();
+  ok(NP.app.readJSON("course", {}).notes[esercizioNota] === "nota nuova sulla zanzara", "la nota si salva con l'esercizio, dove la ricerca la ritrova");
+
+  // Il punto che conta: i dati personali non entrano nell'indice dei contenuti.
+  NP.app.state.diary = [paginaDiario("iso1", "2026-11-10T09:00:00.000Z", "sonno parola segreta")];
+  navigate("#/cerca/sonno");
+  const linkContenuti = document.querySelectorAll("#app .cerca-contenuti a");
+  ok(linkContenuti.length > 0, "la ricerca nei contenuti continua a dare risultati");
+  ok(Array.prototype.every.call(linkContenuti, function (a) {
+    const href = a.getAttribute("href");
+    return !/^#\/diario/.test(href) && !/^#\/esercizi\/.+\/nota/.test(href);
+  }), "e i suoi risultati restano capitoli, glossario ed esercizi, mai voci personali");
+  ok(/parola segreta/.test(document.getElementById("cercaPersonale").textContent), "la voce personale compare solo nella sezione delle tue cose");
+
   // In una pagina che si ridisegna da sola, chi ascolta deve sapere che è
   // cambiata, e chi naviga da tastiera deve ritrovarsi in cima.
   console.log("\nCambio di pagina");

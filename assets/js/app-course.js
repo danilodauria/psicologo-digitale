@@ -122,7 +122,7 @@
 
   views.esercizi = function (params) {
     const id = params && params[0];
-    if (id) { renderExercise(id); return; }
+    if (id) { renderExercise(id, params); return; }
 
     A.setTitle("Esercizi");
     A.page(
@@ -147,12 +147,17 @@
       "</div>";
   }
 
-  function renderExercise(id) {
+  function renderExercise(id, params) {
     const elenco = P.esercizi;
     const posizione = elenco.findIndex(function (e) { return e.id === id; });
     const ex = elenco[posizione];
     if (!ex) { views.esercizi(); return; }
     const capitolo = A.capitoloDellEsercizio(ex.id);
+    // La nota sta con l'esercizio, non in una pagina sua: è lì che si scrive e
+    // lì che la ricerca riporta. `course.notes` esisteva già nei backup, ma
+    // nessuna schermata lo scriveva.
+    const note = (state.course && state.course.notes) || {};
+    const nota = String(note[ex.id] || "");
 
     A.setTitle(ex.titolo);
     A.page(
@@ -173,8 +178,34 @@
             '<a class="chip" href="#/percorso">Torna al percorso</a><a class="chip" href="#/neura">Chiedi a Neura</a><a class="chip" href="#/diario">Annota nel diario</a></div>' +
         "</div>" +
       "</div>" +
+      '<div class="card mt-2" id="notaPercorso"><h2 class=h-sub>Come è andata</h2>' +
+        '<p class="text-small">La nota resta con questo esercizio e si ritrova con la ricerca, dentro «Nelle tue cose». Non esce dal dispositivo.</p>' +
+        '<label class="field-label" for="notaEsercizio">Nota su questo esercizio</label>' +
+        '<textarea class="textarea" id="notaEsercizio" maxlength="600" placeholder="Cosa hai notato, com\'è andata, cosa cambieresti">' + esc(nota) + "</textarea>" +
+        '<div class="btn-row mt-1"><button type="button" class="btn btn-soft btn-sm" id="salvaNota">Salva la nota</button>' +
+          '<span class="text-small muted" id="notaStato" aria-live="polite"></span></div></div>' +
       navEsercizi(ex)
     );
+
+    const campoNota = document.getElementById("notaEsercizio");
+    const salvaNota = document.getElementById("salvaNota");
+    if (salvaNota && campoNota) salvaNota.addEventListener("click", function () {
+      state.course = state.course || { done: [], notes: {} };
+      if (!state.course.notes) state.course.notes = {};
+      const testo = campoNota.value.trim();
+      if (testo) state.course.notes[ex.id] = testo;
+      else delete state.course.notes[ex.id];
+      A.saveCourse();
+      const stato = document.getElementById("notaStato");
+      if (stato) stato.textContent = testo ? "Nota salvata." : "Nota tolta.";
+      A.toast(testo ? "Nota salvata con l'esercizio." : "Nota tolta.");
+    });
+
+    // Arrivando dalla ricerca la nota è il motivo della visita: il cursore ci
+    // va dopo il render, che altrimenti sposta il focus sul titolo.
+    if (params && params[1] === "nota" && campoNota) {
+      setTimeout(function () { campoNota.focus(); }, 0);
+    }
 
     const printBtn = document.getElementById("printEx");
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });

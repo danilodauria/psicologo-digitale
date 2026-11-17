@@ -178,13 +178,33 @@
     return "var(--verde)";
   }
 
-  views.diario = function () {
+  // Una voce cercata si apre qui, anche se è più vecchia delle otto in elenco:
+  // senza questo il risultato della ricerca porterebbe a una pagina in cui la
+  // voce non c'è.
+  function dataBreve(iso) {
+    const t = new Date(iso).getTime();
+    if (!isFinite(t)) return "";
+    return new Date(t).toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  views.diario = function (params) {
+    const chiesto = (params && params[0]) || "";
+    const idChiesto = (params && params[1]) || "";
+    const voceInEvidenza = chiesto === "voce" && idChiesto
+      ? (state.diary || []).filter(function (e) { return e && e.id === idChiesto; })[0]
+      : null;
+    const schedaInEvidenza = chiesto === "scheda" && idChiesto
+      ? A.readJSON("thoughts", []).filter(function (t) { return t && t.id === idChiesto; })[0]
+      : null;
+
     const entries = (state.diary || []).slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
     const last = entries.slice(0, 8);
+    if (voceInEvidenza && last.indexOf(voceInEvidenza) < 0) last.unshift(voceInEvidenza);
     const avgMood = entries.length ? (entries.reduce(function (s, e) { return s + (Number(e.mood) || 0); }, 0) / entries.length).toFixed(1) : "—";
 
     const listHTML = last.length ? last.map(function (e, i) {
-      return '<div class="diary-entry"><span class="diary-date">' + esc(e.date ? new Date(e.date + "T12:00:00").toLocaleDateString("it-IT", { day: "2-digit", month: "short" }) : "—") + "</span>" +
+      const trovata = voceInEvidenza && e.id === voceInEvidenza.id;
+      return '<div class="diary-entry' + (trovata ? " is-trovata" : "") + '"' + (trovata ? ' id="voceCercata"' : "") + '><span class="diary-date">' + esc(e.date ? new Date(e.date + "T12:00:00").toLocaleDateString("it-IT", { day: "2-digit", month: "short" }) : "—") + "</span>" +
         '<span class="diary-mood"><span class="mood-dot" style="background:' + moodColor(e.mood) + '"></span>Umore ' + esc(e.mood) + "/10 · Ansia " + esc(e.anxiety) + "/10 · Sonno " + esc(e.sleep) + "h</span>" +
         '<button type="button" class="chip" data-del="' + esc(e.id) + '" title="Elimina">✕</button>' +
         (e.note ? '<p class="diary-note" style="grid-column:1/-1">' + esc(e.note) + "</p>" : "") + "</div>";
@@ -210,6 +230,16 @@
           "</form>" +
         "</div>" +
         '<div class="grid" style="gap:1rem">' +
+          (schedaInEvidenza
+            ? '<div class="card" id="schedaCercata"><div class="btn-row" style="justify-content:space-between"><h2 style="margin:0">Scheda del pensiero</h2>' +
+                '<span class="text-small muted">' + esc(dataBreve(schedaInEvidenza.date)) + "</span></div>" +
+                '<p class="mt-1"><strong>Situazione.</strong> ' + esc(schedaInEvidenza.situation || "—") + "</p>" +
+                '<p><strong>Pensiero.</strong> ' + esc(schedaInEvidenza.thought || "—") + "</p>" +
+                '<p><strong>Emozione.</strong> ' + esc(schedaInEvidenza.emotion || "—") +
+                  (isFinite(schedaInEvidenza.intensity) ? " (" + esc(schedaInEvidenza.intensity) + "/10)" : "") + "</p>" +
+                '<p><strong>Lettura alternativa.</strong> ' + esc(schedaInEvidenza.alternative || "non formulata") + "</p>" +
+                '<div class="btn-row"><a class="btn btn-ghost btn-sm" href="#/cerca">Torna alla ricerca</a></div></div>'
+            : "") +
           '<div class="card"><div class="btn-row" style="justify-content:space-between"><h2 style="margin:0">Le ultime voci</h2><span class="badge badge-blue">Media umore ' + avgMood + "</span></div><div class=\"diary-list mt-2\">" + listHTML + "</div></div>" +
           '<div class="card"><h2 class=h-sub>Scheda del pensiero</h2><p class="text-small">La classica scheda a sette colonne, ridotta all&rsquo;essenziale. Compila quando un pensiero ti ha fatto stare male.</p>' +
             '<form id="thoughtForm" class="thought-grid">' +
@@ -545,7 +575,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.4.2 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.5.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -742,6 +772,85 @@
     return voci;
   }
 
+  /* --------------------------------------------------------- Le tue cose */
+
+  // Le cose scritte dalla persona si cercano qui, in una funzione separata da
+  // indiceContenuti(): quella conosce solo i testi del programma e non deve
+  // sapere niente del diario, delle schede o delle note. I due indici restano
+  // divisi apposta, e un test controlla che non si mescolino.
+  function estratto(testo, parole) {
+    const basso = testo.toLowerCase();
+    let dove = -1;
+    parole.forEach(function (p) {
+      const i = basso.indexOf(p);
+      if (i >= 0 && (dove < 0 || i < dove)) dove = i;
+    });
+    const inizio = Math.max(0, (dove < 0 ? 0 : dove) - 40);
+    const pezzo = testo.slice(inizio, inizio + 140);
+    const re = new RegExp("(" + parole.map(function (p) {
+      return p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }).join("|") + ")", "gi");
+    // split con un gruppo tiene le parole trovate: si alternano a pezzi da
+    // lasciare com'erano, e si evidenzia solo quello che si è cercato.
+    const html = pezzo.split(re).map(function (parte, i) {
+      return i % 2 ? "<mark>" + esc(parte) + "</mark>" : esc(parte);
+    }).join("");
+    return (inizio > 0 ? "… " : "") + html + (inizio + 140 < testo.length ? " …" : "");
+  }
+
+  function cercaPersonale(parole) {
+    const trova = function (testo) {
+      const basso = String(testo || "").toLowerCase();
+      return parole.every(function (p) { return basso.indexOf(p) >= 0; });
+    };
+    const voci = [];
+
+    (state.diary || []).forEach(function (v) {
+      const testo = String((v && v.note) || "");
+      if (!trova(testo)) return;
+      voci.push({
+        etichetta: "Diario",
+        dettaglio: dataBreve(v.date),
+        estratto: estratto(testo, parole),
+        rotta: "#/diario/voce/" + encodeURIComponent(v.id)
+      });
+    });
+
+    A.readJSON("thoughts", []).forEach(function (t) {
+      if (!t || typeof t !== "object") return;
+      const testo = [t.situation, t.thought, t.emotion, t.alternative].filter(Boolean).join(" · ");
+      if (!trova(testo)) return;
+      voci.push({
+        etichetta: "Scheda del pensiero",
+        dettaglio: dataBreve(t.date),
+        estratto: estratto(testo, parole),
+        rotta: "#/diario/scheda/" + encodeURIComponent(t.id)
+      });
+    });
+
+    const note = (state.course && state.course.notes) || {};
+    Object.keys(note).forEach(function (id) {
+      const testo = String(note[id] || "");
+      if (!trova(testo)) return;
+      const esercizi = (NP.data.percorso && NP.data.percorso.esercizi) || [];
+      const ex = esercizi.filter(function (e) { return e && e.id === id; })[0];
+      voci.push({
+        etichetta: "Nota del percorso",
+        dettaglio: ex ? ex.titolo : id,
+        estratto: estratto(testo, parole),
+        rotta: "#/esercizi/" + encodeURIComponent(id) + "/nota"
+      });
+    });
+
+    return voci.slice(0, 30);
+  }
+
+  function vocePersonaleHTML(v) {
+    return '<li class="cerca-voce"><a href="' + v.rotta + '"><strong>' + esc(v.etichetta) + "</strong></a>" +
+      (v.dettaglio ? ' <span class="text-small muted">' + esc(v.dettaglio) + "</span>" : "") +
+      '<p class="text-small mb-0">' + v.estratto + "</p></li>";
+  }
+
   views.cerca = function (params) {
     const q = (params && params[0]) ? String(params[0]).trim() : "";
     const parole = q.toLowerCase().split(/\s+/).filter(function (p) { return p.length > 1; });
@@ -749,25 +858,32 @@
       const testo = (v.titolo + " " + v.testo).toLowerCase();
       return parole.every(function (p) { return testo.indexOf(p) >= 0; });
     }).slice(0, 40);
+    const personali = parole.length ? cercaPersonale(parole) : [];
+    const nessuno = !!q && !risultati.length && !personali.length;
 
     A.setTitle("Cerca");
     A.page(
-      '<div class="page-head"><p class="eyebrow">Ricerca</p><h1>Cerca nei contenuti</h1>' +
-        '<p class="lead">Capitoli del manuale, voci di glossario ed esercizi guidati. La ricerca avviene qui, sul dispositivo: nessuna parola esce da qui.</p></div>' +
+      '<div class="page-head"><p class="eyebrow">Ricerca</p><h1>Cerca nei contenuti e nelle tue cose</h1>' +
+        '<p class="lead">Capitoli del manuale, glossario ed esercizi, e anche quello che hai scritto tu: voci di diario, schede del pensiero e note del percorso. La ricerca avviene qui, sul dispositivo: nessuna parola esce da qui.</p></div>' +
       '<form class="card" id="cercaForm"><label class="text-small" for="cercaInput">Parole da cercare</label>' +
         '<div class="btn-row"><input id="cercaInput" name="q" type="search" value="' + esc(q) + '" placeholder="per esempio: sonno, rimuginio, respiro" style="flex:1;min-width:12rem;padding:.5rem .7rem">' +
         '<button type="submit" class="btn btn-primary btn-sm">' + A.icon("list") + "Cerca</button></div>" +
-        '<p class="text-small muted mb-0">Si possono cercare più parole: vengono cercate tutte insieme.</p></form>' +
-      (q && !risultati.length
+        '<p class="text-small muted mb-0">Si possono cercare più parole: vengono cercate tutte insieme, nei testi del programma e in quello che hai scritto.</p></form>' +
+      (nessuno
         ? '<div class="callout info mt-2"><p><strong>Nessun risultato per «' + esc(q) + '».</strong> Prova una parola più corta, o il termine clinico invece di quello comune.</p></div>'
         : "") +
       (risultati.length
-        ? '<div class="card mt-2"><h2 class="h-sub">' + risultati.length + (risultati.length === 1 ? " risultato" : " risultati") + '</h2><ul class="text-small">' +
+        ? '<div class="card mt-2 cerca-contenuti"><h2 class="h-sub">Nei contenuti · ' + risultati.length + (risultati.length === 1 ? " risultato" : " risultati") + '</h2><ul class="text-small">' +
           risultati.map(function (v) {
             return '<li><a href="' + v.rotta + '"><strong>' + esc(v.titolo) + "</strong></a> — " + esc(v.tipo) + "</li>";
           }).join("") + "</ul></div>"
         : "") +
-      '<div class="card mt-2"><h2 class="h-sub">Non è un motore di ricerca</h2><p class="text-small mb-0">La ricerca confronta le parole con i testi del programma: se non trova niente, non significa che l\'argomento non esista, ma che non è scritto con quella parola. Per una domanda aperta c\'è Neura.</p></div>'
+      (personali.length
+        ? '<div class="card mt-2 cerca-personali" id="cercaPersonale"><h2 class="h-sub">Nelle tue cose · ' + personali.length + (personali.length === 1 ? " risultato" : " risultati") + '</h2>' +
+          '<ul class="cerca-risultati">' + personali.map(vocePersonaleHTML).join("") + "</ul>" +
+          '<p class="text-small muted mb-0">Sono le cose che hai scritto tu: restano su questo dispositivo e la ricerca le legge qui.</p></div>'
+        : "") +
+      '<div class="card mt-2"><h2 class="h-sub">Non è un motore di ricerca</h2><p class="text-small mb-0">La ricerca confronta le parole con i testi del programma e con quello che hai scritto: se non trova niente, non significa che l\'argomento non esista, ma che non è scritto con quella parola. Per una domanda aperta c\'è Neura.</p></div>'
     );
 
     const modulo = document.getElementById("cercaForm");

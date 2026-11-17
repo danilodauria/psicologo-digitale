@@ -1,10 +1,10 @@
-# Prove a mano · versione 1.4.0
+# Prove a mano · versione 1.5.0
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono trentadue prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono trentasette prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale per la 1.4.0 e per la 1.4.1 (che corregge il messaggio dell'import: qui il risultato atteso è quello corretto, indicato nella prova 3.3).
+Vale dalla 1.4.0 alla 1.5.0. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte.
 
-C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, quattro pagine con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
+C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
 **Dove si prova.** Sul sito — <https://danilodauria.github.io/psicologo-digitale/> — e nell'app installata. La pagina per scaricare i pacchetti è **Installa l'app** (`#/installa`), che porta alle [release su GitHub](https://github.com/danilodauria/psicologo-digitale/releases/latest); lì c'è anche il backup dei sorgenti. Quando una prova dipende dal dispositivo, è scritto nella riga.
 
@@ -92,6 +92,16 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 
 ---
 
+## 7. Ricerca nelle tue cose (dalla 1.5.0)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 7.1 Scrivi nel diario una nota con una parola che non compare nei capitoli (per esempio il nome del tuo animale) e cercala | Compare la sezione **«Nelle tue cose»** con il risultato del diario, la data e l'estratto della nota con la parola in evidenza. Nessun risultato nei contenuti: quella parola lì non esiste |
+| ☐ | 7.2 Apri quel risultato | Si apre il diario con la voce in evidenza, anche se è più vecchia delle otto che la pagina mostra di solito |
+| ☐ | 7.3 Apri un esercizio, scrivi una nota in «Come è andata» e cercala | La nota compare in «Nelle tue cose»; aprendola si riapre l'esercizio con il cursore già nel campo della nota, e il testo è quello salvato |
+| ☐ | 7.4 Salva una scheda del pensiero con una parola riconoscibile e cercala | Il risultato apre la scheda in sola lettura, con situazione, pensiero, emozione e lettura alternativa |
+| ☐ | 7.5 Cerca una parola che sta in un capitolo e anche in una tua nota | Due sezioni distinte: «Nei contenuti» con capitoli, glossario ed esercizi; «Nelle tue cose» con la nota. Nessuna voce personale finisce fra i contenuti |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -100,4 +110,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.4.1 | /32 |  |
+|  |  | 1.5.0 | /37 |  |

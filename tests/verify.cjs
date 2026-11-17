@@ -397,7 +397,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.4.0.md");
+const proveMd = read("PROVE-A-MANO-1.5.0.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -408,7 +408,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 32, "il markdown elenca trentadue prove (" + etichette.length + ")");
+ok(etichette.length === 37, "il markdown elenca trentasette prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -433,6 +433,20 @@ ok(/removeAttribute\("data-testo"\)/.test(read("assets/js/app.js")), "tornare a 
 // proprio quello. Una frase falsa nel programma farebbe fallire la prova per
 // il motivo sbagliato.
 ok(/legge con quella disponibile/.test(read("assets/js/app-status.js")), "il pannello di stato non promette che Neura tace senza voce italiana");
+
+/* Ricerca nelle cose scritte ---------------------------------------------- */
+
+// Due indici separati: quello dei contenuti legge solo NP.data, quello delle
+// cose scritte legge diario, schede e note. Se qualcuno li unisse, le voci di
+// diario finirebbero nella ricerca dei capitoli e da lì in una pagina che si
+// può mostrare a chiunque.
+const indiceContenuti = (read("assets/js/app-views.js").match(/function indiceContenuti\(\) \{[\s\S]*?\n  \}/) || [""])[0];
+ok(!!indiceContenuti, "l'indice dei contenuti è una funzione sua");
+ok(!/state\.|thoughts|course\.notes|readJSON/.test(indiceContenuti), "l'indice dei contenuti non legge i dati personali");
+ok(/function cercaPersonale/.test(read("assets/js/app-views.js")), "le cose scritte si cercano in una funzione separata");
+ok(/Nelle tue cose/.test(read("assets/js/app-views.js")), "i risultati personali stanno in una sezione loro");
+ok(/nessuna parola esce da qui/.test(read("assets/js/app-views.js")), "la pagina dice che la ricerca resta sul dispositivo");
+
 
 /* Programmi installabili e benvenuto --------------------------------------- */
 
