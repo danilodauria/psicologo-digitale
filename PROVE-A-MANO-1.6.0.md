@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.5.0
+# Prove a mano · versione 1.6.0
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono trentasette prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono quaranta prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.5.0. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte.
+Vale dalla 1.4.0 alla 1.6.0. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -102,6 +102,14 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 7.4 Salva una scheda del pensiero con una parola riconoscibile e cercala | Il risultato apre la scheda in sola lettura, con situazione, pensiero, emozione e lettura alternativa |
 | ☐ | 7.5 Cerca una parola che sta in un capitolo e anche in una tua nota | Due sezioni distinte: «Nei contenuti» con capitoli, glossario ed esercizi; «Nelle tue cose» con la nota. Nessuna voce personale finisce fra i contenuti |
 
+## 8. Confronto a sette o trenta giorni (dalla 1.6.0)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 8.1 Apri il riepilogo e scegli «30 giorni» | Titolo e intestazioni dicono trenta, la scelta si vede dal pulsante acceso e i conteggi cambiano rispetto ai sette giorni |
+| ☐ | 8.2 Leggi la riga delle date sotto il titolo | Dice «dal … al …» per entrambi i periodi; cambiando periodo cambiano anche le date, non solo i numeri |
+| ☐ | 8.3 Premi «Stampa il confronto» e guarda l'anteprima | Il foglio ha titolo, date, tabella e la frase «traccia, non come prova»; non ci sono menù, pulsanti, la scelta del periodo né il collegamento per tornare alla home |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -110,4 +118,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.5.0 | /37 |  |
+|  |  | 1.6.0 | /40 |  |

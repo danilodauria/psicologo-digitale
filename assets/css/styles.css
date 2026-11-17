@@ -401,6 +401,19 @@ html[data-theme="dark"] .btn-soft { color: #dbe5fa; }
 
 .btn-row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
 
+/* Riepilogo: scelta del periodo e stampa del confronto -------------------- */
+
+.riepilogo-scelta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  margin-top: 1rem;
+}
+.riepilogo-scelta .btn-row { margin: 0; }
+.riepilogo-date { margin-top: .7rem; }
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -1763,6 +1776,11 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   .report-sheet a { color: #1b2a4a !important; text-decoration: none; }
 
   .card, .callout, .quiz-card, .intake-card { break-inside: avoid; box-shadow: none !important; }
+
+  /* Il confronto stampato porta le date dei due periodi: senza, il foglio
+     non dice a cosa si riferisce quando lo si rilegge in seduta. */
+  .riepilogo-date { font-size: 9.5pt; margin-top: .4rem; }
+  .riepilogo-date, .report-sheet .text-small { color: #111 !important; }
 }
 
 /* Benvenuto di Neura -------------------------------------------------------- */

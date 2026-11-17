@@ -760,8 +760,13 @@ NP.app = (function () {
       const valori = voci.map(function (v) { return Number(v[campo]); }).filter(function (n) { return isFinite(n); });
       return valori.length ? valori.reduce(function (a, b) { return a + b; }, 0) / valori.length : null;
     };
+    // Le date del periodo escono da qui, non da un secondo conto nella vista:
+    // chi mostra il confronto deve poter scrivere «dal … al …» senza rifare
+    // la stessa aritmetica e rischiare di sbagliarla di un giorno.
     return {
       giorni: giorni,
+      dal: new Date(inizio).toISOString(),
+      al: new Date(fine).toISOString(),
       voci: voci.length,
       schede: schede.length,
       misure: misure,

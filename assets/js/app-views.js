@@ -575,7 +575,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.5.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.6.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -710,10 +710,15 @@
   /* ------------------------------------------------------------- Riepilogo */
 
   // I dati sono già tutti nel dispositivo: il riepilogo non li interpreta, li
-  // mette in fila. Due settimane affiancate dicono più di un numero solo.
-  views.riepilogo = function () {
-    const ora = A.statistichePeriodo(7, 0);
-    const prima = A.statistichePeriodo(7, 7);
+  // mette in fila. Due periodi affiancati dicono più di un numero solo. La
+  // scelta fra sette e trenta giorni è solo un'altra chiamata alla stessa
+  // funzione: qui non esiste una seconda formula da tenere allineata.
+  views.riepilogo = function (params) {
+    const giorni = params && params[0] === "30" ? 30 : 7;
+    const ora = A.statistichePeriodo(giorni, 0);
+    const prima = A.statistichePeriodo(giorni, giorni);
+    const parole = giorni === 30 ? "trenta" : "sette";
+    const totale = giorni === 30 ? "sessanta" : "quattordici";
     const vuoto = !ora.voci && !ora.schede && !ora.misure && !prima.voci && !prima.schede && !prima.misure;
     const num = function (n) { return n === null ? "—" : (Math.round(n * 10) / 10).toString().replace(".", ","); };
     const diff = function (a, b) {
@@ -727,14 +732,21 @@
         num(prima.media[campo]) + "</td><td>" + diff(ora.media[campo], prima.media[campo]) + "</td></tr>";
     };
 
+    const dalAl = function (s) { return "dal " + A.fmtDate(s.dal) + " al " + A.fmtDate(s.al); };
+
     A.setTitle("Riepilogo dei periodi");
     A.page(
-      '<div class="page-head"><p class="eyebrow">Riepilogo</p><h1>Gli ultimi sette giorni, accanto ai sette prima</h1>' +
-        '<p class="lead">Le stesse misure in due periodi vicini. Non è un giudizio: è il modo più semplice per vedere se una direzione c\'è.</p></div>' +
+      '<div class="page-head"><p class="eyebrow">Riepilogo</p><h1>Gli ultimi ' + parole + ' giorni, accanto ai ' + parole + ' prima</h1>' +
+        '<p class="lead">Le stesse misure in due periodi vicini. Non è un giudizio: è il modo più semplice per vedere se una direzione c\'è.</p>' +
+        '<div class="riepilogo-scelta no-print"><nav class="btn-row" aria-label="Periodo da confrontare">' +
+          '<a class="btn btn-sm ' + (giorni === 7 ? "btn-primary" : "btn-soft") + '" href="#/riepilogo"' + (giorni === 7 ? ' aria-current="page"' : "") + ">7 giorni</a>" +
+          '<a class="btn btn-sm ' + (giorni === 30 ? "btn-primary" : "btn-soft") + '" href="#/riepilogo/30"' + (giorni === 30 ? ' aria-current="page"' : "") + ">30 giorni</a>" +
+        '</nav><button type="button" class="btn btn-ghost btn-sm" id="stampaRiepilogo">' + A.icon("print") + "Stampa il confronto</button></div>" +
+        '<p class="riepilogo-date text-small muted">' + esc(dalAl(ora)) + ". I " + parole + " giorni prima: " + esc(dalAl(prima)) + "</p></div>" +
       (vuoto
-        ? '<div class="callout info"><p><strong>Non ci sono ancora dati in questi quattordici giorni.</strong> Bastano una voce di diario o un questionario perché il confronto abbia qualcosa da dire.</p></div>'
+        ? '<div class="callout info"><p><strong>Non ci sono ancora dati in questi ' + totale + ' giorni.</strong> Bastano una voce di diario o un questionario perché il confronto abbia qualcosa da dire.</p></div>'
         : '<div class="card"><h2 class="h-sub">Medie del diario</h2>' +
-          '<table class="text-small"><thead><tr><th scope="col">Voce</th><th scope="col">Ultimi 7 giorni</th><th scope="col">7 giorni prima</th><th scope="col">Differenza</th></tr></thead><tbody>' +
+          '<table class="text-small"><thead><tr><th scope="col">Voce</th><th scope="col">Ultimi ' + giorni + ' giorni</th><th scope="col">' + giorni + ' giorni prima</th><th scope="col">Differenza</th></tr></thead><tbody>' +
             riga("Umore", "umore") + riga("Ansia", "ansia") + riga("Sonno", "sonno") + riga("Energia", "energia") +
           '</tbody></table>' +
           '<p class="text-small muted mb-0">Differenza calcolata sulla media dei valori inseriti, da 0 a 10. Con poche voci una media si muove facilmente: vale come traccia, non come prova.</p></div>' +
@@ -747,8 +759,11 @@
           '<div class="card"><h2 class="h-sub">Cosa farne</h2><p class="text-small">Scegli una cosa sola da portare al prossimo colloquio: una voce di diario, un punteggio che si è mosso, o una scheda che si ripete. Il resto può aspettare.</p>' +
             '<div class="btn-row"><a class="btn btn-ghost btn-sm" href="#/diario">Apri il diario</a><a class="btn btn-ghost btn-sm" href="#/valutazione">Questionari</a></div></div>' +
         "</div>") +
-      '<p class="mt-3"><a class="btn btn-soft" href="#/">Torna alla home</a></p>'
+      '<p class="mt-3 no-print"><a class="btn btn-soft" href="#/">Torna alla home</a></p>'
     );
+
+    const stampa = document.getElementById("stampaRiepilogo");
+    if (stampa) stampa.addEventListener("click", function () { window.print(); });
   };
 
   /* ---------------------------------------------------------------- Cerca */

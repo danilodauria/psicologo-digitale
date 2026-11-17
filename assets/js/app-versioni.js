@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.5.0";
+  const VERSIONE = "1.6.0";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.6.0",
+      data: "17 novembre 2026",
+      titolo: "Il confronto si sceglie e si porta in seduta",
+      punti: [
+        "Il riepilogo non confronta più solo due settimane: accanto al titolo ci sono «7 giorni» e «30 giorni», e la tabella cambia con il periodo scelto. Una settimana a volte è troppo poco per vedere una direzione, un mese a volte è troppo: ora si guarda quello che serve, senza un'altra pagina.",
+        "Le due finestre escono dalla stessa funzione: cambiare periodo non cambia il modo di calcolare la media né i confini del periodo precedente, quindi i numeri dei sette giorni restano quelli di prima.",
+        "Sotto il titolo compaiono le date vere dei due intervalli, «dal 18 ottobre 2026 al 17 novembre 2026», e restano anche sulla carta: un foglio con i numeri ma senza il periodo a cui si riferiscono non si può portare in seduta.",
+        "«Stampa il confronto» prepara un foglio pulito: la tabella, le date e le indicazioni su come leggerle, senza menù, senza pulsanti e senza la scelta del periodo."
+      ]
+    },
     {
       v: "1.5.0",
       data: "17 novembre 2026",

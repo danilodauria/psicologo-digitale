@@ -1182,6 +1182,35 @@ setTimeout(async function () {
   navigate("#/riepilogo");
   ok(/Non ci sono ancora dati/.test(document.getElementById("app").textContent), "senza dati lo dice, invece di mostrare una tabella di trattini");
 
+  // Il periodo si sceglie in pagina e il confronto si stampa con le date: un
+  // numero senza il periodo a cui si riferisce non si porta in seduta.
+  NP.app.state.diary = [voce("s8", 20, 4)];
+  const trenta = NP.app.statistichePeriodo(30, 30);
+  ok(trenta.giorni === 30 && /^\d{4}-\d\d-\d\d/.test(trenta.dal) && /^\d{4}-\d\d-\d\d/.test(trenta.al), "la funzione del periodo dice anche le sue date");
+  ok(new Date(trenta.al).getTime() - new Date(trenta.dal).getTime() === 30 * 24 * 60 * 60 * 1000, "e sono i trenta giorni dichiarati, non altri");
+
+  navigate("#/riepilogo/30");
+  const sceltaPeriodo = document.querySelector(".riepilogo-scelta");
+  ok(!!sceltaPeriodo, "il riepilogo lascia scegliere il periodo");
+  ok(!!sceltaPeriodo.querySelector('a[href="#/riepilogo"]'), "con i sette giorni a portata di mano");
+  ok(!!sceltaPeriodo.querySelector('a[href="#/riepilogo/30"][aria-current="page"]'), "e i trenta giorni segnati come scelti");
+  ok(/Ultimi 30 giorni/.test(document.getElementById("app").textContent), "la tabella parla del periodo scelto, non di uno fisso");
+  ok(/1 voce di diario/.test(document.getElementById("app").textContent), "una voce di venti giorni fa entra nei trenta");
+  const dateScelte = document.querySelector(".riepilogo-date").textContent;
+  ok((dateScelte.match(/dal /g) || []).length === 2, "con le date di entrambi i periodi, non di uno solo");
+
+  NP.app.state.diary = [voce("s8", 20, 4), voce("s9", 2, 6)];
+  navigate("#/riepilogo");
+  ok(!!document.querySelector('a[href="#/riepilogo"][aria-current="page"]'), "tornando ai sette giorni, la scelta si vede");
+  ok(/Ultimi 7 giorni/.test(document.getElementById("app").textContent), "e la tabella dice sette");
+  ok(/1 voce di diario/.test(document.getElementById("app").textContent), "la voce di venti giorni fa resta fuori dai sette");
+
+  let stampe = 0;
+  window.print = function () { stampe++; };
+  document.getElementById("stampaRiepilogo").click();
+  ok(stampe === 1, "il pulsante stampa apre la stampa del browser");
+  NP.app.state.diary = [];
+
   // La ricerca confronta parole con i testi del programma, tutto sul dispositivo.
   console.log("\nCerca nei contenuti");
   navigate("#/cerca");

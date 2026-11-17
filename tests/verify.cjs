@@ -397,7 +397,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.5.0.md");
+const proveMd = read("PROVE-A-MANO-1.6.0.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -408,7 +408,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 37, "il markdown elenca trentasette prove (" + etichette.length + ")");
+ok(etichette.length === 40, "il markdown elenca quaranta prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -446,6 +446,22 @@ ok(!/state\.|thoughts|course\.notes|readJSON/.test(indiceContenuti), "l'indice d
 ok(/function cercaPersonale/.test(read("assets/js/app-views.js")), "le cose scritte si cercano in una funzione separata");
 ok(/Nelle tue cose/.test(read("assets/js/app-views.js")), "i risultati personali stanno in una sezione loro");
 ok(/nessuna parola esce da qui/.test(read("assets/js/app-views.js")), "la pagina dice che la ricerca resta sul dispositivo");
+
+/* Riepilogo: periodo scelto e stampa ---------------------------------------- */
+
+// Sette o trenta giorni sono due chiamate alla stessa funzione: se la vista si
+// mettesse a filtrare o a sommare per conto suo, il confronto dei trenta
+// giorni potrebbe non coincidere con quello dei sette senza che nessuno lo veda.
+const vistaRiepilogo = (read("assets/js/app-views.js").match(/views\.riepilogo = function[\s\S]*?\n  \};/) || [""])[0];
+ok(!!vistaRiepilogo, "il riepilogo è una vista sua");
+ok(/statistichePeriodo\(giorni, 0\)/.test(vistaRiepilogo) && /statistichePeriodo\(giorni, giorni\)/.test(vistaRiepilogo), "i due periodi escono dalla stessa funzione, con lo stesso numero di giorni");
+ok(!/\.filter\(|reduce\(/.test(vistaRiepilogo), "e la vista non filtra né somma niente per conto suo");
+ok(/#\/riepilogo\/30/.test(vistaRiepilogo), "la pagina offre il confronto a trenta giorni");
+ok(/id="stampaRiepilogo"/.test(vistaRiepilogo) && /window\.print\(\)/.test(vistaRiepilogo), "e un pulsante che stampa il confronto");
+ok(/riepilogo-scelta no-print/.test(vistaRiepilogo), "la scelta del periodo resta fuori dal foglio stampato");
+ok(/riepilogo-date/.test(read("assets/css/styles.css")), "le date del periodo hanno una riga loro, che si stampa");
+const fnPeriodo = (read("assets/js/app.js").match(/function statistichePeriodo\(giorni, scostamento\) \{[\s\S]*?\n  \}/) || [""])[0];
+ok(/dal: new Date\(inizio\)\.toISOString\(\)/.test(fnPeriodo) && /al: new Date\(fine\)\.toISOString\(\)/.test(fnPeriodo), "il periodo dichiara le sue date, invece di farle ricalcolare a chi lo mostra");
 
 
 /* Programmi installabili e benvenuto --------------------------------------- */
