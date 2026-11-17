@@ -1114,6 +1114,14 @@ setTimeout(async function () {
   ok(!vecchio.errore && vecchio.dati.version === 2, "un file senza versione viene riconosciuto come il primo formato e portato a quello attuale");
   ok(vecchio.migrato === true, "e la migrazione lo dice, invece di avvenire di nascosto");
   ok(!!vecchio.dati.storicoPunteggi && Object.keys(vecchio.dati.storicoPunteggi).length === 0, "completando i campi che allora non esistevano, vuoti e non inventati");
+  const attuale = NP.app.migraBackup({ app: "Psicologo Digitale", version: 2, storicoPunteggi: {} });
+  ok(!attuale.errore && attuale.dati.version === 2, "un file già nel formato attuale viene accettato così com'è");
+  ok(attuale.migrato === false, "e non si dichiara convertito: nessuna conversione è avvenuta");
+  // Il caso vero: esporto adesso e reimporto lo stesso file. Se il messaggio
+  // dicesse «aggiornato al formato attuale» mentirebbe, perché era già così.
+  const rientro = NP.app.migraBackup(NP.app.raccogliDati());
+  ok(!rientro.errore && rientro.dati.version === NP.app.versioneBackup, "un backup esportato adesso si reimporta senza errori");
+  ok(rientro.migrato === false, "e l'import non annuncia un aggiornamento che non c'è stato");
   const futuro = NP.app.migraBackup({ app: "Psicologo Digitale", version: 9 });
   ok(!!futuro.errore, "un file di una versione più recente viene rifiutato, invece di essere letto male");
   ok(/più recente/.test(futuro.errore), "e il messaggio dice perché, così si sa cosa fare");

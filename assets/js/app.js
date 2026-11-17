@@ -658,6 +658,10 @@ NP.app = (function () {
     let d = dati;
     let v = parseInt(d && d.version, 10);
     if (!isFinite(v) || v < 1) v = 1;
+    // Il formato di partenza si ricorda prima della conversione: senza questo,
+    // un file già aggiornato risulterebbe convertito e l'import direbbe una
+    // cosa che non è successa.
+    const partenza = v;
     if (v > VERSIONE_BACKUP) {
       return { errore: "Il file viene da una versione più recente dell'app (formato " + v + "). Aggiorna l'app e riprova." };
     }
@@ -667,7 +671,7 @@ NP.app = (function () {
       d = passo(d);
       v = parseInt(d.version, 10) || v + 1;
     }
-    return { dati: d, migrato: v > 1 };
+    return { dati: d, migrato: v > partenza };
   }
 
   function ultimoBackup() {

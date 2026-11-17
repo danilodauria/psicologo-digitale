@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.4.0";
+  const VERSIONE = "1.4.1";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.4.1",
+      data: "17 novembre 2026",
+      titolo: "Il backup già aggiornato non finge di essere stato convertito",
+      punti: [
+        "Importando un backup esportato da questa stessa versione, il messaggio finale diceva «e aggiornato al formato attuale». Non era vero: quel file era già nel formato attuale e nessuna conversione era avvenuta. Un messaggio che racconta un lavoro mai fatto è peggio di nessun messaggio, perché insegna a fidarsi poco di tutti gli altri.",
+        "Ora la conversione si dichiara solo quando c'è stata davvero: il campo che la segnala nasce dal confronto fra il formato del file e quello di arrivo, non dal fatto che il formato sia riconosciuto. Un file vecchio continua a dire di essere stato aggiornato, uno attuale dice solo «Backup importato».",
+        "Il caso è coperto da un test: si esporta adesso e si reimporta lo stesso file, controllando che l'app non annunci nessun aggiornamento; accanto resta il test sul file vecchio, che invece l'annuncio deve darlo. La differenza è invisibile finché il messaggio non mente, ed è per questo che serve un test."
+      ]
+    },
     {
       v: "1.4.0",
       data: "16 novembre 2026",
@@ -32,7 +42,7 @@
         "Un capitolo si può ascoltare. Il pulsante «Ascolta il capitolo» usa la stessa voce di Neura, quindi la scelta della voce, il ritmo e il pulsante Stop valgono anche qui: una sola strada per parlare, non due.",
         "La pagina che cambia lo dice. Al cambio di pagina il titolo riceve il focus e un annuncio letto dai lettori di schermo conferma che la pagina è cambiata: prima, chi non vede lo schermo restava nella pagina precedente.",
         "Un invito, non una serie. Se il diario è fermo da qualche giorno la home lo nota e propone una riga su oggi. Nessun conteggio dei giorni saltati, nessun premio da difendere: non ci sono serie da mantenere.",
-        "I controlli sono cresciuti con il programma. Le due schermate che non hanno una rotta — il risultato di un questionario e l'anteprima di un ripristino — ora vengono aperte e lette dai controlli automatici, come tutte le altre pagine: 56 verifiche in più nei test, e nessuna pagina che si salva perché nessuno la guarda."
+        "I controlli sono cresciuti con il programma. Le due schermate che non hanno una rotta — il risultato di un questionario e l'anteprima di un ripristino — ora vengono aperte e lette dai controlli automatici, come tutte le altre pagine: oltre cinquanta verifiche in più nei test, e nessuna pagina che si salva perché nessuno la guarda."
       ]
     },
     {

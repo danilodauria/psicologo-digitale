@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.4.0**, 16 novembre 2026.
+Ultimo aggiornamento: versione **1.4.1**, 17 novembre 2026.
 
 ---
 
@@ -46,7 +46,7 @@ Punti fermi dell'impianto:
 4. **La versione è una sola, in sette posti.** `package.json`, `desktop/package.json`, `desktop/package-lock.json`, `sw.js` (`psd-vX.Y.Z`), `come-installare.html`, `scheda-rapida.html`, il piè di pagina in `assets/js/app-views.js`, più `VERSIONE` in `assets/js/app-versioni.js`. Un test confronta `VERSIONE` con `package.json`: se restano indietro, la build è rossa.
 5. **Ogni release ha la sua voce in `NOVITA`** (`assets/js/app-versioni.js`), scritta per chi usa il programma — cosa cambia nella sua giornata — non per chi legge il diff.
 6. **Le promesse nelle pagine sono verificate.** Se *Versioni* o il README dicono che un controllo esiste, quel controllo esiste come script o test che può diventare rosso. Una garanzia non testata è una bugia che invecchia bene.
-7. **Il backup ha un formato dichiarato.** `raccogliDati()` scrive `version` (oggi `2`); `migraBackup()` completa i file vecchi e rifiuta quelli di una versione futura. Cambiando la forma dei dati si incrementa `VERSIONE_BACKUP` e si aggiunge un passo in `MIGRAZIONI`: mai leggere un formato sconosciuto alla cieca.
+7. **Il backup ha un formato dichiarato.** `raccogliDati()` scrive `version` (oggi `2`); `migraBackup()` completa i file vecchi e rifiuta quelli di una versione futura. Cambiando la forma dei dati si incrementa `VERSIONE_BACKUP` e si aggiunge un passo in `MIGRAZIONI`: mai leggere un formato sconosciuto alla cieca. Il campo `migrato` è vero solo se il formato di partenza era diverso da quello di arrivo: un file già aggiornato non deve dichiarare una conversione che non c'è stata, e un test lo blocca.
 8. **I metadati non sono dati della persona.** La data dell'ultima esportazione (`segnaBackup`) si scrive con `localStorage.setItem` diretto: se fallisce non deve finire nella coda dei salvataggi rimasti fuori, o il prossimo salvataggio vero si confonde.
 9. **Chi non vede lo schermo deve sapere dov'è.** Al cambio di pagina il titolo riceve il focus (`tabindex="-1"`) e `#annuncioRotta` annuncia il caricamento. Il focus si sposta **solo** al cambio rotta: spostarlo a ogni ridisegno porta via il cursore a chi sta scrivendo.
 10. **Niente serie, punteggi-premio o confronti sociali.** Il diario propone, non rimprovera: gli inviti dicono un fatto e offrono un gesto piccolo. È una scelta deontologica, non estetica.

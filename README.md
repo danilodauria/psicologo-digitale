@@ -455,4 +455,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.4.0** · novembre 2026.
+Versione **1.4.1** · novembre 2026.
