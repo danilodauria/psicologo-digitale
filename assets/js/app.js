@@ -616,6 +616,7 @@ NP.app = (function () {
       course: state.course,
       quizStats: state.quizStats,
       reportNotes: state.reportNotes,
+      pianoSicurezza: readJSON("pianoSicurezza", null),
     // Ogni file dichiara la forma che ha: all'import si controlla, invece di
     // leggere alla cieca un formato che nel frattempo è cambiato.
     version: VERSIONE_BACKUP,
@@ -650,7 +651,18 @@ NP.app = (function () {
     const scale = d.scales && typeof d.scales === "object" ? Object.keys(d.scales).length : 0;
     const colloquio = d.intake && d.intake.answers && typeof d.intake.answers === "object"
       ? Object.keys(d.intake.answers).length : 0;
-    return Boolean(diario || schede || scale || colloquio);
+    return Boolean(diario || schede || scale || colloquio || pianoHaContenuto(d.pianoSicurezza));
+  }
+
+  // Il piano di sicurezza conta come dato: chi ha compilato solo quello deve
+  // ricevere il promemoria del backup e una copia automatica come gli altri.
+  function pianoHaContenuto(p) {
+    if (!p || typeof p !== "object") return false;
+    const campi = ["segnali", "primiMinuti", "ambiente", "ragione"];
+    return campi.some(function (k) { return typeof p[k] === "string" && p[k].trim(); }) ||
+      (Array.isArray(p.contatti) && p.contatti.some(function (c) {
+        return c && (String(c.nome || "").trim() || String(c.tel || "").trim());
+      }));
   }
 
   const VERSIONE_BACKUP = 2;
@@ -829,7 +841,8 @@ NP.app = (function () {
       thoughts: Array.isArray(d.thoughts) ? d.thoughts : [],
       course: d.course || { done: [], notes: {} },
       quizStats: d.quizStats || { played: 0, best: 0, correct: 0, total: 0, byCat: {} },
-      reportNotes: d.reportNotes || { note: "", clinician: "" }
+      reportNotes: d.reportNotes || { note: "", clinician: "" },
+      pianoSicurezza: d.pianoSicurezza || null
     };
   }
 
@@ -926,6 +939,7 @@ NP.app = (function () {
     quiz: "Palestra",
     reportNotes: "Note della relazione",
     thoughts: "Schede del pensiero",
+    pianoSicurezza: "Piano di sicurezza",
     chat: "Conversazione con Neura",
     copie: "Copie automatiche",
     copieMax: "Preferenze",
@@ -1203,12 +1217,13 @@ NP.app = (function () {
     ["pensieri", "Schede del pensiero", "thoughts", function (d) { return d.thoughts ? d.thoughts.length : 0; }],
     ["esercizi", "Esercizi completati", "course", function (d) { return d.course && d.course.done ? d.course.done.length : 0; }],
     ["quiz", "Risposte ai quiz", "quizStats", function (d) { return d.quizStats ? d.quizStats.total || 0 : 0; }],
-    ["note", "Note della relazione", "reportNotes", function (d) { return d.reportNotes && (d.reportNotes.note || d.reportNotes.clinician) ? 1 : 0; }]
+    ["note", "Note della relazione", "reportNotes", function (d) { return d.reportNotes && (d.reportNotes.note || d.reportNotes.clinician) ? 1 : 0; }],
+    ["pianoSicurezza", "Piano di sicurezza", "pianoSicurezza", function (d) { return pianoHaContenuto(d.pianoSicurezza) ? 1 : 0; }]
   ];
 
   // I campi che il ripristino tocca: il controllo automatico confronta questo
   // elenco con quello sopra, così nessuno dei due può restare indietro.
-  const RIPRISTINATI = ["intake", "scales", "diary", "thoughts", "course", "quizStats", "reportNotes"];
+  const RIPRISTINATI = ["intake", "scales", "diary", "thoughts", "course", "quizStats", "reportNotes", "pianoSicurezza"];
 
   function statoDati(d) {
     const x = d || {};
@@ -1392,6 +1407,7 @@ NP.app = (function () {
     state.quizStats = d.quizStats || state.quizStats;
     state.reportNotes = d.reportNotes || { note: "", clinician: "" };
     writeJSON("thoughts", Array.isArray(d.thoughts) ? d.thoughts : []);
+    writeJSON("pianoSicurezza", d.pianoSicurezza && typeof d.pianoSicurezza === "object" ? d.pianoSicurezza : null);
     saveIntake(); saveScales(); saveDiary(); saveCourse(); saveQuizStats(); saveReportNotes();
   }
 

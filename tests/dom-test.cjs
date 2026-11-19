@@ -1506,6 +1506,58 @@ setTimeout(async function () {
   ok(!!linkProve && linkProve.hasAttribute("download") && !!linkProve.closest(".card"),
     "il collegamento scarica il PDF e sta dentro una scheda con la sua spiegazione");
 
+  /* Piano di sicurezza ------------------------------------------------------- */
+
+  console.log("\nPiano di sicurezza");
+
+  navigate("#/sicurezza/piano");
+  ok(!!document.getElementById("pianoForm") && !!document.getElementById("pianoSegnali"), "il piano ha un modulo compilabile");
+  ok(!!document.getElementById("pianoPrimiMinuti") && !!document.getElementById("pianoAmbiente") && !!document.getElementById("pianoRagione"), "con i cinque campi del piano");
+  const foglioVuoto = document.getElementById("pianoStampa").textContent;
+  ok(/I miei segnali/.test(foglioVuoto) && /Chi chiamo/.test(foglioVuoto) && /Una ragione per chiamare/.test(foglioVuoto), "il foglio stampabile ha le cinque voci anche vuoto");
+  ok(!/respira|prova a|consiglio/i.test(foglioVuoto), "senza consigli già scritti");
+
+  document.getElementById("pianoSegnali").value = "Dormo male e mi isolo";
+  document.getElementById("pianoPrimiMinuti").value = "Esco e chiamo mia sorella";
+  document.getElementById("pianoNome0").value = "Marta";
+  document.getElementById("pianoTel0").value = "333 1234567";
+  document.getElementById("pianoAmbiente").value = "Chiedo a Marta di tenere i farmaci";
+  document.getElementById("pianoRagione").value = "Voglio vedere mia figlia domani";
+  document.getElementById("pianoForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  const pianoSalvato = NP.app.readJSON("pianoSicurezza", null);
+  ok(!!pianoSalvato && pianoSalvato.segnali === "Dormo male e mi isolo", "salvando, il piano resta sul dispositivo");
+  ok(!!pianoSalvato && pianoSalvato.contatti[0].nome === "Marta" && pianoSalvato.contatti[0].tel === "333 1234567", "con i contatti compilati");
+  ok(!!pianoSalvato && pianoSalvato.ragione === "Voglio vedere mia figlia domani", "e la ragione scritta");
+
+  navigate("#/");
+  navigate("#/sicurezza/piano");
+  ok(document.getElementById("pianoSegnali").value === "Dormo male e mi isolo", "riaprendo il piano, i campi sono ancora lì");
+  ok(document.getElementById("pianoNome0").value === "Marta", "compresi i contatti");
+
+  const stampaVeraPiano = window.print;
+  let stampePiano = 0;
+  window.print = function () { stampePiano++; };
+  document.getElementById("stampaPiano").click();
+  ok(stampePiano === 1, "il pulsante Stampa chiama la stampa del browser");
+  const foglioPieno = document.getElementById("pianoStampa").textContent;
+  ok(/Dormo male e mi isolo/.test(foglioPieno) && /Marta/.test(foglioPieno) && /333 1234567/.test(foglioPieno), "e il foglio porta i dati compilati");
+
+  // Chi scrive e stampa senza salvare non deve perdere quello che ha appena
+  // scritto: il foglio si aggiorna dal modulo, non da quello che è in memoria.
+  document.getElementById("pianoRagione").value = "Una ragione appena scritta";
+  document.getElementById("stampaPiano").click();
+  ok(/Una ragione appena scritta/.test(document.getElementById("pianoStampa").textContent), "il foglio stampa anche le modifiche non ancora salvate");
+
+  ["pianoSegnali", "pianoPrimiMinuti", "pianoAmbiente", "pianoRagione"].forEach(function (id) { document.getElementById(id).value = ""; });
+  [0, 1, 2].forEach(function (i) { document.getElementById("pianoNome" + i).value = ""; document.getElementById("pianoTel" + i).value = ""; });
+  document.getElementById("stampaPiano").click();
+  window.print = stampaVeraPiano;
+  const foglioBianco = document.getElementById("pianoStampa").textContent;
+  ok(!/Dormo male/.test(foglioBianco) && document.querySelectorAll("#pianoStampa .piano-riga").length >= 5, "svuotando i campi, il foglio torna bianco con le righe da scrivere a penna");
+
+  const datiPiano = NP.app.raccogliDati();
+  ok(!!datiPiano.pianoSicurezza && datiPiano.pianoSicurezza.segnali === "Dormo male e mi isolo", "il piano viaggia nel backup con gli altri dati");
+
   /* Uscita rapida ----------------------------------------------------------- */
 
   console.log("\nUscita rapida");

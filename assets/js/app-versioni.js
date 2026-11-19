@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.9";
+  const VERSIONE = "1.7.10";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.10",
+      data: "19 novembre 2026",
+      titolo: "Un piano di sicurezza scritto da te, da stampare",
+      punti: [
+        "Nella pagina Sicurezza c'è «Il mio piano di sicurezza»: cinque campi — i segnali, cosa fare nei primi minuti, chi chiamare, come rendere più sicuro l'ambiente, una ragione per chiamare — e tre contatti. Non ci sono consigli già scritti né testi generati: il piano è quello che scrivi tu.",
+        "Resta sul dispositivo, entra nel backup e nel ripristino come il diario e i questionari, e non viene inviato a nessuno. Se lo spazio del browser è pieno il salvataggio lo dice, invece di far finta di averlo scritto.",
+        "Il pulsante «Stampa il piano» porta sulla carta quello che c'è nel modulo, anche se non è stato salvato; con i campi vuoti esce lo stesso foglio, con le righe da riempire a penna. Testata, modulo e pulsanti non finiscono sulla stampa."
+      ]
+    },
     {
       v: "1.7.9",
       data: "19 novembre 2026",

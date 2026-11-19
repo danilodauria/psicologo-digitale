@@ -135,7 +135,108 @@
 
   /* ---------------------------------------------------------------- Sicurezza */
 
-  views.sicurezza = function () {
+  // Il piano di sicurezza personale: cinque campi che compila la persona, non
+  // il programma. Nessun testo viene suggerito o generato; si salva in locale
+  // e si stampa, anche in bianco, per scriverlo a penna.
+  function pianoSicurezza() {
+    const piano = A.readJSON("pianoSicurezza", null) || {};
+    const contatti = Array.isArray(piano.contatti) ? piano.contatti : [];
+    const valore = function (v) { return v == null ? "" : String(v); };
+
+    const campo = function (id, titolo, aiuto, testo, righe) {
+      return '<div class="piano-campo"><label class="field-label" for="' + id + '">' + titolo + '</label>' +
+        '<p class="text-small muted mb-1">' + aiuto + '</p>' +
+        '<textarea class="input piano-area" id="' + id + '" rows="' + (righe || 3) + '">' + esc(testo) + '</textarea></div>';
+    };
+    const rigaContatto = function (i, c) {
+      const n = i + 1;
+      return '<div class="piano-contatto">' +
+        '<div><label class="field-label" for="pianoNome' + i + '">Persona ' + n + '</label>' +
+          '<input class="input" id="pianoNome' + i + '" type="text" autocomplete="off" value="' + esc(valore(c && c.nome)) + '"></div>' +
+        '<div><label class="field-label" for="pianoTel' + i + '">Numero ' + n + '</label>' +
+          '<input class="input" id="pianoTel' + i + '" type="tel" inputmode="tel" autocomplete="off" value="' + esc(valore(c && c.tel)) + '"></div>' +
+        '</div>';
+    };
+    const voceStampa = function (titolo, testo) {
+      const dentro = testo ? esc(testo).replace(/\n/g, "<br>") : '<span class="piano-riga">&nbsp;</span>';
+      return '<section class="piano-voce"><h2>' + titolo + '</h2><p class="piano-testo">' + dentro + '</p></section>';
+    };
+    const stampaHTML = function (p) {
+      const c = Array.isArray(p.contatti) ? p.contatti : [];
+      return '<p class="piano-titolo">Il mio piano di sicurezza</p>' +
+        '<p class="piano-nota">Scritto da me, sul mio dispositivo. Non è una prescrizione e non sostituisce una persona.</p>' +
+        voceStampa("I miei segnali", p.segnali) +
+        voceStampa("Cosa faccio nei primi minuti", p.primiMinuti) +
+        '<section class="piano-voce"><h2>Chi chiamo</h2><ul class="piano-contatti-stampa">' +
+          [0, 1, 2].map(function (i) {
+            const x = c[i] || {};
+            return '<li><span class="piano-riga">' + esc(valore(x.nome)) + '</span>' +
+              '<span class="piano-riga">' + esc(valore(x.tel)) + '</span></li>';
+          }).join("") + "</ul></section>" +
+        voceStampa("Come rendo l'ambiente più sicuro", p.ambiente) +
+        voceStampa("Una ragione per chiamare", p.ragione);
+    };
+
+    A.setTitle("Il mio piano di sicurezza");
+    A.page(
+      '<div class="page-head no-print"><p class="eyebrow">Sicurezza</p><h1>Il mio piano di sicurezza</h1>' +
+        '<p class="lead">Cinque cose scritte da te, da rileggere quando è difficile decidere. Il programma non aggiunge consigli: i campi restano come li lasci.</p>' +
+        '<p class="mt-1 mb-0"><a class="chip" href="#/sicurezza">Torna a Sicurezza</a></p></div>' +
+      '<div class="callout info no-print"><p><strong>Resta su questo dispositivo.</strong> Il piano si salva qui, viaggia nel backup e non viene inviato a nessuno. Se c\'è un pericolo immediato, chiama il <strong>112</strong>.</p></div>' +
+      '<form class="card mt-2 piano-modulo no-print" id="pianoForm">' +
+        campo("pianoSegnali", "I miei segnali", "Come mi accorgo che le cose stanno peggiorando: sensazioni, pensieri, comportamenti.", valore(piano.segnali), 3) +
+        campo("pianoPrimiMinuti", "Cosa faccio nei primi minuti", "I passi che ho deciso di fare, uno per riga.", valore(piano.primiMinuti), 4) +
+        '<h2 class="h-sub mt-2">Chi chiamo</h2>' +
+        '<div class="piano-contatti">' + [0, 1, 2].map(function (i) { return rigaContatto(i, contatti[i]); }).join("") + "</div>" +
+        campo("pianoAmbiente", "Come rendo l'ambiente più sicuro", "Cosa tolgo, metto via o chiedo a qualcuno.", valore(piano.ambiente), 3) +
+        campo("pianoRagione", "Una ragione per chiamare", "La frase che voglio rileggere quando non riesco a decidere.", valore(piano.ragione), 2) +
+        '<div class="btn-row mt-2"><button class="btn btn-primary" type="submit">Salva il piano</button>' +
+          '<button class="btn btn-soft" type="button" id="stampaPiano">Stampa il piano</button></div>' +
+      "</form>" +
+      '<div class="solo-stampa piano-stampa" id="pianoStampa"></div>'
+    );
+
+    const leggi = function () {
+      const v = function (id) { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+      return {
+        segnali: v("pianoSegnali"),
+        primiMinuti: v("pianoPrimiMinuti"),
+        contatti: [0, 1, 2].map(function (i) {
+          return { nome: v("pianoNome" + i), tel: v("pianoTel" + i) };
+        }),
+        ambiente: v("pianoAmbiente"),
+        ragione: v("pianoRagione"),
+        aggiornato: new Date().toISOString()
+      };
+    };
+    const aggiornaStampa = function (dati) {
+      const box = document.getElementById("pianoStampa");
+      if (box) box.innerHTML = stampaHTML(dati || {});
+    };
+    aggiornaStampa(piano);
+
+    const modulo = document.getElementById("pianoForm");
+    if (modulo) modulo.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const dati = leggi();
+      if (A.writeJSON("pianoSicurezza", dati) === false) {
+        A.toast("Non è stato possibile salvare il piano: lo spazio del browser è pieno. Esporta un backup e riprova.", 9000);
+        return;
+      }
+      aggiornaStampa(dati);
+      A.toast("Piano salvato.");
+    });
+    const stampa = document.getElementById("stampaPiano");
+    if (stampa) stampa.addEventListener("click", function () {
+      // Si stampa quello che c'è ora, anche se non è stato salvato: chi ha
+      // appena scritto non deve perdere il foglio per un clic dimenticato.
+      aggiornaStampa(leggi());
+      window.print();
+    });
+  }
+
+  views.sicurezza = function (params) {
+    if (params && params[0] === "piano") { pianoSicurezza(); return; }
     const S = NP.data.sicurezza;
     A.setTitle("Sicurezza e numeri utili");
     A.page(
@@ -164,6 +265,7 @@
         '<div class="card"><h2 class=h-sub>Violenza e stalking</h2><p>' + esc(S.violenza) + "</p></div>" +
       "</div>" +
 
+      '<div class="card mt-2" id="pianoSicurezzaCard"><div class="btn-row" style="justify-content:space-between;align-items:center;gap:1rem"><div><h2 class="h-sub" style="margin-bottom:.2rem">Il mio piano di sicurezza</h2><p class="text-small mb-0">Segnali, primi passi, persone da chiamare, ambiente e una ragione: lo compili tu, resta sul dispositivo e si stampa.</p></div><a class="btn btn-soft btn-sm" href="#/sicurezza/piano">Apri il piano</a></div></div>' +
       '<div class="callout warn mt-2"><p><strong>Nota.</strong> ' + esc(S.nota) + "</p></div>" +
       '<div class="callout info"><p><strong>Se stai leggendo per un\'altra persona:</strong> non lasciarla sola, ascolta senza giudicare, non promettere segreti che riguardano la sua sicurezza e aiutala a contattare un professionista. In pericolo immediato: 112.</p></div>' +
       '<div class="btn-row mt-2"><a class="btn btn-primary" href="#/neura">Parla con Neura</a><a class="btn btn-ghost" href="#/colloquio">Colloquio</a></div>'
@@ -691,7 +793,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.9 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.10 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -759,6 +861,7 @@
           A.writeJSON("thoughts", Array.isArray(data.thoughts) ? data.thoughts : []);
           A.writeJSON("storicoPunteggi", data.storicoPunteggi && typeof data.storicoPunteggi === "object" &&
             !Array.isArray(data.storicoPunteggi) ? data.storicoPunteggi : {});
+          A.writeJSON("pianoSicurezza", data.pianoSicurezza && typeof data.pianoSicurezza === "object" ? data.pianoSicurezza : null);
           A.saveIntake(); A.saveScales(); A.saveDiary(); A.saveCourse(); A.saveQuizStats(); A.saveReportNotes();
           A.toast("Backup importato" + (esito.migrato ? " e aggiornato al formato attuale." : "."));
           A.render();

@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.9**, 19 novembre 2026.
+Ultimo aggiornamento: versione **1.7.10**, 19 novembre 2026.
 
 ---
 
@@ -50,6 +50,7 @@ Punti fermi dell'impianto:
 8. **I metadati non sono dati della persona.** La data dell'ultima esportazione (`segnaBackup`) si scrive con `localStorage.setItem` diretto: se fallisce non deve finire nella coda dei salvataggi rimasti fuori, o il prossimo salvataggio vero si confonde.
 9. **Chi non vede lo schermo deve sapere dov'è.** Al cambio di pagina il titolo riceve il focus (`tabindex="-1"`) e `#annuncioRotta` annuncia il caricamento. Il focus si sposta **solo** al cambio rotta: spostarlo a ogni ridisegno porta via il cursore a chi sta scrivendo.
 10. **Niente serie, punteggi-premio o confronti sociali.** Il diario propone, non rimprovera: gli inviti dicono un fatto e offrono un gesto piccolo. È una scelta deontologica, non estetica.
+11. **Il piano di sicurezza è un modulo, non un testo.** I cinque campi e i tre contatti li compila la persona: il programma non precompila consigli né interpreta quello che legge. Vive in `localStorage` (`pianoSicurezza`), entra in `raccogliDati`, nel ripristino e nell'anteprima delle copie, e si stampa anche vuoto.
 
 ---
 
@@ -105,7 +106,7 @@ Il push su `main` passa con «Bypassed rule violations» perché il check richie
 
 ```bash
 gh api repos/danilodauria/psicologo-digitale/releases/tags/psd-vNEW.VER \
-  --jq '.assets | length'                       # atteso: 13
+  --jq '.assets | length'                       # atteso: 14
 gh api repos/danilodauria/psicologo-digitale/actions/runs \
   --jq '.workflow_runs[0] | "\(.name) \(.conclusion)"'   # sei job verdi
 curl -s https://danilodauria.github.io/psicologo-digitale/sw.js | grep psd-vNEW.VER
@@ -121,7 +122,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 593 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 608 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -133,7 +134,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 
 Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono.
 
-Numeri aggiornati a ogni `npm test`: 19 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
+Numeri aggiornati a ogni `npm test`: 20 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
 
 ---
 

@@ -101,7 +101,7 @@ endobj
 endobj
 14 0 obj
 <<
-/Author (Danilo D'Auria) /CreationDate (D:20261119141229+00'00') /Creator (scripts/build_prove_a_mano_pdf.py) /Keywords () /ModDate (D:20261119141229+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Danilo D'Auria) /CreationDate (D:20261119143042+00'00') /Creator (scripts/build_prove_a_mano_pdf.py) /Keywords () /ModDate (D:20261119143042+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (Prove da fare a mano prima di considerare chiusa una release) /Title (Psicologo Digitale \267 Prove a mano) /Trapped /False
 >>
 endobj
@@ -112,7 +112,7 @@ endobj
 endobj
 16 0 obj
 <<
-/Length 7296
+/Length 7365
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -120,18 +120,18 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Prove a mano) Tj T* ET
-BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.7.9) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.10) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
-BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.9.md) Tj T* ET
+BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.10.md) Tj T* ET
 BT 1 0 0 1 515.0984 31.1811 Tm (pagina 1) Tj T* ET
 Q
 q
 1 0 0 1 57.02362 748.5276 cm
 q
 .133333 .203922 .360784 rg
-BT 1 0 0 1 0 4 Tm /F2 21 Tf 25 TL (Prove a mano \267 versione 1.7.9) Tj T* ET
+BT 1 0 0 1 0 4 Tm /F2 21 Tf 25 TL (Prove a mano \267 versione 1.7.10) Tj T* ET
 Q
 Q
 q
@@ -140,14 +140,14 @@ Q
 q
 1 0 0 1 57.02362 699.7276 cm
 q
-BT 1 0 0 1 0 30.9 Tm 1.202029 Tw 13.6 TL /F1 9.9 Tf 0 0 0 rg (Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un) Tj T* 0 Tw .380484 Tw (telefono, il messaggio che compare al momento giusto. Sono sessantadue prove, un quarto d'ora in tutto, da) Tj T* 0 Tw (fare ) Tj /F2 9.9 Tf (prima) Tj /F1 9.9 Tf ( di considerare chiusa una release.) Tj T* ET
+BT 1 0 0 1 0 30.9 Tm 1.202029 Tw 13.6 TL /F1 9.9 Tf 0 0 0 rg (Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un) Tj T* 0 Tw .47977 Tw (telefono, il messaggio che compare al momento giusto. Sono sessantacinque prove, un quarto d'ora in tutto,) Tj T* 0 Tw (da fare ) Tj /F2 9.9 Tf (prima) Tj /F1 9.9 Tf ( di considerare chiusa una release.) Tj T* ET
 Q
 Q
 q
 1 0 0 1 57.02362 560.7276 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 126.1 Tm /F1 9.9 Tf 13.6 TL .767758 Tw (Vale dalla 1.4.0 alla 1.7.9. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la) Tj T* 0 Tw .014578 Tw (1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8,) Tj T* 0 Tw .588566 Tw (sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul) Tj T* 0 Tw -0.052508 Tw (movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due) Tj T* 0 Tw .079158 Tw (della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della) Tj T* 0 Tw .676865 Tw (sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione) Tj T* 0 Tw 1.389427 Tw (nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della) Tj T* 0 Tw 1.299608 Tw (sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui) Tj T* 0 Tw .856571 Tw (sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due) Tj T* 0 Tw (della sezione 18, sull'uscita rapida.) Tj T* ET
+BT 1 0 0 1 0 126.1 Tm /F1 9.9 Tf 13.6 TL .461958 Tw (Vale dalla 1.4.0 alla 1.7.10. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la) Tj T* 0 Tw .014578 Tw (1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8,) Tj T* 0 Tw .588566 Tw (sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul) Tj T* 0 Tw -0.052508 Tw (movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due) Tj T* 0 Tw .079158 Tw (della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della) Tj T* 0 Tw .676865 Tw (sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione) Tj T* 0 Tw 1.389427 Tw (nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della) Tj T* 0 Tw 1.299608 Tw (sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui) Tj T* 0 Tw .856571 Tw (sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due) Tj T* 0 Tw (della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza.) Tj T* ET
 Q
 Q
 q
@@ -266,7 +266,7 @@ endstream
 endobj
 17 0 obj
 <<
-/Length 16363
+/Length 16365
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -274,11 +274,11 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Prove a mano) Tj T* ET
-BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.7.9) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.10) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
-BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.9.md) Tj T* ET
+BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.10.md) Tj T* ET
 BT 1 0 0 1 515.0984 31.1811 Tm (pagina 2) Tj T* ET
 Q
 q
@@ -1053,7 +1053,7 @@ endstream
 endobj
 18 0 obj
 <<
-/Length 12918
+/Length 12920
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1061,11 +1061,11 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Prove a mano) Tj T* ET
-BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.7.9) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.10) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
-BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.9.md) Tj T* ET
+BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.10.md) Tj T* ET
 BT 1 0 0 1 515.0984 31.1811 Tm (pagina 3) Tj T* ET
 Q
 q
@@ -1709,7 +1709,7 @@ endstream
 endobj
 19 0 obj
 <<
-/Length 15002
+/Length 15004
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1717,11 +1717,11 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Prove a mano) Tj T* ET
-BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.7.9) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.10) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
-BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.9.md) Tj T* ET
+BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.10.md) Tj T* ET
 BT 1 0 0 1 515.0984 31.1811 Tm (pagina 4) Tj T* ET
 Q
 q
@@ -2477,7 +2477,7 @@ endstream
 endobj
 20 0 obj
 <<
-/Length 13178
+/Length 13180
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -2485,11 +2485,11 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Prove a mano) Tj T* ET
-BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.7.9) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.10) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
-BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.9.md) Tj T* ET
+BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.10.md) Tj T* ET
 BT 1 0 0 1 515.0984 31.1811 Tm (pagina 5) Tj T* ET
 Q
 q
@@ -3096,7 +3096,7 @@ endstream
 endobj
 21 0 obj
 <<
-/Length 9639
+/Length 13019
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -3104,11 +3104,11 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Prove a mano) Tj T* ET
-BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.7.9) Tj T* ET
+BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.10) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
-BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.9.md) Tj T* ET
+BT 1 0 0 1 51.02362 31.1811 Tm (github.com/danilodauria/psicologo-digitale/blob/main/PROVE-A-MANO-1.7.10.md) Tj T* ET
 BT 1 0 0 1 515.0984 31.1811 Tm (pagina 6) Tj T* ET
 Q
 q
@@ -3425,24 +3425,177 @@ q
 1 0 0 1 57.02362 472.5276 cm
 q
 .133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (19. Piano di sicurezza personale \(dalla 1.7.10\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.02362 338.5276 cm
+q
+.968627 .960784 .937255 rg
+n 0 129 493.2283 -15 re f*
+1 1 1 rg
+n 0 114 493.2283 -44.8 re f*
+.984314 .980392 .968627 rg
+n 0 69.2 493.2283 -34.6 re f*
+1 1 1 rg
+n 0 34.6 493.2283 -34.6 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 4 116 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.4 Tm /F2 8.6 Tf 11 TL (Fatto) Tj T* ET
+Q
+Q
+q
+1 0 0 1 35.1811 116 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.4 Tm /F2 8.6 Tf 11 TL (Prova) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 116 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2.4 Tm /F2 8.6 Tf 11 TL (Risultato atteso) Tj T* ET
+Q
+Q
+q
+1 0 0 1 11.29055 103.4 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 J
+1 j
+.356863 .392157 .447059 RG
+.7 w
+n 0 8.6 m 8.6 8.6 l S
+n 0 0 m 8.6 0 l S
+n 0 0 m 0 8.6 l S
+n 8.6 0 m 8.6 8.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 35.1811 71.2 cm
+q
+BT 1 0 0 1 0 32.3 Tm 10.2 TL /F1 8.5 Tf 0 0 0 rg (19.1 Apri ) Tj /F2 8.5 Tf (Sicurezza) Tj /F1 8.5 Tf ( -) Tj (> ) Tj /F2 8.5 Tf (Il mio piano di) Tj T* (sicurezza) Tj /F1 8.5 Tf ( -) Tj (> ) Tj /F2 8.5 Tf (Apri il piano) Tj /F1 8.5 Tf (. Compila i) Tj T* (cinque campi e almeno un contatto, poi) Tj T* (premi ) Tj /F2 8.5 Tf (Salva il piano) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 91.6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 11.9 Tm /F1 8.5 Tf 10.2 TL (Compare \253Piano salvato\273. Ricaricando la pagina i valori sono ancora l\354,) Tj T* (compresi nome e numero; il piano non \350 stato mandato a nessuno) Tj T* ET
+Q
+Q
+q
+1 0 0 1 11.29055 58.6 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 J
+1 j
+.356863 .392157 .447059 RG
+.7 w
+n 0 8.6 m 8.6 8.6 l S
+n 0 0 m 8.6 0 l S
+n 0 0 m 0 8.6 l S
+n 8.6 0 m 8.6 8.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 35.1811 46.8 cm
+q
+BT 1 0 0 1 0 11.9 Tm 10.2 TL /F1 8.5 Tf 0 0 0 rg (19.2 Svuota i campi e premi ) Tj /F2 8.5 Tf (Stampa il) Tj T* (piano) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 36.6 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 22.1 Tm /F1 8.5 Tf 10.2 TL (L'anteprima di stampa mostra il foglio con i cinque titoli e le righe vuote da) Tj T* -0.095318 Tw (riempire a penna, senza frasi di consiglio gi\340 scritte. Sulla carta non compaiono) Tj T* 0 Tw (testata, menu, modulo n\351 pulsanti) Tj T* ET
+Q
+Q
+q
+1 0 0 1 11.29055 24 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 J
+1 j
+.356863 .392157 .447059 RG
+.7 w
+n 0 8.6 m 8.6 8.6 l S
+n 0 0 m 8.6 0 l S
+n 0 0 m 0 8.6 l S
+n 8.6 0 m 8.6 8.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 35.1811 2 cm
+q
+BT 1 0 0 1 0 22.1 Tm 10.2 TL /F1 8.5 Tf 0 0 0 rg (19.3 Con il piano compilato esporta un) Tj T* (backup da ) Tj /F2 8.5 Tf (Licenze e progetto) Tj /F1 8.5 Tf (; poi) Tj T* (cancella tutti i dati e importa il file) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 12.2 cm
+q
+BT 1 0 0 1 0 11.9 Tm 10.2 TL /F1 8.5 Tf 0 0 0 rg (Il piano torna com'era, contatti compresi. Prima di ripristinare, l'anteprima) Tj T* (nomina anche ) Tj /F2 8.5 Tf (Piano di sicurezza) Tj /F1 8.5 Tf (, cos\354 si sa che il file lo contiene) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.4 w
+n 0 129 m 493.2283 129 l S
+n 0 0 m 493.2283 0 l S
+n 0 0 m 0 129 l S
+n 493.2283 0 m 493.2283 129 l S
+n 0 114 m 493.2283 114 l S
+n 0 69.2 m 493.2283 69.2 l S
+n 0 34.6 m 493.2283 34.6 l S
+n 31.1811 0 m 31.1811 129 l S
+n 188.2772 0 m 188.2772 129 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 333.5276 cm
+Q
+q
+1 0 0 1 57.02362 304.5276 cm
+q
+.133333 .203922 .360784 rg
 BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Se qualcosa non torna) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 426.7276 cm
+1 0 0 1 57.02362 258.7276 cm
 q
 BT 1 0 0 1 0 30.9 Tm .116426 Tw 13.6 TL /F1 9.9 Tf 0 0 0 rg (Annota, senza correggere niente a mano: la versione \(pagina ) Tj /F2 9.9 Tf (Versioni e novit\340) Tj /F1 9.9 Tf (\), il dispositivo e il browser, la) Tj T* 0 Tw .102608 Tw (prova \(per esempio \2533.3\273\), i passi e ) Tj /F2 9.9 Tf (cosa \350 successo invece) Tj /F1 9.9 Tf ( di quello atteso. Se il problema riguarda un file) Tj T* 0 Tw (importato, allega il file di prova \() Tj /F3 8.6 Tf (prova-1.4.0.json) Tj /F1 9.9 Tf (\), ) Tj /F2 9.9 Tf (mai un backup vero) Tj /F1 9.9 Tf (: contiene dati personali.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 397.7276 cm
+1 0 0 1 57.02362 229.7276 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Esito) Tj T* ET
 Q
 Q
 q
-1 0 0 1 51.02362 363.5276 cm
+1 0 0 1 51.02362 195.5276 cm
 q
 .968627 .960784 .937255 rg
 n 0 29.2 493.2283 -15 re f*
@@ -3495,14 +3648,14 @@ q
 1 0 0 1 150.6929 2 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL (1.7.9) Tj T* ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL (1.7.10) Tj T* ET
 Q
 Q
 q
 1 0 0 1 266.2047 2 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL (/62) Tj T* ET
+BT 1 0 0 1 0 1.7 Tm /F1 8.5 Tf 10.2 TL (/65) Tj T* ET
 Q
 Q
 q
@@ -3526,21 +3679,21 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 358.5276 cm
+1 0 0 1 57.02362 190.5276 cm
 Q
 q
-1 0 0 1 57.02362 350.5276 cm
+1 0 0 1 57.02362 182.5276 cm
 Q
 q
-1 0 0 1 57.02362 312.7276 cm
+1 0 0 1 57.02362 144.7276 cm
 q
 BT 1 0 0 1 0 28.6 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Questo foglio non sostituisce i test.) Tj /F1 9.2 Tf ( I controlli automatici \() Tj /F3 8.6 Tf (npm test) Tj /F1 9.2 Tf (\) coprono dati, interfaccia, collegamenti,) Tj T* (accessibilit\340 e testi; qui resta quello che solo una persona pu\362 vedere e sentire: la voce che parte, la pagina su un) Tj T* (telefono, il messaggio che compare al momento giusto.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 285.5276 cm
+1 0 0 1 57.02362 117.5276 cm
 q
-BT 1 0 0 1 0 16 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Il foglio nasce da ) Tj /F3 8.6 Tf (PROVE-A-MANO-1.7.9.md) Tj /F1 9.2 Tf (: se una prova cambia, cambiano il markdown e questo PDF insieme,) Tj T* (rigenerandolo con ) Tj /F3 8.6 Tf (scripts/build_prove_a_mano_pdf.py) Tj /F1 9.2 Tf (.) Tj T* ET
+BT 1 0 0 1 0 16 Tm 12.6 TL /F1 9.2 Tf 0 0 0 rg (Il foglio nasce da ) Tj /F3 8.6 Tf (PROVE-A-MANO-1.7.10.md) Tj /F1 9.2 Tf (: se una prova cambia, cambiano il markdown e questo PDF insieme,) Tj T* (rigenerandolo con ) Tj /F3 8.6 Tf (scripts/build_prove_a_mano_pdf.py) Tj /F1 9.2 Tf (.) Tj T* ET
 Q
 Q
  
@@ -3565,15 +3718,15 @@ xref
 0000002183 00000 n 
 0000002551 00000 n 
 0000002644 00000 n 
-0000009992 00000 n 
-0000026408 00000 n 
-0000039379 00000 n 
-0000054434 00000 n 
-0000067665 00000 n 
+0000010061 00000 n 
+0000026479 00000 n 
+0000039452 00000 n 
+0000054509 00000 n 
+0000067742 00000 n 
 trailer
 <<
 /ID 
-[<5c2935f64c2f4ba21b750c68b191826a><5c2935f64c2f4ba21b750c68b191826a>]
+[<bcf0dbdd55852968de0454810b035e59><bcf0dbdd55852968de0454810b035e59>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 14 0 R
@@ -3581,5 +3734,5 @@ trailer
 /Size 22
 >>
 startxref
-77356
+80814
 %%EOF

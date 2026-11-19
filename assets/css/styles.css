@@ -180,6 +180,22 @@ body.nuova-scheda .page.wrap { max-width: none; margin: 0; padding: 0; }
 .nuova-scheda-ora { margin: 0; font-size: clamp(3.5rem, 14vw, 7rem); font-weight: 200; line-height: 1; letter-spacing: -.02em; }
 .nuova-scheda-data { margin: 0; font-size: clamp(.95rem, 2.4vw, 1.15rem); color: #5f6368; }
 
+/* Piano di sicurezza: un modulo, non un testo da leggere. A schermo si compila;
+   sulla carta esce il foglio con le righe vuote per chi preferisce la penna. */
+.piano-area { width: 100%; min-height: 4.6rem; resize: vertical; font: inherit; line-height: 1.5; }
+.piano-contatti { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: .4rem; }
+.piano-contatto { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; padding: .7rem; border: 1px solid var(--line); border-radius: 12px; }
+@media (max-width: 860px) { .piano-contatti { grid-template-columns: 1fr; } }
+.piano-stampa { color: #111; }
+.piano-titolo { font-family: var(--serif, Georgia, serif); font-size: 1.6rem; font-weight: 600; line-height: 1.2; margin: 0 0 .2rem; }
+.piano-nota { font-size: .82rem; color: #444; margin: 0 0 1.2rem; }
+.piano-voce { break-inside: avoid; margin: 0 0 1.1rem; }
+.piano-voce h2 { font-size: 1rem; margin: 0 0 .3rem; }
+.piano-testo { margin: 0; min-height: 1.4rem; line-height: 1.5; }
+.piano-riga { display: inline-block; min-width: 8rem; min-height: 1.2em; border-bottom: 1px solid #777; vertical-align: bottom; }
+.piano-contatti-stampa { list-style: none; padding: 0; margin: 0; }
+.piano-contatti-stampa li { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: .55rem; }
+
 .skip-link {
   position: absolute;
   left: -9999px;

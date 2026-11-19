@@ -228,6 +228,23 @@ ok(NP.data.sicurezza.numeri.some((n) => n.numero === "19696"), "è presente Tele
 ok(NP.data.sicurezza.segnali.length >= 6, "sono elencati i segnali d'allarme");
 ok(NP.data.sicurezza.cosaFare.length >= 5, "sono indicate le azioni immediate");
 
+/* Piano di sicurezza personale ------------------------------------------------ */
+
+// Il piano è un modulo, non un testo consigliato: cinque campi compilati dalla
+// persona, salvati in locale, stampabili anche vuoti. Viaggia nel backup e nel
+// ripristino come gli altri dati, o sarebbe l'unico a potersi perdere.
+const pianoVista = read("assets/js/app-views.js");
+ok(/params\[0\] === "piano"/.test(pianoVista) && /id="pianoForm"/.test(pianoVista), "il piano di sicurezza è una pagina del programma");
+["pianoSegnali", "pianoPrimiMinuti", "pianoAmbiente", "pianoRagione"].forEach(function (id) {
+  ok(pianoVista.indexOf('campo("' + id + '"') >= 0, "il piano ha il campo " + id);
+});
+ok(/pianoNome' \+ i/.test(pianoVista) && /pianoTel' \+ i/.test(pianoVista), "il piano ha i contatti da chiamare");
+ok(/A\.writeJSON\("pianoSicurezza", dati\)/.test(pianoVista), "il piano si salva in locale");
+ok(/solo-stampa piano-stampa/.test(pianoVista) && /window\.print\(\)/.test(pianoVista), "il piano si stampa, con un foglio suo");
+ok(/pianoSicurezza: readJSON\("pianoSicurezza", null\)/.test(read("assets/js/app.js")), "il piano entra nel backup");
+ok(/writeJSON\("pianoSicurezza", d\.pianoSicurezza/.test(read("assets/js/app.js")), "e torna al suo posto con un ripristino");
+ok(/pianoHaContenuto/.test(read("assets/js/app.js")) && /pianoSicurezza: "Piano di sicurezza"/.test(read("assets/js/app.js")), "il piano conta come dato e ha un nome nello spazio occupato");
+
 /* Uscita rapida ------------------------------------------------------------ */
 
 // Chi ha bisogno di sparire non deve cercare un pulsante fra i numeri, e la
@@ -436,7 +453,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.9.md");
+const proveMd = read("PROVE-A-MANO-1.7.10.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -447,7 +464,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 62, "il markdown elenca sessantadue prove (" + etichette.length + ")");
+ok(etichette.length === 65, "il markdown elenca sessantacinque prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
