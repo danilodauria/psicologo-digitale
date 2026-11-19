@@ -575,7 +575,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.1 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -772,9 +772,17 @@
   // troppi per essere attraversati a mano quando si cerca una parola sola.
   function indiceContenuti() {
     const voci = [];
+    // Il titolo non entra nel testo da cui si ricava l'estratto: è già scritto
+    // sopra il risultato, e incollato al sommario faceva sembrare che la prima
+    // frase cominciasse con lui («Ansia L'ansia è…»). Quello che si cerca è il
+    // corpo, con un a capo fra un pezzo e l'altro: per estratto() l'a capo è
+    // anche un confine di frase, quindi la riga sotto un titolo non si porta
+    // dietro il titolo della sezione.
     (NP.data.manuale || []).forEach(function (c) {
-      const testo = [c.titolo, c.sommario].concat(c.sezioni.map(function (s) { return s.h + " " + s.p.join(" "); })).join(" ");
-      voci.push({ tipo: "Capitolo " + c.n, titolo: c.titolo, testo: testo, rotta: "#/manuale/" + c.id });
+      const corpo = [c.sommario].concat(c.sezioni.map(function (s) {
+        return [s.h].concat(s.p).join("\n");
+      })).join("\n");
+      voci.push({ tipo: "Capitolo " + c.n, titolo: c.titolo, testo: corpo, rotta: "#/manuale/" + c.id });
     });
     (NP.data.glossario || []).forEach(function (v) {
       voci.push({ tipo: "Glossario", titolo: v.t, testo: v.d, rotta: "#/glossario" });
@@ -782,7 +790,7 @@
     const esercizi = (NP.data.percorso && Array.isArray(NP.data.percorso.esercizi)) ? NP.data.percorso.esercizi : [];
     esercizi.forEach(function (e) {
       if (!e || typeof e !== "object" || !e.id) return;
-      voci.push({ tipo: "Esercizio", titolo: e.titolo || e.id, testo: [e.titolo, e.testo, e.durata].join(" "), rotta: "#/esercizi/" + e.id });
+      voci.push({ tipo: "Esercizio", titolo: e.titolo || e.id, testo: [e.testo, e.durata].filter(function (parte) { return !!parte; }).join("\n"), rotta: "#/esercizi/" + e.id });
     });
     return voci;
   }
@@ -916,8 +924,9 @@
       (risultati.length
         ? '<div class="card mt-2 cerca-contenuti"><h2 class="h-sub">Nei contenuti · ' + risultati.length + (risultati.length === 1 ? " risultato" : " risultati") + '</h2><ul class="text-small">' +
           risultati.map(function (v) {
+            const frase = estratto(v.testo, parole);
             return '<li><a href="' + v.rotta + '"><strong>' + esc(v.titolo) + "</strong></a> — " + esc(v.tipo) +
-              '<p class="text-small muted mb-0">' + estratto(v.testo, parole) + "</p></li>";
+              (frase ? '<p class="text-small muted mb-0">' + frase + "</p>" : "") + "</li>";
           }).join("") + "</ul></div>"
         : "") +
       (personali.length

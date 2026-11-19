@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.0
+# Prove a mano · versione 1.7.1
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono quarantatré prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono quarantaquattro prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.0. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto.
+Vale dalla 1.4.0 alla 1.7.1. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -118,6 +118,12 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 9.2 Scrivi nel diario una nota di due frasi, con una parola riconoscibile solo nella seconda, e cercala | L'estratto nelle tue cose è la seconda frase, intera; la prima non compare neanche parzialmente |
 | ☐ | 9.3 Attiva «Riduci il movimento» nelle impostazioni di accessibilità del sistema e riapri la home | L'orbita di Neura è ferma — niente respiro, niente anello che ruota — e i cambi pagina non hanno dissolvenze. Spegnendo l'impostazione l'animazione torna |
 
+## 10. Estratti senza titolo (dalla 1.7.1)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 10.1 Cerca `ansia` e guarda i risultati dei capitoli | Sotto il titolo del capitolo «Ansia: il corpo che suona l'allarme», e sotto ogni altro risultato, l'estratto è una frase intera che comincia da sé: non c'è il titolo incollato davanti alla prima parola («Ansia L'ansia è…»), né il titolo di una sezione sopra il paragrafo. La parola cercata resta evidenziata |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -126,4 +132,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.0 | /43 |  |
+|  |  | 1.7.1 | /44 |  |

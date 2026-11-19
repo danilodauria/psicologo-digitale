@@ -397,7 +397,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.0.md");
+const proveMd = read("PROVE-A-MANO-1.7.1.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -408,7 +408,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 43, "il markdown elenca quarantatré prove (" + etichette.length + ")");
+ok(etichette.length === 44, "il markdown elenca quarantaquattro prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -464,6 +464,14 @@ const fnEstratto = (read("assets/js/app-views.js").match(/function estratto\(tes
 ok(!!fnEstratto && /lastIndexOf\(c, primo\)/.test(fnEstratto), "l'estratto parte dal confine della frase, non da quaranta caratteri prima");
 ok(!!fnEstratto && /indexOf\(c, ultimo\)/.test(fnEstratto), "e finisce alla fine della stessa frase");
 ok(/estratto\(v\.testo, parole\)/.test(read("assets/js/app-views.js")), "anche i risultati nei contenuti mostrano la loro frase");
+
+// L'indice dei contenuti non unisce titolo e sommario in una sola stringa: se
+// lo facesse, la frase cercata comincerebbe col titolo già stampato sopra il
+// risultato («Ansia L'ansia è…») e l'estratto non sarebbe una frase vera.
+ok(!/\[c\.titolo, c\.sommario\]/.test(indiceContenuti), "l'indice dei contenuti non incolla il titolo al sommario");
+ok(/const corpo = \[c\.sommario\]/.test(indiceContenuti), "il testo da cui nasce l'estratto comincia dal sommario, non dal titolo");
+ok(/join\("\\n"\)/.test(indiceContenuti), "e i pezzi sono separati da un a capo, che è anche un confine di frase");
+ok(!/\[e\.titolo, e\.testo, e\.durata\]/.test(indiceContenuti), "anche gli esercizi tengono il titolo fuori dal testo dell'estratto");
 
 /* Riepilogo: periodo scelto e stampa ---------------------------------------- */
 

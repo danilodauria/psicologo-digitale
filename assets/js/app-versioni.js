@@ -13,11 +13,20 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.0";
+  const VERSIONE = "1.7.1";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.1",
+      data: "19 novembre 2026",
+      titolo: "L'estratto comincia dalla frase, non dal titolo",
+      punti: [
+        "Nei risultati della ricerca, sotto il titolo del capitolo, la frase compariva con il titolo incollato davanti: cercando «ansia» si leggeva «Ansia L'ansia è…». Non era un errore di visualizzazione: l'indice dei contenuti univa titolo e sommario in una riga sola, e l'estratto partiva dalla prima parola che trovava, cioè dal titolo che era già scritto sopra.",
+        "Ora il titolo resta fuori dal testo da cui nasce l'estratto, e i pezzi che lo compongono — sommario, titoli di sezione, paragrafi — sono separati da un a capo, che vale come confine di frase. Ogni risultato mostra una frase intera che comincia da sé, senza ripetere quello che si è già letto nel titolo."
+      ]
+    },
     {
       v: "1.7.0",
       data: "17 novembre 2026",

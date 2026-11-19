@@ -1234,6 +1234,24 @@ setTimeout(async function () {
   ok(!!contenutiProva && !/resta fuori/.test(contenutiProva.textContent), "e la frase di prima resta fuori");
   capitoloProva.sezioni[0].p = paragrafiProva;
 
+  // Il titolo è già scritto sopra l'estratto: se l'indice lo incolla al
+  // sommario, la prima frase comincia con una parola che non è una frase e
+  // sembra che il titolo faccia parte di quello che si legge sotto. La frase
+  // deve cominciare da sé, e non portarsi dietro il titolo della sezione.
+  const capitoloTitolo = NP.data.manuale[0];
+  const paragrafiTitolo = capitoloTitolo.sezioni[0].p;
+  capitoloTitolo.sezioni[0].p = ["Una frase che resta fuori.", "La parola ottovolante sta dentro una frase vera."];
+  navigate("#/cerca/ottovolante");
+  const voceTitolo = Array.prototype.filter.call(document.querySelectorAll("#app .cerca-contenuti li"), function (li) {
+    const link = li.querySelector("a");
+    return !!link && link.getAttribute("href") === "#/manuale/" + capitoloTitolo.id;
+  })[0];
+  const fraseTitolo = voceTitolo && voceTitolo.querySelector("p");
+  ok(!!fraseTitolo && /^(… )?La parola <mark>ottovolante<\/mark> sta dentro una frase vera\./.test(fraseTitolo.innerHTML), "l'estratto comincia dalla frase che contiene la parola, senza niente davanti");
+  ok(!!fraseTitolo && fraseTitolo.textContent.indexOf(capitoloTitolo.titolo) < 0, "e non ripete il titolo, che è già scritto nel risultato");
+  ok(!!fraseTitolo && !/Non è un esame/.test(fraseTitolo.textContent), "né il titolo della sezione sopra la frase");
+  capitoloTitolo.sezioni[0].p = paragrafiTitolo;
+
   // La ricerca copre anche le cose scritte dalla persona, in una sezione sua:
   // diario, schede del pensiero e note del percorso, con un estratto e un
   // collegamento che porta alla voce.
