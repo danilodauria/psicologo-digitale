@@ -57,6 +57,53 @@ NP.data.glossario = [
   { t: "Confine", d: "Limite che definisce ciò che è accettabile per sé in una relazione, espresso senza attaccare l'altro.", cat: "Relazioni" }
 ];
 
+// Sinonimi della ricerca, curati a mano. Ogni riga è un gruppo di parole che,
+// per questo programma, parlano della stessa cosa: cercare «dormire» deve
+// trovare il capitolo sul sonno anche se la parola «dormire» non c'è. Non è
+// un motore semantico e non vuole esserlo: fuori da questa tabella la ricerca
+// resta letterale, e la pagina lo dice. Un termine sta in un gruppo solo:
+// duplicarlo renderebbe ambigua l'espansione della ricerca.
+NP.data.sinonimi = [
+  ["sonno", "sonni", "dormire", "dorme", "dormi", "dormito", "dormendo", "insonnia", "insonnie", "riposo", "riposare"],
+  ["ansia", "ansie", "ansioso", "ansiosa", "ansiosi", "ansiose", "ansiosamente"],
+  ["depressione", "depressioni", "depresso", "depressa", "depressi", "depresse", "tristezza", "triste", "tristi"],
+  ["umore", "umori"],
+  ["stress", "stressato", "stressata", "stressati", "stressate", "tensione", "tensioni"],
+  ["burnout", "esaurimento", "esaurito", "esaurita", "esauriti", "esaurite"],
+  ["preoccupazione", "preoccupazioni", "preoccupato", "preoccupata", "preoccupati", "preoccupate", "rimuginio", "rimuginare"],
+  ["paura", "paure", "spavento", "spaventato", "spaventata", "terrorizzato", "terrorizzata"],
+  ["panico", "attacco di panico", "attacchi di panico"],
+  ["rabbia", "rabbie", "arrabbiato", "arrabbiata", "arrabbiati", "arrabbiate", "collera"],
+  ["colpa", "colpe", "colpevole", "colpevoli", "colpevolizzarsi"],
+  ["vergogna", "vergogne", "imbarazzo", "imbarazzato", "imbarazzata", "imbarazzanti"],
+  ["lutto", "lutti", "cordoglio", "vedovanza"],
+  ["trauma", "traumi", "traumatico", "traumatica", "traumatici", "ptsd", "post-traumatico", "post-traumatica"],
+  ["respiro", "respiri", "respirazione", "respirare", "respirato", "respirando"],
+  ["alimentazione", "alimentare", "alimentari", "cibo", "cibi", "mangiare", "mangio", "mangiato", "dieta", "diete", "nutrizione"],
+  ["movimento", "muoversi", "attività fisica", "camminare", "camminata", "camminate", "palestra"],
+  ["caffeina", "caffè", "caffe"],
+  ["alcol", "alcolici", "alcool", "bere", "bevuto", "ubriaco", "ubriaca"],
+  ["sostanze", "sostanza", "droga", "droghe", "stupefacenti", "cannabis", "cocaina"],
+  ["farmaci", "farmaco", "medicinali", "medicinale", "psicofarmaci", "antidepressivi", "antidepressivo"],
+  ["psicologo", "psicologa", "psicologi", "psicologhe", "psicoterapeuta", "psicoterapeuti", "terapeuta", "terapeuti"],
+  ["terapia", "terapie", "terapeutico", "terapeutica", "trattamento", "trattamenti"],
+  ["lavoro", "lavori", "lavorativo", "lavorativa", "impiego", "ufficio", "azienda"],
+  ["relazione", "relazioni", "legame", "legami", "coppia", "coppie", "partner", "famiglia", "famiglie", "familiare", "familiari"],
+  ["solitudine", "isolamento", "isolato", "isolata", "solitario", "solitaria"],
+  ["autostima", "autoefficacia", "fiducia in sé", "sicurezza di sé", "valore personale"],
+  ["corpo", "corpi", "fisico", "fisica", "somatico", "somatica", "somatici"],
+  ["morte", "morti", "morire", "suicidio", "suicidi", "suicidario", "suicidaria"],
+  ["autolesionismo", "autolesionista", "autolesionisti", "farsi del male", "tagliarsi"],
+  ["genitori", "genitore", "madre", "madri", "padre", "padri", "figlio", "figli", "figlia", "figlie"],
+  ["adolescente", "adolescenti", "ragazzo", "ragazza", "ragazzi", "ragazze", "minore", "minori"],
+  ["memoria", "memorie", "ricordi", "ricordo", "ricordare"],
+  ["concentrazione", "concentrarsi", "attenzione", "distrazione", "distratto", "distratta"],
+  ["energia", "energie", "stanchezza", "stanco", "stanca", "stanchi", "stanche", "affaticamento"],
+  ["piacere", "piaceri", "interesse", "interessi", "anedonia", "gratificante"],
+  ["crisi", "emergenza", "emergenze", "urgenza", "urgente"],
+  ["violenza", "violenze", "abuso", "abusi", "maltrattamento", "maltrattamenti", "stalking"]
+];
+
 NP.data.sicurezza = {
   introduzione: "Se c'è un pericolo immediato per la tua vita o per quella di un'altra persona, chiama il 112. Non aspettare di avere le parole giuste: il 112 risponde anche per emergenze psicologiche.",
   numeri: [

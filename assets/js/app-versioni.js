@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.6";
+  const VERSIONE = "1.7.7";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.7",
+      data: "19 novembre 2026",
+      titolo: "La ricerca capisce anche qualche sinonimo",
+      punti: [
+        "Cercare «dormire» non trovava il capitolo sul sonno, e «ansioso» non trovava l'ansia: la ricerca confrontava le lettere, e chi usa la parola comune restava senza risultati. Ora una tabella curata a mano fa valere l'una per l'altra le parole con cui si parla della stessa cosa, anche nelle cose che hai scritto.",
+        "La tabella è di trentotto gruppi — sonno, ansia, umore, stress, lutto, respiro, cibo, farmaci, terapia, lavoro, relazioni e altri — e sta nei dati, non nel motore: si legge e si corregge senza toccare la ricerca. Un termine sta in un gruppo solo, così l'espansione non diventa ambigua; i test lo controllano.",
+        "Non è un'intelligenza e non finge di esserlo: fuori dalla tabella la ricerca resta letterale, e la pagina lo dice. L'estratto evidenzia la parola che c'è davvero nel testo — «sonno» quando hai cercato «dormire» — invece di lasciare il risultato senza il pezzo che lo giustifica."
+      ]
+    },
     {
       v: "1.7.6",
       data: "19 novembre 2026",

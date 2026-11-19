@@ -421,7 +421,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.6.md");
+const proveMd = read("PROVE-A-MANO-1.7.7.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -432,7 +432,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 54, "il markdown elenca cinquantaquattro prove (" + etichette.length + ")");
+ok(etichette.length === 56, "il markdown elenca cinquantasei prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -471,6 +471,32 @@ ok(/function cercaPersonale/.test(read("assets/js/app-views.js")), "le cose scri
 ok(/Nelle tue cose/.test(read("assets/js/app-views.js")), "i risultati personali stanno in una sezione loro");
 ok(/nessuna parola esce da qui/.test(read("assets/js/app-views.js")), "la pagina dice che la ricerca resta sul dispositivo");
 
+/* Sinonimi curati a mano ---------------------------------------------------- */
+
+// La tabella sta nei dati ed è l'unica cosa che allarga la ricerca: un termine
+// in due gruppi renderebbe ambigua l'espansione, un gruppo di una parola sola
+// non servirebbe a niente, e un termine maiuscolo non incontrerebbe il testo.
+const sinonimi = NP.data.sinonimi;
+ok(Array.isArray(sinonimi) && sinonimi.length >= 20, "c'è una tabella di sinonimi con almeno venti gruppi (" + (Array.isArray(sinonimi) ? sinonimi.length : 0) + ")");
+const terminiSinonimi = [];
+let sinonimiNonValidi = "";
+(sinonimi || []).forEach(function (gruppo) {
+  if (!Array.isArray(gruppo) || gruppo.length < 2) sinonimiNonValidi = "un gruppo ha meno di due termini";
+  (gruppo || []).forEach(function (termine) {
+    if (!termine || termine !== String(termine).toLowerCase().trim()) sinonimiNonValidi = "termine non in minuscolo: «" + termine + "»";
+    if (terminiSinonimi.indexOf(termine) >= 0) sinonimiNonValidi = "termine in due gruppi: «" + termine + "»";
+    terminiSinonimi.push(termine);
+  });
+});
+ok(!sinonimiNonValidi, "ogni gruppo ha almeno due termini, tutti in minuscolo e in un gruppo solo" + (sinonimiNonValidi ? " (" + sinonimiNonValidi + ")" : ""));
+ok((sinonimi || []).some(function (g) { return g.indexOf("dormire") >= 0 && g.indexOf("sonno") >= 0; }), "«dormire» e «sonno» sono nello stesso gruppo");
+ok((sinonimi || []).some(function (g) { return g.indexOf("ansioso") >= 0 && g.indexOf("ansia") >= 0; }), "«ansioso» e «ansia» sono nello stesso gruppo");
+const cercaJs = read("assets/js/app-views.js");
+ok(/function espandiParole/.test(cercaJs) && /function contieneLeParole/.test(cercaJs), "la ricerca espande le parole con la tabella, invece di confrontarle solo alla lettera");
+ok(/contieneLeParole\(v\.titolo \+ " " \+ v\.testo/.test(cercaJs), "l'espansione vale per i contenuti del programma");
+ok(/cercaPersonale\(espansione\)/.test(cercaJs), "e per le cose scritte dalla persona");
+ok(/La ricerca capisce anche i sinonimi/.test(cercaJs) && /tabella curata a mano/.test(cercaJs), "la pagina dice che i sinonimi sono una tabella curata, non un'intelligenza");
+
 /* Diario: elenco completo, modifica e schede -------------------------------- */
 
 // Le voci restavano otto e una correzione obbligava a cancellare e riscrivere:
@@ -503,7 +529,7 @@ ok(/scroll-behavior: auto !important/.test(moto), "e si ferma anche lo scorrimen
 const fnEstratto = (read("assets/js/app-views.js").match(/function estratto\(testo, parole\) \{[\s\S]*?\n  \}/) || [""])[0];
 ok(!!fnEstratto && /lastIndexOf\(c, primo\)/.test(fnEstratto), "l'estratto parte dal confine della frase, non da quaranta caratteri prima");
 ok(!!fnEstratto && /indexOf\(c, ultimo\)/.test(fnEstratto), "e finisce alla fine della stessa frase");
-ok(/estratto\(v\.testo, parole\)/.test(read("assets/js/app-views.js")), "anche i risultati nei contenuti mostrano la loro frase");
+ok(/estratto\(v\.testo, espansione\.tutti\)/.test(read("assets/js/app-views.js")), "anche i risultati nei contenuti mostrano la loro frase");
 
 // L'indice dei contenuti non unisce titolo e sommario in una sola stringa: se
 // lo facesse, la frase cercata comincerebbe col titolo già stampato sopra il

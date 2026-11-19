@@ -1582,6 +1582,40 @@ setTimeout(async function () {
   await new Promise(function (r) { setTimeout(r, 10); });
   ok(ricaricheMute === 1, "se l'evento non arriva, la pagina si ricarica comunque una volta sola");
 
+  /* Ricerca con i sinonimi -------------------------------------------------- */
+
+  console.log("\nRicerca con i sinonimi");
+
+  const diarioPrimaDeiSinonimi = NP.app.state.diary;
+
+  navigate("#/cerca/dormire");
+  let contenutiSinonimi = document.querySelector("#app .cerca-contenuti");
+  ok(!!contenutiSinonimi && /Sonno: la riparazione notturna/.test(contenutiSinonimi.textContent), "«dormire» trova il capitolo sul sonno");
+  const evidenziateSinonimi = contenutiSinonimi ? Array.prototype.map.call(contenutiSinonimi.querySelectorAll("mark"), function (m) { return m.textContent.toLowerCase(); }) : [];
+  ok(evidenziateSinonimi.indexOf("sonno") >= 0, "e l'estratto evidenzia la parola che c'è davvero, «sonno»");
+
+  navigate("#/cerca/ansioso");
+  contenutiSinonimi = document.querySelector("#app .cerca-contenuti");
+  ok(!!contenutiSinonimi && /Ansia: il corpo che suona l'allarme/.test(contenutiSinonimi.textContent), "«ansioso» trova il capitolo sull'ansia");
+
+  navigate("#/cerca/dormito");
+  contenutiSinonimi = document.querySelector("#app .cerca-contenuti");
+  ok(!!contenutiSinonimi && /Sonno: la riparazione notturna/.test(contenutiSinonimi.textContent), "una forma del verbo porta allo stesso capitolo");
+
+  NP.app.state.diary = [{
+    id: "sin1", date: "2026-11-16", mood: 5, anxiety: 4, sleep: 3, energy: 4,
+    note: "Ho dormito poco e mi sono svegliato tre volte."
+  }];
+  navigate("#/cerca/sonno");
+  const personaleSinonimi = document.getElementById("cercaPersonale");
+  ok(!!personaleSinonimi && /dormito/.test(personaleSinonimi.textContent), "la tabella vale anche per le cose scritte: «sonno» trova «dormito»");
+  ok(!!personaleSinonimi && /<mark>dormito<\/mark>/.test(personaleSinonimi.innerHTML), "e la parola trovata è evidenziata anche lì");
+
+  navigate("#/cerca/zanzara");
+  ok(!document.querySelector("#app .cerca-contenuti"), "una parola fuori dalla tabella resta letterale, senza parenti inventati");
+
+  NP.app.state.diary = diarioPrimaDeiSinonimi;
+
   /* Diario: elenco completo, modifica, schede ------------------------------ */
 
   console.log("\nDiario: elenco, modifica e schede");

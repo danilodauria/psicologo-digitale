@@ -658,7 +658,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.6 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.7 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -938,10 +938,45 @@
     return (inizio > 0 ? "… " : "") + html + (fine < testo.length ? " …" : "");
   }
 
-  function cercaPersonale(parole) {
+  // La tabella dei sinonimi (data-extra.js) vale per tutte e due le ricerche:
+  // chi cerca «dormire» deve trovare il capitolo sul sonno, e chi cerca
+  // «sonno» deve trovare la nota in cui ha scritto «ho dormito poco». Un
+  // termine fuori dalla tabella resta sé stesso: la ricerca non indovina.
+  function gruppoDiSinonimi(parola) {
+    const gruppi = (NP.data && NP.data.sinonimi) || [];
+    for (let i = 0; i < gruppi.length; i++) {
+      if (gruppi[i].indexOf(parola) >= 0) return gruppi[i];
+    }
+    return [parola];
+  }
+
+  function espandiParole(parole) {
+    const perParola = parole.map(gruppoDiSinonimi);
+    const visti = {};
+    const tutti = [];
+    perParola.forEach(function (gruppo) {
+      gruppo.forEach(function (termine) {
+        if (visti[termine]) return;
+        visti[termine] = true;
+        tutti.push(termine);
+      });
+    });
+    // Le parole più lunghe prima: «ansiosamente» non deve essere evidenziata
+    // solo a metà da «ansia».
+    tutti.sort(function (a, b) { return b.length - a.length; });
+    return { perParola: perParola, tutti: tutti };
+  }
+
+  function contieneLeParole(testo, gruppi) {
+    const basso = String(testo || "").toLowerCase();
+    return gruppi.every(function (gruppo) {
+      return gruppo.some(function (termine) { return basso.indexOf(termine) >= 0; });
+    });
+  }
+
+  function cercaPersonale(espansione) {
     const trova = function (testo) {
-      const basso = String(testo || "").toLowerCase();
-      return parole.every(function (p) { return basso.indexOf(p) >= 0; });
+      return contieneLeParole(testo, espansione.perParola);
     };
     const voci = [];
 
@@ -951,7 +986,7 @@
       voci.push({
         etichetta: "Diario",
         dettaglio: dataBreve(v.date),
-        estratto: estratto(testo, parole),
+        estratto: estratto(testo, espansione.tutti),
         rotta: "#/diario/voce/" + encodeURIComponent(v.id)
       });
     });
@@ -966,7 +1001,7 @@
       voci.push({
         etichetta: "Scheda del pensiero",
         dettaglio: dataBreve(t.date),
-        estratto: estratto(testo, parole),
+        estratto: estratto(testo, espansione.tutti),
         rotta: "#/diario/scheda/" + encodeURIComponent(t.id)
       });
     });
@@ -980,7 +1015,7 @@
       voci.push({
         etichetta: "Nota del percorso",
         dettaglio: ex ? ex.titolo : id,
-        estratto: estratto(testo, parole),
+        estratto: estratto(testo, espansione.tutti),
         rotta: "#/esercizi/" + encodeURIComponent(id) + "/nota"
       });
     });
@@ -997,11 +1032,11 @@
   views.cerca = function (params) {
     const q = (params && params[0]) ? String(params[0]).trim() : "";
     const parole = q.toLowerCase().split(/\s+/).filter(function (p) { return p.length > 1; });
+    const espansione = espandiParole(parole);
     const risultati = !parole.length ? [] : indiceContenuti().filter(function (v) {
-      const testo = (v.titolo + " " + v.testo).toLowerCase();
-      return parole.every(function (p) { return testo.indexOf(p) >= 0; });
+      return contieneLeParole(v.titolo + " " + v.testo, espansione.perParola);
     }).slice(0, 40);
-    const personali = parole.length ? cercaPersonale(parole) : [];
+    const personali = parole.length ? cercaPersonale(espansione) : [];
     const nessuno = !!q && !risultati.length && !personali.length;
 
     A.setTitle("Cerca");
@@ -1011,14 +1046,14 @@
       '<form class="card" id="cercaForm"><label class="text-small" for="cercaInput">Parole da cercare</label>' +
         '<div class="btn-row"><input id="cercaInput" name="q" type="search" value="' + esc(q) + '" placeholder="per esempio: sonno, rimuginio, respiro" style="flex:1;min-width:12rem;padding:.5rem .7rem">' +
         '<button type="submit" class="btn btn-primary btn-sm">' + A.icon("list") + "Cerca</button></div>" +
-        '<p class="text-small muted mb-0">Si possono cercare più parole: vengono cercate tutte insieme, nei testi del programma e in quello che hai scritto.</p></form>' +
+        '<p class="text-small muted mb-0">Si possono cercare più parole: vengono cercate tutte insieme, nei testi del programma e in quello che hai scritto. La ricerca capisce anche i sinonimi più comuni: «dormire» trova il capitolo sul sonno, «ansioso» trova l\'ansia.</p></form>' +
       (nessuno
         ? '<div class="callout info mt-2"><p><strong>Nessun risultato per «' + esc(q) + '».</strong> Prova una parola più corta, o il termine clinico invece di quello comune.</p></div>'
         : "") +
       (risultati.length
         ? '<div class="card mt-2 cerca-contenuti"><h2 class="h-sub">Nei contenuti · ' + risultati.length + (risultati.length === 1 ? " risultato" : " risultati") + '</h2><ul class="text-small">' +
           risultati.map(function (v) {
-            const frase = estratto(v.testo, parole);
+            const frase = estratto(v.testo, espansione.tutti);
             return '<li><a href="' + v.rotta + '"><strong>' + esc(v.titolo) + "</strong></a> — " + esc(v.tipo) +
               (frase ? '<p class="text-small muted mb-0">' + frase + "</p>" : "") + "</li>";
           }).join("") + "</ul></div>"
@@ -1028,7 +1063,7 @@
           '<ul class="cerca-risultati">' + personali.map(vocePersonaleHTML).join("") + "</ul>" +
           '<p class="text-small muted mb-0">Sono le cose che hai scritto tu: restano su questo dispositivo e la ricerca le legge qui.</p></div>'
         : "") +
-      '<div class="card mt-2"><h2 class="h-sub">Non è un motore di ricerca</h2><p class="text-small mb-0">La ricerca confronta le parole con i testi del programma e con quello che hai scritto: se non trova niente, non significa che l\'argomento non esista, ma che non è scritto con quella parola. Per una domanda aperta c\'è Neura.</p></div>'
+      '<div class="card mt-2"><h2 class="h-sub">Non è un motore di ricerca</h2><p class="text-small mb-0">La ricerca confronta le parole con i testi del programma e con quello che hai scritto. I sinonimi sono una tabella curata a mano, non un\'intelligenza: fuori da quella tabella resta letterale, e se non trova niente non significa che l\'argomento non esista, ma che non è scritto con quella parola. Per una domanda aperta c\'è Neura.</p></div>'
     );
 
     const modulo = document.getElementById("cercaForm");
