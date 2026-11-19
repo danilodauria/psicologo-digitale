@@ -397,7 +397,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.1.md");
+const proveMd = read("PROVE-A-MANO-1.7.2.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -408,7 +408,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 44, "il markdown elenca quarantaquattro prove (" + etichette.length + ")");
+ok(etichette.length === 46, "il markdown elenca quarantasei prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -457,6 +457,9 @@ ok(!!moto, "c'è una regola per chi chiede meno movimento");
 ok(/\*,\s*\*::before,\s*\*::after\s*\{[\s\S]*?animation: none !important/.test(moto), "le animazioni si fermano, invece di rallentare a un ciclo");
 ok(/transition: none !important/.test(moto), "e le transizioni spariscono invece di accorciarsi");
 ok(/animation: orb-breathe 7\.5s/.test(read("assets/css/styles.css")), "l'animazione dell'orbita resta nel foglio: è la preferenza a spegnerla");
+// Lo scorrimento morbido non sta solo su html: la finestra della chat ha il
+// suo, e una regola su html e body non la tocca. Sul selettore universale sì.
+ok(/scroll-behavior: auto !important/.test(moto), "e si ferma anche lo scorrimento morbido, compreso quello della finestra della chat");
 
 // L'estratto è la frase che contiene le parole cercate, non una finestra fissa
 // di caratteri che taglia a metà il pezzo che spiega di cosa si parla.
@@ -472,6 +475,9 @@ ok(!/\[c\.titolo, c\.sommario\]/.test(indiceContenuti), "l'indice dei contenuti 
 ok(/const corpo = \[c\.sommario\]/.test(indiceContenuti), "il testo da cui nasce l'estratto comincia dal sommario, non dal titolo");
 ok(/join\("\\n"\)/.test(indiceContenuti), "e i pezzi sono separati da un a capo, che è anche un confine di frase");
 ok(!/\[e\.titolo, e\.testo, e\.durata\]/.test(indiceContenuti), "anche gli esercizi tengono il titolo fuori dal testo dell'estratto");
+// Stessa regola per le schede del pensiero: situazione, pensiero, emozione e
+// lettura alternativa uniti con «·» facevano un'unica frase finta.
+ok(!/\.join\(" · "\)/.test(read("assets/js/app-views.js")), "i campi di una scheda non si incollano in una riga sola: l'estratto mostra il campo con la parola");
 
 /* Riepilogo: periodo scelto e stampa ---------------------------------------- */
 

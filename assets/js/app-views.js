@@ -575,7 +575,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.1 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.2 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -867,7 +867,10 @@
 
     A.readJSON("thoughts", []).forEach(function (t) {
       if (!t || typeof t !== "object") return;
-      const testo = [t.situation, t.thought, t.emotion, t.alternative].filter(Boolean).join(" · ");
+      // I campi sono cose diverse, non una frase sola: uniti con «·»
+      // l'estratto ne mostrava tre di fila senza punteggiatura. L'a capo è
+      // anche un confine di frase, quindi la ricerca mostra il campo giusto.
+      const testo = [t.situation, t.thought, t.emotion, t.alternative].filter(Boolean).join("\n");
       if (!trova(testo)) return;
       voci.push({
         etichetta: "Scheda del pensiero",

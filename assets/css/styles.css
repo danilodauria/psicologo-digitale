@@ -1746,10 +1746,14 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
    Neura e alle transizioni: non rallentarle a un ciclo di un millisecondo,
    fermale. L'animazione resta nel foglio — è la preferenza a spegnerla. */
 @media (prefers-reduced-motion: reduce) {
-  html, body { scroll-behavior: auto; }
   *, *::before, *::after {
     animation: none !important;
     transition: none !important;
+    /* Anche lo scorrimento morbido è movimento, e non sta solo su html: la
+       finestra della chat ha il suo, e una regola su html e body non la
+       tocca perché la classe è più specifica. Sul selettore universale non ne
+       resta fuori nessuna. */
+    scroll-behavior: auto !important;
   }
 }
 

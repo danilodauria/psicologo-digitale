@@ -13,11 +13,20 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.1";
+  const VERSIONE = "1.7.2";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.2",
+      data: "19 novembre 2026",
+      titolo: "La frase della ricerca non si incolla più a un altro campo",
+      punti: [
+        "Nella ricerca delle cose scritte, i campi di una scheda del pensiero — situazione, pensiero, emozione, lettura alternativa — erano uniti in una riga sola: cercando una parola della situazione, l'estratto mostrava anche il pensiero dietro, senza punteggiatura, come se fosse la stessa frase. Ora ogni campo comincia per conto suo e l'estratto mostra quello che contiene la parola.",
+        "Con «Riduci il movimento» attivo, la regola che ferma animazioni e transizioni non arrivava allo scorrimento morbido della finestra della chat, che ha un'impostazione sua: i cambi pagina saltavano subito, la conversazione continuava a scorrere. Ora si ferma anche quello, e la regola non lascia fuori nessun elemento della pagina."
+      ]
+    },
     {
       v: "1.7.1",
       data: "19 novembre 2026",

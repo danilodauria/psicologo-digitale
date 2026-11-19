@@ -1225,32 +1225,22 @@ setTimeout(async function () {
 
   // L'estratto è la frase che contiene la parola, non una finestra fissa di
   // caratteri: la frase prima non deve comparire, quella cercata sì, intera.
+  // E il titolo del capitolo, già scritto sopra il risultato, non deve
+  // finire davanti alla frase come se ne facesse parte («Ansia L'ansia è…»).
   const capitoloProva = NP.data.manuale[0];
   const paragrafiProva = capitoloProva.sezioni[0].p;
   capitoloProva.sezioni[0].p = ["Questa frase resta fuori dall'estratto.", "La frase che conta parla di un ottovolante e finisce qui."];
   navigate("#/cerca/ottovolante");
-  const contenutiProva = document.querySelector("#app .cerca-contenuti");
-  ok(!!contenutiProva && /La frase che conta parla di un <mark>ottovolante<\/mark> e finisce qui\./.test(contenutiProva.innerHTML), "l'estratto è la frase intera che contiene la parola");
-  ok(!!contenutiProva && !/resta fuori/.test(contenutiProva.textContent), "e la frase di prima resta fuori");
-  capitoloProva.sezioni[0].p = paragrafiProva;
-
-  // Il titolo è già scritto sopra l'estratto: se l'indice lo incolla al
-  // sommario, la prima frase comincia con una parola che non è una frase e
-  // sembra che il titolo faccia parte di quello che si legge sotto. La frase
-  // deve cominciare da sé, e non portarsi dietro il titolo della sezione.
-  const capitoloTitolo = NP.data.manuale[0];
-  const paragrafiTitolo = capitoloTitolo.sezioni[0].p;
-  capitoloTitolo.sezioni[0].p = ["Una frase che resta fuori.", "La parola ottovolante sta dentro una frase vera."];
-  navigate("#/cerca/ottovolante");
-  const voceTitolo = Array.prototype.filter.call(document.querySelectorAll("#app .cerca-contenuti li"), function (li) {
+  const voceProva = Array.prototype.filter.call(document.querySelectorAll("#app .cerca-contenuti li"), function (li) {
     const link = li.querySelector("a");
-    return !!link && link.getAttribute("href") === "#/manuale/" + capitoloTitolo.id;
+    return !!link && link.getAttribute("href") === "#/manuale/" + capitoloProva.id;
   })[0];
-  const fraseTitolo = voceTitolo && voceTitolo.querySelector("p");
-  ok(!!fraseTitolo && /^(… )?La parola <mark>ottovolante<\/mark> sta dentro una frase vera\./.test(fraseTitolo.innerHTML), "l'estratto comincia dalla frase che contiene la parola, senza niente davanti");
-  ok(!!fraseTitolo && fraseTitolo.textContent.indexOf(capitoloTitolo.titolo) < 0, "e non ripete il titolo, che è già scritto nel risultato");
-  ok(!!fraseTitolo && !/Non è un esame/.test(fraseTitolo.textContent), "né il titolo della sezione sopra la frase");
-  capitoloTitolo.sezioni[0].p = paragrafiTitolo;
+  const fraseProva = voceProva && voceProva.querySelector("p");
+  ok(!!fraseProva && /^(… )?La frase che conta parla di un <mark>ottovolante<\/mark> e finisce qui\./.test(fraseProva.innerHTML), "l'estratto è la frase intera che contiene la parola, senza niente davanti");
+  ok(!!fraseProva && !/resta fuori/.test(fraseProva.textContent), "e la frase di prima resta fuori");
+  ok(!!fraseProva && fraseProva.textContent.indexOf(capitoloProva.titolo) < 0, "il titolo non è incollato davanti alla frase, che è già scritta sopra");
+  ok(!!fraseProva && !/Non è un esame/.test(fraseProva.textContent), "né il titolo della sezione sopra il paragrafo");
+  capitoloProva.sezioni[0].p = paragrafiProva;
 
   // La ricerca copre anche le cose scritte dalla persona, in una sezione sua:
   // diario, schede del pensiero e note del percorso, con un estratto e un
@@ -1280,6 +1270,12 @@ setTimeout(async function () {
   ok(!!document.querySelector('#app a[href="#/diario/voce/pz1"]'), "il risultato del diario porta alla sua voce");
   ok(!!document.querySelector('#app a[href="#/diario/scheda/tz1"]'), "quello della scheda porta alla scheda");
   ok(!!document.querySelector('#app a[href="#/esercizi/' + esercizioNota + '/nota"]'), "quello della nota porta all'esercizio, dove si scrive");
+
+  // I campi di una scheda sono cose diverse, non una frase sola: l'estratto
+  // mostra quello che contiene la parola, senza incollargli dietro il resto.
+  const voceScheda = document.querySelector('#app a[href="#/diario/scheda/tz1"]').closest("li");
+  ok(!!voceScheda && /la <mark>zanzara<\/mark> in cucina/.test(voceScheda.innerHTML), "l'estratto della scheda è il campo con la parola");
+  ok(!!voceScheda && !/non ce la farò/.test(voceScheda.textContent), "senza il pensiero incollato dietro, che è un altro campo");
 
   // Anche nelle cose scritte l'estratto è la frase: una nota di due frasi non
   // deve portare con sé quella che non c'entra.

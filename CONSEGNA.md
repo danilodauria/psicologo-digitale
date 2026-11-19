@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.1**, 19 novembre 2026.
+Ultimo aggiornamento: versione **1.7.2**, 19 novembre 2026.
 
 ---
 
