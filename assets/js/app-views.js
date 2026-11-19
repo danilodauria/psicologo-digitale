@@ -431,6 +431,25 @@
         "</div>";
       })() +
 
+      (function () {
+        const stato = A.statoSpazioPersistente();
+        const esporta = '<div class="btn-row mt-1"><button type="button" class="btn btn-soft btn-sm" id="protezioneEsporta">' +
+          A.icon("download") + "Esporta backup</button></div>";
+        let corpo;
+        if (!stato) {
+          corpo = '<p>Sto chiedendo al browser se può proteggere i dati di questa app…</p>';
+        } else if (!stato.supportato) {
+          corpo = "<p><strong>Questo browser non offre la protezione dello spazio.</strong> Non può garantire che i dati restino quando lo spazio scarseggia: il backup è l'unica copia che non dipende da lui.</p>" + esporta;
+        } else if (stato.protetto) {
+          corpo = "<p><strong>I dati sono protetti dallo spazio.</strong> Il browser li conserva anche quando lo spazio scarseggia e non li cancella da solo per fare posto ad altri siti. Restano i limiti di sempre: svuotare i dati del sito o cambiare browser li porta via lo stesso.</p>";
+        } else {
+          corpo = '<p><strong>I dati non sono protetti dallo spazio.</strong> Il browser può cancellarli da solo quando lo spazio finisce, per fare posto ad altri siti. Non è successo adesso: è un rischio da conoscere, e il backup è la copia che resta anche se il browser cambia idea.</p>' +
+            '<div class="btn-row mt-1"><button type="button" class="btn btn-soft btn-sm" id="protezioneEsporta">' + A.icon("download") + "Esporta backup</button>" +
+            '<button type="button" class="btn btn-ghost btn-sm" id="protezioneRiprova">Riprova a proteggere</button></div>';
+        }
+        return '<div class="card mt-2" id="protezioneSpazio"><h2 class=h-sub>Protezione dello spazio</h2>' + corpo + "</div>";
+      })() +
+
       '<div class="card mt-2" id="letturaPrivacy"><h2 class=h-sub>Lettura e privacy</h2>' +
         '<div class="btn-row"><label class="text-small" for="testoScelta">Dimensione del testo</label>' +
           '<select id="testoScelta" style="width:auto;padding:.35rem .6rem;font-size:.85rem">' +
@@ -575,7 +594,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.4 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.5 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -592,6 +611,14 @@
     if (discretoToggle) discretoToggle.addEventListener("click", function () {
       A.impostaDiscreto(!A.discretoAttivo());
       A.render();
+    });
+
+    const protezioneEsporta = document.getElementById("protezioneEsporta");
+    if (protezioneEsporta) protezioneEsporta.addEventListener("click", function () { A.esportaBackup(); });
+
+    const protezioneRiprova = document.getElementById("protezioneRiprova");
+    if (protezioneRiprova) protezioneRiprova.addEventListener("click", function () {
+      A.chiediSpazioPersistente().then(function () { A.render(); });
     });
 
     const esportaSubito = document.getElementById("spazioPienoEsporta");

@@ -198,6 +198,11 @@
   A.setTitle("");
   A.render();
 
+  // Chiedere la protezione dello spazio non mostra finestre: il browser
+  // risponde da solo. Si fa all'avvio perché la risposta serva già quando si
+  // apre Licenze, e non una volta per pagina.
+  A.chiediSpazioPersistente();
+
   // La copia automatica si prende all'avvio, una volta al giorno: è il momento
   // in cui i dati delle volte precedenti sono ancora tutti lì.
   A.salvaCopia(false);

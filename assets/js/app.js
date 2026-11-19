@@ -885,6 +885,36 @@ NP.app = (function () {
   // quasi tutti applicano. Serve come metro, non come promessa.
   const LIMITE_BROWSER = 5 * 1024 * 1024;
 
+  // Protezione dello spazio: un sito può chiedere al browser di non
+  // cancellare i propri dati quando lo spazio scarseggia. Non è una garanzia
+  // assoluta — la decisione resta del browser, che può anche revocarla — ma è
+  // l'unica richiesta disponibile, e va fatta una volta: la risposta serve a
+  // dire in Licenze se i dati sono al riparo e, se non lo sono, a proporre il
+  // backup. Senza la Storage API non si promette niente.
+  let statoPersistenza = null;
+
+  function chiediSpazioPersistente(api) {
+    const s = api || (typeof navigator !== "undefined" ? navigator.storage : null);
+    const risposta = function (supportato, protetto) {
+      statoPersistenza = { supportato: supportato, protetto: protetto };
+      return statoPersistenza;
+    };
+    if (!s || typeof s.persist !== "function" || typeof s.persisted !== "function") {
+      return Promise.resolve(risposta(false, false));
+    }
+    return Promise.resolve()
+      .then(function () { return s.persisted(); })
+      .then(function (gia) {
+        if (gia) return risposta(true, true);
+        return Promise.resolve(s.persist()).then(function (esito) {
+          return risposta(true, !!esito);
+        });
+      })
+      .catch(function () { return risposta(true, false); });
+  }
+
+  function statoSpazioPersistente() { return statoPersistenza; }
+
   const NOMI_CHIAVI = {
     intake: "Colloquio",
     scales: "Questionari",
@@ -1467,6 +1497,8 @@ NP.app = (function () {
     impostaCopieMassimo: impostaCopieMassimo,
     spazioCopie: spazioCopie,
     spazioDati: spazioDati,
+    chiediSpazioPersistente: chiediSpazioPersistente,
+    statoSpazioPersistente: statoSpazioPersistente,
     salvataggioNonRiuscito: salvataggioNonRiuscito,
     pianificaCompatta: pianificaCompatta,
     compattaDati: compattaDati,

@@ -1582,6 +1582,59 @@ setTimeout(async function () {
   await new Promise(function (r) { setTimeout(r, 10); });
   ok(ricaricheMute === 1, "se l'evento non arriva, la pagina si ricarica comunque una volta sola");
 
+  /* Protezione dello spazio ------------------------------------------------ */
+
+  console.log("\nProtezione dello spazio");
+
+  // Il browser può cancellare i dati di un sito quando lo spazio scarseggia.
+  // L'app chiede la protezione e dice in Licenze se l'ha ottenuta; quando non
+  // l'ha ottenuta, propone il backup invece di lasciare il rischio muto.
+  const storageVero = window.navigator.storage;
+  function storageFinto(persisted, persist) {
+    Object.defineProperty(window.navigator, "storage", {
+      configurable: true,
+      value: { persisted: persisted, persist: persist }
+    });
+  }
+
+  storageFinto(function () { return Promise.resolve(false); }, function () { return Promise.resolve(true); });
+  const protetto = await NP.app.chiediSpazioPersistente();
+  ok(protetto.supportato === true && protetto.protetto === true, "se il browser concede la protezione, l'app lo registra");
+  navigate("#/licenze");
+  const cardProtetta = document.getElementById("protezioneSpazio");
+  ok(!!cardProtetta && /protetti dallo spazio/.test(cardProtetta.textContent), "in Licenze si legge che i dati sono protetti");
+  ok(!document.getElementById("protezioneEsporta"), "quando i dati sono protetti il backup non compare come urgenza");
+
+  let richieste = 0;
+  storageFinto(function () { return Promise.resolve(false); }, function () { richieste++; return Promise.resolve(false); });
+  const nonProtetto = await NP.app.chiediSpazioPersistente();
+  ok(nonProtetto.supportato === true && nonProtetto.protetto === false, "se il browser rifiuta, lo stato resta non protetto");
+  ok(richieste === 1, "la protezione viene chiesta al browser, non solo letta");
+  navigate("#/licenze");
+  const cardNonProtetta = document.getElementById("protezioneSpazio");
+  ok(/non sono protetti/.test(cardNonProtetta.textContent), "in Licenze si legge che i dati non sono protetti");
+  const esportaProtezione = document.getElementById("protezioneEsporta");
+  ok(!!esportaProtezione, "e viene proposto di esportare il backup");
+  let esportazioni = 0;
+  const esportaVera = NP.app.esportaBackup;
+  NP.app.esportaBackup = function () { esportazioni++; };
+  esportaProtezione.click();
+  NP.app.esportaBackup = esportaVera;
+  ok(esportazioni === 1, "il pulsante esporta davvero un backup");
+
+  // Un browser senza Storage API non deve rompere la pagina né promettere
+  // una protezione che non può dare.
+  Object.defineProperty(window.navigator, "storage", { configurable: true, value: undefined });
+  const senzaApi = await NP.app.chiediSpazioPersistente();
+  ok(senzaApi.supportato === false && senzaApi.protetto === false, "senza Storage API l'app non rompe niente");
+  navigate("#/licenze");
+  const cardSenza = document.getElementById("protezioneSpazio");
+  ok(/non offre la protezione/.test(cardSenza.textContent), "in Licenze lo dice, senza promettere una protezione che non c'è");
+  ok(!!document.getElementById("protezioneEsporta"), "e anche qui propone il backup");
+
+  if (storageVero === undefined) delete window.navigator.storage;
+  else Object.defineProperty(window.navigator, "storage", { configurable: true, value: storageVero });
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

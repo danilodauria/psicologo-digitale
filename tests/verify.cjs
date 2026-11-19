@@ -73,6 +73,18 @@ ok(/VERSION/.test(sw), "il service worker ha una versione della cache");
 ok(/id="avvisoAggiornamento"/.test(html) && /id="aggiornaRicaricando"/.test(html), "la pagina ha la barra e il pulsante per la versione nuova del sito");
 ok(/hidden role="status">\s*<p><strong>C'è una versione nuova/.test(html), "la barra dell'aggiornamento parte nascosta e si annuncia ai lettori di schermo");
 ok(/\.avviso-aggiornamento\[hidden\]/.test(read("assets/css/styles.css")), "la barra resta davvero nascosta finché non serve");
+// Protezione dello spazio: la richiesta va fatta, ma senza promettere che il
+// browser la conceda. In Licenze lo stato si legge, e quando i dati non sono
+// protetti compare il pulsante che esporta il backup.
+const appCore = read("assets/js/app.js");
+const licenzeJs = read("assets/js/app-views.js");
+ok(/navigator\.storage/.test(appCore) && /persist\(\)/.test(appCore) && /persisted\(\)/.test(appCore), "l'app chiede al browser lo spazio persistente");
+ok(/typeof s\.persist !== "function"/.test(appCore) && /\.catch\(function \(\) \{ return risposta\(true, false\); \}\)/.test(appCore), "senza Storage API, o se la richiesta fallisce, non si rompe e non si promette niente");
+ok(/id="protezioneSpazio"/.test(licenzeJs) && /I dati sono protetti dallo spazio/.test(licenzeJs), "Licenze dice se i dati sono protetti");
+ok(/I dati non sono protetti dallo spazio/.test(licenzeJs) && /protezioneEsporta/.test(licenzeJs), "quando non lo sono, propone di esportare il backup");
+ok(/Questo browser non offre la protezione dello spazio/.test(licenzeJs), "se il browser non la offre, lo dice invece di far finta");
+ok(/A\.chiediSpazioPersistente\(\);/.test(read("assets/js/app-init.js")), "la richiesta parte all'avvio, una volta, senza finestre");
+
 const appInit = read("assets/js/app-init.js");
 ok(/controllerchange/.test(appInit), "il programma si accorge quando il service worker nuovo prende il controllo");
 ok(/SKIP_WAITING/.test(appInit), "il pulsante chiede al service worker in attesa di attivarsi");
@@ -409,7 +421,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.4.md");
+const proveMd = read("PROVE-A-MANO-1.7.5.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -420,7 +432,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 49, "il markdown elenca quarantanove prove (" + etichette.length + ")");
+ok(etichette.length === 51, "il markdown elenca cinquantuno prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));

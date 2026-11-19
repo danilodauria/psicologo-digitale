@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.4";
+  const VERSIONE = "1.7.5";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.5",
+      data: "19 novembre 2026",
+      titolo: "Il browser dice se i dati sono al riparo",
+      punti: [
+        "I dati vivono nel browser, e un browser può cancellarli da solo quando lo spazio finisce, per fare posto ad altri siti. Ora l'app chiede al browser di proteggere lo spazio che occupa: è una richiesta che non mostra finestre e non manda niente in rete.",
+        "In Licenze c'è una scheda che dice com'è andata: dati protetti, richiesta rifiutata, oppure browser che non offre la protezione. Quando i dati non sono protetti la scheda propone di esportare il backup con un pulsante, perché il file resta anche se il browser cambia idea.",
+        "La protezione non è una garanzia: la decisione resta del browser e può cambiarla. Per questo la scheda lo dice invece di promettere che i dati siano eterni; il backup resta l'unica copia che non dipende dal browser."
+      ]
+    },
     {
       v: "1.7.4",
       data: "19 novembre 2026",
