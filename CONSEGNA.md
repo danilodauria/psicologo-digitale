@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.8**, 19 novembre 2026.
+Ultimo aggiornamento: versione **1.7.9**, 19 novembre 2026.
 
 ---
 
@@ -121,7 +121,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 583 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 593 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -159,6 +159,7 @@ Numeri aggiornati a ogni `npm test`: 19 viste, 30 pagine di singoli elementi, 3 
 - **La ricerca è letterale, con una tabella di sinonimi curata a mano**: trentotto gruppi di parole equivalenti (sonno/dormire, ansia/ansioso, …) allargano la ricerca nei contenuti e nelle cose scritte. Fuori da quella tabella resta letterale: se un argomento c'è ma è scritto con un'altra parola non prevista, non lo trova — ed è dichiarato nella pagina.
 - **La modalità discreta non è cifratura.** Copre lo schermo da chi passa dietro; chi apre gli strumenti di sviluppo vede i dati, come in qualsiasi app locale.
 - **Nessuna sincronizzazione tra dispositivi.** Il backup JSON è l'unico passaggio di consegne, e richiede un gesto esplicito.
+- **L'uscita rapida non cancella la cronologia.** «Esci subito», in cima a Sicurezza, apre una pagina neutra con ora e data, senza testata né contenuti. La visita al programma resta nella cronologia del browser, e Indietro riporta alla pagina di prima: è una copertura dello schermo, non una cancellazione delle tracce.
 - **L'avviso di versione nuova del sito** nei test automatici è simulato: jsdom non ha un service worker. La prova vera è la 13.1 del foglio, che richiede una pubblicazione mentre la scheda è aperta.
 - **La protezione dello spazio è una richiesta, non una garanzia**: decide il browser e può revocarla. I test simulano le tre risposte (concessa, rifiutata, API assente); la prova nei browser veri è la sezione 14 del foglio.
 - **Il runner macOS di GitHub** a volte si blocca in coda: si rilancia il job fallito, non si cambia il codice per farlo passare.

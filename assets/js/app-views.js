@@ -141,6 +141,14 @@
     A.page(
       '<div class="page-head"><p class="eyebrow">Sicurezza</p><h1>Quando la priorità non è l\'app</h1>' +
         '<p class="lead">' + esc(S.introduzione) + "</p></div>" +
+      // Un'uscita sola, in cima: chi ha bisogno di sparire non deve cercarla
+      // fra i numeri. La pagina neutra non è una cancellazione, e qui lo dice.
+      '<div class="card uscita-rapida" id="uscitaRapida">' +
+        '<div class="btn-row" style="justify-content:space-between;align-items:center;gap:1rem">' +
+          '<div><h2 class="h-sub" style="margin-bottom:.2rem">Se qualcuno sta arrivando</h2>' +
+          '<p class="text-small mb-0"><strong>Esci subito</strong> apre una pagina neutra, senza contenuti del programma. Non cancella la cronologia del browser: la visita resta nella cronologia, e con il pulsante Indietro si torna qui.</p></div>' +
+          '<a class="btn btn-primary" id="esciSubito" href="#/nuova">Esci subito</a>' +
+        "</div></div>" +
       '<div class="emergency-box"><h2>Emergenza</h2>' +
         '<div class="emergency-numbers">' + S.numeri.map(function (n) {
           return '<div class="emergency-num"><b><a href="tel:' + n.tel + '">' + esc(n.numero) + "</a></b><span>" + esc(n.nome) + "</span><p class=\"text-small muted mb-0\">" + esc(n.nota) + "</p></div>";
@@ -160,6 +168,31 @@
       '<div class="callout info"><p><strong>Se stai leggendo per un\'altra persona:</strong> non lasciarla sola, ascolta senza giudicare, non promettere segreti che riguardano la sua sicurezza e aiutala a contattare un professionista. In pericolo immediato: 112.</p></div>' +
       '<div class="btn-row mt-2"><a class="btn btn-primary" href="#/neura">Parla con Neura</a><a class="btn btn-ghost" href="#/colloquio">Colloquio</a></div>'
     );
+  };
+
+  // Uscita rapida: una pagina che non dice niente di chi la stava guardando.
+  // Non è una pagina bianca: un orologio e una data sono quello che mostra una
+  // scheda nuova, e non rivelano né il programma né l'argomento. La cronologia
+  // del browser non si tocca: la voce resta, e Indietro riporta alla sicurezza.
+  views.nuova = function () {
+    document.title = "Nuova scheda";
+    const data = new Date().toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+    const aggiornaOrologio = function () {
+      const ora = document.getElementById("nuovaSchedaOra");
+      if (!ora) return;
+      ora.textContent = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+      setTimeout(aggiornaOrologio, 15000);
+    };
+    A.page(
+      '<div class="nuova-scheda-pagina">' +
+        '<h1 class="nuova-scheda-nome">Nuova scheda</h1>' +
+        '<div class="nuova-scheda-centro">' +
+          '<p class="nuova-scheda-ora" id="nuovaSchedaOra"></p>' +
+          '<p class="nuova-scheda-data">' + esc(data.charAt(0).toUpperCase() + data.slice(1)) + "</p>" +
+        "</div>" +
+      "</div>"
+    );
+    aggiornaOrologio();
   };
 
   /* -------------------------------------------------------------------- Diario */
@@ -658,7 +691,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.8 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.9 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

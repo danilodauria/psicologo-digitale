@@ -151,6 +151,35 @@ html[data-theme="dark"] ::selection { background: #2b3c5e; color: #fff; }
 
 .app { flex: 1 0 auto; padding-bottom: 3.5rem; }
 
+/* Uscita rapida: tutto ciò che dice dove sei sparisce, e resta una scheda
+   nuova con l'ora e la data. Non è una pagina bianca, che sembrerebbe rotta,
+   e non contiene niente del programma. */
+body.nuova-scheda { background: #fff; color: #202124; }
+body.nuova-scheda .skip-link,
+body.nuova-scheda .site-header,
+body.nuova-scheda .site-footer,
+body.nuova-scheda .status-bar,
+body.nuova-scheda .avviso-discreto,
+body.nuova-scheda .avviso-aggiornamento,
+body.nuova-scheda #toast,
+body.nuova-scheda #annuncioRotta { display: none !important; }
+html[data-discreto="1"] body.nuova-scheda #app { filter: none; }
+body.nuova-scheda .app { padding: 0; }
+body.nuova-scheda .page.wrap { max-width: none; margin: 0; padding: 0; }
+.nuova-scheda-pagina {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2.2rem clamp(1.2rem, 5vw, 4rem);
+  background: #fff;
+  color: #202124;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+.nuova-scheda-nome { margin: 0; font-size: .95rem; font-weight: 500; color: #5f6368; }
+.nuova-scheda-centro { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; padding-bottom: 12vh; }
+.nuova-scheda-ora { margin: 0; font-size: clamp(3.5rem, 14vw, 7rem); font-weight: 200; line-height: 1; letter-spacing: -.02em; }
+.nuova-scheda-data { margin: 0; font-size: clamp(.95rem, 2.4vw, 1.15rem); color: #5f6368; }
+
 .skip-link {
   position: absolute;
   left: -9999px;

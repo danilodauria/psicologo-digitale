@@ -469,6 +469,9 @@ NP.app = (function () {
       if (window.console) console.error(err);
     }
     updateNav(name);
+    // L'uscita rapida toglie di mezzo tutto ciò che dice dove sei: testata,
+    // menu, piè di pagina e barra di stato. Il resto delle pagine li riporta.
+    document.body.classList.toggle("nuova-scheda", name === "nuova");
     window.scrollTo({ top: 0, behavior: "instant" in document.documentElement.style ? "instant" : "auto" });
     const nav = document.getElementById("mainNav");
     if (nav) nav.classList.remove("is-open");

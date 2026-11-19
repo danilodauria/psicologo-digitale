@@ -40,7 +40,7 @@ Il programma non prova a "fare lo psicologo". Prova a fare bene una cosa diversa
 | **Manuale** | Dodici capitoli: primo colloquio, scelta del professionista, ansia, umore, sonno, stress e burnout, emozioni, pensieri, relazioni, trauma e lutto, corpo e sostanze, etica e limiti dell'IA. |
 | **Palestra della mente** | 36 domande divulgative in sei aree, con spiegazioni: miti da smontare, evidenze, linguaggio corretto. |
 | **Glossario** | 48 voci di psicologia clinica, metodo e terapia, con ricerca istantanea. |
-| **Sicurezza** | 112, Telefono Amico, Samaritans, Telefono Azzurro, 1522, 114. Segnali d'allarme, cosa fare subito, indicazioni per minori e violenza. |
+| **Sicurezza** | 112, Telefono Amico, Samaritans, Telefono Azzurro, 1522, 114. Segnali d'allarme, cosa fare subito, indicazioni per minori e violenza. In cima c'è **Esci subito**: apre una pagina neutra senza contenuti del programma, e dice che non cancella la cronologia del browser. |
 | **Nutrizione** | Alimentazione e umore: cinque principi, un piatto di riferimento, ritmo dei pasti, differenze tra dietista, dietologo e biologo nutrizionista, segnali dei disturbi alimentari, domande per il professionista. Nessuna dieta e nessuna prescrizione. |
 | **Installa** | Installazione come app su Android, iPhone e computer, uso offline e guida facoltativa a **Ollama**: riconosce sistema e memoria dichiarata dal browser, indica il pacchetto giusto e il modello adatto, verifica il collegamento locale. |
 | **Licenze** | Attribuzione, licenze, privacy, backup, cancellazione dati, FAQ e fonti. |
@@ -236,6 +236,7 @@ Si scarica in **PDF** (generato sul dispositivo, senza librerie) oppure si stamp
 - Il programma è **educativo**: non diagnostica, non prescrive, non cura.
 - Le domande sul rischio sono dirette, rispettose e non giudicanti; la formazione sul rischio è parte della competenza clinica, non un tabù.
 - In caso di pericolo: **112**. Ascolto: **Telefono Amico 02 2327 2327**, **Samaritans 06 77208977**, **Telefono Azzurro 19696**, **1522** antiviolenza, **114** emergenza infanzia.
+- Se qualcuno sta arrivando, **Esci subito** in cima alla pagina Sicurezza apre una scheda nuova con l'ora e la data, senza testata né contenuti del programma. Non cancella la cronologia del browser: la visita resta, e con **Indietro** si torna alla pagina di prima.
 - Per i minori la valutazione va condivisa con un adulto responsabile e con un professionista.
 - La violenza non è un conflitto di coppia: è un reato. Il 1522 è gratuito e riservato.
 - Il programma **non è un dispositivo medico** ai sensi del Regolamento UE 2017/745.
@@ -419,7 +420,7 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 ## Prove a mano prima di una release
 
-I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.8 è [PROVE-A-MANO-1.7.8.md](PROVE-A-MANO-1.7.8.md): sessanta controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito e protezione dello spazio, ognuno con il risultato atteso e una casella da spuntare.
+I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.9 è [PROVE-A-MANO-1.7.9.md](PROVE-A-MANO-1.7.9.md): sessantadue controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito e protezione dello spazio, ognuno con il risultato atteso e una casella da spuntare.
 
 Lo stesso foglio esiste in **PDF A4**, per stamparlo e spuntarlo a penna: [assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf](assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf), casella per ogni prova e tabella d'esito in fondo, con versione e provenienza nel piè di pagina. Non è una seconda copia del testo: `scripts/build_prove_a_mano_pdf.py` legge il markdown delle prove — il più recente per versione — e lo impagina con la stessa testata degli altri fogli, riusando l'impaginatore di `build_come_installare_pdf.py`. Il file è allegato alla release insieme agli altri PDF (`.github/workflows/foglio.yml`), e `tests/verify.cjs` confronta le prove del markdown con quelle stampate: una prova aggiunta e mai rigenerata diventa una build rossa.
 
@@ -476,4 +477,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.7.8** · novembre 2026.
+Versione **1.7.9** · novembre 2026.

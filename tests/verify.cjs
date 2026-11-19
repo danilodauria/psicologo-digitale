@@ -227,6 +227,21 @@ ok(NP.data.sicurezza.numeri.some((n) => n.numero === "1522"), "è presente il 15
 ok(NP.data.sicurezza.numeri.some((n) => n.numero === "19696"), "è presente Telefono Azzurro");
 ok(NP.data.sicurezza.segnali.length >= 6, "sono elencati i segnali d'allarme");
 ok(NP.data.sicurezza.cosaFare.length >= 5, "sono indicate le azioni immediate");
+
+/* Uscita rapida ------------------------------------------------------------ */
+
+// Chi ha bisogno di sparire non deve cercare un pulsante fra i numeri, e la
+// pagina neutra non deve portarsi dietro il nome del programma nel titolo o la
+// testata. La cronologia del browser resta: il pulsante non è una cancellazione.
+const uscitaJs = (read("assets/js/app-views.js").match(/views\.nuova = function[\s\S]*?\n  \};/) || [""])[0];
+ok(!!uscitaJs && /Nuova scheda/.test(uscitaJs), "c'è una pagina neutra per l'uscita rapida");
+ok(!!uscitaJs && !/A\.setTitle/.test(uscitaJs) && /document\.title = "Nuova scheda"/.test(uscitaJs), "il titolo della scheda neutra non nomina il programma");
+ok(/id="esciSubito"/.test(read("assets/js/app-views.js")) && /#\/nuova/.test(read("assets/js/app-views.js")), "il pulsante Esci subito porta alla pagina neutra");
+ok(/Non cancella la cronologia del browser/.test(read("assets/js/app-views.js")), "la pagina spiega che la cronologia del browser non viene cancellata");
+ok(/document\.body\.classList\.toggle\("nuova-scheda", name === "nuova"\)/.test(read("assets/js/app.js")), "la pagina neutra toglie testata, menu e piè di pagina");
+const cssUscita = read("assets/css/styles.css");
+ok(/body\.nuova-scheda \.site-header/.test(cssUscita) && /body\.nuova-scheda \.site-footer/.test(cssUscita) && /body\.nuova-scheda \.status-bar/.test(cssUscita), "la testata, il piè di pagina e la barra di stato spariscono davvero");
+ok(/html\[data-discreto="1"\] body\.nuova-scheda #app \{ filter: none; \}/.test(cssUscita), "anche la modalità discreta non lascia la pagina neutra sfocata");
 ok(NP.data.fonti.length >= 6, "la pagina fonti cita almeno sei riferimenti");
 
 /* Motore di Neura --------------------------------------------------------- */
@@ -421,7 +436,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.8.md");
+const proveMd = read("PROVE-A-MANO-1.7.9.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -432,7 +447,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 60, "il markdown elenca sessanta prove (" + etichette.length + ")");
+ok(etichette.length === 62, "il markdown elenca sessantadue prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));

@@ -1506,6 +1506,28 @@ setTimeout(async function () {
   ok(!!linkProve && linkProve.hasAttribute("download") && !!linkProve.closest(".card"),
     "il collegamento scarica il PDF e sta dentro una scheda con la sua spiegazione");
 
+  /* Uscita rapida ----------------------------------------------------------- */
+
+  console.log("\nUscita rapida");
+
+  navigate("#/sicurezza");
+  const esciSubito = document.getElementById("esciSubito");
+  ok(!!esciSubito && /Esci subito/.test(esciSubito.textContent), "la pagina Sicurezza ha il pulsante Esci subito");
+  ok(!!esciSubito && esciSubito.getAttribute("href") === "#/nuova", "e porta alla pagina neutra con un solo collegamento");
+  ok(/non cancella la cronologia/i.test(document.getElementById("app").textContent), "e dice che non cancella la cronologia del browser");
+
+  navigate("#/nuova");
+  ok(document.body.classList.contains("nuova-scheda"), "la pagina neutra nasconde testata, menu e piè di pagina");
+  ok(document.title === "Nuova scheda", "il titolo della scheda non nomina il programma");
+  const testoNeutro = document.getElementById("app").textContent;
+  ok(/Nuova scheda/.test(testoNeutro), "la pagina dice solo quello che direbbe una scheda nuova");
+  ok(!/Psicologo|Neura|ansia|diario|112/i.test(testoNeutro), "e non contiene niente del programma");
+  ok(/^\d{1,2}:\d{2}$/.test(document.getElementById("nuovaSchedaOra").textContent), "con un orologio vero, non un segnaposto");
+
+  navigate("#/sicurezza");
+  ok(!document.body.classList.contains("nuova-scheda"), "tornando indietro la testata e il menu tornano");
+  ok(/Sicurezza e numeri utili/.test(document.title), "e il titolo torna quello della pagina di prima");
+
   /* Aggiornamento del sito -------------------------------------------------- */
 
   console.log("\nAggiornamento del sito");

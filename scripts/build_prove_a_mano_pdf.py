@@ -123,7 +123,7 @@ def stili_prove():
     s["th"] = ParagraphStyle(
         "th", fontName="Helvetica-Bold", fontSize=8.6, leading=11, textColor=INDACO
     )
-    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=10.4)
+    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=10.2)
     return s
 
 
@@ -154,8 +154,8 @@ def tabella(righe, s):
                 ("ALIGN", (0, 0), (0, -1), "CENTER"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 4),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                ("TOPPADDING", (0, 0), (-1, -1), 2.2),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2),
+                ("TOPPADDING", (0, 0), (-1, -1), 2.0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2.0),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
             ]
         )

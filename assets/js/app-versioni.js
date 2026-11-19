@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.8";
+  const VERSIONE = "1.7.9";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.9",
+      data: "19 novembre 2026",
+      titolo: "Un'uscita rapida, quando qualcuno sta arrivando",
+      punti: [
+        "Nella pagina Sicurezza c'è «Esci subito»: un tocco e compare una scheda nuova con l'ora e la data, senza testata, menu, piè di pagina né contenuti del programma. Anche il titolo della scheda dice solo «Nuova scheda».",
+        "Non è una cancellazione: la cronologia del browser resta, la visita al programma è ancora lì e il pulsante Indietro riporta alla pagina di prima. La pagina lo dice accanto al pulsante, prima di usarlo, perché nessuno creda di aver cancellato le tracce.",
+        "Con la modalità discreta attiva la scheda nuova resta nitida: la sfocatura appartiene al programma, e lì non c'è niente da coprire."
+      ]
+    },
     {
       v: "1.7.8",
       data: "19 novembre 2026",
