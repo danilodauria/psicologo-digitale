@@ -397,7 +397,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.2.md");
+const proveMd = read("PROVE-A-MANO-1.7.3.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -408,7 +408,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 46, "il markdown elenca quarantasei prove (" + etichette.length + ")");
+ok(etichette.length === 47, "il markdown elenca quarantasette prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -729,10 +729,26 @@ ok(/voceNaturale/.test(preloadC) && /voceNaturale:scarica/.test(preloadC) && /pr
 ok(/voceNaturale:scarica/.test(mainC) && /voceNaturale:pronuncia/.test(mainC) && /voceNaturale:rimuovi/.test(mainC), "il processo principale scarica, legge e rimuove la voce naturale");
 ok(/piper_windows_amd64\.zip/.test(mainC) && /piper_linux_x86_64\.tar\.gz/.test(mainC) && /piper_linux_aarch64\.tar\.gz/.test(mainC) && /it_IT-paola-medium\.onnx/.test(mainC), "il motore è fissato a una versione precisa per Windows e Linux");
 ok((mainC.match(/sha256: "[0-9a-f]{64}"/g) || []).length === 7, "ogni file scaricato (motore per sistema e voci) ha un'impronta SHA-256 fissata");
+
+// Gli indirizzi sono fissati a un commit: un modello ricaricato a monte (è
+// successo con Paola il 18 novembre 2026, da 63.511.038 a 63.221.984 byte) non
+// deve rompere le app già installate, che scaricherebbero tutto per poi
+// rifiutare il file e restare ferme al 100%.
+const catalogoVoci = (mainC.match(/const VOCE_VOCI = \[[\s\S]*?\n\];/) || [""])[0];
+ok(!!catalogoVoci, "il catalogo delle voci naturali sta in un blocco suo");
+const urlVoci = Array.from(catalogoVoci.matchAll(/url: "([^"]+)"/g)).map((m) => m[1]);
+ok(urlVoci.length === 4, "il catalogo elenca i due file di ognuna delle due voci (" + urlVoci.length + ")");
+ok(urlVoci.every((u) => /\/resolve\/[0-9a-f]{40}\//.test(u)), "ogni indirizzo è fissato a un commit, non a main");
+const impronteVoci = Array.from(catalogoVoci.matchAll(/sha256: "([0-9a-f]{64})"/g)).map((m) => m[1]);
+ok(impronteVoci.length === 4 && new Set(impronteVoci).size === 4, "ogni file della voce ha la sua impronta, e non sono copie");
+const byteVoci = Array.from(catalogoVoci.matchAll(/byte: (\d+)/g)).map((m) => Number(m[1]));
+ok(byteVoci.length === 4 && byteVoci.every((b) => b > 1000), "e la misura attesa, quella che il download controlla");
+ok((mainC.match(/Math\.min\(99,/g) || []).length >= 2 && /fase: "pronta", percentuale: 100/.test(mainC), "l'avanzamento si ferma a 99 finché il file non è scritto: il 100% vuol dire installata");
 ok(/it_IT-riccardo-x_low\.onnx/.test(mainC) && /"riccardo"/.test(mainC) && /maschile/.test(mainC), "c'è una seconda voce italiana, maschile");
 ok(/function vocePerId/.test(mainC) && /for \(const file of voce\.file\)/.test(mainC), "ogni voce è un modello a sé, scaricato solo quando serve");
 ok(/function motoreVoce/.test(mainC) && /process\.platform \+ "-" \+ process\.arch/.test(mainC), "il motore si sceglie in base al sistema e al processore");
-ok(/createHash\("sha256"\)/.test(mainC) && /impronta SHA-256 diversa/.test(mainC), "i file scaricati sono verificati prima di essere usati");
+ok(/createHash\("sha256"\)/.test(mainC) && /il file scaricato non è quello previsto/.test(mainC), "i file scaricati sono verificati prima di essere usati, e il rifiuto dice perché");
+ok(!/installata: pronte\.length > 0/.test(neuraUI) && /const pronteOra = naturaleVoci\.filter/.test(neuraUI), "se il download fallisce la scheda usa le voci vere, non una variabile che non esiste");
 const motoreC = read("desktop/motore.cjs");
 ok(/require\("\.\/motore\.cjs"\)/.test(mainC) && /scompattaMotore\(/.test(mainC), "il motore si scompatta dentro il programma");
 ok(/unzipSync/.test(motoreC) && /gunzipSync/.test(motoreC) && /symlinkSync/.test(motoreC) && /chmodSync/.test(motoreC), "ZIP e tar.gz si aprono senza strumenti esterni, con librerie e permessi");

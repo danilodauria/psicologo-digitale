@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.2";
+  const VERSIONE = "1.7.3";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.3",
+      data: "19 novembre 2026",
+      titolo: "Il download della voce naturale arriva in fondo",
+      punti: [
+        "Il modello italiano di Paola è stato ricaricato sul server il 18 novembre: il programma si aspettava il file di prima, scaricava tutto, rifiutava il file e restava fermo al 100% senza dire niente. La scheda Voce tornava a «Installa Paola» e non si capiva perché.",
+        "Ora il catalogo ha misure e impronte dei file veri, e ogni indirizzo è fissato a una versione precisa: un file ricaricato a monte non può più rompere un programma già installato. L'avanzamento si ferma al 99% finché il file non è verificato e scritto, quindi il 100% vuol dire davvero installata.",
+        "Se un download fallisce — connessione, spazio, file diverso da quello previsto — la scheda scrive il motivo e la voce resta da installare. Prima il ramo d'errore usava una variabile che non esisteva: non riusciva nemmeno a mostrare l'avviso, e la nota restava ferma sull'ultima percentuale."
+      ]
+    },
     {
       v: "1.7.2",
       data: "19 novembre 2026",

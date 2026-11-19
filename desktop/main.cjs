@@ -106,9 +106,16 @@ ipcMain.handle("sistema:copia", (_evento, testo) => {
 
 // Il programma parla con le voci del sistema. Per averne una davvero naturale
 // senza mandare il testo a nessuno si aggiunge un motore neurale che gira qui:
-// non sta nel pacchetto (86 MB), si scarica una volta dal pannello Voce e
+// non sta nel pacchetto (82 MB), si scarica una volta dal pannello Voce e
 // resta nella cartella dei dati dell'utente. Ogni file ha un'impronta fissata
 // qui sotto e viene controllato prima di essere usato.
+//
+// Gli indirizzi sono fissati a un commit, non a «main»: i file di un modello
+// possono essere ricaricati a monte (è successo il 18 novembre 2026 con Paola,
+// passata da 63.511.038 a 63.221.984 byte) e un'app già installata scaricava
+// tutto, poi rifiutava il file e restava ferma al 100%, senza mai installare.
+// Con il commit nell'indirizzo il contenuto non cambia sotto i piedi a chi ha
+// già il programma: si aggiorna qui, di proposito, con una release.
 // Un motore per sistema e processore: su Windows arriva uno ZIP, su Linux un
 // tar.gz con dentro il binario e le sue librerie.
 const VOCE_MOTORE = {
@@ -150,15 +157,15 @@ const VOCE_VOCI = [
     file: [
       {
         nome: "it_IT-paola-medium.onnx",
-        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx",
-        sha256: "6fc918b5a0ea6137382833dddfa567bffbe6a5060c02043c87192ee59c04210c",
-        byte: 63511038
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/04ca88f5685ca5253c701af3687e155b113bd512/it/it_IT/paola/medium/it_IT-paola-medium.onnx",
+        sha256: "f9b8658aa8c01f8280aa88488f6e7643a639b6225a81514c40440a01f6364a20",
+        byte: 63221984
       },
       {
         nome: "it_IT-paola-medium.onnx.json",
-        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json",
-        sha256: "aea19c0a7fce29fbc359b93f10e7902854401e4c95ae2ea328ae516b15d296cf",
-        byte: 7099
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/04ca88f5685ca5253c701af3687e155b113bd512/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json",
+        sha256: "10e46e8534dd2d4051f1534ba6542f189f854454acea44a6d45ff464a83260fa",
+        byte: 6114
       }
     ]
   },
@@ -170,13 +177,13 @@ const VOCE_VOCI = [
     file: [
       {
         nome: "it_IT-riccardo-x_low.onnx",
-        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx",
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/04ca88f5685ca5253c701af3687e155b113bd512/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx",
         sha256: "1368de15f123275a7ef951c9e5e30be0f58a032daa14a0da44037443c1d1d21b",
         byte: 28130791
       },
       {
         nome: "it_IT-riccardo-x_low.onnx.json",
-        url: "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx.json",
+        url: "https://huggingface.co/rhasspy/piper-voices/resolve/04ca88f5685ca5253c701af3687e155b113bd512/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx.json",
         sha256: "146ab9c634afe524e9fb7530f2510df7a42fb1db56b52658ca1fb3d98001a62a",
         byte: 4161
       }
@@ -304,10 +311,10 @@ async function scaricaFile(destinazione, file, onProgresso) {
   }
   const contenuto = Buffer.concat(pezzi);
   if (file.byte && contenuto.length !== file.byte) {
-    throw new Error("file incompleto: " + contenuto.length + " byte invece di " + file.byte);
+    throw new Error("il file scaricato non è quello previsto: " + contenuto.length + " byte invece di " + file.byte);
   }
   const impronta = crypto.createHash("sha256").update(contenuto).digest("hex");
-  if (impronta !== file.sha256) throw new Error("impronta SHA-256 diversa da quella prevista");
+  if (impronta !== file.sha256) throw new Error("il file scaricato non è quello previsto: l'impronta SHA-256 non corrisponde");
   await fs.promises.mkdir(path.dirname(destinazione), { recursive: true });
   await fs.promises.writeFile(destinazione, contenuto);
   return contenuto;
@@ -341,7 +348,9 @@ ipcMain.handle("voceNaturale:scarica", async (evento, id) => {
     await fs.promises.mkdir(cartella, { recursive: true });
     if (!motoreCera) {
       manda({ fase: "motore", percentuale: 0 });
-      await scaricaFile(archivio, motore, (letti) => manda({ fase: "motore", percentuale: Math.round((letti / pesoTotale) * 100) }));
+      // Il 100% si manda solo dopo verifica e scrittura: una barra al 100% che
+      // poi fallisce è quella che sembrava «scarica ma non installa».
+      await scaricaFile(archivio, motore, (letti) => manda({ fase: "motore", percentuale: Math.min(99, Math.round((letti / pesoTotale) * 100)) }));
       fatto += motore.byte;
       scompattaMotore(await fs.promises.readFile(archivio), cartella, motore.tipo);
       await fs.promises.unlink(archivio).catch(() => {});
@@ -352,7 +361,7 @@ ipcMain.handle("voceNaturale:scarica", async (evento, id) => {
       const prima = fatto;
       await scaricaFile(path.join(cartella, file.nome), file, (letti) => manda({
         fase: "voce",
-        percentuale: Math.round(((prima + letti) / pesoTotale) * 100)
+        percentuale: Math.min(99, Math.round(((prima + letti) / pesoTotale) * 100))
       }));
       fatto += file.byte;
     }

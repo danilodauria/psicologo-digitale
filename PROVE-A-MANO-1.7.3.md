@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.2
+# Prove a mano · versione 1.7.3
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono quarantasei prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono quarantasette prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.2. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto.
+Vale dalla 1.4.0 alla 1.7.3. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -131,6 +131,12 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 11.1 Cerca una parola che sta solo nella «Situazione» di una scheda del pensiero | La scheda compare in «Nelle tue cose» con l'estratto limitato a quel campo: non porta dietro il pensiero, l'emozione o la lettura alternativa, e non ci sono «·» a incollarli in una riga sola |
 | ☐ | 11.2 Con «Riduci il movimento» attivo, apri Neura e invia un messaggio | La finestra della conversazione si porta in fondo di colpo, senza scorrimento morbido; l'orbita resta ferma come nella prova 9.3 |
 
+## 12. Voce naturale (dalla 1.7.3)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 12.1 Nel programma installato apri Neura → scheda Voce e premi **Installa Paola** | L'avanzamento sale fino al 99%, poi la scheda dice «Voci naturali pronte: Paola» e il pulsante diventa «Paola · femminile · 60 MB». La lettura parte con quella voce anche staccando la rete. Se il download si interrompe (prova con la rete spenta a metà) la scheda scrive il motivo e la voce resta da installare: non deve restare ferma al 100% |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -139,4 +145,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.2 | /46 |  |
+|  |  | 1.7.3 | /47 |  |

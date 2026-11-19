@@ -806,11 +806,20 @@
               riempi();
               A.toast("Voce naturale pronta: " + voce.nome + ".");
             } else {
-              disegnaNaturale({ disponibile: true, installata: pronte.length > 0, voci: naturaleVoci });
-              A.toast("Voce naturale non installata: " + ((s && (s.errore || s.motivo)) || "riprova") + ".");
+              // Il fallimento va scritto nella scheda, non solo in un avviso che
+              // sparisce: sempre con le voci che ci sono davvero, perché qui
+              // «pronte» non esiste e il ramo d'errore si rompeva da solo,
+              // lasciando la nota ferma all'ultima percentuale.
+              const pronteOra = naturaleVoci.filter(function (v) { return v.installata; });
+              const motivo = (s && (s.errore || s.motivo)) || "riprova";
+              disegnaNaturale({ disponibile: true, installata: pronteOra.length > 0, voci: naturaleVoci });
+              if (notaNaturale) notaNaturale.textContent = "Voce naturale non installata: " + motivo + ". Niente è stato salvato: puoi riprovare.";
+              A.toast("Voce naturale non installata: " + motivo + ".");
             }
           }).catch(function () {
-            disegnaNaturale({ disponibile: true, installata: pronte.length > 0, voci: naturaleVoci });
+            const pronteOra = naturaleVoci.filter(function (v) { return v.installata; });
+            disegnaNaturale({ disponibile: true, installata: pronteOra.length > 0, voci: naturaleVoci });
+            if (notaNaturale) notaNaturale.textContent = "Voce naturale non installata: controlla la connessione e riprova. Niente è stato salvato.";
             A.toast("Voce naturale non installata: controlla la connessione e riprova.");
           });
         });

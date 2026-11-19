@@ -574,6 +574,22 @@ setTimeout(async function () {
   ok(document.querySelectorAll("#voiceNaturaleVoci [data-rimuovi]").length === 0, "senza voci installate non resta alcun «Togli»");
   ok(document.getElementById("voiceNaturaleConfronta").hidden === true, "con una voce sola il confronto non compare");
 
+  // Un download può arrivare in fondo e poi fallire — è quello che succede
+  // quando il file sul server non è più quello previsto — e prima la scheda
+  // restava ferma sull'ultima percentuale, perché il ramo d'errore usava una
+  // variabile che non esiste. Deve dire il motivo e lasciare la voce da
+  // installare, non finta installata.
+  const scaricaBuona = window.npDesktop.voceNaturale.scarica;
+  window.npDesktop.voceNaturale.scarica = function () {
+    chiamateVoce.scarica++;
+    return Promise.resolve({ ok: false, errore: "il file scaricato non è quello previsto: 63.221.984 byte invece di 63.511.038" });
+  };
+  document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').click();
+  await new Promise(function (r) { setTimeout(r, 40); });
+  ok(/non è quello previsto/.test(document.getElementById("voiceNaturaleNota").textContent), "se il download fallisce la scheda dice il motivo, invece di restare al 100%");
+  ok(/Installa Paola/.test(document.querySelector('#voiceNaturaleVoci [data-voce="paola"]').textContent), "e la voce resta da installare, non compare fra quelle pronte");
+  window.npDesktop.voceNaturale.scarica = scaricaBuona;
+
   // Su Mac il motore locale non esiste: la scheda deve mandare alle voci
   // «Premium» di Apple invece di offrire un download che non funzionerebbe.
   window.npDesktop.voceNaturale.stato = function () {
