@@ -67,6 +67,18 @@ swAssets.forEach((a) => ok(exists(a), "il service worker elenca un file esistent
 srcs.forEach((s) => ok(sw.includes('"' + s + '"'), "il service worker include " + s));
 ok(/VERSION/.test(sw), "il service worker ha una versione della cache");
 
+// Una versione nuova del sito deve dirlo alla pagina aperta, invece di
+// aspettare la prossima riapertura. La barra parte nascosta, il pulsante
+// ricarica una volta sola e alla prima installazione non compare nulla.
+ok(/id="avvisoAggiornamento"/.test(html) && /id="aggiornaRicaricando"/.test(html), "la pagina ha la barra e il pulsante per la versione nuova del sito");
+ok(/hidden role="status">\s*<p><strong>C'è una versione nuova/.test(html), "la barra dell'aggiornamento parte nascosta e si annuncia ai lettori di schermo");
+ok(/\.avviso-aggiornamento\[hidden\]/.test(read("assets/css/styles.css")), "la barra resta davvero nascosta finché non serve");
+const appInit = read("assets/js/app-init.js");
+ok(/controllerchange/.test(appInit), "il programma si accorge quando il service worker nuovo prende il controllo");
+ok(/SKIP_WAITING/.test(appInit), "il pulsante chiede al service worker in attesa di attivarsi");
+ok(/ricaricaUnaVolta/.test(appInit) && /ricaricato/.test(appInit), "la ricarica è una sola, anche con più clic o più eventi");
+ok(/Aggiorna e ricarica/.test(html), "il pulsante dice cosa fa");
+
 const manifest = JSON.parse(read("manifest.webmanifest"));
 ok(manifest.icons.every((i) => exists(i.src)), "le icone del manifest esistono");
 ok(manifest.name.includes("Psicologo"), "il manifest ha il nome dell'app");
@@ -397,7 +409,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.3.md");
+const proveMd = read("PROVE-A-MANO-1.7.4.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -408,7 +420,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 47, "il markdown elenca quarantasette prove (" + etichette.length + ")");
+ok(etichette.length === 49, "il markdown elenca quarantanove prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));

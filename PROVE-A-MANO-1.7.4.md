@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.3
+# Prove a mano · versione 1.7.4
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono quarantasette prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono quarantanove prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.3. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale.
+Vale dalla 1.4.0 alla 1.7.4. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -137,6 +137,13 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 |---|---|---|
 | ☐ | 12.1 Nel programma installato apri Neura → scheda Voce e premi **Installa Paola** | L'avanzamento sale fino al 99%, poi la scheda dice «Voci naturali pronte: Paola» e il pulsante diventa «Paola · femminile · 60 MB». La lettura parte con quella voce anche staccando la rete. Se il download si interrompe (prova con la rete spenta a metà) la scheda scrive il motivo e la voce resta da installare: non deve restare ferma al 100% |
 
+## 13. Aggiornamento del sito (dalla 1.7.4)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 13.1 Lascia aperta una scheda del sito mentre esce una versione nuova (si prova alla release successiva, oppure riaprendo una scheda rimasta aperta da prima dell'aggiornamento) | Compare la barra «C'è una versione nuova» con il pulsante **Aggiorna e ricarica**. Un clic ricarica la pagina una volta e la barra sparisce; in **Versioni e novità** la versione in uso è quella nuova. Non è possibile un secondo clic: il pulsante è sparito con la barra |
+| ☐ | 13.2 Su un browser pulito, alla prima apertura del sito | La barra non compare e la pagina non si ricarica da sola: non c'è nessuna versione precedente da sostituire |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -145,4 +152,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.3 | /47 |  |
+|  |  | 1.7.4 | /49 |  |

@@ -122,6 +122,69 @@
   const mostraDiscreto = document.getElementById("mostraDiscreto");
   if (mostraDiscreto) mostraDiscreto.addEventListener("click", function () { A.svelaContenuti(); });
 
+  /* Aggiornamento del sito -------------------------------------------------- */
+
+  // Il service worker nuovo si installa e prende il controllo da solo, ma la
+  // pagina aperta continua a girare con i file vecchi: senza un avviso una
+  // versione nuova arriva solo alla riapertura. La barra compare quando il
+  // controllo è già passato al service worker nuovo, e il pulsante ricarica
+  // una volta sola: due clic non fanno due ricariche.
+  function collegaAvvisoAggiornamento(reg, opzioni) {
+    const opt = opzioni || {};
+    const nav = opt.nav || (navigator.serviceWorker || null);
+    const box = opt.box || document.getElementById("avvisoAggiornamento");
+    const bottone = opt.bottone || document.getElementById("aggiornaRicaricando");
+    const ricarica = opt.ricarica || function () { window.location.reload(); };
+    const attesa = typeof opt.attesa === "number" ? opt.attesa : 1500;
+    const avevaControllo = !!(nav && nav.controller);
+    let cliccato = false;
+    let ricaricato = false;
+    let timer = null;
+
+    function ricaricaUnaVolta() {
+      if (ricaricato) return;
+      ricaricato = true;
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (bottone) bottone.disabled = true;
+      ricarica();
+    }
+
+    function mostra() {
+      if (box) box.hidden = false;
+    }
+
+    function aggiorna() {
+      if (cliccato || ricaricato) return;
+      cliccato = true;
+      if (bottone) bottone.disabled = true;
+      const inAttesa = reg && reg.waiting;
+      if (inAttesa && typeof inAttesa.postMessage === "function") {
+        // Il service worker deve prendere il controllo prima della ricarica,
+        // o la pagina ripartirebbe con i file vecchi. Se il browser non manda
+        // l'evento, il timer di riserva ricarica lo stesso.
+        try { inAttesa.postMessage({ type: "SKIP_WAITING" }); } catch (e) {}
+        timer = setTimeout(ricaricaUnaVolta, attesa);
+      } else {
+        ricaricaUnaVolta();
+      }
+    }
+
+    if (nav && typeof nav.addEventListener === "function") {
+      nav.addEventListener("controllerchange", function () {
+        if (ricaricato) return;
+        if (cliccato) { ricaricaUnaVolta(); return; }
+        // Alla prima installazione il controllo passa per la prima volta: non
+        // c'è una versione precedente da sostituire, quindi niente avviso.
+        if (avevaControllo) mostra();
+      });
+    }
+    if (reg && reg.waiting) mostra();
+    if (bottone) bottone.addEventListener("click", aggiorna);
+    return { aggiorna: aggiorna, mostra: mostra };
+  }
+
+  A.collegaAvvisoAggiornamento = collegaAvvisoAggiornamento;
+
   /* Routing --------------------------------------------------------------- */
 
   window.addEventListener("hashchange", function () { A.render(); });
@@ -141,7 +204,19 @@
 
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js").catch(function () { /* offline non disponibile */ });
+      navigator.serviceWorker.register("sw.js").then(function (reg) {
+        A.collegaAvvisoAggiornamento(reg);
+        // Un controllo all'avvio e uno quando si torna sulla pagina: senza il
+        // secondo, un'app lasciata aperta non si accorgerebbe di nulla.
+        const cerca = function () {
+          if (typeof reg.update !== "function") return;
+          Promise.resolve(reg.update()).catch(function () {});
+        };
+        cerca();
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) cerca();
+        });
+      }).catch(function () { /* offline non disponibile */ });
     });
   }
 })();

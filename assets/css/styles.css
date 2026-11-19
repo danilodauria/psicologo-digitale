@@ -1600,6 +1600,11 @@ html[data-discreto="1"] #app { transition: filter .18s ease; }
 .avviso-discreto { max-width: 72rem; margin: 1rem auto 0; padding: .7rem 1rem; border-radius: 12px; background: var(--ambra-chiara); color: var(--ambra-scura); display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
 .avviso-discreto p { margin: 0; font-size: .9rem; }
 html[data-theme="dark"] .avviso-discreto { background: #33281a; color: #f0d9b5; }
+/* Versione nuova del sito: la barra resta nascosta finché il service worker
+   nuovo non prende il controllo, e il pulsante ricarica una volta sola. */
+.avviso-aggiornamento { max-width: 72rem; margin: 1rem auto 0; padding: .7rem 1rem; border-radius: 12px; background: var(--indaco-100); color: inherit; display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
+.avviso-aggiornamento p { margin: 0; font-size: .9rem; }
+.avviso-aggiornamento[hidden] { display: none; }
 /* Confronto fra oggi e una copia: due barre sulla stessa scala, così la
    differenza si vede a colpo d'occhio senza leggere i punteggi. */
 /* Storico dei punteggi: una riga per misurazione, dal più vecchio al più

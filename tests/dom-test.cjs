@@ -1506,6 +1506,82 @@ setTimeout(async function () {
   ok(!!linkProve && linkProve.hasAttribute("download") && !!linkProve.closest(".card"),
     "il collegamento scarica il PDF e sta dentro una scheda con la sua spiegazione");
 
+  /* Aggiornamento del sito -------------------------------------------------- */
+
+  console.log("\nAggiornamento del sito");
+
+  // Il service worker nuovo prende il controllo da solo, ma la pagina aperta
+  // continua a girare con i file vecchi: deve dirlo e offrire una ricarica.
+  ok(!!document.getElementById("avvisoAggiornamento") && !!document.getElementById("aggiornaRicaricando"),
+    "la pagina ha la barra e il pulsante per l'aggiornamento");
+  ok(document.getElementById("avvisoAggiornamento").hidden === true, "all'avvio la barra resta nascosta");
+
+  function bancoAggiornamento(avevaControllo) {
+    const nav = new window.EventTarget();
+    nav.controller = avevaControllo ? {} : null;
+    const box = document.createElement("div");
+    box.hidden = true;
+    const bottone = document.createElement("button");
+    const stato = { ricariche: 0 };
+    NP.app.collegaAvvisoAggiornamento(
+      { waiting: null },
+      { nav: nav, box: box, bottone: bottone, attesa: 0, ricarica: function () { stato.ricariche++; } }
+    );
+    return { nav: nav, box: box, bottone: bottone, stato: stato };
+  }
+
+  const primaVolta = bancoAggiornamento(false);
+  primaVolta.nav.dispatchEvent(new window.Event("controllerchange"));
+  ok(primaVolta.box.hidden === true, "alla prima installazione non compare nessun avviso");
+
+  const banco = bancoAggiornamento(true);
+  banco.nav.dispatchEvent(new window.Event("controllerchange"));
+  ok(banco.box.hidden === false, "quando il service worker cambia compare l'avviso");
+  banco.bottone.click();
+  ok(banco.stato.ricariche === 1, "il pulsante ricarica la pagina una volta");
+  ok(banco.bottone.disabled === true, "dopo il clic il pulsante si spegne");
+  banco.bottone.click();
+  banco.nav.dispatchEvent(new window.Event("controllerchange"));
+  ok(banco.stato.ricariche === 1, "un secondo clic non ricarica di nuovo");
+
+  // Con un service worker in attesa la ricarica aspetta il passaggio di
+  // controllo: ripartire prima vorrebbe dire tornare ai file vecchi.
+  const navInAttesa = new window.EventTarget();
+  navInAttesa.controller = {};
+  const boxInAttesa = document.createElement("div");
+  boxInAttesa.hidden = true;
+  const bottoneInAttesa = document.createElement("button");
+  const messaggi = [];
+  let ricaricheInAttesa = 0;
+  NP.app.collegaAvvisoAggiornamento(
+    { waiting: { postMessage: function (m) { messaggi.push(m && m.type); } } },
+    { nav: navInAttesa, box: boxInAttesa, bottone: bottoneInAttesa, attesa: 0, ricarica: function () { ricaricheInAttesa++; } }
+  );
+  ok(boxInAttesa.hidden === false, "un service worker in attesa fa comparire l'avviso");
+  bottoneInAttesa.click();
+  ok(messaggi.length === 1 && messaggi[0] === "SKIP_WAITING", "il pulsante chiede al service worker di prendere il controllo");
+  ok(ricaricheInAttesa === 0, "la pagina aspetta il passaggio di controllo prima di ricaricare");
+  navInAttesa.dispatchEvent(new window.Event("controllerchange"));
+  ok(ricaricheInAttesa === 1, "quando il controllo passa, la pagina si ricarica");
+  await new Promise(function (r) { setTimeout(r, 10); });
+  ok(ricaricheInAttesa === 1, "e la ricarica resta una sola, anche col timer di riserva");
+
+  // Se il browser non annuncia il passaggio di controllo, il timer di riserva
+  // ricarica lo stesso: il pulsante non deve restare senza effetto.
+  const navMuto = new window.EventTarget();
+  navMuto.controller = {};
+  const boxMuto = document.createElement("div");
+  boxMuto.hidden = true;
+  const bottoneMuto = document.createElement("button");
+  let ricaricheMute = 0;
+  NP.app.collegaAvvisoAggiornamento(
+    { waiting: { postMessage: function () {} } },
+    { nav: navMuto, box: boxMuto, bottone: bottoneMuto, attesa: 0, ricarica: function () { ricaricheMute++; } }
+  );
+  bottoneMuto.click();
+  await new Promise(function (r) { setTimeout(r, 10); });
+  ok(ricaricheMute === 1, "se l'evento non arriva, la pagina si ricarica comunque una volta sola");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

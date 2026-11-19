@@ -242,7 +242,7 @@
           "<li>La prima apertura salva l'app nella memoria del browser: le volte successive partono senza connessione.</li>" +
           "<li>Risposte, questionari, diario e relazione restano su quel dispositivo. Non c'è un account da ricordare.</li>" +
           "<li>Se cancelli i dati del browser o disinstalli, i contenuti salvati spariscono: esporta un backup dalla sezione Licenze.</li>" +
-          "<li>Gli aggiornamenti arrivano da soli alla riapertura, quando il dispositivo è in rete.</li>" +
+          "<li>Quando il sito pubblica una versione nuova compare una barra con «Aggiorna e ricarica»: la pagina si ricarica una volta e riparte con i file nuovi.</li>" +
         "</ul></div>" +
 
       '<div class="card mt-2"><h2 class=h-sub>I programmi installabili</h2>' +

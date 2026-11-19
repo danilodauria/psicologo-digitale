@@ -247,7 +247,7 @@
     let html = "<h2 class=h-sub>Aggiornamenti</h2>";
 
     if (!ponte) {
-      return html + '<p class="text-small muted mb-0">Qui gli aggiornamenti non si gestiscono: nel browser la pagina si rinnova da sé quando il sito pubblica una nuova versione. Il controllo automatico riguarda il programma installato.</p>';
+      return html + '<p class="text-small muted mb-0">Qui gli aggiornamenti non si gestiscono: nel browser la pagina avvisa quando il sito pubblica una versione nuova, con un pulsante che aggiorna e ricarica. Il controllo automatico riguarda il programma installato.</p>';
     }
 
     const fase = statoUpdate.fase;

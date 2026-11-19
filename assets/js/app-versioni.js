@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.3";
+  const VERSIONE = "1.7.4";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.4",
+      data: "19 novembre 2026",
+      titolo: "Il sito dice quando c'è una versione nuova",
+      punti: [
+        "Prima, se il sito veniva aggiornato mentre la pagina era aperta, si continuava a usare la versione vecchia senza saperlo: il service worker nuovo si installava in sottofondo, ma i file in uso restavano quelli di prima fino alla riapertura successiva.",
+        "Ora compare una barra con «C'è una versione nuova» e il pulsante «Aggiorna e ricarica»: chiede al service worker di prendere il controllo e ricarica la pagina una volta sola. Se il browser non manda l'avviso, la ricarica avviene lo stesso dopo un attimo; un secondo clic non fa una seconda ricarica.",
+        "Alla prima visita la barra non compare, perché non c'è nessuna versione precedente da sostituire. Il controllo avviene all'avvio e ogni volta che si torna sulla pagina, così anche un'app lasciata aperta se ne accorge."
+      ]
+    },
     {
       v: "1.7.3",
       data: "19 novembre 2026",
@@ -917,7 +927,7 @@
         '<p class="lead">Che cosa ha portato ogni versione, dalla prima installabile a oggi. Il segno <strong>in uso</strong> dice quale stai usando adesso.</p>' +
       "</div>" +
 
-      '<div class="callout info"><p><strong>Nel browser</strong> la pagina si aggiorna da sé quando il sito pubblica una versione nuova: cambia il numero del service worker e il telefono se ne accorge al primo avvio. <strong>Nel programma installato</strong> se ne occupa l\'aggiornamento automatico, dalla 1.3.7 in poi.</p></div>' +
+      '<div class="callout info"><p><strong>Nel browser</strong> quando il sito pubblica una versione nuova compare una barra con «Aggiorna e ricarica»: la pagina si ricarica una volta sola e riparte con i file nuovi. <strong>Nel programma installato</strong> se ne occupa l\'aggiornamento automatico, dalla 1.3.7 in poi.</p></div>' +
 
       elenco +
 
@@ -926,7 +936,7 @@
         '<a class="btn btn-ghost btn-sm" href="https://github.com/danilodauria/psicologo-digitale/releases" target="_blank" rel="noopener">Tutte le release su GitHub</a>' +
       "</div>" +
 
-      '<p class="text-small muted mt-3">Una nota pratica: se qui la versione «in uso» è più vecchia dell\'ultima pubblicata, l\'aggiornamento non è ancora arrivato. Nel browser basta ricaricare; nel programma si può forzare il controllo dal pannello degli aggiornamenti.</p>'
+      '<p class="text-small muted mt-3">Una nota pratica: se qui la versione «in uso» è più vecchia dell\'ultima pubblicata, l\'aggiornamento non è ancora arrivato. Nel browser la barra compare appena il service worker nuovo prende il controllo; nel programma si può forzare il controllo dal pannello degli aggiornamenti.</p>'
     );
   };
 })();

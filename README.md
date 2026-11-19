@@ -352,6 +352,12 @@ Tre limiti da conoscere:
 
 Perché funzioni, la release deve contenere anche i tre file di servizio che GitHub non mostra tra i download: `latest.yml` (Windows), `latest-mac.yml` e `latest-linux.yml`. Li scrive `electron-builder` a ogni build e il workflow li allega; *Controllo che la release sia completa* verifica che ci siano, perché senza di loro il programma installato non vede le nuove versioni.
 
+### Quando cambia il sito
+
+Anche la pagina web ha il suo avviso. Quando GitHub Pages pubblica una versione nuova, la scheda aperta mostra una barra — **«C'è una versione nuova»** — con il pulsante **Aggiorna e ricarica**: chiede al service worker di prendere il controllo e ricarica la pagina una volta sola. Prima l'aggiornamento arrivava in silenzio solo alla riapertura, e chi teneva l'app aperta continuava a usare i file vecchi senza saperlo.
+
+Alla prima visita la barra non compare, perché non c'è nessuna versione precedente da sostituire. Il controllo avviene all'avvio e ogni volta che si torna sulla pagina, così anche un'app lasciata aperta se ne accorge; se il browser non annuncia il passaggio di controllo, la ricarica avviene lo stesso dopo un attimo.
+
 ### Controllo del sito pubblicato
 
 Dopo la pubblicazione parte il job **Il sito serve la versione giusta**. Scarica `sw.js` e verifica che dichiari la versione di `package.json`: un service worker vecchio in cache non dà errori, resta lì finché qualcuno non apre la pagina. Poi scarica i quattro PDF e ne confronta l'impronta SHA-256 con quella dei file del repository, così un PDF non copiato nell'artefatto si vede subito. I tentativi si ripetono per qualche minuto, perché Pages non è aggiornato nell'istante in cui il deploy finisce; se la versione resta sbagliata la build diventa rossa e il problema si vede senza aprire il browser.
@@ -412,7 +418,7 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 ## Prove a mano prima di una release
 
-I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.3 è [PROVE-A-MANO-1.7.3.md](PROVE-A-MANO-1.7.3.md): quarantasette controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti e nelle cose scritte, backup con migrazione, dimensione del testo, modalità discreta e lettura ad alta voce, ognuno con il risultato atteso e una casella da spuntare.
+I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.4 è [PROVE-A-MANO-1.7.4.md](PROVE-A-MANO-1.7.4.md): quarantanove controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti e nelle cose scritte, backup con migrazione, dimensione del testo, modalità discreta, lettura ad alta voce e avviso di aggiornamento del sito, ognuno con il risultato atteso e una casella da spuntare.
 
 Lo stesso foglio esiste in **PDF A4**, per stamparlo e spuntarlo a penna: [assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf](assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf), casella per ogni prova e tabella d'esito in fondo, con versione e provenienza nel piè di pagina. Non è una seconda copia del testo: `scripts/build_prove_a_mano_pdf.py` legge il markdown delle prove — il più recente per versione — e lo impagina con la stessa testata degli altri fogli, riusando l'impaginatore di `build_come_installare_pdf.py`. Il file è allegato alla release insieme agli altri PDF (`.github/workflows/foglio.yml`), e `tests/verify.cjs` confronta le prove del markdown con quelle stampate: una prova aggiunta e mai rigenerata diventa una build rossa.
 
@@ -469,4 +475,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.7.3** · novembre 2026.
+Versione **1.7.4** · novembre 2026.
