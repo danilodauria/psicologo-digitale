@@ -658,7 +658,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.7 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.8 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -870,18 +870,33 @@
     // anche un confine di frase, quindi la riga sotto un titolo non si porta
     // dietro il titolo della sezione.
     (NP.data.manuale || []).forEach(function (c) {
-      const corpo = [c.sommario].concat(c.sezioni.map(function (s) {
-        return [s.h].concat(s.p).join("\n");
-      })).join("\n");
-      voci.push({ tipo: "Capitolo " + c.n, titolo: c.titolo, testo: corpo, rotta: "#/manuale/" + c.id });
+      // Il titolo della sezione serve per trovare il capitolo, non per
+      // l'estratto: chi cerca «suicidario» deve vedere il capitolo, non la
+      // riga «Il rischio suicidario» al posto di una frase. Il testo per la
+      // ricerca tiene i titoli, quello per l'estratto tiene solo la prosa.
+      const prosa = [c.sommario];
+      const corpo = [c.sommario];
+      c.sezioni.forEach(function (s) {
+        corpo.push(s.h);
+        s.p.forEach(function (p) { corpo.push(p); prosa.push(p); });
+      });
+      voci.push({ tipo: "Capitolo " + c.n, titolo: c.titolo, testo: corpo.join("\n"), frase: prosa.join("\n"), rotta: "#/manuale/" + c.id });
     });
     (NP.data.glossario || []).forEach(function (v) {
-      voci.push({ tipo: "Glossario", titolo: v.t, testo: v.d, rotta: "#/glossario" });
+      voci.push({ tipo: "Glossario", titolo: v.t, testo: v.d, frase: v.d, rotta: "#/glossario" });
     });
     const esercizi = (NP.data.percorso && Array.isArray(NP.data.percorso.esercizi)) ? NP.data.percorso.esercizi : [];
     esercizi.forEach(function (e) {
       if (!e || typeof e !== "object" || !e.id) return;
-      voci.push({ tipo: "Esercizio", titolo: e.titolo || e.id, testo: [e.testo, e.durata].filter(function (parte) { return !!parte; }).join("\n"), rotta: "#/esercizi/" + e.id });
+      // Il testo di un esercizio non è un campo solo: scopo, quando, passi,
+      // variante e nota. Prima l'indice leggeva `e.testo`, che negli esercizi
+      // non esiste, quindi restavano cercabili solo titolo e durata — ed era
+      // la durata a finire nell'estratto. La durata resta cercabile, ma non
+      // può prendere il posto della frase.
+      const prosa = [e.testo, e.scopo, e.quando].concat(
+        Array.isArray(e.passo) ? e.passo : [], [e.variante, e.nota]
+      ).filter(function (parte) { return !!parte; }).join("\n");
+      voci.push({ tipo: "Esercizio", titolo: e.titolo || e.id, testo: [prosa, e.durata].filter(function (parte) { return !!parte; }).join("\n"), frase: prosa, rotta: "#/esercizi/" + e.id });
     });
     return voci;
   }
@@ -905,10 +920,15 @@
       if (primo < 0 || i < primo) primo = i;
       if (i + p.length > ultimo) ultimo = i + p.length;
     });
-    if (primo < 0) { primo = 0; ultimo = 0; }
-    // Punto, punto e virgola, punto esclamativo o interrogativo seguiti da uno
-    // spazio, e l'a capo: sono i posti in cui comincia una frase nuova.
-    const confini = [". ", "! ", "? ", "; ", "\n"];
+    // Nessun termine cercato nella prosa: il risultato è comparso per il
+    // titolo o per una durata, e non c'è una frase da mostrare. Meglio niente
+    // estratto che una frase che non c'entra.
+    if (primo < 0) return "";
+    // Punto, punto esclamativo o interrogativo seguiti da uno spazio, e l'a
+    // capo: sono i posti in cui comincia una frase nuova. Il punto e virgola
+    // non è un confine: «È utile quando…; diventa un problema quando…» è una
+    // frase sola, e tagliarla lì lasciava una dipendente senza la principale.
+    const confini = [". ", "! ", "? ", "\n"];
     let inizio = 0;
     confini.forEach(function (c) {
       const i = testo.lastIndexOf(c, primo);
@@ -921,10 +941,23 @@
       if (i >= 0 && i + c.length - 1 < fine) fine = i + c.length - 1;
     });
     // Una frase lunghissima — un paragrafo senza punti — si taglia lo stesso,
-    // ma sempre lasciando dentro le parole cercate.
+    // ma sempre lasciando dentro le parole cercate e senza spezzare una parola:
+    // un estratto che finisce con «personalizzaz» non è una frase, è un errore.
     if (fine - inizio > 220) {
-      inizio = Math.max(inizio, primo - 40);
-      fine = Math.max(ultimo, Math.min(fine, inizio + 180));
+      const inizioParola = function (i) {
+        while (i > 0 && !/\s/.test(testo.charAt(i - 1))) i--;
+        return i;
+      };
+      const fineParola = function (i) {
+        while (i < testo.length && !/\s/.test(testo.charAt(i))) i++;
+        return i;
+      };
+      inizio = Math.max(inizio, inizioParola(Math.max(inizio, primo - 40)));
+      const taglio = Math.max(ultimo, Math.min(fine, inizio + 180));
+      const dietro = inizioParola(taglio);
+      // Se la parola tagliata comincia dopo il termine cercato, si arretra al
+      // suo inizio; altrimenti si va avanti fino alla sua fine.
+      fine = dietro > ultimo ? dietro : Math.min(fine, fineParola(taglio));
     }
     const pezzo = testo.slice(inizio, fine).trim();
     const re = new RegExp("(" + parole.map(function (p) {
@@ -1053,7 +1086,7 @@
       (risultati.length
         ? '<div class="card mt-2 cerca-contenuti"><h2 class="h-sub">Nei contenuti · ' + risultati.length + (risultati.length === 1 ? " risultato" : " risultati") + '</h2><ul class="text-small">' +
           risultati.map(function (v) {
-            const frase = estratto(v.testo, espansione.tutti);
+            const frase = estratto(v.frase || v.testo, espansione.tutti);
             return '<li><a href="' + v.rotta + '"><strong>' + esc(v.titolo) + "</strong></a> — " + esc(v.tipo) +
               (frase ? '<p class="text-small muted mb-0">' + frase + "</p>" : "") + "</li>";
           }).join("") + "</ul></div>"

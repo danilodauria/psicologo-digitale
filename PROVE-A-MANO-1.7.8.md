@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.7
+# Prove a mano · versione 1.7.8
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono cinquantasei prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono sessanta prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.7. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca.
+Vale dalla 1.4.0 alla 1.7.8. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -166,6 +166,15 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 16.1 Cerca «dormire» e poi «ansioso» | «Dormire» trova il capitolo **Sonno: la riparazione notturna** con «sonno» evidenziato nell'estratto; «ansioso» trova il capitolo sull'ansia, con «ansia» evidenziato. Il risultato non è un titolo senza spiegazione: la frase mostrata contiene la parola che lo ha fatto comparire |
 | ☐ | 16.2 Scrivi nel diario una nota con «ho dormito poco», poi cerca «sonno»; infine cerca «zanzara» | La nota compare in **Nelle tue cose** con «dormito» evidenziato; «zanzara», che non è nella tabella, non inventa parenti e dà gli stessi risultati di prima (nessuno, se non l'hai scritta) |
 
+## 17. Estratti della ricerca (dalla 1.7.8)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 17.1 Cerca «legittime» | Compare **Scegliere il professionista giusto** senza una riga che ripeta il titolo di sezione «Domande legittime»: il titolo serve a trovarlo, non a spiegarlo |
+| ☐ | 17.2 Cerca «pianificazione» e poi «padronanza» | «Pianificazione» trova **Attivazione comportamentale** senza «10 minuti di pianificazione» come estratto; «padronanza» trova lo stesso esercizio con la frase dei passi, parola evidenziata |
+| ☐ | 17.3 Cerca «reagisce» | L'estratto comincia prima del punto e virgola: si legge «… scegliere cosa fare; fuori, si reagisce», non solo la parte dopo |
+| ☐ | 17.4 Cerca «etichettamento» | L'estratto si ferma a una parola intera («… cancella il resto),») e non lascia una parola mozzata come «personalizzaz» |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -174,4 +183,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.7 | /56 |  |
+|  |  | 1.7.8 | /60 |  |

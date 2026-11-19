@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.7";
+  const VERSIONE = "1.7.8";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.8",
+      data: "19 novembre 2026",
+      titolo: "Gli estratti della ricerca tornano a essere frasi",
+      punti: [
+        "Un termine che stava solo in un titolo di sezione trovava il capitolo, ma al posto della frase mostrava il titolo: «Domande legittime» non spiega niente. Ora i titoli restano cercabili e non entrano più negli estratti; se nella prosa non c'è niente da mostrare, il risultato compare senza estratto, invece di mostrare una riga che non c'entra.",
+        "Le durate degli esercizi facevano da estratto («10 minuti di pianificazione»): l'indice leggeva un campo che negli esercizi non esiste, quindi erano cercabili solo titolo e durata. Ora scopo, quando, passi, variante e nota entrano nella ricerca e nell'estratto; la durata resta cercabile, ma non prende il posto della frase.",
+        "Il punto e virgola spezzava la frase: «…; fuori, si reagisce» perdeva la principale. Non è più un confine, e nei paragrafi lunghi il taglio si ferma alla parola intera invece di lasciare «personalizzaz»."
+      ]
+    },
     {
       v: "1.7.7",
       data: "19 novembre 2026",

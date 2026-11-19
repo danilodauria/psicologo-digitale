@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.7**, 19 novembre 2026.
+Ultimo aggiornamento: versione **1.7.8**, 19 novembre 2026.
 
 ---
 
@@ -121,7 +121,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 576 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 583 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |

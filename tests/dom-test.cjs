@@ -1616,6 +1616,36 @@ setTimeout(async function () {
 
   NP.app.state.diary = diarioPrimaDeiSinonimi;
 
+  /* Estratti della ricerca -------------------------------------------------- */
+
+  console.log("\nEstratti della ricerca");
+
+  // Un termine che sta solo nel titolo di una sezione non deve trasformare il
+  // titolo in una frase: il risultato si vede, l'estratto no.
+  navigate("#/cerca/legittime");
+  const rigaTitoloSezione = Array.prototype.filter.call(document.querySelectorAll("#app .cerca-contenuti li"), function (li) {
+    return /Scegliere il professionista giusto/.test(li.textContent);
+  })[0];
+  ok(!!rigaTitoloSezione, "un termine che sta solo in un titolo di sezione trova lo stesso il capitolo");
+  ok(!!rigaTitoloSezione && !rigaTitoloSezione.querySelector("p"), "ma il titolo di sezione non viene usato come estratto");
+
+  // La durata resta una cosa cercabile; non è una frase da mostrare.
+  navigate("#/cerca/pianificazione");
+  const linkDurata = document.querySelector('#app .cerca-contenuti a[href="#/esercizi/attivazione"]');
+  ok(!!linkDurata, "un esercizio si trova anche dalla sua durata");
+  ok(!!linkDurata && !linkDurata.closest("li").querySelector("p"), "ma la durata non prende il posto della frase");
+
+  // Il punto e virgola separa due parti della stessa frase: tagliarlo lascia
+  // una dipendente senza la principale.
+  navigate("#/cerca/reagisce");
+  ok(/scegliere cosa fare; fuori, si reagisce/i.test(document.getElementById("app").textContent), "il punto e virgola non spezza più la frase");
+
+  // Un paragrafo lunghissimo si taglia, ma non dentro una parola.
+  navigate("#/cerca/etichettamento");
+  const testoTaglio = document.getElementById("app").textContent;
+  ok(/cancella il resto\),/.test(testoTaglio), "il paragrafo lungo si ferma a una parola intera");
+  ok(!/personalizzaz(?!ione)/.test(testoTaglio), "e non lascia una parola mozzata come «personalizzaz»");
+
   /* Diario: elenco completo, modifica, schede ------------------------------ */
 
   console.log("\nDiario: elenco, modifica e schede");

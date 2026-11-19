@@ -30,7 +30,7 @@ from reportlab.lib import colors  # noqa: E402
 from reportlab.lib.pagesizes import A4  # noqa: E402
 from reportlab.lib.styles import ParagraphStyle  # noqa: E402
 from reportlab.lib.units import mm  # noqa: E402
-from reportlab.platypus import KeepTogether, Paragraph, Spacer, Table, TableStyle  # noqa: E402
+from reportlab.platypus import Paragraph, Spacer, Table, TableStyle  # noqa: E402
 
 from build_come_installare_pdf import (  # noqa: E402
     BASE,
@@ -123,7 +123,7 @@ def stili_prove():
     s["th"] = ParagraphStyle(
         "th", fontName="Helvetica-Bold", fontSize=8.6, leading=11, textColor=INDACO
     )
-    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=11.4)
+    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=10.4)
     return s
 
 
@@ -154,8 +154,8 @@ def tabella(righe, s):
                 ("ALIGN", (0, 0), (0, -1), "CENTER"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 4),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                ("TOPPADDING", (0, 0), (-1, -1), 3.5),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 3.5),
+                ("TOPPADDING", (0, 0), (-1, -1), 2.2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
             ]
         )
@@ -193,7 +193,7 @@ def impagina(markdown, s):
         nonlocal tabella_righe
         if tabella_righe:
             elementi.append(tabella(tabella_righe, s))
-            elementi.append(Spacer(1, 7))
+            elementi.append(Spacer(1, 5))
             tabella_righe = []
 
     def chiudi_elenco():
@@ -330,14 +330,9 @@ def main():
     )
 
     os.makedirs(os.path.dirname(USCITA), exist_ok=True)
-    # L'esito e le note finali restano sulla stessa pagina: da sistema l'ultima
-    # riga della tabella da sola in cima a un foglio, con il resto vuoto sotto.
-    taglio = next(
-        (i for i, elemento in enumerate(storia) if isinstance(elemento, Paragraph) and elemento.text == "Esito"),
-        None,
-    )
-    if taglio is not None:
-        storia = storia[:taglio] + [KeepTogether(storia[taglio:])]
+    # Con sessanta prove l'esito non sta più per forza su un foglio suo: tenerlo
+    # tutto insieme lasciava una settima pagina quasi vuota. Ora segue il testo,
+    # e la tabella scende solo se non c'è spazio per l'intestazione.
     documento = Foglio(
         USCITA,
         ver,

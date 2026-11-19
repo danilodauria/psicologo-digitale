@@ -421,7 +421,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.7.md");
+const proveMd = read("PROVE-A-MANO-1.7.8.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -432,7 +432,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 56, "il markdown elenca cinquantasei prove (" + etichette.length + ")");
+ok(etichette.length === 60, "il markdown elenca sessanta prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -529,7 +529,12 @@ ok(/scroll-behavior: auto !important/.test(moto), "e si ferma anche lo scorrimen
 const fnEstratto = (read("assets/js/app-views.js").match(/function estratto\(testo, parole\) \{[\s\S]*?\n  \}/) || [""])[0];
 ok(!!fnEstratto && /lastIndexOf\(c, primo\)/.test(fnEstratto), "l'estratto parte dal confine della frase, non da quaranta caratteri prima");
 ok(!!fnEstratto && /indexOf\(c, ultimo\)/.test(fnEstratto), "e finisce alla fine della stessa frase");
-ok(/estratto\(v\.testo, espansione\.tutti\)/.test(read("assets/js/app-views.js")), "anche i risultati nei contenuti mostrano la loro frase");
+ok(/estratto\(v\.frase \|\| v\.testo, espansione\.tutti\)/.test(read("assets/js/app-views.js")), "anche i risultati nei contenuti mostrano la loro frase, presa dalla prosa");
+ok(/frase: prosa\.join/.test(indiceContenuti) && /const prosa = \[e\.testo, e\.scopo, e\.quando\]/.test(indiceContenuti), "titoli di sezione e durate restano cercabili ma fuori dagli estratti");
+const fnEstrattoRicerca = (read("assets/js/app-views.js").match(/function estratto\(testo, parole\) \{[\s\S]*?\n  \}/) || [""])[0];
+ok(!!fnEstrattoRicerca && /if \(primo < 0\) return ""/.test(fnEstrattoRicerca), "quando la parola sta solo nel titolo, l'estratto tace invece di mostrare il titolo");
+ok(!!fnEstrattoRicerca && fnEstrattoRicerca.indexOf('\"; \"') < 0, "il punto e virgola non è più un confine di frase");
+ok(!!fnEstrattoRicerca && /inizioParola/.test(fnEstrattoRicerca) && /fineParola/.test(fnEstrattoRicerca), "il taglio dei paragrafi lunghi si ferma ai confini delle parole");
 
 // L'indice dei contenuti non unisce titolo e sommario in una sola stringa: se
 // lo facesse, la frase cercata comincerebbe col titolo già stampato sopra il
