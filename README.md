@@ -35,7 +35,7 @@ Il programma non prova a "fare lo psicologo". Prova a fare bene una cosa diversa
 | **Sedute** | Sette protocolli clinici: primo colloquio, formulazione condivisa, psicoeducazione, pensieri e comportamenti, esposizione, regolazione emotiva, chiusura. Agenda minuto per minuto. |
 | **Esercizi** | Dodici pratiche guidate: respiro 4-6, ancoraggio 5-4-3-2-1, attivazione comportamentale, scheda del pensiero, finestra della preoccupazione, igiene del sonno, autocompassione, DESC, bussola dei valori, rilassamento muscolare, camminata consapevole, piano di mantenimento. |
 | **Diario** | Umore, ansia, sonno, energia e nota giornaliera; scheda del pensiero integrata. Le voci si correggono e si eliminano una per una, e dal diario si apre l'elenco completo; le schede del pensiero si possono togliere. Tutto locale, incluso nella relazione. |
-| **Relazione** | Documento A4 con dati, aree emerse, storia, funzionamento, punteggi, segnali di sicurezza, obiettivi, diario, domande per il clinico, firme. PDF generato sul dispositivo. |
+| **Relazione** | Documento A4 con dati, aree emerse, storia, funzionamento, punteggi, segnali di sicurezza, obiettivi, domande per il clinico, firme. Prima del PDF tre caselle scelgono se includere diario, schede del pensiero e note personali. PDF generato sul dispositivo. |
 | **Neura** | Assistente locale: spiega, cerca, propone esercizi, orienta e riconosce le situazioni di rischio. Legge le risposte ad alta voce (sintesi vocale del dispositivo) e accetta la dettatura, se il browser la supporta. |
 | **Manuale** | Dodici capitoli: primo colloquio, scelta del professionista, ansia, umore, sonno, stress e burnout, emozioni, pensieri, relazioni, trauma e lutto, corpo e sostanze, etica e limiti dell'IA. |
 | **Palestra della mente** | 36 domande divulgative in sei aree, con spiegazioni: miti da smontare, evidenze, linguaggio corretto. |
@@ -224,10 +224,10 @@ La relazione raccoglie:
 - punteggi dei questionari con fasce e interpretazione;
 - segnali di sicurezza, in evidenza;
 - obiettivi, disponibilità, rete e risorse;
-- diario recente e schede del pensiero;
 - domande suggerite per il clinico, generate in base ai dati;
-- spazio per le note della persona e del professionista;
 - firme e avvertenze.
+
+Prima di generare il documento, tre caselle permettono di includere o escludere il **diario recente**, le **schede del pensiero** e le **note personali**. Le parti tolte non compaiono né nel PDF né nella stampa; le domande per il clinico e lo spazio del professionista restano. Le caselle partono tutte spuntate, così chi non le tocca ritrova la relazione di sempre, e la numerazione delle sezioni si adatta senza lasciare buchi.
 
 Si scarica in **PDF** (generato sul dispositivo, senza librerie) oppure si stampa con il comando del browser. Contiene dati sensibili: va conservata e condivisa con cura.
 
@@ -421,7 +421,7 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 ## Prove a mano prima di una release
 
-I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.10 è [PROVE-A-MANO-1.7.10.md](PROVE-A-MANO-1.7.10.md): sessantacinque controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito, protezione dello spazio e piano di sicurezza personale, ognuno con il risultato atteso e una casella da spuntare.
+I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.11 è [PROVE-A-MANO-1.7.11.md](PROVE-A-MANO-1.7.11.md): sessantotto controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito, protezione dello spazio, piano di sicurezza personale e parti da includere nella relazione, ognuno con il risultato atteso e una casella da spuntare.
 
 Lo stesso foglio esiste in **PDF A4**, per stamparlo e spuntarlo a penna: [assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf](assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf), casella per ogni prova e tabella d'esito in fondo, con versione e provenienza nel piè di pagina. Non è una seconda copia del testo: `scripts/build_prove_a_mano_pdf.py` legge il markdown delle prove — il più recente per versione — e lo impagina con la stessa testata degli altri fogli, riusando l'impaginatore di `build_come_installare_pdf.py`. Il file è allegato alla release insieme agli altri PDF (`.github/workflows/foglio.yml`), e `tests/verify.cjs` confronta le prove del markdown con quelle stampate: una prova aggiunta e mai rigenerata diventa una build rossa.
 
@@ -478,4 +478,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.7.10** · novembre 2026.
+Versione **1.7.11** · novembre 2026.

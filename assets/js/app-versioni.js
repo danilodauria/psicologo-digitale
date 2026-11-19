@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.10";
+  const VERSIONE = "1.7.11";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.11",
+      data: "19 novembre 2026",
+      titolo: "Scegliere cosa consegnare nella relazione",
+      punti: [
+        "Prima di scaricare il PDF, la pagina Relazione ha tre caselle: diario recente, schede del pensiero e note personali. Partono tutte spuntate, così chi non le tocca ritrova il documento di sempre; togliendo una spunta, quella parte non compare nel PDF né nella stampa.",
+        "La numerazione delle sezioni si adatta: se togli il diario, le schede prendono il suo numero e le domande per il clinico slittano senza lasciare buchi. Le domande suggerite e lo spazio del professionista restano sempre, perché non sono parti personali.",
+        "Le caselle non cancellano niente: diario, schede e note restano salvati sul dispositivo e tornano spuntando di nuovo. Servono a scegliere cosa consegnare, non a fare pulizia."
+      ]
+    },
     {
       v: "1.7.10",
       data: "19 novembre 2026",

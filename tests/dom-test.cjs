@@ -299,6 +299,65 @@ ok(pdfText.indexOf("Psicologo Digitale") >= 0, "il PDF contiene l'intestazione d
 ok(pdfText.indexOf("/Type /Page") >= 0, "il PDF contiene almeno una pagina");
 ok(pdfText.indexOf("%%EOF") > 0, "il PDF è chiuso correttamente");
 
+/* Cosa finisce nella relazione -------------------------------------------- */
+
+console.log("\nCosa finisce nella relazione");
+
+const diarioPrimaRelazione = NP.app.state.diary;
+const pensieriPrimaRelazione = NP.app.readJSON("thoughts", []);
+const notePrimaRelazione = { note: NP.app.state.reportNotes.note, clinician: NP.app.state.reportNotes.clinician };
+NP.app.state.diary = [{ id: "rel-d1", date: "2026-11-18T09:00:00.000Z", mood: 4, anxiety: 5, sleep: 6, energy: 5, note: "voce di diario inclusa" }];
+NP.app.writeJSON("thoughts", [{
+  id: "rel-t1", date: "2026-11-18T10:00:00.000Z",
+  situation: "situazione inclusa", thought: "pensiero incluso", emotion: "ansia", intensity: 6, alternative: "alternativa inclusa"
+}]);
+NP.app.state.reportNotes.note = "nota personale inclusa";
+NP.app.state.reportNotes.clinician = "spazio del professionista";
+NP.app.saveReportNotes();
+
+navigate("#/relazione");
+const incDiario = document.getElementById("incDiario");
+const incPensieri = document.getElementById("incPensieri");
+const incNote = document.getElementById("incNote");
+ok(!!incDiario && !!incPensieri && !!incNote, "la relazione offre tre caselle prima di generare il PDF");
+ok(incDiario.checked && incPensieri.checked && incNote.checked, "senza scelte, le tre parti sono incluse");
+ok(/Diario recente/.test(document.getElementById("reportBody").textContent) &&
+  /Schede del pensiero/.test(document.getElementById("reportBody").textContent) &&
+  /Note della persona/.test(document.getElementById("reportBody").textContent), "il foglio mostra tutte e tre le parti");
+
+[incDiario, incPensieri, incNote].forEach(function (input) {
+  input.checked = false;
+  input.dispatchEvent(new window.Event("change", { bubbles: true }));
+});
+const corpoRidotto = document.getElementById("reportBody").textContent;
+ok(!/Diario recente/.test(corpoRidotto) && !/Schede del pensiero/.test(corpoRidotto) && !/Note della persona/.test(corpoRidotto),
+  "togliendo le tre caselle, le tre parti spariscono dal foglio");
+ok(/8\. Domande suggerite per il clinico/.test(corpoRidotto), "le domande restano, con la numerazione senza buchi");
+ok(/Spazio per il professionista/.test(corpoRidotto), "lo spazio del professionista non è una nota personale e resta");
+
+incDiario.checked = true;
+incDiario.dispatchEvent(new window.Event("change", { bubbles: true }));
+const corpoSoloDiario = document.getElementById("reportBody").textContent;
+ok(/8\. Diario recente/.test(corpoSoloDiario) && !/Schede del pensiero/.test(corpoSoloDiario) && !/Note della persona/.test(corpoSoloDiario),
+  "rimettendo solo il diario, torna solo quella parte");
+ok(/9\. Domande suggerite per il clinico/.test(corpoSoloDiario), "e le domande slittano di un numero, senza salti");
+
+const pdfCompleto = NP.reportPdf.generate({ diario: true, pensieri: true, note: true });
+const pdfRidotto = NP.reportPdf.generate({ diario: false, pensieri: false, note: false });
+const testoPdfCompleto = Buffer.from(pdfCompleto).toString("latin1");
+const testoPdfRidotto = Buffer.from(pdfRidotto).toString("latin1");
+ok(pdfRidotto.length < pdfCompleto.length, "il PDF senza le tre parti è più corto (" + pdfRidotto.length + " contro " + pdfCompleto.length + " byte)");
+ok(/Diario recente/.test(testoPdfCompleto) && /Schede del pensiero/.test(testoPdfCompleto) && /Note della persona/.test(testoPdfCompleto),
+  "il PDF completo contiene le tre parti");
+ok(!/Diario recente/.test(testoPdfRidotto) && !/Schede del pensiero/.test(testoPdfRidotto) && !/Note della persona/.test(testoPdfRidotto),
+  "il PDF ridotto non le contiene");
+
+NP.app.state.diary = diarioPrimaRelazione;
+NP.app.writeJSON("thoughts", pensieriPrimaRelazione);
+NP.app.state.reportNotes.note = notePrimaRelazione.note;
+NP.app.state.reportNotes.clinician = notePrimaRelazione.clinician;
+NP.app.saveReportNotes();
+
 /* Percorso e sedute ------------------------------------------------------- */
 
 navigate("#/percorso");

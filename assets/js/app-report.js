@@ -96,7 +96,13 @@
     }).join(", ");
   }
 
-  function sections(d) {
+  // Cosa entra nel documento lo sceglie la persona prima di generarlo. Senza
+  // scelte valgono tutte e tre le parti: è il comportamento di sempre per chi
+  // scarica il PDF senza toccare niente.
+  function sections(d, opz) {
+    const scelte = opz || {};
+    const incluso = function (chiave) { return scelte[chiave] !== false; };
+    let numero = 8;
     const out = [];
     const a = d.a;
     const p = d.p;
@@ -181,24 +187,24 @@
       ["Risorse personali", Array.isArray(a.forze) && a.forze.length ? a.forze.join(", ") : "non indicate"]
     ] });
 
-    if (d.diary.length) {
-      out.push({ type: "h", text: "8. Diario recente" });
+    if (incluso("diario") && d.diary.length) {
+      out.push({ type: "h", text: numero++ + ". Diario recente" });
       out.push({ type: "table", head: ["Data", "Umore", "Ansia", "Sonno", "Nota"], rows: d.diary.map(function (e) {
         return [e.date || "—", e.mood + "/10", e.anxiety + "/10", e.sleep + " h", (e.note || "").slice(0, 80)];
       }) });
     }
 
-    if (d.thoughts.length) {
-      out.push({ type: "h", text: (d.diary.length ? "9" : "8") + ". Schede del pensiero recenti" });
+    if (incluso("pensieri") && d.thoughts.length) {
+      out.push({ type: "h", text: numero++ + ". Schede del pensiero recenti" });
       d.thoughts.forEach(function (t) {
         out.push({ type: "p", text: "Situazione: " + (t.situation || "—") + " · Pensiero: «" + (t.thought || "—") + "» · Emozione: " + (t.emotion || "—") + " (" + t.intensity + "/10). Alternativa: " + (t.alternative || "non formulata") + "." });
       });
     }
 
-    out.push({ type: "h", text: (d.diary.length ? "10" : d.thoughts.length ? "9" : "8") + ". Domande suggerite per il clinico" });
+    out.push({ type: "h", text: numero + ". Domande suggerite per il clinico" });
     out.push({ type: "ul", items: clinicoQuestions(d) });
 
-    if (state.reportNotes.note) {
+    if (incluso("note") && state.reportNotes.note) {
       out.push({ type: "h", text: "Note della persona" });
       out.push({ type: "p", text: state.reportNotes.note });
     }
@@ -213,6 +219,7 @@
   /* ---------------------------------------------------------------- Vista HTML */
 
   let editing = false;
+  const include = { diario: true, pensieri: true, note: true };
 
   function renderHTML(sectionsData, d) {
     return sectionsData.map(function (s) {
@@ -249,13 +256,29 @@
       return;
     }
 
-    const data = sections(d);
+    const data = sections(d, include);
     const when = new Date();
+    const casella = function (id, chiave, testo, vuoto) {
+      return '<label class="report-opzione" for="' + id + '"><input type="checkbox" id="' + id + '" data-include="' + chiave + '"' +
+        (include[chiave] ? " checked" : "") + (vuoto ? " disabled" : "") + "> <span>" + testo + "</span></label>";
+    };
+    const conteggio = function (n, singolare, plurale) {
+      return n ? " (" + n + " " + (n === 1 ? singolare : plurale) + ")" : " (" + (singolare === "voce" ? "nessuna voce" : "nessuna scheda") + ")";
+    };
 
     A.setTitle("Relazione");
     A.page(
       '<div class="page-head"><p class="eyebrow">Relazione preliminare</p><h1>Da consegnare al professionista</h1>' +
         '<p class="lead">Un riassunto leggibile di ciò che hai raccolto. Portala a uno psicologo, a uno psicoterapeuta o al medico di base: serve a rendere il colloquio più preciso, non a sostituirlo.</p></div>' +
+
+      '<div class="card report-options no-print" id="reportOptions"><fieldset>' +
+        '<legend>Cosa includere nella relazione</legend>' +
+        '<p class="text-small muted">Scegli prima di scaricare il PDF o stampare. Quello che togli non compare nel documento.</p>' +
+        '<div class="report-opzioni-lista">' +
+          casella("incDiario", "diario", "Diario recente" + conteggio(d.diary.length, "voce", "voci"), !d.diary.length) +
+          casella("incPensieri", "pensieri", "Schede del pensiero" + conteggio(d.thoughts.length, "scheda", "schede"), !d.thoughts.length) +
+          casella("incNote", "note", "Le mie note personali" + (state.reportNotes.note ? "" : " (nessuna nota)"), !state.reportNotes.note) +
+        '</div></fieldset></div>' +
 
       '<div class="report-actions no-print"><span class="grow">Il PDF viene generato sul tuo dispositivo. Contiene dati sensibili: conservalo con cura.</span>' +
         '<button type="button" class="btn btn-primary" id="pdfBtn">' + A.icon("download") + "Scarica PDF</button>" +
@@ -263,7 +286,7 @@
         '<button type="button" class="btn btn-ghost" id="noteBtn">' + A.icon("pen") + "Aggiungi note</button></div>" +
 
       '<div id="noteBox" class="card no-print"' + (editing ? "" : ' hidden') + ' style="margin-bottom:1.2rem">' +
-        '<div class="form-field"><label class="field-label" for="notePerson">Note della persona <span class="muted text-small">(facoltative, compaiono nella relazione)</span></label>' +
+        '<div class="form-field"><label class="field-label" for="notePerson">Note della persona <span class="muted text-small">(facoltative; puoi escluderle dalla relazione)</span></label>' +
           '<textarea class="textarea" id="notePerson" maxlength="1200" placeholder="Cose che vuoi aggiungere e che non sono emerse…">' + esc(state.reportNotes.note || "") + "</textarea></div>" +
         '<div class="form-field"><label class="field-label" for="noteClin">Spazio per il professionista</label>' +
           '<textarea class="textarea" id="noteClin" maxlength="1200" placeholder="Osservazioni, ipotesi, indicazioni…">' + esc(state.reportNotes.clinician || "") + "</textarea></div>" +
@@ -274,13 +297,21 @@
         '<header class="report-head"><div class="report-brand">Psicologo Digitale<span>Relazione preliminare · uso educativo</span></div>' +
           '<div class="report-id"><b>' + esc(docId()) + "</b><br>Generata il " + esc(when.toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })) + "</div></header>" +
         '<p class="small" style="margin-top:0">Documento preparato dalla persona con un programma di psicoeducazione e autovalutazione. <strong>Non è una diagnosi</strong> e non sostituisce una valutazione clinica. I punteggi sono indicatori di intensità.</p>' +
-        renderHTML(data, d) +
+        '<div id="reportBody">' + renderHTML(data, d) + '</div>' +
         '<div class="signatures"><div>Firma della persona</div><div>Firma del professionista</div></div>' +
         '<p class="report-foot">«Psicologo Digitale — La stanza d\'ascolto» di Danilo D\'Auria · progetto FeniceOS · contenuti CC BY-NC-SA 4.0 · codice MIT. Documento generato localmente: nessun dato è stato inviato. In caso di emergenza: 112. Numeri di ascolto: Telefono Amico 02 2327 2327 · Samaritans 06 77208977 · 1522 antiviolenza.</p>' +
       "</article>" +
 
       '<p class="text-small muted mt-2 no-print">Se la relazione contiene un segnale di rischio, non aspettare il prossimo appuntamento: chiama il 112 o uno dei numeri nella sezione <a href="#/sicurezza">Sicurezza</a>.</p>'
     );
+
+    document.querySelectorAll("#reportOptions input[data-include]").forEach(function (input) {
+      input.addEventListener("change", function () {
+        include[input.getAttribute("data-include")] = input.checked;
+        const body = document.getElementById("reportBody");
+        if (body) body.innerHTML = renderHTML(sections(d, include), d);
+      });
+    });
 
     const noteBtn = document.getElementById("noteBtn");
     const noteBox = document.getElementById("noteBox");
@@ -308,7 +339,7 @@
     const pdfBtn = document.getElementById("pdfBtn");
     if (pdfBtn) pdfBtn.addEventListener("click", function () {
       try {
-        const pdf = buildPdf(data, d, docId(), when);
+        const pdf = buildPdf(sections(d, include), d, docId(), when);
         downloadPdf(pdf, "relazione-psicologo-digitale-" + when.toISOString().slice(0, 10) + ".pdf");
         A.toast("PDF generato.");
       } catch (e) {
@@ -597,9 +628,9 @@
     collect: collect,
     sections: sections,
     docId: docId,
-    generate: function () {
+    generate: function (opz) {
       const d = collect();
-      return buildPdf(sections(d), d, docId(), new Date());
+      return buildPdf(sections(d, opz), d, docId(), new Date());
     }
   };
 })();

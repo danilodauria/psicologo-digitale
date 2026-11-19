@@ -212,7 +212,8 @@ def costruisci(percorso, d):
         Paragraph("La struttura della relazione", st["Sezione"]),
         Paragraph(
             "La numerazione delle sezioni cambia se la persona non ha compilato il diario o le schede del "
-            "pensiero: le voci sotto restano le stesse, in quest'ordine.",
+            "pensiero, e cambia ancora se sceglie di escludere diario, schede o note personali prima di "
+            "generare il PDF: le voci sotto restano le stesse, in quest'ordine.",
             st["Corpo"],
         ),
         tabella(
@@ -225,9 +226,10 @@ def costruisci(percorso, d):
                 ["5. Questionari", "Punteggio, massimo, percentuale, fascia, data; poi la lettura della fascia.", "Il cuore di questa guida: vedi le sezioni successive."],
                 ["6. Sicurezza", "Segnali emersi dalle domande dirette del colloquio.", "Non è una valutazione del rischio: un'assenza di segnali non rassicura."],
                 ["7. Obiettivi e risorse", "Obiettivo dichiarato, tipo di aiuto, rete, punti di forza.", "Materiale per l'alleanza e per gli obiettivi misurabili."],
-                ["8. Diario recente", "Fino a dieci voci: data, umore, ansia, ore di sonno, nota.", "L'unica serie temporale del documento: guardarla come tendenza."],
-                ["9. Schede del pensiero", "Fino a cinque situazioni, pensieri, emozioni, alternative.", "Utile per la concettualizzazione cognitiva."],
-                ["10. Domande suggerite", "Fino a otto domande generate dai dati del colloquio.", "Sono ipotesi di lavoro automatiche: vanno scremate."],
+                ["Diario recente (facoltativo)", "Fino a dieci voci: data, umore, ansia, ore di sonno, nota. La persona può escluderlo.", "L'unica serie temporale del documento: guardarla come tendenza."],
+                ["Schede del pensiero (facoltative)", "Fino a cinque situazioni, pensieri, emozioni, alternative. La persona può escluderle.", "Utile per la concettualizzazione cognitiva."],
+                ["Note personali (facoltative)", "Le note scritte dalla persona. Può escluderle; lo spazio del professionista resta.", "Distingue ciò che scrive la persona da ciò che scrive il clinico."],
+                ["Domande suggerite", "Fino a otto domande generate dai dati del colloquio.", "Sono ipotesi di lavoro automatiche: vanno scremate."],
             ],
             ["Sezione", "Contenuto", "Come leggerla"],
             st, doc,

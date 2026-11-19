@@ -453,7 +453,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.10.md");
+const proveMd = read("PROVE-A-MANO-1.7.11.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -464,7 +464,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 65, "il markdown elenca sessantacinque prove (" + etichette.length + ")");
+ok(etichette.length === 68, "il markdown elenca sessantotto prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -883,6 +883,15 @@ ok(/npDesktop/.test(inst), "la pagina usa il ponte desktop quando è disponibile
 ok(/buildPdf|NP\.reportPdf/.test(read("assets/js/app-report.js")), "il generatore PDF è presente");
 ok(/115|MediaBox|PDF-1\.4/.test(read("assets/js/app-report.js")), "il generatore produce un PDF 1.4 valido");
 ok(/WinAnsiEncoding/.test(read("assets/js/app-report.js")), "il PDF gestisce gli accenti con WinAnsi");
+// Prima del PDF si sceglie cosa consegnare: le tre parti facoltative non sono
+// solo nascoste a schermo, devono uscire anche dal documento e dal PDF.
+const reportJs = read("assets/js/app-report.js");
+["incDiario", "incPensieri", "incNote"].forEach(function (id) {
+  ok(reportJs.indexOf('casella("' + id + '"') >= 0, "la relazione ha la casella " + id);
+});
+ok(/incluso\("diario"\)/.test(reportJs) && /incluso\("pensieri"\)/.test(reportJs) && /incluso\("note"\)/.test(reportJs), "diario, schede e note si possono escludere dal documento");
+ok(/function sections\(d, opz\)/.test(reportJs) && /generate: function \(opz\)/.test(reportJs), "la scelta arriva anche al generatore del PDF, non solo al foglio a schermo");
+ok(/report-opzioni-lista/.test(read("assets/css/styles.css")), "le caselle hanno uno stile proprio, leggibile anche da tastiera");
 
 /* Controllo automatico dei collegamenti ------------------------------------ */
 

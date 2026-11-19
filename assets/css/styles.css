@@ -1475,6 +1475,15 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
    Report
    -------------------------------------------------------------------------- */
 
+.report-options { margin-bottom: 1rem; }
+.report-options fieldset { border: 0; margin: 0; padding: 0; }
+.report-options legend { font-family: var(--serif); font-size: 1.06rem; font-weight: 600; color: var(--text); padding: 0; }
+.report-options .text-small { margin: .25rem 0 .7rem; }
+.report-opzioni-lista { display: grid; gap: .5rem; }
+.report-opzione { display: flex; align-items: flex-start; gap: .55rem; font-size: .92rem; color: var(--text-soft); cursor: pointer; }
+.report-opzione input { width: 1.05rem; height: 1.05rem; margin: .15rem 0 0; accent-color: var(--indaco-700); flex: none; }
+.report-opzione input:disabled + span { color: var(--text-faint); }
+
 .report-actions {
   display: flex;
   flex-wrap: wrap;
