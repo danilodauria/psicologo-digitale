@@ -421,7 +421,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.5.md");
+const proveMd = read("PROVE-A-MANO-1.7.6.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -432,7 +432,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 51, "il markdown elenca cinquantuno prove (" + etichette.length + ")");
+ok(etichette.length === 54, "il markdown elenca cinquantaquattro prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -470,6 +470,19 @@ ok(!/state\.|thoughts|course\.notes|readJSON/.test(indiceContenuti), "l'indice d
 ok(/function cercaPersonale/.test(read("assets/js/app-views.js")), "le cose scritte si cercano in una funzione separata");
 ok(/Nelle tue cose/.test(read("assets/js/app-views.js")), "i risultati personali stanno in una sezione loro");
 ok(/nessuna parola esce da qui/.test(read("assets/js/app-views.js")), "la pagina dice che la ricerca resta sul dispositivo");
+
+/* Diario: elenco completo, modifica e schede -------------------------------- */
+
+// Le voci restavano otto e una correzione obbligava a cancellare e riscrivere:
+// l'elenco completo, la modifica sul posto e la cancellazione di una scheda
+// del pensiero hanno una casa sola nella vista del diario.
+ok(/chiesto === "tutte"/.test(licenzeJs) && /Tutte le voci/.test(licenzeJs), "il diario ha un elenco completo delle voci");
+ok(/#\/diario\/tutte/.test(licenzeJs) && /Vedi tutte le/.test(licenzeJs), "l'elenco completo si raggiunge dal diario, con il numero delle voci");
+ok(/#\/diario\/modifica\//.test(licenzeJs) && /Salva le modifiche/.test(licenzeJs), "una voce si può aprire in modifica");
+ok(/state\.diary\.findIndex/.test(licenzeJs) && /Object\.assign\(\{\}, inModifica, dati\)/.test(licenzeJs), "la modifica aggiorna la voce sul posto, senza crearne una nuova");
+ok(/data-del-thought/.test(licenzeJs) && /eliminaScheda/.test(licenzeJs), "una scheda del pensiero si può eliminare dall'elenco e dalla scheda aperta");
+ok(/Eliminare questa scheda del pensiero/.test(licenzeJs), "la cancellazione chiede conferma, perché non si torna indietro");
+ok(/if \(A\.writeJSON\("thoughts", restanti\) === false\)/.test(licenzeJs), "se il salvataggio della cancellazione fallisce, l'app lo dice e non finge che sia riuscito");
 
 /* Movimento ridotto e frasi ------------------------------------------------- */
 

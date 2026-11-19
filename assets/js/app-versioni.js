@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.5";
+  const VERSIONE = "1.7.6";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.6",
+      data: "19 novembre 2026",
+      titolo: "Il diario si corregge, e le schede si possono togliere",
+      punti: [
+        "In elenco restavano solo le otto voci più recenti: una voce più vecchia si poteva aprire dalla ricerca, ma non correggere. Ora c'è «Vedi tutte le N voci», con l'elenco completo, e ogni riga ha «Modifica» accanto a «Elimina».",
+        "Correggere una voce non ne crea una seconda: la data e l'identità restano, cambiano i valori. Prima l'unica strada era cancellare e riscrivere, e nel frattempo le medie del riepilogo contavano un dato sbagliato.",
+        "Le schede del pensiero salvate ora si vedono nel diario e si eliminano una per una, con conferma; lo stesso pulsante c'è nella scheda che si apre dalla ricerca. Prima restavano per sempre: l'unico modo per toglierle era cancellare tutti i dati."
+      ]
+    },
     {
       v: "1.7.5",
       data: "19 novembre 2026",

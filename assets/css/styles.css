@@ -1371,7 +1371,7 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
 .diary-list { display: grid; gap: .6rem; }
 .diary-entry {
   display: grid;
-  grid-template-columns: 64px 1fr auto;
+  grid-template-columns: 64px 1fr auto auto;
   gap: .8rem;
   align-items: center;
   padding: .7rem .85rem;
@@ -1388,6 +1388,13 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
 /* Una voce ritrovata con la ricerca: si vede subito quale è, anche quando è
    più vecchia delle otto che la pagina mostra di solito. */
 .diary-entry.is-trovata { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+/* Schede del pensiero in elenco: una riga per scheda, con la data e il
+   pulsante per eliminarla senza doverla cercare. */
+.thought-list { list-style: none; padding: 0; margin: 0; }
+.thought-item { padding: .6rem 0; border-top: 1px solid var(--line); }
+.thought-item:first-child { border-top: 0; padding-top: 0; }
+.thought-item .btn-row { gap: .5rem; }
 
 /* Risultati della ricerca nelle cose scritte dalla persona: un estratto per
    voce, con le parole cercate in evidenza. */

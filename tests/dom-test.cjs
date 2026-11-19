@@ -1582,6 +1582,66 @@ setTimeout(async function () {
   await new Promise(function (r) { setTimeout(r, 10); });
   ok(ricaricheMute === 1, "se l'evento non arriva, la pagina si ricarica comunque una volta sola");
 
+  /* Diario: elenco completo, modifica, schede ------------------------------ */
+
+  console.log("\nDiario: elenco, modifica e schede");
+
+  const diarioPrimaDiQuesteProve = NP.app.state.diary;
+  const pensieriPrimaDiQuesteProve = NP.app.readJSON("thoughts", []);
+  function voceDiProva(id, giorno, nota) {
+    return { id: id, date: "2026-11-" + String(giorno).padStart(2, "0") + "T09:00:00.000Z", mood: 5, anxiety: 4, sleep: 7, energy: 5, note: nota };
+  }
+  NP.app.state.diary = [];
+  for (let i = 1; i <= 10; i++) NP.app.state.diary.push(voceDiProva("v" + i, i, "nota " + i));
+  NP.app.saveDiary();
+
+  navigate("#/diario");
+  ok(document.querySelectorAll("#app .diary-entry").length === 8, "il diario mostra le otto voci più recenti");
+  const vediTutte = document.querySelector('#app a[href="#/diario/tutte"]');
+  ok(!!vediTutte && /10 voci/.test(vediTutte.textContent), "e offre l'elenco completo con il numero vero");
+
+  navigate("#/diario/tutte");
+  ok(document.querySelectorAll("#app .diary-entry").length === 10, "l'elenco completo mostra tutte le voci");
+  ok(!!document.querySelector('#app a[href="#/diario"]'), "con un ritorno al diario");
+
+  navigate("#/diario/modifica/v7");
+  ok(document.getElementById("dDate").value === "2026-11-07", "aprendo una voce il modulo porta la sua data");
+  ok(document.getElementById("dNote").value === "nota 7", "e la sua nota");
+  ok(document.querySelector('.mood-pick[data-mood="5"]').classList.contains("is-active"), "e il suo umore è già scelto");
+  document.querySelector('.mood-pick[data-mood="9"]').click();
+  document.getElementById("dNote").value = "nota 7 corretta";
+  document.getElementById("diaryForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  const modificata = NP.app.state.diary.filter(function (v) { return v.id === "v7"; })[0];
+  ok(!!modificata && modificata.note === "nota 7 corretta" && modificata.mood === 9, "salvando, la voce viene aggiornata sul posto");
+  ok(NP.app.state.diary.length === 10, "senza aggiungere una voce nuova");
+  ok(modificata.date === "2026-11-07", "e la data resta quella di prima");
+
+  NP.app.writeJSON("thoughts", [
+    { id: "s1", date: "2026-11-10T09:00:00.000Z", situation: "cucina", thought: "non ce la farò", emotion: "ansia", intensity: 6, alternative: "forse è stanchezza" },
+    { id: "s2", date: "2026-11-12T09:00:00.000Z", situation: "ufficio", thought: "tutti mi giudicano", emotion: "vergogna", intensity: 7, alternative: "non lo so" }
+  ]);
+  navigate("#/diario");
+  ok(document.querySelectorAll("#app [data-del-thought]").length === 2, "il diario elenca le schede del pensiero salvate");
+  ok(document.getElementById("app").textContent.indexOf("tutti mi giudicano") >= 0, "con il pensiero scritto, non solo la data");
+
+  const confermaVera = window.confirm;
+  window.confirm = function () { return true; };
+  document.querySelector('#app [data-del-thought="s1"]').click();
+  window.confirm = confermaVera;
+  const schedeRimaste = NP.app.readJSON("thoughts", []);
+  ok(schedeRimaste.length === 1 && schedeRimaste[0].id === "s2", "la scheda scelta viene eliminata e le altre restano");
+
+  navigate("#/diario/scheda/s2");
+  ok(!!document.getElementById("eliminaScheda"), "la scheda aperta dalla ricerca si può eliminare");
+  window.confirm = function () { return true; };
+  document.getElementById("eliminaScheda").click();
+  window.confirm = confermaVera;
+  ok(NP.app.readJSON("thoughts", []).length === 0, "eliminandola sparisce dalle schede salvate");
+
+  NP.app.state.diary = diarioPrimaDiQuesteProve;
+  NP.app.saveDiary();
+  NP.app.writeJSON("thoughts", pensieriPrimaDiQuesteProve);
+
   /* Protezione dello spazio ------------------------------------------------ */
 
   console.log("\nProtezione dello spazio");

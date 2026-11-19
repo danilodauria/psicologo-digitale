@@ -197,15 +197,26 @@
       ? A.readJSON("thoughts", []).filter(function (t) { return t && t.id === idChiesto; })[0]
       : null;
 
+    // L'elenco completo si apre con #/diario/tutte, e una voce si modifica con
+    // #/diario/modifica/<id>: la forma è la stessa, cambia quello che c'è
+    // dentro, così una voce sbagliata si corregge senza cancellarla e
+    // riscriverla (e senza lasciare un buco nelle medie del riepilogo).
+    const tutte = chiesto === "tutte";
+    const inModifica = chiesto === "modifica" && idChiesto
+      ? (state.diary || []).filter(function (e) { return e && e.id === idChiesto; })[0]
+      : null;
     const entries = (state.diary || []).slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
-    const last = entries.slice(0, 8);
-    if (voceInEvidenza && last.indexOf(voceInEvidenza) < 0) last.unshift(voceInEvidenza);
+    const last = tutte ? entries : entries.slice(0, 8);
+    if (!tutte && voceInEvidenza && last.indexOf(voceInEvidenza) < 0) last.unshift(voceInEvidenza);
     const avgMood = entries.length ? (entries.reduce(function (s, e) { return s + (Number(e.mood) || 0); }, 0) / entries.length).toFixed(1) : "—";
+    const schede = A.readJSON("thoughts", []).filter(function (t) { return t && typeof t === "object"; })
+      .sort(function (a, b) { return String(b.date || "").localeCompare(String(a.date || "")); });
 
     const listHTML = last.length ? last.map(function (e, i) {
       const trovata = voceInEvidenza && e.id === voceInEvidenza.id;
       return '<div class="diary-entry' + (trovata ? " is-trovata" : "") + '"' + (trovata ? ' id="voceCercata"' : "") + '><span class="diary-date">' + esc(e.date ? new Date(e.date + "T12:00:00").toLocaleDateString("it-IT", { day: "2-digit", month: "short" }) : "—") + "</span>" +
         '<span class="diary-mood"><span class="mood-dot" style="background:' + moodColor(e.mood) + '"></span>Umore ' + esc(e.mood) + "/10 · Ansia " + esc(e.anxiety) + "/10 · Sonno " + esc(e.sleep) + "h</span>" +
+        '<a class="chip" href="#/diario/modifica/' + esc(e.id) + '" title="Modifica questa voce">Modifica</a>' +
         '<button type="button" class="chip" data-del="' + esc(e.id) + '" title="Elimina">✕</button>' +
         (e.note ? '<p class="diary-note" style="grid-column:1/-1">' + esc(e.note) + "</p>" : "") + "</div>";
     }).join("") : '<p class="muted text-small">Nessuna voce. Anche tre righe al giorno bastano per vedere un pattern.</p>';
@@ -215,18 +226,20 @@
       '<div class="page-head"><p class="eyebrow">Diario</p><h1>Misurare senza ossessionarsi</h1>' +
         '<p class="lead">Umore, ansia, sonno e una nota. Serve a te e al professionista: i pattern contano più della singola giornata.</p></div>' +
       '<div class="diary-grid">' +
-        '<div class="card"><h2>Voce di oggi</h2>' +
+        '<div class="card"><h2>' + (inModifica ? "Modifica la voce" : "Voce di oggi") + "</h2>" +
+          (inModifica ? '<p class="text-small muted">Stai correggendo la voce del ' + esc(dataBreve(inModifica.date)) + ". La data resta quella: non diventa una voce nuova.</p>" : "") +
           '<form id="diaryForm">' +
-            '<div class="form-field"><label class="field-label" for="dDate">Data</label><input class="input" type="date" id="dDate" value="' + todayISO() + '"></div>' +
+            '<div class="form-field"><label class="field-label" for="dDate">Data</label><input class="input" type="date" id="dDate" value="' + esc(String(inModifica ? inModifica.date : todayISO()).slice(0, 10)) + '"></div>' +
             '<div class="form-field"><span class="field-label">Umore <span class="muted text-small">(0 pessimo · 10 ottimo)</span></span><div class="mood-scale-row" id="moodRow">' +
-              [0,1,2,3,4,5,6,7,8,9,10].map(function (v) { return '<button type="button" class="mood-pick' + (v === 5 ? " is-active" : "") + '" data-mood="' + v + '">' + v + "</button>"; }).join("") + "</div></div>" +
-            '<div class="form-field"><label class="field-label" for="dAnx">Ansia <span class="muted text-small">(0-10)</span></label><div class="scale-input"><input type="range" id="dAnx" min="0" max="10" value="4"><output class="scale-value" id="dAnxOut">4</output></div></div>' +
+              [0,1,2,3,4,5,6,7,8,9,10].map(function (v) { return '<button type="button" class="mood-pick' + (v === (inModifica ? Number(inModifica.mood) : 5) ? " is-active" : "") + '" data-mood="' + v + '">' + v + "</button>"; }).join("") + "</div></div>" +
+            '<div class="form-field"><label class="field-label" for="dAnx">Ansia <span class="muted text-small">(0-10)</span></label><div class="scale-input"><input type="range" id="dAnx" min="0" max="10" value="' + esc(inModifica ? inModifica.anxiety : 4) + '"><output class="scale-value" id="dAnxOut">' + esc(inModifica ? inModifica.anxiety : 4) + "</output></div></div>" +
             '<div class="form-grid">' +
-              '<div class="form-field"><label class="field-label" for="dSleep">Ore di sonno</label><input class="input" type="number" id="dSleep" min="0" max="14" step="0.5" value="7"></div>' +
-              '<div class="form-field"><label class="field-label" for="dEnergy">Energia (0-10)</label><input class="input" type="number" id="dEnergy" min="0" max="10" value="5"></div>' +
+              '<div class="form-field"><label class="field-label" for="dSleep">Ore di sonno</label><input class="input" type="number" id="dSleep" min="0" max="14" step="0.5" value="' + esc(inModifica ? inModifica.sleep : 7) + '"></div>' +
+              '<div class="form-field"><label class="field-label" for="dEnergy">Energia (0-10)</label><input class="input" type="number" id="dEnergy" min="0" max="10" value="' + esc(inModifica ? inModifica.energy : 5) + '"></div>' +
             "</div>" +
-            '<div class="form-field"><label class="field-label" for="dNote">Nota <span class="muted text-small">(facoltativa)</span></label><textarea class="textarea" id="dNote" maxlength="400" placeholder="Cosa è successo, cosa hai notato…"></textarea></div>' +
-            '<button type="submit" class="btn btn-primary btn-wide">' + A.icon("pen") + "Salva la voce</button>" +
+            '<div class="form-field"><label class="field-label" for="dNote">Nota <span class="muted text-small">(facoltativa)</span></label><textarea class="textarea" id="dNote" maxlength="400" placeholder="Cosa è successo, cosa hai notato…">' + esc(inModifica ? inModifica.note : "") + '</textarea></div>' +
+            '<div class="btn-row"><button type="submit" class="btn btn-primary">' + A.icon("pen") + (inModifica ? "Salva le modifiche" : "Salva la voce") + "</button>" +
+              (inModifica ? '<a class="btn btn-ghost" href="#/diario">Annulla</a>' : "") + "</div>" +
           "</form>" +
         "</div>" +
         '<div class="grid" style="gap:1rem">' +
@@ -238,9 +251,14 @@
                 '<p><strong>Emozione.</strong> ' + esc(schedaInEvidenza.emotion || "—") +
                   (isFinite(schedaInEvidenza.intensity) ? " (" + esc(schedaInEvidenza.intensity) + "/10)" : "") + "</p>" +
                 '<p><strong>Lettura alternativa.</strong> ' + esc(schedaInEvidenza.alternative || "non formulata") + "</p>" +
-                '<div class="btn-row"><a class="btn btn-ghost btn-sm" href="#/cerca">Torna alla ricerca</a></div></div>'
+                '<div class="btn-row"><button type="button" class="btn btn-danger btn-sm" id="eliminaScheda">Elimina la scheda</button>' +
+                '<a class="btn btn-ghost btn-sm" href="#/cerca">Torna alla ricerca</a></div></div>'
             : "") +
-          '<div class="card"><div class="btn-row" style="justify-content:space-between"><h2 style="margin:0">Le ultime voci</h2><span class="badge badge-blue">Media umore ' + avgMood + "</span></div><div class=\"diary-list mt-2\">" + listHTML + "</div></div>" +
+          '<div class="card"><div class="btn-row" style="justify-content:space-between"><h2 style="margin:0">' + (tutte ? "Tutte le voci" : "Le ultime voci") + '</h2><span class="badge badge-blue">Media umore ' + avgMood + "</span></div><div class=\"diary-list mt-2\">" + listHTML + "</div>" +
+            (!tutte && entries.length > 8
+              ? '<p class="text-small mt-1 mb-0"><a class="chip" href="#/diario/tutte">Vedi tutte le ' + entries.length + ' voci</a></p>'
+              : (tutte ? '<p class="text-small mt-1 mb-0"><a class="chip" href="#/diario">Torna al diario</a></p>' : "")) +
+          "</div>" +
           '<div class="card"><h2 class=h-sub>Scheda del pensiero</h2><p class="text-small">La classica scheda a sette colonne, ridotta all&rsquo;essenziale. Compila quando un pensiero ti ha fatto stare male.</p>' +
             '<form id="thoughtForm" class="thought-grid">' +
               '<div class="form-field"><label class="field-label" for="tSit">Situazione</label><input class="input" id="tSit" placeholder="Chi, dove, quando"></div>' +
@@ -250,12 +268,23 @@
               '<div class="form-field"><label class="field-label" for="tAlt">Una lettura alternativa</label><textarea class="textarea" id="tAlt" maxlength="400" placeholder="Più precisa, non più ottimista…"></textarea></div>' +
               '<button type="submit" class="btn btn-soft">Salva la scheda</button>' +
             "</form></div>" +
+          '<div class="card"><div class="btn-row" style="justify-content:space-between"><h2 style="margin:0">Le ultime schede</h2><span class="badge badge-blue">' + schede.length + "</span></div>" +
+            (schede.length
+              ? '<ul class="text-small thought-list mt-2">' + schede.slice(0, 5).map(function (t) {
+                  return '<li class="thought-item"><div class="btn-row" style="justify-content:space-between"><span class="muted">' + esc(dataBreve(t.date)) + '</span>' +
+                    '<button type="button" class="chip" data-del-thought="' + esc(t.id) + '" title="Elimina questa scheda">✕</button></div>' +
+                    '<p class="mb-0"><strong>' + esc(t.thought || "—") + "</strong></p>" +
+                    '<span class="muted">' + esc(t.emotion || "—") + (isFinite(t.intensity) ? " · " + esc(t.intensity) + "/10" : "") + "</span></li>";
+                }).join("") + "</ul>" +
+                (schede.length > 5 ? '<p class="text-small muted mb-0">Le più vecchie si trovano con la ricerca: ogni risultato apre la scheda con il pulsante per eliminarla.</p>' : "")
+              : '<p class="text-small muted mb-0">Nessuna scheda salvata. Compila quella sopra quando un pensiero ti ha fatto stare male.</p>') +
+          "</div>" +
         "</div>" +
       "</div>" +
       '<div class="callout warn mt-3"><p><strong>Il diario non è una pagella.</strong> Se ti accorgi di controllarlo in modo compulsivo o che ti fa stare peggio, parlane con il professionista: anche il monitoraggio può diventare un problema.</p></div>'
     );
 
-    let mood = 5;
+    let mood = inModifica ? Number(inModifica.mood) : 5;
     const moodRow = document.getElementById("moodRow");
     if (moodRow) moodRow.addEventListener("click", function (e) {
       const b = e.target.closest("[data-mood]");
@@ -272,18 +301,31 @@
     const form = document.getElementById("diaryForm");
     if (form) form.addEventListener("submit", function (e) {
       e.preventDefault();
-      state.diary.push({
-        id: "d" + Date.now(),
-        date: document.getElementById("dDate").value || todayISO(),
+      const dati = {
+        // Un campo data vuoto non deve cambiare la data di una voce che si sta
+        // correggendo: se il browser non restituisce niente, resta quella sua.
+        date: document.getElementById("dDate").value || (inModifica ? String(inModifica.date).slice(0, 10) : todayISO()),
         mood: mood,
         anxiety: Number(document.getElementById("dAnx").value),
         sleep: Number(document.getElementById("dSleep").value),
         energy: Number(document.getElementById("dEnergy").value),
         note: document.getElementById("dNote").value.trim()
-      });
+      };
+      // Una voce in modifica si aggiorna sul posto: id e data restano, quindi
+      // non compare una seconda voce e le medie non contano due volte lo stesso
+      // giorno. Una voce nuova, invece, si aggiunge in fondo.
+      if (inModifica) {
+        const i = state.diary.findIndex(function (x) { return x && x.id === inModifica.id; });
+        if (i >= 0) state.diary[i] = Object.assign({}, inModifica, dati);
+        A.saveDiary();
+        A.toast("Voce aggiornata.");
+        A.go("diario");
+        return;
+      }
+      state.diary.push(Object.assign({ id: "d" + Date.now() }, dati));
       A.saveDiary();
       A.toast("Voce salvata nel diario.");
-      views.diario();
+      A.render();
     });
 
     document.querySelectorAll("[data-del]").forEach(function (btn) {
@@ -291,8 +333,30 @@
         if (!confirm("Eliminare questa voce?")) return;
         state.diary = state.diary.filter(function (x) { return x.id !== btn.getAttribute("data-del"); });
         A.saveDiary();
-        views.diario();
+        A.render();
       });
+    });
+
+    // Le schede del pensiero si eliminano da qui e dalla scheda aperta con la
+    // ricerca, con la stessa conferma: una scheda contiene pensieri personali e
+    // non deve sparire per un tocco sbagliato.
+    function eliminaSchedaPensiero(id) {
+      if (!id) return;
+      if (!confirm("Eliminare questa scheda del pensiero? L'operazione non si può annullare.")) return;
+      const restanti = A.readJSON("thoughts", []).filter(function (t) { return t && t.id !== id; });
+      if (A.writeJSON("thoughts", restanti) === false) {
+        A.toast("Non sono riuscito a salvare la cancellazione: lo spazio è pieno.");
+        return;
+      }
+      A.toast("Scheda eliminata.");
+      A.go("diario");
+    }
+    document.querySelectorAll("[data-del-thought]").forEach(function (btn) {
+      btn.addEventListener("click", function () { eliminaSchedaPensiero(btn.getAttribute("data-del-thought")); });
+    });
+    const eliminaScheda = document.getElementById("eliminaScheda");
+    if (eliminaScheda) eliminaScheda.addEventListener("click", function () {
+      eliminaSchedaPensiero(schedaInEvidenza && schedaInEvidenza.id);
     });
 
     const tf = document.getElementById("thoughtForm");
@@ -594,7 +658,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.5 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.6 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

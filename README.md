@@ -34,7 +34,7 @@ Il programma non prova a "fare lo psicologo". Prova a fare bene una cosa diversa
 | **Percorso** | Otto tappe (16 settimane circa): orientarsi, corpo, attivazione, pensieri, emozioni, relazioni, valori, mantenimento. Con pratica settimanale e indicatori. |
 | **Sedute** | Sette protocolli clinici: primo colloquio, formulazione condivisa, psicoeducazione, pensieri e comportamenti, esposizione, regolazione emotiva, chiusura. Agenda minuto per minuto. |
 | **Esercizi** | Dodici pratiche guidate: respiro 4-6, ancoraggio 5-4-3-2-1, attivazione comportamentale, scheda del pensiero, finestra della preoccupazione, igiene del sonno, autocompassione, DESC, bussola dei valori, rilassamento muscolare, camminata consapevole, piano di mantenimento. |
-| **Diario** | Umore, ansia, sonno, energia e nota giornaliera; scheda del pensiero integrata. Tutto locale, incluso nella relazione. |
+| **Diario** | Umore, ansia, sonno, energia e nota giornaliera; scheda del pensiero integrata. Le voci si correggono e si eliminano una per una, e dal diario si apre l'elenco completo; le schede del pensiero si possono togliere. Tutto locale, incluso nella relazione. |
 | **Relazione** | Documento A4 con dati, aree emerse, storia, funzionamento, punteggi, segnali di sicurezza, obiettivi, diario, domande per il clinico, firme. PDF generato sul dispositivo. |
 | **Neura** | Assistente locale: spiega, cerca, propone esercizi, orienta e riconosce le situazioni di rischio. Legge le risposte ad alta voce (sintesi vocale del dispositivo) e accetta la dettatura, se il browser la supporta. |
 | **Manuale** | Dodici capitoli: primo colloquio, scelta del professionista, ansia, umore, sonno, stress e burnout, emozioni, pensieri, relazioni, trauma e lutto, corpo e sostanze, etica e limiti dell'IA. |
@@ -419,7 +419,7 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 ## Prove a mano prima di una release
 
-I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.5 è [PROVE-A-MANO-1.7.5.md](PROVE-A-MANO-1.7.5.md): cinquantuno controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti e nelle cose scritte, backup con migrazione, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito e protezione dello spazio, ognuno con il risultato atteso e una casella da spuntare.
+I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.6 è [PROVE-A-MANO-1.7.6.md](PROVE-A-MANO-1.7.6.md): cinquantaquattro controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti e nelle cose scritte, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito e protezione dello spazio, ognuno con il risultato atteso e una casella da spuntare.
 
 Lo stesso foglio esiste in **PDF A4**, per stamparlo e spuntarlo a penna: [assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf](assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf), casella per ogni prova e tabella d'esito in fondo, con versione e provenienza nel piè di pagina. Non è una seconda copia del testo: `scripts/build_prove_a_mano_pdf.py` legge il markdown delle prove — il più recente per versione — e lo impagina con la stessa testata degli altri fogli, riusando l'impaginatore di `build_come_installare_pdf.py`. Il file è allegato alla release insieme agli altri PDF (`.github/workflows/foglio.yml`), e `tests/verify.cjs` confronta le prove del markdown con quelle stampate: una prova aggiunta e mai rigenerata diventa una build rossa.
 
@@ -476,4 +476,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.7.5** · novembre 2026.
+Versione **1.7.6** · novembre 2026.

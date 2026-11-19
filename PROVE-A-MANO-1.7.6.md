@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.5
+# Prove a mano · versione 1.7.6
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono cinquantuno prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono cinquantaquattro prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.5. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio.
+Vale dalla 1.4.0 alla 1.7.6. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -151,6 +151,14 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 14.1 Apri **Licenze e progetto** in un browser che concede la protezione (Chrome o Edge usati da un po') | La scheda «Protezione dello spazio» dice che i dati sono protetti, e **non** c'è il pulsante del backup: non c'è urgenza da segnalare |
 | ☐ | 14.2 Apri **Licenze e progetto** in una finestra privata, o in un browser senza Storage API | La scheda dice che i dati non sono protetti (o che il browser non offre la protezione) e propone **Esporta backup**; il pulsante scarica `psicologo-digitale-backup.json`, senza cambiare pagina |
 
+## 15. Diario completo, modifica e schede (dalla 1.7.6)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 15.1 Con più di otto voci di diario, apri **Diario** | Sotto le ultime voci c'è **Vedi tutte le N voci**, con il numero vero. Il collegamento apre l'elenco completo, con tutte le voci in ordine di data; **Torna al diario** riporta alle ultime otto |
+| ☐ | 15.2 In una voce qualsiasi premi **Modifica**, cambia umore e nota e salva | La voce è quella di prima — stessa data, stesso posto nell'elenco — con i valori nuovi; il numero di voci non aumenta e il riepilogo usa i valori corretti |
+| ☐ | 15.3 Elimina una scheda del pensiero dal diario, e un'altra dalla scheda aperta con la ricerca | In entrambi i casi chiede conferma, la scheda scelta sparisce e le altre restano; il messaggio dice che è stata eliminata |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -159,4 +167,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.5 | /51 |  |
+|  |  | 1.7.6 | /54 |  |
