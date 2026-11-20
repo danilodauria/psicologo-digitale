@@ -126,8 +126,8 @@ def stili_prove():
     s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=9.0)
     # Il foglio è cresciuto con le prove, non con l'aria fra i paragrafi: le
     # sezioni restano staccate, ma senza lasciare una pagina quasi vuota in coda.
-    s["h2"] = ParagraphStyle("h2", parent=s["h2"], spaceBefore=4, spaceAfter=3)
-    s["p"] = ParagraphStyle("p", parent=s["p"], leading=12.4, spaceAfter=2)
+    s["h2"] = ParagraphStyle("h2", parent=s["h2"], spaceBefore=3, spaceAfter=2)
+    s["p"] = ParagraphStyle("p", parent=s["p"], leading=12.2, spaceAfter=2)
     return s
 
 
@@ -312,22 +312,15 @@ def main():
     s = stili_prove()
     storia = impagina(markdown, s)
 
-    # In coda, cosa il foglio è e cosa non è.
-    storia.append(Spacer(1, 8))
+    # In coda, cosa il foglio è e cosa non è. Due righe bastano: il resto
+    # allungava il foglio di una pagina quasi vuota.
+    storia.append(Spacer(1, 6))
     storia.append(
         Paragraph(
-            "<b>Questo foglio non sostituisce i test.</b> I controlli automatici (<font face=\"Courier\" "
-            "size=\"8.6\">npm test</font>) coprono dati, interfaccia, collegamenti, accessibilità e testi; "
-            "qui resta quello che solo una persona può vedere e sentire: la voce che parte, la pagina su un "
-            "telefono, il messaggio che compare al momento giusto.",
-            s["p_small"],
-        )
-    )
-    storia.append(
-        Paragraph(
-            "Il foglio nasce da <font face=\"Courier\" size=\"8.6\">%s</font>: se una prova cambia, "
-            "cambiano il markdown e questo PDF insieme, rigenerandolo con "
-            "<font face=\"Courier\" size=\"8.6\">scripts/build_prove_a_mano_pdf.py</font>."
+            "<b>Questo foglio non sostituisce i test.</b> <font face=\"Courier\" size=\"8.6\">npm test</font> "
+            "copre dati, interfaccia, collegamenti, accessibilità e testi; qui resta quello che solo una "
+            "persona può vedere e sentire. Nasce da <font face=\"Courier\" size=\"8.6\">%s</font>: "
+            "se una prova cambia, cambiano il markdown e questo PDF insieme."
             % os.path.basename(percorso),
             s["p_small"],
         )

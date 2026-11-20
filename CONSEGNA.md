@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.14**, 20 novembre 2026.
+Ultimo aggiornamento: versione **1.7.15**, 20 novembre 2026.
 
 ---
 
@@ -136,7 +136,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | `scripts/riepilogo-copertura.cjs` | Scrive `artifacts/copertura/riepilogo.md`: quante viste, quante pagine di singoli elementi (30), quali controlli sono verdi |
 | `PROVE-A-MANO-<versione>.md` | **Non è automatico**: le prove che una persona deve fare a mano (voce, telefoni, messaggi al momento giusto), con il risultato atteso per ciascuna. Si leggono prima di dichiarare chiusa una release. Lo stesso foglio esiste in PDF A4 (`assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`), generato dal markdown da `scripts/build_prove_a_mano_pdf.py`: `verify.cjs` controlla che ogni prova del markdown sia anche nel PDF |
 
-Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono.
+Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono. La scheda da portare è stata controllata in un browser vero a larghezza telefono e in stampa A4 nella 1.7.15, ma resta una verifica da rifare quando cambiano il foglio o i suoi stili.
 
 Numeri aggiornati a ogni `npm test`: 22 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
 
@@ -174,12 +174,13 @@ Numeri aggiornati a ogni `npm test`: 22 viste, 30 pagine di singoli elementi, 3 
 
 ## 8. Prossimi passi sensati (con il criterio per farli)
 
-1. **Diario: promemoria a orari scelti dalla persona**, se si accetta di chiedere il permesso di notifica. Criterio: deve funzionare anche senza permesso (fallback in-app) e non deve introdurre serie o conteggi.
+Il riepilogo a 30 giorni è già nella 1.6.0 e non è più un passo da fare. I promemoria con notifiche di sistema restano fuori per scelta: quelli dell'app sono dentro l'app, senza permessi e senza cose che suonano di notte.
+
+1. **Prova su dispositivi veri** (iOS Safari, Android Chrome) per la sintesi vocale, il salvataggio offline e l'apertura dei backup cifrati. È il buco più grande dei controlli attuali: jsdom simula voce e Web Crypto, ma non un telefono vero. Criterio: provare almeno un iPhone e un Android, anche con l'app installata, e annotare sistema, browser e risultato.
 2. **Esportazione della sola relazione** oltre al backup completo. Criterio: resta un file locale, nessun invio.
 3. **Verifica automatica dell'aspetto** con uno screenshot di riferimento. Criterio: solo se il confronto è stabile tra macchine, altrimenti produce rumore e viene ignorato.
-4. **Prova su dispositivi veri** (iOS Safari, Android Chrome) per la sintesi vocale e il salvataggio offline. È il buco più grande dei controlli attuali.
 
-Cose da **non** fare, per coerenza con l'impianto: account e sincronizzazione cloud, streak o premi, una IA che interpreta i punteggi al posto del clinico, qualunque tracciamento.
+Cose da **non** fare, per coerenza con l'impianto: account e sincronizzazione cloud, streak o premi, una IA che interpreta i punteggi al posto del clinico, qualunque tracciamento, notifiche di sistema o promemoria a orari — i promemoria restano dentro l'app, senza chiedere permessi.
 
 ---
 

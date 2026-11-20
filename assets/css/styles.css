@@ -1686,6 +1686,7 @@ html[data-discreto="1"] #app:not(.svelato) { filter: blur(7px); }
 html[data-discreto="1"] #app { transition: filter .18s ease; }
 .avviso-discreto { max-width: 72rem; margin: 1rem auto 0; padding: .7rem 1rem; border-radius: 12px; background: var(--ambra-chiara); color: var(--ambra-scura); display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
 .avviso-discreto p { margin: 0; font-size: .9rem; }
+.avviso-discreto[hidden] { display: none; }
 html[data-theme="dark"] .avviso-discreto { background: #33281a; color: #f0d9b5; }
 /* Versione nuova del sito: la barra resta nascosta finché il service worker
    nuovo non prende il controllo, e il pulsante ricarica una volta sola. */
@@ -1857,7 +1858,7 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   @page { margin: 16mm 15mm; }
 
   html, body { background: #fff !important; color: #111 !important; font-size: 11.5pt; }
-  .site-header, .site-footer, .report-actions, .toast, .skip-link, .no-print { display: none !important; }
+  .site-header, .site-footer, .avviso-discreto, .report-actions, .toast, .skip-link, .no-print { display: none !important; }
   .app { padding: 0 !important; }
   .wrap, .wrap-narrow { width: 100% !important; margin: 0 !important; }
   .page-head { padding: 0 0 .6rem !important; }

@@ -987,7 +987,7 @@
     };
 
     content.push("0.08 g BT /F2 16 Tf 1 0 0 1 " + M + " " + (H - M).toFixed(1) + " Tm (Psicologo Digitale) Tj ET");
-    content.push("0.45 g BT /F1 8 Tf 1 0 0 1 " + M + " " + (H - M - 12).toFixed(1) + " Tm (Scheda da portare al colloquio - uso educativo - non e una diagnosi) Tj ET");
+    content.push("0.45 g BT /F1 8 Tf 1 0 0 1 " + M + " " + (H - M - 12).toFixed(1) + " Tm (Scheda da portare al colloquio - uso educativo - non è una diagnosi) Tj ET");
     content.push("0.12 g BT /F2 8.5 Tf 1 0 0 1 " + (W - M - 150) + " " + (H - M).toFixed(1) + " Tm (Preparata il " + pdfString(quando.toLocaleDateString("it-IT")) + ") Tj ET");
     y = H - M - 26;
     content.push("0.2 G 1.4 w " + M + " " + y.toFixed(1) + " m " + (W - M) + " " + y.toFixed(1) + " l S");
@@ -996,12 +996,21 @@
     y -= 2;
 
     if (contenuto.avviso) {
-      y -= 5;
-      content.push("0.97 g " + M + " " + (y - 18).toFixed(1) + " " + CONTENT_W + " 24 re f");
-      content.push("0.64 g " + M + " " + (y - 18).toFixed(1) + " 3 24 re f");
-      y -= 3;
-      par("Da non rimandare: " + contenuto.avviso, 8.8, 0.35);
-      y -= 3;
+      // Il riquadro deve contenere il testo, non finirci sopra: si calcola
+      // prima l'altezza delle righe, poi si disegna lo sfondo e si scrive
+      // dentro, con lo stesso margine della barra laterale.
+      const lineH = 11.6;
+      const pad = 8;
+      const lines = wrap("Da non rimandare: " + contenuto.avviso, CONTENT_W - pad * 2, 8.8, false);
+      const boxH = lines.length * lineH + pad * 2;
+      y -= 6;
+      content.push("0.97 g " + M + " " + (y - boxH).toFixed(1) + " " + CONTENT_W + " " + boxH.toFixed(1) + " re f");
+      content.push("0.64 g " + M + " " + (y - boxH).toFixed(1) + " 3 " + boxH.toFixed(1) + " re f");
+      lines.forEach(function (l, i) {
+        content.push("0.35 g BT /F1 8.8 Tf 1 0 0 1 " + (M + pad).toFixed(1) + " " +
+          (y - pad - 8.8 * 0.8 - i * lineH).toFixed(1) + " Tm (" + pdfString(l) + ") Tj ET");
+      });
+      y -= boxH + 6;
     }
 
     contenuto.sezioni.forEach(function (s) {

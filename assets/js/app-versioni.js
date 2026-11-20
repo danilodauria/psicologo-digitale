@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.14";
+  const VERSIONE = "1.7.15";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.15",
+      data: "20 novembre 2026",
+      titolo: "La scheda da portare, pulita anche sulla carta",
+      punti: [
+        "La barra della modalità discreta non resta più visibile quando la modalità è spenta e non finisce più nella stampa.",
+        "Il PDF scaricato dalla scheda non sovrappone più l'avviso di rischio alla barra laterale: il testo sta dentro il riquadro, con il suo margine.",
+        "La scheda è stata controllata a larghezza telefono e su A4: resta una pagina sola, con l'avviso in cima e il piè di pagina in fondo."
+      ]
+    },
     {
       v: "1.7.14",
       data: "20 novembre 2026",

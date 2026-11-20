@@ -73,6 +73,12 @@ ok(/VERSION/.test(sw), "il service worker ha una versione della cache");
 ok(/id="avvisoAggiornamento"/.test(html) && /id="aggiornaRicaricando"/.test(html), "la pagina ha la barra e il pulsante per la versione nuova del sito");
 ok(/hidden role="status">\s*<p><strong>C'è una versione nuova/.test(html), "la barra dell'aggiornamento parte nascosta e si annuncia ai lettori di schermo");
 ok(/\.avviso-aggiornamento\[hidden\]/.test(read("assets/css/styles.css")), "la barra resta davvero nascosta finché non serve");
+// La modalità discreta usa display:flex, che da solo vince su [hidden]:
+// senza questa regola la barra resterebbe visibile anche a modalità spenta,
+// e finirebbe pure sulla carta.
+const cssAvvisi = read("assets/css/styles.css");
+ok(/\.avviso-discreto\[hidden\]/.test(cssAvvisi), "la barra della modalità discreta sparisce davvero quando è spenta");
+ok(/@media print[\s\S]*?\.avviso-discreto/.test(cssAvvisi), "la barra della modalità discreta non finisce nella stampa");
 // Protezione dello spazio: la richiesta va fatta, ma senza promettere che il
 // browser la conceda. In Licenze lo stato si legge, e quando i dati non sono
 // protetti compare il pulsante che esporta il backup.
@@ -453,7 +459,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.14.md");
+const proveMd = read("PROVE-A-MANO-1.7.15.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -464,7 +470,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 77, "il markdown elenca settantasette prove (" + etichette.length + ")");
+ok(etichette.length === 79, "il markdown elenca settantanove prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
