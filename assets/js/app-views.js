@@ -81,12 +81,17 @@
       "</div>" +
       '<div class="callout warn mt-2"><p><strong>Avviso.</strong> ' + esc(c.neura.avviso) + "</p></div>" +
       '<div class="card mt-2"><h2 class=h-sub>Riferimenti</h2><ul class="text-small muted">' + c.fonti.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></div>" +
+      '<div class="card mt-2" id="taccuinoCapitolo"><h2 class=h-sub>Una domanda per il clinico</h2>' +
+        '<p class="text-small">Se leggendo ti viene in mente qualcosa da chiedere al professionista, scrivilo qui: lo ritrovi nel taccuino e puoi scegliere se portarlo nella relazione.</p>' +
+        A.moduloDomanda("domandaCapitolo", "formDomandaCapitolo", "linkTaccuinoCapitolo") + "</div>" +
       '<div class="btn-row mt-3">' +
         (prev ? '<a class="btn btn-ghost" data-nav="prev" href="#/manuale/' + prev.id + '">← ' + esc(prev.titolo) + "</a>" : "") +
         '<a class="btn btn-soft" href="#/manuale">Tutti i capitoli</a>' +
         (next ? '<a class="btn btn-ghost" data-nav="next" href="#/manuale/' + next.id + '">' + esc(next.titolo) + " →</a>" : "") +
       "</div>"
     );
+
+    A.collegaFormDomanda("formDomandaCapitolo", "domandaCapitolo", "linkTaccuinoCapitolo");
 
     const ascolta = document.getElementById("ascoltaCapitolo");
     if (ascolta) ascolta.addEventListener("click", function () {
@@ -96,6 +101,79 @@
       A.leggiCapitolo(testo);
     });
   }
+
+  /* ---------------------------------------------------------------- Taccuino */
+
+  // Le domande che la persona vuole fare al clinico. Non vengono interpretate:
+  // sono appunti suoi, che sceglie se portare nella relazione o nella scheda.
+  let taccuinoInModifica = null;
+
+  views.taccuino = function () {
+    const domande = state.domandePersonali || [];
+    const inModifica = taccuinoInModifica ? domande.filter(function (q) { return q.id === taccuinoInModifica; })[0] : null;
+    if (taccuinoInModifica && !inModifica) taccuinoInModifica = null;
+
+    A.setTitle("Taccuino");
+    A.page(
+      '<div class="page-head"><p class="eyebrow">Taccuino</p><h1>Le domande che vuoi fare</h1>' +
+        '<p class="lead">Scrivile quando ti vengono, mentre leggi o parli con Neura. Restano su questo dispositivo e prima della relazione scegli tu quali affiancare a quelle generate.</p></div>' +
+      '<div class="grid grid-2">' +
+        '<div class="card" id="taccuinoNuova"><h2 class=h-sub>' + (inModifica ? "Correggi la domanda" : "Aggiungi una domanda") + "</h2>" +
+          '<p class="text-small muted">Una domanda alla volta, con parole tue. Non serve che sia perfetta: serve che sia la tua.</p>' +
+          '<form id="taccuinoForm"><div class="form-field"><label class="field-label" for="domandaTesto">La domanda</label>' +
+            '<textarea class="textarea" id="domandaTesto" maxlength="200" rows="3" required placeholder="Per esempio: che cosa posso fare se gli attacchi arrivano la sera?">' + esc(inModifica ? inModifica.testo : "") + "</textarea></div>" +
+            '<div class="btn-row"><button type="submit" class="btn btn-primary">' + (inModifica ? "Salva la modifica" : "Aggiungi al taccuino") + "</button>" +
+              (inModifica ? '<button type="button" class="btn btn-ghost" id="annullaModifica">Annulla</button>' : "") + "</div>" +
+            '<p class="text-small muted mb-0">Massimo 200 caratteri. Resta su questo dispositivo.</p></form></div>' +
+        '<div class="card"><h2 class=h-sub>Il taccuino' + (domande.length ? " (" + domande.length + ")" : "") + "</h2>" +
+          (domande.length
+            ? '<ul class="taccuino-lista" id="taccuinoList">' + domande.map(function (q) {
+                return '<li class="taccuino-voce"><p>' + esc(q.testo) + '</p><p class="text-small muted">Scritta il ' + esc(A.fmtDate(q.creato)) + '</p>' +
+                  '<div class="btn-row"><button type="button" class="chip" data-modifica="' + esc(q.id) + '">Modifica</button>' +
+                  '<button type="button" class="chip" data-elimina="' + esc(q.id) + '">Togli</button></div></li>';
+              }).join("") + "</ul>"
+            : '<p class="text-small muted">Il taccuino è vuoto. Puoi scrivere la prima domanda qui accanto, oppure aggiungerla alla fine di un capitolo del <a href="#/manuale">manuale</a> o dalla pagina di <a href="#/neura">Neura</a>.</p>') +
+          '<div class="btn-row mt-2"><a class="chip" href="#/relazione">Scegli per la relazione</a><a class="chip" href="#/scheda">Prepara la scheda</a></div></div>' +
+      "</div>"
+    );
+
+    const form = document.getElementById("taccuinoForm");
+    const input = document.getElementById("domandaTesto");
+    if (form) form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const esito = inModifica ? A.modificaDomanda(inModifica.id, input.value) : A.aggiungiDomanda(input.value);
+      if (esito.ok === false) { A.toast(esito.motivo, 5000); return; }
+      A.toast(inModifica ? "Domanda aggiornata." : "Domanda aggiunta al taccuino.");
+      taccuinoInModifica = null;
+      views.taccuino();
+    });
+
+    const annulla = document.getElementById("annullaModifica");
+    if (annulla) annulla.addEventListener("click", function () {
+      taccuinoInModifica = null;
+      views.taccuino();
+    });
+
+    const lista = document.getElementById("taccuinoList");
+    if (lista) lista.addEventListener("click", function (e) {
+      const modifica = e.target.closest("[data-modifica]");
+      if (modifica) {
+        taccuinoInModifica = modifica.getAttribute("data-modifica");
+        views.taccuino();
+        const campo = document.getElementById("domandaTesto");
+        if (campo) { campo.focus(); campo.setSelectionRange(campo.value.length, campo.value.length); }
+        return;
+      }
+      const togli = e.target.closest("[data-elimina]");
+      if (!togli) return;
+      if (!confirm("Togliere questa domanda dal taccuino?")) return;
+      const id = togli.getAttribute("data-elimina");
+      if (!A.eliminaDomanda(id)) { A.toast("Non è stato possibile togliere la domanda.", 5000); return; }
+      if (taccuinoInModifica === id) taccuinoInModifica = null;
+      A.toast("Domanda tolta dal taccuino.");
+      views.taccuino();
+    });
+  };
 
   /* ---------------------------------------------------------------- Glossario */
 
@@ -793,7 +871,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.12 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.13 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

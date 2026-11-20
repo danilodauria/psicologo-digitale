@@ -1495,6 +1495,19 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
 .scheda-sheet ul, .scheda-sheet ol { margin-bottom: .45rem; }
 .scheda-sheet .report-foot { margin-top: 1.2rem; }
 
+/* Taccuino: poche righe, testo della persona, niente da interpretare. */
+.taccuino-form { margin-top: .8rem; }
+.taccuino-riga { display: flex; align-items: flex-start; gap: .5rem; }
+.taccuino-riga .input { flex: 1; }
+.taccuino-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+.taccuino-voce { border-top: 1px solid var(--line); padding-top: .7rem; }
+.taccuino-voce:first-child { border-top: 0; padding-top: 0; }
+.taccuino-voce p:first-child { margin-bottom: .2rem; }
+@media (max-width: 600px) {
+  .taccuino-riga { flex-direction: column; }
+  .taccuino-riga .btn { width: 100%; }
+}
+
 .report-actions {
   display: flex;
   flex-wrap: wrap;

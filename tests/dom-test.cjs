@@ -463,6 +463,99 @@ NP.app.state.diary = diarioPrimaScheda;
 NP.app.saveDiary();
 NP.app.writeJSON("thoughts", pensieriPrimaScheda);
 
+/* Il taccuino delle domande ----------------------------------------------- */
+
+console.log("\nIl taccuino delle domande");
+NP.app.state.domandePersonali = [];
+NP.app.saveDomandePersonali();
+
+const avviso = function () { return document.getElementById("toast").textContent; };
+
+navigate("#/manuale/ansia");
+const formCapitolo = document.getElementById("formDomandaCapitolo");
+const campoCapitolo = document.getElementById("domandaCapitolo");
+ok(!!formCapitolo && !!campoCapitolo, "alla fine di un capitolo c'è il modulo per una domanda");
+campoCapitolo.value = "  Che cosa   posso fare la sera?  ";
+formCapitolo.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+ok(NP.app.state.domandePersonali.length === 1, "la domanda scritta nel capitolo entra nel taccuino");
+ok(NP.app.state.domandePersonali[0].testo === "Che cosa posso fare la sera?", "gli spazi in più vengono tolti");
+ok(/Apri il taccuino \(1\)/.test(document.getElementById("linkTaccuinoCapitolo").textContent), "il collegamento dice quante domande ci sono");
+ok(campoCapitolo.value === "", "il campo si svuota dopo l'aggiunta");
+
+navigate("#/neura");
+const formNeura = document.getElementById("formDomandaNeura");
+ok(!!formNeura && !!document.getElementById("domandaNeura"), "anche Neura offre il modulo per il taccuino");
+document.getElementById("domandaNeura").value = "Posso parlarne con il medico di base?";
+formNeura.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+ok(NP.app.state.domandePersonali.length === 2, "la domanda scritta parlando con Neura entra nello stesso taccuino");
+ok(/Apri il taccuino \(2\)/.test(document.getElementById("linkTaccuinoNeura").textContent), "il collegamento si aggiorna senza ricaricare la pagina");
+
+navigate("#/taccuino");
+ok(/Le domande che vuoi fare/.test(document.querySelector("h1").textContent), "il taccuino ha una pagina sua");
+ok(document.querySelectorAll("#taccuinoList .taccuino-voce").length === 2, "il taccuino elenca le due domande");
+ok(!!document.getElementById("taccuinoNuova"), "e offre il modulo per aggiungerne una");
+
+const campoNuovo = document.getElementById("domandaTesto");
+campoNuovo.value = "che cosa posso fare la sera?";
+document.getElementById("taccuinoForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+ok(NP.app.state.domandePersonali.length === 2, "una domanda già scritta non viene duplicata");
+ok(/già nel taccuino/.test(avviso()), "e l'avviso dice perché");
+
+const idPrima = NP.app.state.domandePersonali[0].id;
+document.querySelector('[data-modifica="' + idPrima + '"]').click();
+ok(/Correggi la domanda/.test(document.getElementById("taccuinoNuova").textContent), "Modifica apre la domanda scelta");
+ok(document.getElementById("domandaTesto").value === "Posso parlarne con il medico di base?", "con il testo già dentro");
+document.getElementById("domandaTesto").value = "Che cosa posso fare se arriva la sera?";
+document.getElementById("taccuinoForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+ok(NP.app.state.domandePersonali.some(function (q) { return q.testo === "Che cosa posso fare se arriva la sera?"; }), "salvando, la domanda viene corretta");
+ok(/Domanda aggiornata/.test(avviso()), "e l'avviso lo conferma");
+
+const idSeconda = NP.app.state.domandePersonali[1].id;
+const confirmPrima = window.confirm;
+window.confirm = function () { return true; };
+document.querySelector('[data-elimina="' + idSeconda + '"]').click();
+ok(NP.app.state.domandePersonali.length === 1, "Togli elimina solo la domanda scelta");
+window.confirm = confirmPrima;
+
+NP.app.state.diary = [{ id: "tacc-d1", date: "2026-11-18T09:00:00.000Z", mood: 5, anxiety: 4, sleep: 6, energy: 5, note: "voce per il taccuino" }];
+NP.app.saveDiary();
+navigate("#/relazione");
+ok(!!document.getElementById("reportDomande"), "la relazione mostra le domande scritte");
+const casellaPersonale = document.querySelector("#reportDomande input[data-domanda]");
+ok(!!casellaPersonale && casellaPersonale.checked, "prima del PDF la domanda è inclusa");
+ok(/Che cosa posso fare se arriva la sera\?/.test(document.getElementById("reportBody").textContent), "e compare nel testo della relazione");
+ok(/Le domande che ho scritto:/.test(document.getElementById("reportBody").textContent), "sotto le domande generate, con un'etichetta chiara");
+casellaPersonale.checked = false;
+casellaPersonale.dispatchEvent(new window.Event("change", { bubbles: true }));
+ok(!/Che cosa posso fare se arriva la sera\?/.test(document.getElementById("reportBody").textContent), "togliendola, sparisce dal testo");
+ok(!/Le domande che ho scritto:/.test(document.getElementById("reportBody").textContent), "e l'etichetta sparisce con lei");
+casellaPersonale.checked = true;
+casellaPersonale.dispatchEvent(new window.Event("change", { bubbles: true }));
+ok(/Che cosa posso fare se arriva la sera\?/.test(document.getElementById("reportBody").textContent), "rimettendola, torna al suo posto");
+
+const idPersonale = NP.app.state.domandePersonali[0].id;
+const pdfConPersonale = NP.reportPdf.generate({ personali: [idPersonale] });
+const pdfSenzaPersonale = NP.reportPdf.generate({ personali: [] });
+const testoConPersonale = Buffer.from(pdfConPersonale).toString("latin1");
+const testoSenzaPersonale = Buffer.from(pdfSenzaPersonale).toString("latin1");
+ok(/Che cosa posso fare se arriva la sera\?/.test(testoConPersonale), "il PDF scelto contiene la domanda scritta");
+ok(!/Che cosa posso fare se arriva la sera\?/.test(testoSenzaPersonale), "il PDF senza quella casella non la contiene");
+
+navigate("#/scheda");
+const caselleScheda = Array.prototype.slice.call(document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]'));
+const indiceTua = caselleScheda.findIndex(function (c) {
+  return /\(tua\)/.test(c.closest(".report-opzione").textContent);
+});
+ok(indiceTua >= 0, "la scheda mette le domande scritte accanto a quelle generate, segnate come tue");
+caselleScheda[indiceTua].checked = true;
+caselleScheda[indiceTua].dispatchEvent(new window.Event("change", { bubbles: true }));
+ok(/Che cosa posso fare se arriva la sera\?/.test(document.getElementById("schedaBody").textContent), "e scegliendola entra nella scheda");
+
+NP.app.state.domandePersonali = [];
+NP.app.saveDomandePersonali();
+NP.app.state.diary = diarioPrimaScheda;
+NP.app.saveDiary();
+
 /* Percorso e sedute ------------------------------------------------------- */
 
 navigate("#/percorso");
@@ -1286,16 +1379,23 @@ setTimeout(async function () {
   // Il backup ha una forma dichiarata: un file vecchio si completa, uno di una
   // versione futura si rifiuta. Importare alla cieca è una perdita silenziosa.
   console.log("\nFormato del backup");
-  ok(NP.app.versioneBackup === 2, "il formato del backup ha una versione dichiarata");
+  ok(NP.app.versioneBackup === 3, "il formato del backup ha una versione dichiarata");
+  NP.app.state.domandePersonali = [{ id: "q-backup", testo: "Domanda nel backup", creato: "2026-11-18T10:00:00.000Z" }];
+  NP.app.saveDomandePersonali();
   const raccolto = NP.app.raccogliDati();
-  ok(raccolto.version === 2, "ogni file esportato dice quale formato ha");
+  ok(raccolto.version === 3, "ogni file esportato dice quale formato ha");
   ok(!!raccolto.storicoPunteggi && typeof raccolto.storicoPunteggi === "object", "e porta con sé lo storico delle misure");
+  ok(Array.isArray(raccolto.domandePersonali) && raccolto.domandePersonali.length === 1, "e le domande scritte per il clinico");
   const vecchio = NP.app.migraBackup({ app: "Psicologo Digitale", diary: [] });
-  ok(!vecchio.errore && vecchio.dati.version === 2, "un file senza versione viene riconosciuto come il primo formato e portato a quello attuale");
+  ok(!vecchio.errore && vecchio.dati.version === 3, "un file senza versione viene riconosciuto come il primo formato e portato a quello attuale");
   ok(vecchio.migrato === true, "e la migrazione lo dice, invece di avvenire di nascosto");
   ok(!!vecchio.dati.storicoPunteggi && Object.keys(vecchio.dati.storicoPunteggi).length === 0, "completando i campi che allora non esistevano, vuoti e non inventati");
-  const attuale = NP.app.migraBackup({ app: "Psicologo Digitale", version: 2, storicoPunteggi: {} });
-  ok(!attuale.errore && attuale.dati.version === 2, "un file già nel formato attuale viene accettato così com'è");
+  ok(Array.isArray(vecchio.dati.domandePersonali) && vecchio.dati.domandePersonali.length === 0, "anche il taccuino, senza inventare domande");
+  const secondo = NP.app.migraBackup({ app: "Psicologo Digitale", version: 2, storicoPunteggi: {} });
+  ok(!secondo.errore && secondo.dati.version === 3, "un file del formato precedente viene portato a quello attuale");
+  ok(secondo.migrato === true, "e la conversione viene dichiarata");
+  const attuale = NP.app.migraBackup({ app: "Psicologo Digitale", version: 3, storicoPunteggi: {}, domandePersonali: [] });
+  ok(!attuale.errore && attuale.dati.version === 3, "un file già nel formato attuale viene accettato così com'è");
   ok(attuale.migrato === false, "e non si dichiara convertito: nessuna conversione è avvenuta");
   // Il caso vero: esporto adesso e reimporto lo stesso file. Se il messaggio
   // dicesse «aggiornato al formato attuale» mentirebbe, perché era già così.

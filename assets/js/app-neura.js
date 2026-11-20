@@ -515,6 +515,8 @@
           "</ul></div>" +
           '<div class="card"><h2 class=h-sub>Quando non basta</h2><p class="text-small">Se il disagio è intenso, dura da settimane o c\'è un rischio, Neura non è lo strumento giusto: serve una persona.</p>' +
             '<div class="pill-row"><a class="chip" href="#/sicurezza">Numeri utili</a><a class="chip" href="#/colloquio">Colloquio</a></div></div>' +
+          '<div class="card"><h2 class=h-sub>Una domanda per il clinico</h2><p class="text-small">Se Neura ti fa venire in mente qualcosa da chiedere al professionista, scrivilo qui: resta nel taccuino e lo scegli tu prima della relazione.</p>' +
+            A.moduloDomanda("domandaNeura", "formDomandaNeura", "linkTaccuinoNeura") + "</div>" +
           '<div class="card"><h2 class=h-sub>Voce</h2><p class="text-small">Il pulsante dell\'altoparlante in alto attiva o disattiva la lettura. Puoi fermarla con Stop, con «Ferma l\'audio» nella barra in alto o con Esc.</p>' +
             '<div class="form-field"><label class="field-label" for="voiceSelect">Voce del dispositivo</label>' +
               '<select class="input" id="voiceSelect"><option value="">Automatica (consigliata)</option></select></div>' +
@@ -543,6 +545,7 @@
 
     renderLog(false);
     quickChips(["Come inizio?", "Che cos'è l'ansia?", "Un esercizio per dormire", "Come preparo la relazione?"]);
+    A.collegaFormDomanda("formDomandaNeura", "domandaNeura", "linkTaccuinoNeura");
 
     const form = document.getElementById("chatForm");
     const input = document.getElementById("neuraInput");

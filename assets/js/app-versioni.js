@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.12";
+  const VERSIONE = "1.7.13";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.13",
+      data: "20 novembre 2026",
+      titolo: "Un taccuino per le domande che vuoi fare",
+      punti: [
+        "Alla fine di ogni capitolo del manuale e nella pagina di Neura c'è un campo per scrivere una domanda da fare al clinico. Le domande restano nel taccuino, sul dispositivo, e si possono correggere o togliere dalla pagina Taccuino.",
+        "Prima di scaricare la relazione, la sezione «Le domande che hai scritto» lascia scegliere quali affiancare a quelle generate: partono tutte incluse, e togliendo la spunta restano nel taccuino ma non nel PDF. Completano la sezione delle domande, sotto quelle suggerite.",
+        "Le domande scritte entrano anche nella scheda da portare, segnate come tue, e nel backup. Il formato del backup passa alla versione 3: i file vecchi si aprono lo stesso, con il taccuino vuoto."
+      ]
+    },
     {
       v: "1.7.12",
       data: "20 novembre 2026",

@@ -87,6 +87,11 @@
     return q.slice(0, 8);
   }
 
+  function domandeDisponibili(d) {
+    return clinicoQuestions(d).map(function (t) { return { testo: t, mia: false }; })
+      .concat((state.domandePersonali || []).map(function (q) { return { testo: q.testo, mia: true }; }));
+  }
+
   function labelsFor(qid, values) {
     const q = (NP.data.intake || []).filter(function (x) { return x.id === qid; })[0];
     if (!q || !q.opzioni) return values.join(", ");
@@ -203,6 +208,13 @@
 
     out.push({ type: "h", text: numero + ". Domande suggerite per il clinico" });
     out.push({ type: "ul", items: clinicoQuestions(d) });
+    const personali = Array.isArray(opz && opz.personali)
+      ? (state.domandePersonali || []).filter(function (q) { return opz.personali.indexOf(q.id) >= 0; })
+      : (state.domandePersonali || []);
+    if (personali.length) {
+      out.push({ type: "p", text: "Le domande che ho scritto:" });
+      out.push({ type: "ul", items: personali.map(function (q) { return q.testo; }) });
+    }
 
     if (incluso("note") && state.reportNotes.note) {
       out.push({ type: "h", text: "Note della persona" });
@@ -276,7 +288,7 @@
 
   function scelteScheda(d, opz) {
     const date = opz || {};
-    const domande = clinicoQuestions(d);
+    const domande = domandeDisponibili(d);
     return {
       aree: (Array.isArray(date.aree) ? date.aree : d.p.aree.slice(0, SCHEDA_MAX.aree).map(function (x) { return x.id; })).slice(0, SCHEDA_MAX.aree),
       punteggi: (Array.isArray(date.punteggi) ? date.punteggi : punteggiRecenti(d).slice(0, SCHEDA_MAX.punteggi).map(function (x) { return x.scale.id; })).slice(0, SCHEDA_MAX.punteggi),
@@ -297,7 +309,7 @@
     const pensieri = pensieriRecenti(d);
     const voce = s.voce >= 0 ? d.diary[s.voce] : null;
     const pensiero = s.pensiero >= 0 ? pensieri[s.pensiero] : null;
-    const domande = clinicoQuestions(d);
+    const domande = domandeDisponibili(d);
     const sezioni = [];
 
     const paragrafi = [motivoScheda(d)];
@@ -335,7 +347,7 @@
     }
 
     if (domande.length && s.domande.length) {
-      sezioni.push({ titolo: "Cosa voglio chiedere", voci: s.domande.map(function (i) { return domande[i]; }).filter(Boolean), numerata: true });
+      sezioni.push({ titolo: "Cosa voglio chiedere", voci: s.domande.map(function (i) { return domande[i] && domande[i].testo; }).filter(Boolean), numerata: true });
     }
 
     return { sezioni: sezioni, avviso: avvisoScheda(d) };
@@ -360,6 +372,7 @@
 
   let editing = false;
   const include = { diario: true, pensieri: true, note: true };
+  const personaliIncluse = {};
 
   function renderHTML(sectionsData, d) {
     return sectionsData.map(function (s) {
@@ -390,13 +403,20 @@
         '<div class="card report-empty"><div class="report-ico">' + A.icon("print") + "</div>" +
           "<h2>Non ci sono ancora dati</h2>" +
           '<p class="text-small muted">Inizia dal colloquio: bastano poche domande. Puoi aggiungere i questionari in un secondo momento.</p>' +
-          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/valutazione">Vai ai questionari</a><a class="btn btn-ghost" href="#/scheda">Prepara la scheda</a></div>' +
+          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/valutazione">Vai ai questionari</a><a class="btn btn-ghost" href="#/scheda">Prepara la scheda</a><a class="btn btn-ghost" href="#/taccuino">Scrivi le domande</a></div>' +
         "</div>"
       );
       return;
     }
 
-    const data = sections(d, include);
+    // Le domande scritte dalla persona restano nel taccuino: qui si sceglie solo quali
+    // affiancare a quelle generate, senza cancellarle dal taccuino.
+    const opzioni = function () {
+      return Object.assign({}, include, {
+        personali: (state.domandePersonali || []).filter(function (q) { return personaliIncluse[q.id] !== false; }).map(function (q) { return q.id; })
+      });
+    };
+    const data = sections(d, opzioni());
     const when = new Date();
     const casella = function (id, chiave, testo, vuoto) {
       return '<label class="report-opzione" for="' + id + '"><input type="checkbox" id="' + id + '" data-include="' + chiave + '"' +
@@ -421,6 +441,18 @@
           casella("incPensieri", "pensieri", "Schede del pensiero" + conteggio(d.thoughts.length, "scheda", "schede"), !d.thoughts.length) +
           casella("incNote", "note", "Le mie note personali" + (state.reportNotes.note ? "" : " (nessuna nota)"), !state.reportNotes.note) +
         '</div></fieldset></div>' +
+
+      '<div class="card report-options no-print" id="reportDomande"><fieldset>' +
+        '<legend>Le domande che hai scritto</legend>' +
+        ((state.domandePersonali || []).length
+          ? '<p class="text-small muted">Scegli quali affiancare a quelle generate. Quello che togli resta nel taccuino.</p>' +
+            '<div class="report-opzioni-lista">' + state.domandePersonali.map(function (q) {
+              return '<label class="report-opzione" for="incDomanda' + esc(q.id) + '"><input type="checkbox" id="incDomanda' + esc(q.id) + '" data-domanda="' + esc(q.id) + '"' +
+                (personaliIncluse[q.id] !== false ? " checked" : "") + "> <span>" + esc(q.testo) + "</span></label>";
+            }).join("") + "</div>" +
+            '<p class="text-small muted" style="margin-top:.6rem"><a href="#/taccuino">Apri il taccuino</a> per aggiungerne altre o correggerle.</p>'
+          : '<p class="text-small muted">Non hai ancora scritto domande. Puoi aggiungerle mentre leggi il <a href="#/manuale">manuale</a>, parlando con <a href="#/neura">Neura</a> o dal <a href="#/taccuino">taccuino</a>.</p>') +
+      '</fieldset></div>' +
 
       '<div class="report-actions no-print"><span class="grow">Il PDF viene generato sul tuo dispositivo. Contiene dati sensibili: conservalo con cura.</span>' +
         '<button type="button" class="btn btn-primary" id="pdfBtn">' + A.icon("download") + "Scarica PDF</button>" +
@@ -451,7 +483,15 @@
       input.addEventListener("change", function () {
         include[input.getAttribute("data-include")] = input.checked;
         const body = document.getElementById("reportBody");
-        if (body) body.innerHTML = renderHTML(sections(d, include), d);
+        if (body) body.innerHTML = renderHTML(sections(d, opzioni()), d);
+      });
+    });
+
+    document.querySelectorAll("#reportDomande input[data-domanda]").forEach(function (input) {
+      input.addEventListener("change", function () {
+        personaliIncluse[input.getAttribute("data-domanda")] = input.checked;
+        const body = document.getElementById("reportBody");
+        if (body) body.innerHTML = renderHTML(sections(d, opzioni()), d);
       });
     });
 
@@ -481,7 +521,7 @@
     const pdfBtn = document.getElementById("pdfBtn");
     if (pdfBtn) pdfBtn.addEventListener("click", function () {
       try {
-        const pdf = buildPdf(sections(d, include), d, docId(), when);
+        const pdf = buildPdf(sections(d, opzioni()), d, docId(), when);
         downloadPdf(pdf, "relazione-psicologo-digitale-" + when.toISOString().slice(0, 10) + ".pdf");
         A.toast("PDF generato.");
       } catch (e) {
@@ -510,7 +550,7 @@
     const scelte = scelteScheda(d);
     const punteggi = punteggiRecenti(d);
     const pensieri = pensieriRecenti(d);
-    const domande = clinicoQuestions(d);
+    const domande = domandeDisponibili(d);
     const quando = new Date();
 
     const casella = function (gruppo, valore, testo, attivo, disabilitato) {
@@ -555,7 +595,7 @@
 
     const domandeList = '<div class="report-opzioni-lista">' + domande.map(function (q, i) {
       const attivo = scelte.domande.indexOf(i) >= 0;
-      return casella("domande", String(i), esc(q), attivo, !attivo && scelte.domande.length >= SCHEDA_MAX.domande);
+      return casella("domande", String(i), esc(q.testo) + (q.mia ? ' <span class="muted">(tua)</span>' : ""), attivo, !attivo && scelte.domande.length >= SCHEDA_MAX.domande);
     }).join("") + "</div>";
 
     A.setTitle("Scheda da portare");

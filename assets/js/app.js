@@ -112,6 +112,10 @@ NP.app = (function () {
     course: readJSON("course", { done: [], notes: {} }),
     quizStats: readJSON("quiz", { played: 0, best: 0, correct: 0, total: 0, byCat: {} }),
     reportNotes: readJSON("reportNotes", { note: "", clinician: "" }),
+    domandePersonali: (function () {
+      const salvate = readJSON("domandePersonali", []);
+      return Array.isArray(salvate) ? salvate : [];
+    })(),
     chat: [],
     pendingAsk: null,
     filters: { q: "", cat: "tutte" }
@@ -124,6 +128,94 @@ NP.app = (function () {
   function saveQuizStats() { writeJSON("quiz", state.quizStats); }
   function saveReportNotes() { writeJSON("reportNotes", state.reportNotes); }
   function saveChat() { writeJSON("chat", state.chat.slice(-40)); }
+
+  // Il taccuino delle domande: quello che la persona vuole chiedere al clinico,
+  // scritto mentre legge o parla con Neura. Non è un dato clinico e non viene
+  // interpretato: è testo suo, che sceglie se portare nella relazione.
+  function salvaDomandePersonali() { return writeJSON("domandePersonali", state.domandePersonali); }
+
+  function testoDomanda(testo) {
+    return String(testo || "").replace(/\s+/g, " ").trim();
+  }
+
+  function aggiungiDomanda(testo) {
+    const t = testoDomanda(testo);
+    if (!t) return { ok: false, motivo: "Scrivi la domanda prima di aggiungerla." };
+    if (t.length > 200) return { ok: false, motivo: "La domanda è troppo lunga: il massimo è 200 caratteri." };
+    if (state.domandePersonali.length >= 50) return { ok: false, motivo: "Il taccuino è pieno: togli una domanda per aggiungerne un'altra." };
+    if (state.domandePersonali.some(function (q) { return String(q.testo || "").toLowerCase() === t.toLowerCase(); })) {
+      return { ok: false, motivo: "Questa domanda è già nel taccuino." };
+    }
+    const prima = state.domandePersonali;
+    const q = { id: "q" + Date.now() + Math.random().toString(36).slice(2, 7), testo: t, creato: new Date().toISOString() };
+    state.domandePersonali = [q].concat(prima);
+    if (salvaDomandePersonali() === false) {
+      state.domandePersonali = prima;
+      return { ok: false, motivo: "Non c'è spazio per salvare la domanda: libera un po' di spazio e riprova." };
+    }
+    return { ok: true, domanda: q };
+  }
+
+  function modificaDomanda(id, testo) {
+    const t = testoDomanda(testo);
+    if (!t) return { ok: false, motivo: "Scrivi la domanda prima di salvarla." };
+    if (t.length > 200) return { ok: false, motivo: "La domanda è troppo lunga: il massimo è 200 caratteri." };
+    if (state.domandePersonali.some(function (q) { return q.id !== id && String(q.testo || "").toLowerCase() === t.toLowerCase(); })) {
+      return { ok: false, motivo: "Questa domanda è già nel taccuino." };
+    }
+    const prima = state.domandePersonali;
+    const trovata = prima.filter(function (q) { return q.id === id; })[0];
+    if (!trovata) return { ok: false, motivo: "La domanda non è più nel taccuino." };
+    state.domandePersonali = prima.map(function (q) { return q.id === id ? Object.assign({}, q, { testo: t }) : q; });
+    if (salvaDomandePersonali() === false) {
+      state.domandePersonali = prima;
+      return { ok: false, motivo: "Non c'è spazio per salvare la modifica: libera un po' di spazio e riprova." };
+    }
+    return { ok: true };
+  }
+
+  function eliminaDomanda(id) {
+    const prima = state.domandePersonali;
+    const restanti = prima.filter(function (q) { return q.id !== id; });
+    if (restanti.length === prima.length) return false;
+    state.domandePersonali = restanti;
+    if (salvaDomandePersonali() === false) {
+      state.domandePersonali = prima;
+      return false;
+    }
+    return true;
+  }
+
+  function etichettaTaccuino() {
+    const n = state.domandePersonali.length;
+    return "Apri il taccuino" + (n ? " (" + n + ")" : "");
+  }
+
+  // Lo stesso modulo breve serve al manuale e a Neura: una domanda, un pulsante,
+  // il collegamento al taccuino. Gli id cambiano, il comportamento no.
+  function moduloDomanda(idInput, idForm, idLink) {
+    return '<form id="' + idForm + '" class="taccuino-form">' +
+      '<label class="field-label" for="' + idInput + '">La tua domanda</label>' +
+      '<div class="taccuino-riga"><input class="input" id="' + idInput + '" maxlength="200" placeholder="Per esempio: che cosa posso chiedere alla prima visita?" aria-describedby="' + idInput + 'Nota">' +
+      '<button type="submit" class="btn btn-soft btn-sm">Aggiungi</button></div>' +
+      '<p class="text-small muted mb-0" id="' + idInput + 'Nota">Massimo 200 caratteri. Resta su questo dispositivo. <a id="' + idLink + '" href="#/taccuino">' + etichettaTaccuino() + "</a></p></form>";
+  }
+
+  function collegaFormDomanda(idForm, idInput, idLink) {
+    const form = document.getElementById(idForm);
+    const input = document.getElementById(idInput);
+    if (!form || !input) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const esito = aggiungiDomanda(input.value);
+      if (esito.ok === false) { toast(esito.motivo, 5000); return; }
+      input.value = "";
+      toast("Domanda aggiunta al taccuino.");
+      const link = document.getElementById(idLink);
+      if (link) link.textContent = etichettaTaccuino();
+      input.focus();
+    });
+  }
 
   const ICONS = {
     heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
@@ -421,7 +513,7 @@ NP.app = (function () {
     return { name: parts[0] || "home", params: parts.slice(1) };
   }
 
-  const MORE_ROUTES = ["sedute", "esercizi", "nutrizione", "manuale", "palestra", "glossario", "sicurezza", "relazione", "scheda", "licenze", "installa", "versioni"];
+  const MORE_ROUTES = ["sedute", "esercizi", "nutrizione", "manuale", "palestra", "glossario", "sicurezza", "relazione", "scheda", "taccuino", "licenze", "installa", "versioni"];
 
   function updateNav(name) {
     document.querySelectorAll("[data-nav]").forEach(function (a) {
@@ -430,7 +522,7 @@ NP.app = (function () {
     const moreBtn = document.getElementById("moreBtn");
     if (moreBtn) moreBtn.classList.toggle("is-active", MORE_ROUTES.indexOf(name) >= 0);
     // La scheda è una pagina della relazione: nel menu resta accesa Relazione.
-    const voceMenu = name === "scheda" ? "relazione" : name;
+    const voceMenu = name === "scheda" || name === "taccuino" ? "relazione" : name;
     document.querySelectorAll("#moreMenu a").forEach(function (a) {
       a.classList.toggle("is-active", a.getAttribute("data-nav") === voceMenu);
     });
@@ -618,6 +710,7 @@ NP.app = (function () {
       course: state.course,
       quizStats: state.quizStats,
       reportNotes: state.reportNotes,
+      domandePersonali: state.domandePersonali,
       pianoSicurezza: readJSON("pianoSicurezza", null),
     // Ogni file dichiara la forma che ha: all'import si controlla, invece di
     // leggere alla cieca un formato che nel frattempo è cambiato.
@@ -653,7 +746,8 @@ NP.app = (function () {
     const scale = d.scales && typeof d.scales === "object" ? Object.keys(d.scales).length : 0;
     const colloquio = d.intake && d.intake.answers && typeof d.intake.answers === "object"
       ? Object.keys(d.intake.answers).length : 0;
-    return Boolean(diario || schede || scale || colloquio || pianoHaContenuto(d.pianoSicurezza));
+    const domande = Array.isArray(d.domandePersonali) ? d.domandePersonali.length : 0;
+    return Boolean(diario || schede || scale || colloquio || domande || pianoHaContenuto(d.pianoSicurezza));
   }
 
   // Il piano di sicurezza conta come dato: chi ha compilato solo quello deve
@@ -667,7 +761,7 @@ NP.app = (function () {
       }));
   }
 
-  const VERSIONE_BACKUP = 2;
+  const VERSIONE_BACKUP = 3;
 
   // Un backup vecchio si completa invece di essere letto alla cieca: la forma
   // del file è cambiata nel tempo (versione 1 = senza campo `version` né
@@ -675,6 +769,9 @@ NP.app = (function () {
   const MIGRAZIONI = {
     1: function (d) {
       return Object.assign({}, d, { version: 2, storicoPunteggi: d.storicoPunteggi || {} });
+    },
+    2: function (d) {
+      return Object.assign({}, d, { version: 3, domandePersonali: Array.isArray(d.domandePersonali) ? d.domandePersonali : [] });
     }
   };
 
@@ -844,6 +941,7 @@ NP.app = (function () {
       course: d.course || { done: [], notes: {} },
       quizStats: d.quizStats || { played: 0, best: 0, correct: 0, total: 0, byCat: {} },
       reportNotes: d.reportNotes || { note: "", clinician: "" },
+      domandePersonali: Array.isArray(d.domandePersonali) ? d.domandePersonali : [],
       pianoSicurezza: d.pianoSicurezza || null
     };
   }
@@ -940,6 +1038,7 @@ NP.app = (function () {
     course: "Percorso",
     quiz: "Palestra",
     reportNotes: "Note della relazione",
+    domandePersonali: "Domande per il clinico",
     thoughts: "Schede del pensiero",
     pianoSicurezza: "Piano di sicurezza",
     chat: "Conversazione con Neura",
@@ -1220,12 +1319,13 @@ NP.app = (function () {
     ["esercizi", "Esercizi completati", "course", function (d) { return d.course && d.course.done ? d.course.done.length : 0; }],
     ["quiz", "Risposte ai quiz", "quizStats", function (d) { return d.quizStats ? d.quizStats.total || 0 : 0; }],
     ["note", "Note della relazione", "reportNotes", function (d) { return d.reportNotes && (d.reportNotes.note || d.reportNotes.clinician) ? 1 : 0; }],
+    ["domande", "Domande per il clinico", "domandePersonali", function (d) { return Array.isArray(d.domandePersonali) ? d.domandePersonali.length : 0; }],
     ["pianoSicurezza", "Piano di sicurezza", "pianoSicurezza", function (d) { return pianoHaContenuto(d.pianoSicurezza) ? 1 : 0; }]
   ];
 
   // I campi che il ripristino tocca: il controllo automatico confronta questo
   // elenco con quello sopra, così nessuno dei due può restare indietro.
-  const RIPRISTINATI = ["intake", "scales", "diary", "thoughts", "course", "quizStats", "reportNotes", "pianoSicurezza"];
+  const RIPRISTINATI = ["intake", "scales", "diary", "thoughts", "course", "quizStats", "reportNotes", "domandePersonali", "pianoSicurezza"];
 
   function statoDati(d) {
     const x = d || {};
@@ -1408,9 +1508,10 @@ NP.app = (function () {
     state.course = d.course || { done: [], notes: {} };
     state.quizStats = d.quizStats || state.quizStats;
     state.reportNotes = d.reportNotes || { note: "", clinician: "" };
+    state.domandePersonali = Array.isArray(d.domandePersonali) ? d.domandePersonali : [];
     writeJSON("thoughts", Array.isArray(d.thoughts) ? d.thoughts : []);
     writeJSON("pianoSicurezza", d.pianoSicurezza && typeof d.pianoSicurezza === "object" ? d.pianoSicurezza : null);
-    saveIntake(); saveScales(); saveDiary(); saveCourse(); saveQuizStats(); saveReportNotes();
+    saveIntake(); saveScales(); saveDiary(); saveCourse(); saveQuizStats(); saveReportNotes(); salvaDomandePersonali();
   }
 
   function annullaRipristino() {
@@ -1483,6 +1584,7 @@ NP.app = (function () {
     state.course = { done: [], notes: {} };
     state.quizStats = { played: 0, best: 0, correct: 0, total: 0, byCat: {} };
     state.reportNotes = { note: "", clinician: "" };
+    state.domandePersonali = [];
     state.chat = [];
     toast("Dati cancellati.");
     return true;
@@ -1507,6 +1609,13 @@ NP.app = (function () {
     saveCourse: saveCourse,
     saveQuizStats: saveQuizStats,
     saveReportNotes: saveReportNotes,
+    saveDomandePersonali: salvaDomandePersonali,
+    aggiungiDomanda: aggiungiDomanda,
+    modificaDomanda: modificaDomanda,
+    eliminaDomanda: eliminaDomanda,
+    etichettaTaccuino: etichettaTaccuino,
+    moduloDomanda: moduloDomanda,
+    collegaFormDomanda: collegaFormDomanda,
     saveChat: saveChat,
     esportaBackup: esportaBackup,
     esportaCopia: esportaCopia,
