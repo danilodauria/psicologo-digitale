@@ -453,7 +453,7 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.11.md");
+const proveMd = read("PROVE-A-MANO-1.7.12.md");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -464,7 +464,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 68, "il markdown elenca sessantotto prove (" + etichette.length + ")");
+ok(etichette.length === 71, "il markdown elenca settantuno prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));
@@ -892,6 +892,16 @@ const reportJs = read("assets/js/app-report.js");
 ok(/incluso\("diario"\)/.test(reportJs) && /incluso\("pensieri"\)/.test(reportJs) && /incluso\("note"\)/.test(reportJs), "diario, schede e note si possono escludere dal documento");
 ok(/function sections\(d, opz\)/.test(reportJs) && /generate: function \(opz\)/.test(reportJs), "la scelta arriva anche al generatore del PDF, non solo al foglio a schermo");
 ok(/report-opzioni-lista/.test(read("assets/css/styles.css")), "le caselle hanno uno stile proprio, leggibile anche da tastiera");
+
+// La scheda da portare: una pagina sola, con le parti che la persona sceglie.
+// Non è una seconda relazione e non deve diventare un documento lungo.
+ok(/views\.scheda = function/.test(reportJs), "la scheda da portare è una vista dell'app");
+ok(/href="#\/scheda"/.test(reportJs), "la relazione apre la scheda da portare");
+ok(/SCHEDA_MAX = \{ aree: 3, punteggi: 3, domande: 4 \}/.test(reportJs), "la scheda tiene tre aree, tre punteggi e quattro domande");
+ok(/function schedaContenuto/.test(reportJs) && /function buildSchedaPdf/.test(reportJs), "la scheda ha contenuto e PDF propri");
+ok(/serializePdf\(streams\)/.test(reportJs) && /return serializePdf\(\[content\.join/.test(reportJs), "relazione e scheda usano lo stesso impaginatore PDF");
+ok(/scheda-sheet/.test(read("assets/css/styles.css")), "la scheda ha uno stile di stampa proprio");
+ok(/Da non rimandare/.test(reportJs), "un segnale di rischio resta in cima alla scheda, non sparisce");
 
 /* Controllo automatico dei collegamenti ------------------------------------ */
 

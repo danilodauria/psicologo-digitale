@@ -209,6 +209,13 @@ def costruisci(percorso, d):
             "chiede aiuto</b>, non come una cartella clinica.",
             st["Corpo"],
         ),
+        Paragraph(
+            "Se la persona ha scelto la <b>scheda da portare</b>, ricevi anche una pagina sola: il motivo, fino a tre "
+            "aree, fino a tre punteggi, una voce di diario, una scheda del pensiero e fino a quattro domande scelte "
+            "da lei. Non sostituisce la relazione e non aggiunge dati: è il foglio che tiene in mano, e un segnale "
+            "di rischio vi compare in cima invece di restare fuori.",
+            st["Corpo"],
+        ),
         Paragraph("La struttura della relazione", st["Sezione"]),
         Paragraph(
             "La numerazione delle sezioni cambia se la persona non ha compilato il diario o le schede del "

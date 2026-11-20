@@ -358,6 +358,111 @@ NP.app.state.reportNotes.note = notePrimaRelazione.note;
 NP.app.state.reportNotes.clinician = notePrimaRelazione.clinician;
 NP.app.saveReportNotes();
 
+/* La scheda da portare ---------------------------------------------------- */
+
+console.log("\nLa scheda da portare");
+
+const intakePrimaScheda = JSON.parse(JSON.stringify(NP.app.state.intake));
+const scalesPrimaScheda = JSON.parse(JSON.stringify(NP.app.state.scales));
+const diarioPrimaScheda = NP.app.state.diary;
+const pensieriPrimaScheda = NP.app.readJSON("thoughts", []);
+
+NP.app.state.intake.answers = Object.assign({}, NP.app.state.intake.answers, {
+  aree: ["ansia", "sonno", "umore"],
+  durata: "mesi6",
+  impatto: 7,
+  obiettivi: "Dormire meglio e capire da dove cominciare",
+  um_piacere: 3,
+  an_manifestazioni: ["tensione", "evitamento"],
+  so_tipo: ["addormentamento"],
+  lav_recupero: "no",
+  salute: ["altro"],
+  farmaci: "psiche",
+  terapia: "corso",
+  sic_pensieri: "fugaci"
+});
+NP.app.saveIntake();
+NP.app.state.scales = {
+  ansia: { score: 12, doneAt: "2026-11-17T10:00:00.000Z" },
+  umore: { score: 9, doneAt: "2026-11-16T10:00:00.000Z" },
+  sonno: { score: 15, doneAt: "2026-11-15T10:00:00.000Z" },
+  stress: { score: 22, doneAt: "2026-11-14T10:00:00.000Z" }
+};
+NP.app.saveScales();
+NP.app.state.diary = [
+  { id: "sch-d1", date: "2026-11-18", mood: 4, anxiety: 6, sleep: 6, energy: 4, note: "giornata difficile al lavoro" },
+  { id: "sch-d2", date: "2026-11-17", mood: 6, anxiety: 4, sleep: 7, energy: 6, note: "voce precedente" }
+];
+NP.app.saveDiary();
+NP.app.writeJSON("thoughts", [
+  { id: "sch-t1", date: "2026-11-18T10:00:00.000Z", situation: "riunione con il capo", thought: "non sono capace", emotion: "ansia", intensity: 7, alternative: "ho già gestito situazioni simili" },
+  { id: "sch-t2", date: "2026-11-17T10:00:00.000Z", situation: "situazione vecchia", thought: "pensiero vecchio", emotion: "tristezza", intensity: 4, alternative: "" }
+]);
+
+navigate("#/relazione");
+ok(!!document.querySelector('a[href="#/scheda"]'), "la relazione porta alla scheda da portare");
+
+navigate("#/scheda");
+ok(document.querySelector(".scheda-sheet"), "la scheda da portare è generata");
+ok(/Una pagina sola, per il colloquio/.test(document.querySelector("h1").textContent), "la scheda dice che sta in una pagina");
+const caselleAree = document.querySelectorAll('#schedaScelte input[data-gruppo="aree"]');
+const casellePunteggi = document.querySelectorAll('#schedaScelte input[data-gruppo="punteggi"]');
+const caselleDomande = document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]');
+ok(caselleAree.length === 4, "la scheda offre tutte le aree del colloquio (" + caselleAree.length + ")");
+ok(document.querySelectorAll('#schedaScelte input[data-gruppo="aree"]:checked').length === 3, "senza scelte parte con tre aree");
+ok(document.querySelectorAll('#schedaScelte input[data-gruppo="punteggi"]:checked').length === 3, "e con tre punteggi");
+ok(document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]:checked').length === 3, "e con tre domande");
+ok(document.querySelectorAll('#schedaScelte input[data-gruppo="aree"]:not(:checked):disabled').length === 1, "la quarta area si ferma finché non se ne toglie una");
+
+const corpoScheda = document.getElementById("schedaBody");
+ok(/Le aree che mi pesano di più/.test(corpoScheda.textContent), "la scheda comincia dal motivo");
+ok(/giornata difficile al lavoro/.test(corpoScheda.textContent), "la scheda parte dall'ultima voce di diario");
+ok(/non sono capace/.test(corpoScheda.textContent), "e dall'ultima scheda del pensiero");
+ok(/Cosa voglio chiedere/.test(corpoScheda.textContent), "e dalle domande scelte");
+ok(/Da non rimandare/.test(corpoScheda.textContent), "un segnale di rischio resta in cima, non sparisce");
+
+const pdfScheda = NP.reportPdf.scheda();
+const testoPdfScheda = Buffer.from(pdfScheda).toString("latin1");
+ok((testoPdfScheda.match(/\/Type\s*\/Page[^s]/g) || []).length === 1, "il PDF della scheda sta in una pagina sola");
+ok(/Cosa voglio chiedere/.test(testoPdfScheda) && /giornata difficile al lavoro/.test(testoPdfScheda), "il PDF porta le parti scelte");
+ok(/Da non rimandare/.test(testoPdfScheda), "e il segnale di rischio");
+
+const pdfSoloMotivo = NP.reportPdf.scheda({ aree: [], punteggi: [], voce: -1, pensiero: -1, domande: [] });
+const testoSoloMotivo = Buffer.from(pdfSoloMotivo).toString("latin1");
+ok((testoSoloMotivo.match(/\/Type\s*\/Page[^s]/g) || []).length === 1, "anche la scheda ridotta sta in una pagina");
+ok(!/Cosa voglio chiedere/.test(testoSoloMotivo) && !/Le aree che pesano/.test(testoSoloMotivo), "senza scelte restano fuori le sezioni vuote");
+
+Array.prototype.forEach.call(caselleAree, function (c) { c.checked = false; c.dispatchEvent(new window.Event("change", { bubbles: true })); });
+ok(!/Le aree che pesano/.test(corpoScheda.textContent), "togliendo le aree, la sezione sparisce anche a schermo");
+ok(!caselleAree[3].disabled, "liberando un posto, la quarta area si può scegliere");
+caselleAree[3].checked = true;
+caselleAree[3].dispatchEvent(new window.Event("change", { bubbles: true }));
+ok(/Le aree che pesano/.test(corpoScheda.textContent), "scegliendo la quarta area, la sezione torna");
+
+const voceDue = document.querySelector('#schedaScelte input[name="schedaVoce"][value="1"]');
+voceDue.checked = true;
+voceDue.dispatchEvent(new window.Event("change", { bubbles: true }));
+ok(/voce precedente/.test(corpoScheda.textContent) && !/giornata difficile al lavoro/.test(corpoScheda.textContent), "scegliendo un'altra voce, la scheda la segue");
+
+const pensieroDue = document.querySelector('#schedaScelte input[name="schedaPensiero"][value="1"]');
+pensieroDue.checked = true;
+pensieroDue.dispatchEvent(new window.Event("change", { bubbles: true }));
+ok(/pensiero vecchio/.test(corpoScheda.textContent) && !/non sono capace/.test(corpoScheda.textContent), "scegliendo un'altra scheda, la scheda la segue");
+
+ok(caselleDomande.length >= 5, "la scheda offre almeno cinque domande (" + caselleDomande.length + ")");
+caselleDomande[3].checked = true;
+caselleDomande[3].dispatchEvent(new window.Event("change", { bubbles: true }));
+ok(caselleDomande[4].disabled, "alla quarta domanda le altre si fermano");
+ok(/Chiarire la terapia farmacologica/.test(corpoScheda.textContent), "la quarta domanda entra nella scheda");
+
+NP.app.state.intake = intakePrimaScheda;
+NP.app.saveIntake();
+NP.app.state.scales = scalesPrimaScheda;
+NP.app.saveScales();
+NP.app.state.diary = diarioPrimaScheda;
+NP.app.saveDiary();
+NP.app.writeJSON("thoughts", pensieriPrimaScheda);
+
 /* Percorso e sedute ------------------------------------------------------- */
 
 navigate("#/percorso");

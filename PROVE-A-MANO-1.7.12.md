@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.11
+# Prove a mano · versione 1.7.12
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono sessantotto prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono settantuno prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.11. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza; per la 1.7.11 le tre della sezione 20, sulle parti da includere nella relazione.
+Vale dalla 1.4.0 alla 1.7.12. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza; per la 1.7.11 le tre della sezione 20, sulle parti da includere nella relazione; per la 1.7.12 le tre della sezione 21, sulla scheda da portare.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -198,6 +198,14 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 20.2 Scarica il **PDF** con tutte e tre le caselle spuntate, poi riscaricalo dopo averle tolte | Il primo PDF contiene diario, schede e note; il secondo no. Entrambi contengono colloquio, punteggi, sicurezza, domande e firme |
 | ☐ | 20.3 Con le tre caselle tolte, premi **Stampa**; poi rimettile e controlla il foglio | La stampa rispetta la scelta, senza diario, schede o note personali. Rimettendo le spunte, le tre parti tornano sia a schermo sia nella stampa, perché le caselle non cancellano i dati |
 
+## 21. La scheda da portare (dalla 1.7.12)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 21.1 Apri **Relazione** → **Prepara la scheda**. Guarda il foglio e scarica il **PDF** senza toccare niente | La scheda parte con il motivo, tre aree, tre punteggi, l'ultima voce di diario, l'ultima scheda del pensiero e tre domande. Il PDF è di **una pagina sola**, con le stesse parti, l'avvertenza che non è una diagnosi e il 112 in fondo |
+| ☐ | 21.2 Togli un'area e una domanda, scegli un'altra voce di diario e un'altra scheda del pensiero; poi prova a spuntare una quarta area | Il foglio a schermo cambia subito. Con tre aree scelte la quarta casella è spenta: si accende togliendone una. Le domande si fermano a quattro. Il PDF riscaricato rispetta le scelte, e le parti tolte non compaiono |
+| ☐ | 21.3 Con un segnale di rischio emerso nel colloquio, apri la scheda e poi premi **Stampa** | Il segnale compare in cima, con «Da non rimandare», sia a schermo sia nel PDF sia sulla carta. Senza segnali la riga non c'è. La stampa esce su una pagina, senza testata, menu, caselle o pulsanti |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -206,4 +214,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.11 | /68 |  |
+|  |  | 1.7.12 | /71 |  |

@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.11";
+  const VERSIONE = "1.7.12";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.12",
+      data: "20 novembre 2026",
+      titolo: "Una scheda di una pagina da portare al colloquio",
+      punti: [
+        "Dalla Relazione si apre «Scheda da portare»: scegli il motivo, fino a tre aree, fino a tre punteggi, una voce di diario, una scheda del pensiero e fino a quattro domande. Il PDF esce su una pagina sola, da leggere in sala d'attesa o consegnare.",
+        "Le scelte non cancellano niente: servono a scegliere cosa mettere in quella pagina, e la relazione completa resta com'è. Se dal colloquio è emerso un segnale di rischio, la scheda lo porta in cima invece di nasconderlo.",
+        "Il foglio si stampa dal browser o si scarica in PDF generato sul dispositivo, con la stessa avvertenza della relazione: non è una diagnosi, e in caso di emergenza il numero è il 112."
+      ]
+    },
     {
       v: "1.7.11",
       data: "19 novembre 2026",

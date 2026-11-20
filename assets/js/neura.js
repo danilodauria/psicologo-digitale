@@ -205,8 +205,9 @@ NP.neura = (function () {
     if (/(relazione|pdf|stamp|portare al medico|report)/.test(t)) {
       return {
         html: "<p>La <strong>relazione</strong> raccoglie ciò che hai inserito: dati del colloquio, punteggi dei questionari con le fasce, segnali di sicurezza, obiettivi e domande suggerite per il professionista. Prima di generare il PDF puoi scegliere se includere il diario recente, le schede del pensiero e le tue note personali. Puoi scaricarla in PDF o stamparla.</p>" +
+          "<p>Se ti serve qualcosa di più corto, dalla relazione si apre la <strong>scheda da portare</strong>: una pagina sola con le aree, fino a tre punteggi, una voce di diario, una scheda del pensiero e le domande che scegli tu.</p>" +
           "<p>È pensata per essere consegnata a uno psicologo, a uno psicoterapeuta o al medico di base: serve a rendere il primo incontro più preciso, non a sostituirlo. Contiene dati sensibili: conservala con cura.</p>" +
-          '<p class="mini">' + link("relazione", "Apri la relazione") + " · " + link("manuale/etica-ia", "Privacy e limiti") + "</p>",
+          '<p class="mini">' + link("relazione", "Apri la relazione") + " · " + link("scheda", "Prepara la scheda") + " · " + link("manuale/etica-ia", "Privacy e limiti") + "</p>",
         suggest: ["Cosa contiene la relazione?", "I miei dati sono al sicuro?", "Come preparo il primo colloquio?"]
       };
     }

@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.11**, 19 novembre 2026.
+Ultimo aggiornamento: versione **1.7.12**, 20 novembre 2026.
 
 ---
 
@@ -52,6 +52,7 @@ Punti fermi dell'impianto:
 10. **Niente serie, punteggi-premio o confronti sociali.** Il diario propone, non rimprovera: gli inviti dicono un fatto e offrono un gesto piccolo. È una scelta deontologica, non estetica.
 11. **Il piano di sicurezza è un modulo, non un testo.** I cinque campi e i tre contatti li compila la persona: il programma non precompila consigli né interpreta quello che legge. Vive in `localStorage` (`pianoSicurezza`), entra in `raccogliDati`, nel ripristino e nell'anteprima delle copie, e si stampa anche vuoto.
 12. **La relazione si consegna per parti, ma i dati restano.** Prima del PDF tre caselle scelgono diario, schede del pensiero e note personali; senza scelte sono tutte incluse. L'esclusione vale per il foglio, la stampa e il PDF, non cancella niente dal dispositivo, e la numerazione delle sezioni si ricalcola. Domande per il clinico e spazio del professionista non sono parti personali e restano sempre.
+13. **La scheda da portare non è una seconda relazione.** È una pagina sola, con un massimo dichiarato (`SCHEDA_MAX`: tre aree, tre punteggi, quattro domande), una voce di diario e una scheda del pensiero scelte dalla persona. Non aggiunge dati, non interpreta e non cancella: legge quello che c'è. Il PDF è costruito per stare su una pagina e un segnale di rischio resta in cima, non viene tolto per fare spazio.
 
 ---
 
@@ -123,7 +124,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 619 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 645 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -135,7 +136,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 
 Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono.
 
-Numeri aggiornati a ogni `npm test`: 20 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
+Numeri aggiornati a ogni `npm test`: 21 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
 
 ---
 
@@ -171,7 +172,7 @@ Numeri aggiornati a ogni `npm test`: 20 viste, 30 pagine di singoli elementi, 3 
 ## 8. Prossimi passi sensati (con il criterio per farli)
 
 1. **Diario: promemoria a orari scelti dalla persona**, se si accetta di chiedere il permesso di notifica. Criterio: deve funzionare anche senza permesso (fallback in-app) e non deve introdurre serie o conteggi.
-2. **Riepilogo su periodi più lunghi** (30 giorni) riusando `statistichePeriodo`. Criterio: nessuna nuova funzione di calcolo, solo un altro `scostamento`.
+2. **Domande scritte dalla persona**, raccolte mentre legge o usa il programma e scelte per la scheda. Criterio: restano sul dispositivo, non vengono interpretate e non sostituiscono quelle generate dai dati.
 3. **Esportazione della sola relazione** oltre al backup completo. Criterio: resta un file locale, nessun invio.
 4. **Verifica automatica dell'aspetto** con uno screenshot di riferimento. Criterio: solo se il confronto è stabile tra macchine, altrimenti produce rumore e viene ignorato.
 5. **Prova su dispositivi veri** (iOS Safari, Android Chrome) per la sintesi vocale e il salvataggio offline. È il buco più grande dei controlli attuali.

@@ -1484,6 +1484,17 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
 .report-opzione input { width: 1.05rem; height: 1.05rem; margin: .15rem 0 0; accent-color: var(--indaco-700); flex: none; }
 .report-opzione input:disabled + span { color: var(--text-faint); }
 
+/* Scheda da portare: poche scelte esplicite, un foglio solo. */
+.scheda-scelte { margin-bottom: 1.2rem; }
+.scheda-gruppo { border: 0; margin: 1rem 0 0; padding: 0; }
+.scheda-gruppo legend { font-family: var(--serif); font-size: 1rem; font-weight: 600; color: var(--text); padding: 0; }
+.scheda-conteggio { font-family: var(--sans); font-size: .78rem; font-weight: 500; color: var(--text-soft); white-space: nowrap; }
+.scheda-gruppo .report-opzioni-lista { margin-top: .45rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.scheda-sheet h2 { font-size: 1.02rem; margin: 1.1rem 0 .35rem; }
+.scheda-sheet p { margin-bottom: .35rem; }
+.scheda-sheet ul, .scheda-sheet ol { margin-bottom: .45rem; }
+.scheda-sheet .report-foot { margin-top: 1.2rem; }
+
 .report-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1854,6 +1865,10 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   .report-sheet table { page-break-inside: avoid; }
   .report-sheet .signatures { page-break-inside: avoid; }
   .report-sheet a { color: #1b2a4a !important; text-decoration: none; }
+  /* La scheda è una pagina sola: i margini si stringono, il testo resta leggibile. */
+  .scheda-sheet h2 { font-size: 11pt; margin: .7rem 0 .2rem; }
+  .scheda-sheet p, .scheda-sheet li { font-size: 9.6pt; line-height: 1.32; }
+  .scheda-sheet .report-head { padding-bottom: .5rem; margin-bottom: .6rem; }
 
   .card, .callout, .quiz-card, .intake-card { break-inside: avoid; box-shadow: none !important; }
 

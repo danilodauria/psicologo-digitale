@@ -216,6 +216,146 @@
     return out;
   }
 
+  /* ------------------------------------------------------- Scheda da portare */
+
+  // Una pagina sola, scelta dalla persona: motivo, aree, pochi punteggi, una
+  // voce di diario, una scheda del pensiero e le domande che vuole fare. Non è
+  // una seconda relazione: è il foglio che si tiene in mano in sala d'attesa.
+  const SCHEDA_MAX = { aree: 3, punteggi: 3, domande: 4 };
+
+  function elencoItaliano(voci) {
+    if (voci.length <= 1) return voci.join("");
+    return voci.slice(0, -1).join(", ") + " e " + voci[voci.length - 1];
+  }
+
+  function accorciaScheda(testo, max) {
+    const t = String(testo || "").replace(/\s+/g, " ").trim();
+    if (t.length <= max) return t;
+    const tagliato = t.slice(0, max - 1);
+    return tagliato.replace(/\s+\S*$/, "") + "…";
+  }
+
+  function punteggiRecenti(d) {
+    return d.scales.slice().sort(function (x, y) {
+      return String(y.rec.doneAt || "").localeCompare(String(x.rec.doneAt || ""));
+    });
+  }
+
+  function pensieriRecenti(d) {
+    return d.thoughts.slice().sort(function (x, y) {
+      return String(y.date || "").localeCompare(String(x.date || ""));
+    });
+  }
+
+  function motivoScheda(d) {
+    const a = d.a;
+    const p = d.p;
+    const dichiarate = Array.isArray(a.aree) ? a.aree : [];
+    let aree = dichiarate.map(function (id) {
+      const x = (NP.data.aree || []).filter(function (y) { return y.id === id; })[0];
+      return x ? x.label.toLowerCase() : id;
+    });
+    if (!aree.length) aree = p.aree.slice(0, 3).map(function (x) { return x.label.toLowerCase(); });
+
+    let frase;
+    if (aree.length === 1) frase = "L'area che mi pesa di più: " + aree[0] + ".";
+    else if (aree.length) frase = "Le aree che mi pesano di più: " + elencoItaliano(aree) + ".";
+    else frase = "Sto mettendo in ordine quello che sento.";
+
+    const durata = { "2sett": "meno di due settimane", "4sett": "due a quattro settimane", mesi6: "uno a sei mesi", anno: "sei a dodici mesi", oltre: "più di un anno", fasi: "a fasi" }[a.durata];
+    if (durata) frase += a.durata === "fasi" ? " Va a fasi." : " Da " + durata + ".";
+    if (p.impatto != null) frase += " Impatto sulla vita quotidiana: " + p.impatto + "/10.";
+    return frase;
+  }
+
+  function avvisoScheda(d) {
+    const peso = { alto: 3, medio: 2, basso: 1 };
+    const primo = d.flags.slice().sort(function (x, y) { return (peso[y.level] || 0) - (peso[x.level] || 0); })[0];
+    return primo ? primo.testo : "";
+  }
+
+  function scelteScheda(d, opz) {
+    const date = opz || {};
+    const domande = clinicoQuestions(d);
+    return {
+      aree: (Array.isArray(date.aree) ? date.aree : d.p.aree.slice(0, SCHEDA_MAX.aree).map(function (x) { return x.id; })).slice(0, SCHEDA_MAX.aree),
+      punteggi: (Array.isArray(date.punteggi) ? date.punteggi : punteggiRecenti(d).slice(0, SCHEDA_MAX.punteggi).map(function (x) { return x.scale.id; })).slice(0, SCHEDA_MAX.punteggi),
+      voce: typeof date.voce === "number" ? date.voce : (d.diary.length ? 0 : -1),
+      pensiero: typeof date.pensiero === "number" ? date.pensiero : (pensieriRecenti(d).length ? 0 : -1),
+      domande: (Array.isArray(date.domande) ? date.domande : [0, 1, 2]).filter(function (i) { return i < domande.length; }).slice(0, SCHEDA_MAX.domande)
+    };
+  }
+
+  function schedaContenuto(d, opz) {
+    const s = scelteScheda(d, opz);
+    const aree = s.aree.map(function (id) {
+      return d.p.aree.filter(function (x) { return x.id === id; })[0];
+    }).filter(Boolean);
+    const punteggi = s.punteggi.map(function (id) {
+      return d.scales.filter(function (x) { return x.scale.id === id; })[0];
+    }).filter(Boolean);
+    const pensieri = pensieriRecenti(d);
+    const voce = s.voce >= 0 ? d.diary[s.voce] : null;
+    const pensiero = s.pensiero >= 0 ? pensieri[s.pensiero] : null;
+    const domande = clinicoQuestions(d);
+    const sezioni = [];
+
+    const paragrafi = [motivoScheda(d)];
+    if (d.p.obiettivi) paragrafi.push("Vorrei: " + accorciaScheda(d.p.obiettivi, 220));
+    if (d.a.altro_descr) paragrafi.push("In due righe: «" + accorciaScheda(d.a.altro_descr, 220) + "»");
+    sezioni.push({ titolo: "Perché sono qui", paragrafi: paragrafi });
+
+    if (aree.length) {
+      sezioni.push({ titolo: "Le aree che pesano", voci: aree.map(function (x) {
+        return x.label + " — " + x.label2.toLowerCase() + " (" + x.score.toFixed(1) + "/10)";
+      }) });
+    }
+
+    if (punteggi.length) {
+      sezioni.push({ titolo: "Come sto", voci: punteggi.map(function (x) {
+        return x.scale.titolo + " (" + x.scale.sigla + "): " + x.rec.score + "/" + A.scaleMax(x.scale) + " · " +
+          x.band.label.toLowerCase() + ", " + A.fmtDate(x.rec.doneAt);
+      }) });
+    }
+
+    if (voce) {
+      const riga = A.fmtDate(voce.date) + " — umore " + voce.mood + "/10, ansia " + voce.anxiety + "/10, sonno " +
+        voce.sleep + " h, energia " + voce.energy + "/10.";
+      sezioni.push({ titolo: "Una giornata", paragrafi: voce.note ? [riga, "«" + accorciaScheda(voce.note, 220) + "»"] : [riga] });
+    }
+
+    if (pensiero) {
+      const righe = [];
+      if (pensiero.situation) righe.push("Situazione: " + accorciaScheda(pensiero.situation, 160));
+      if (pensiero.thought) righe.push("Pensiero: «" + accorciaScheda(pensiero.thought, 160) + "»");
+      righe.push("Emozione: " + (pensiero.emotion || "non indicata") +
+        (isFinite(pensiero.intensity) ? " (" + pensiero.intensity + "/10)" : "") + ".");
+      if (pensiero.alternative) righe.push("Lettura alternativa: " + accorciaScheda(pensiero.alternative, 180));
+      sezioni.push({ titolo: "Un pensiero che torna", paragrafi: righe });
+    }
+
+    if (domande.length && s.domande.length) {
+      sezioni.push({ titolo: "Cosa voglio chiedere", voci: s.domande.map(function (i) { return domande[i]; }).filter(Boolean), numerata: true });
+    }
+
+    return { sezioni: sezioni, avviso: avvisoScheda(d) };
+  }
+
+  function schedaHTML(contenuto) {
+    let html = "";
+    if (contenuto.avviso) html += '<div class="flag"><b>Da non rimandare.</b> ' + esc(contenuto.avviso) + "</div>";
+    html += contenuto.sezioni.map(function (s) {
+      let corpo = "";
+      if (s.paragrafi) corpo += s.paragrafi.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("");
+      if (s.voci) {
+        const tag = s.numerata ? "ol" : "ul";
+        corpo += "<" + tag + ">" + s.voci.map(function (v) { return "<li>" + esc(v) + "</li>"; }).join("") + "</" + tag + ">";
+      }
+      return "<h2>" + esc(s.titolo) + "</h2>" + corpo;
+    }).join("");
+    return html || '<p class="muted">Non hai scelto nessuna parte: la scheda è vuota.</p>';
+  }
+
   /* ---------------------------------------------------------------- Vista HTML */
 
   let editing = false;
@@ -250,7 +390,7 @@
         '<div class="card report-empty"><div class="report-ico">' + A.icon("print") + "</div>" +
           "<h2>Non ci sono ancora dati</h2>" +
           '<p class="text-small muted">Inizia dal colloquio: bastano poche domande. Puoi aggiungere i questionari in un secondo momento.</p>' +
-          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/valutazione">Vai ai questionari</a></div>' +
+          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/valutazione">Vai ai questionari</a><a class="btn btn-ghost" href="#/scheda">Prepara la scheda</a></div>' +
         "</div>"
       );
       return;
@@ -270,6 +410,8 @@
     A.page(
       '<div class="page-head"><p class="eyebrow">Relazione preliminare</p><h1>Da consegnare al professionista</h1>' +
         '<p class="lead">Un riassunto leggibile di ciò che hai raccolto. Portala a uno psicologo, a uno psicoterapeuta o al medico di base: serve a rendere il colloquio più preciso, non a sostituirlo.</p></div>' +
+
+      '<div class="card card-soft no-print" id="schedaInvito"><div class="btn-row" style="justify-content:space-between;align-items:center;gap:1rem"><div><h2 class="h-sub" style="margin-bottom:.2rem">Un foglio solo per il colloquio</h2><p class="text-small mb-0">La relazione è completa; se vuoi una pagina da tenere in mano, scegli tu cosa metterci.</p></div><a class="btn btn-soft btn-sm" href="#/scheda">Prepara la scheda</a></div></div>' +
 
       '<div class="card report-options no-print" id="reportOptions"><fieldset>' +
         '<legend>Cosa includere nella relazione</legend>' +
@@ -346,6 +488,148 @@
         A.toast("Non riesco a generare il PDF: usa Stampa.");
       }
     });
+  };
+
+  views.scheda = function () {
+    const d = collect();
+    const haDati = Object.keys(state.intake.answers || {}).length > 0 || d.scales.length > 0 || d.diary.length > 0 || d.thoughts.length > 0;
+    if (!haDati) {
+      A.setTitle("Scheda da portare");
+      A.page(
+        '<div class="page-head"><p class="eyebrow">Scheda da portare</p><h1>Una pagina per il colloquio</h1>' +
+          '<p class="lead">La scheda mette in una pagina il motivo, le aree, pochi punteggi, una voce di diario, una scheda del pensiero e le domande che vuoi fare.</p></div>' +
+        '<div class="card report-empty"><div class="report-ico">' + A.icon("print") + "</div>" +
+          "<h2>Non ci sono ancora dati</h2>" +
+          '<p class="text-small muted">Inizia dal colloquio o scrivi una voce di diario: la scheda si costruisce da lì.</p>' +
+          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/diario">Vai al diario</a></div>' +
+        "</div>"
+      );
+      return;
+    }
+
+    const scelte = scelteScheda(d);
+    const punteggi = punteggiRecenti(d);
+    const pensieri = pensieriRecenti(d);
+    const domande = clinicoQuestions(d);
+    const quando = new Date();
+
+    const casella = function (gruppo, valore, testo, attivo, disabilitato) {
+      return '<label class="report-opzione"><input type="checkbox" data-gruppo="' + gruppo + '" value="' + esc(valore) + '"' +
+        (attivo ? " checked" : "") + (disabilitato ? " disabled" : "") + "> <span>" + testo + "</span></label>";
+    };
+    const contatore = function (gruppo, massimo) {
+      return '<span class="scheda-conteggio" data-conteggio="' + gruppo + '">' + scelte[gruppo].length + " di " + massimo + "</span>";
+    };
+
+    const areeList = d.p.aree.length
+      ? '<div class="report-opzioni-lista">' + d.p.aree.map(function (x) {
+          const attivo = scelte.aree.indexOf(x.id) >= 0;
+          return casella("aree", x.id, esc(x.label) + ' <span class="muted">' + x.score.toFixed(1) + "/10 · " + esc(x.label2.toLowerCase()) + "</span>", attivo, !attivo && scelte.aree.length >= SCHEDA_MAX.aree);
+        }).join("") + "</div>"
+      : '<p class="text-small muted">Le aree compaiono quando il colloquio è completo.</p>';
+
+    const punteggiList = punteggi.length
+      ? '<div class="report-opzioni-lista">' + punteggi.map(function (x) {
+          const attivo = scelte.punteggi.indexOf(x.scale.id) >= 0;
+          return casella("punteggi", x.scale.id, esc(x.scale.titolo) + ' <span class="muted">' + x.rec.score + "/" + A.scaleMax(x.scale) + " · " + esc(x.band.label.toLowerCase()) + "</span>", attivo, !attivo && scelte.punteggi.length >= SCHEDA_MAX.punteggi);
+        }).join("") + "</div>"
+      : '<p class="text-small muted">I punteggi compaiono quando hai compilato almeno un questionario.</p>';
+
+    const voceList = d.diary.length
+      ? '<div class="report-opzioni-lista">' +
+        '<label class="report-opzione"><input type="radio" name="schedaVoce" value="-1"' + (scelte.voce < 0 ? " checked" : "") + "> <span>Nessuna voce</span></label>" +
+        d.diary.map(function (v, i) {
+          return '<label class="report-opzione"><input type="radio" name="schedaVoce" value="' + i + '"' + (scelte.voce === i ? " checked" : "") + "> <span>" + esc(A.fmtDate(v.date)) +
+            ' <span class="muted">umore ' + esc(v.mood) + "/10, ansia " + esc(v.anxiety) + "/10</span></span></label>";
+        }).join("") + "</div>"
+      : '<p class="text-small muted">Non ci sono voci di diario: la scheda esce senza quella parte.</p>';
+
+    const pensieriList = pensieri.length
+      ? '<div class="report-opzioni-lista">' +
+        '<label class="report-opzione"><input type="radio" name="schedaPensiero" value="-1"' + (scelte.pensiero < 0 ? " checked" : "") + "> <span>Nessuna scheda</span></label>" +
+        pensieri.map(function (v, i) {
+          return '<label class="report-opzione"><input type="radio" name="schedaPensiero" value="' + i + '"' + (scelte.pensiero === i ? " checked" : "") + "> <span>" + esc(A.fmtDate(v.date)) +
+            " · «" + esc(accorciaScheda(v.thought, 70)) + "»</span></label>";
+        }).join("") + "</div>"
+      : '<p class="text-small muted">Non ci sono schede del pensiero: la scheda esce senza quella parte.</p>';
+
+    const domandeList = '<div class="report-opzioni-lista">' + domande.map(function (q, i) {
+      const attivo = scelte.domande.indexOf(i) >= 0;
+      return casella("domande", String(i), esc(q), attivo, !attivo && scelte.domande.length >= SCHEDA_MAX.domande);
+    }).join("") + "</div>";
+
+    A.setTitle("Scheda da portare");
+    A.page(
+      '<div class="page-head no-print"><p class="eyebrow">Scheda da portare</p><h1>Una pagina sola, per il colloquio</h1>' +
+        '<p class="lead">Scegli cosa mettere in una pagina: il motivo, le aree, fino a tre punteggi, una voce di diario, una scheda del pensiero e le domande che vuoi fare. Il resto resta nella relazione.</p></div>' +
+
+      '<div class="card scheda-scelte no-print" id="schedaScelte">' +
+        '<h2 class="h-sub">Cosa metti nella scheda</h2>' +
+        '<p class="text-small muted">Le scelte valgono per questa scheda e non cancellano niente. Il PDF esce su una pagina sola.</p>' +
+        '<fieldset class="scheda-gruppo"><legend>Aree <span class="muted text-small">(fino a tre)</span> ' + contatore("aree", SCHEDA_MAX.aree) + "</legend>" + areeList + "</fieldset>" +
+        '<fieldset class="scheda-gruppo"><legend>Punteggi <span class="muted text-small">(fino a tre)</span> ' + contatore("punteggi", SCHEDA_MAX.punteggi) + "</legend>" + punteggiList + "</fieldset>" +
+        '<fieldset class="scheda-gruppo"><legend>Una voce di diario</legend>' + voceList + "</fieldset>" +
+        '<fieldset class="scheda-gruppo"><legend>Una scheda del pensiero</legend>' + pensieriList + "</fieldset>" +
+        '<fieldset class="scheda-gruppo"><legend>Le domande che vuoi fare <span class="muted text-small">(fino a quattro)</span> ' + contatore("domande", SCHEDA_MAX.domande) + "</legend>" + domandeList + "</fieldset>" +
+      "</div>" +
+
+      '<div class="report-actions no-print"><span class="grow">Il PDF viene generato sul tuo dispositivo. Contiene dati sensibili: conservalo con cura.</span>' +
+        '<button type="button" class="btn btn-primary" id="schedaPdfBtn">' + A.icon("download") + "Scarica PDF</button>" +
+        '<button type="button" class="btn btn-ghost" id="schedaPrintBtn">' + A.icon("print") + "Stampa</button></div>" +
+
+      '<article class="report-sheet scheda-sheet" id="schedaSheet">' +
+        '<header class="report-head"><div class="report-brand">Psicologo Digitale<span>Scheda da portare · uso educativo</span></div>' +
+          '<div class="report-id"><b>Scheda da portare al colloquio</b><br>Preparata il ' + esc(quando.toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })) + "</div></header>" +
+        '<p class="small" style="margin-top:0">Una pagina scelta da me, da leggere o consegnare. <strong>Non è una diagnosi</strong> e non sostituisce la relazione completa.</p>' +
+        '<div id="schedaBody">' + schedaHTML(schedaContenuto(d, scelte)) + "</div>" +
+        '<p class="report-foot">«Psicologo Digitale — La stanza d\'ascolto» di Danilo D\'Auria · progetto FeniceOS · documento generato localmente: nessun dato è stato inviato. In caso di emergenza: 112. Telefono Amico 02 2327 2327.</p>' +
+      "</article>"
+    );
+
+    const aggiorna = function () {
+      const leggiGruppo = function (gruppo) {
+        return Array.prototype.map.call(document.querySelectorAll('#schedaScelte input[data-gruppo="' + gruppo + '"]:checked'), function (i) { return i.value; });
+      };
+      scelte.aree = leggiGruppo("aree").slice(0, SCHEDA_MAX.aree);
+      scelte.punteggi = leggiGruppo("punteggi").slice(0, SCHEDA_MAX.punteggi);
+      scelte.domande = leggiGruppo("domande").map(Number).slice(0, SCHEDA_MAX.domande);
+      const voce = document.querySelector('#schedaScelte input[name="schedaVoce"]:checked');
+      scelte.voce = voce ? Number(voce.value) : -1;
+      const pensiero = document.querySelector('#schedaScelte input[name="schedaPensiero"]:checked');
+      scelte.pensiero = pensiero ? Number(pensiero.value) : -1;
+
+      [["aree", SCHEDA_MAX.aree], ["punteggi", SCHEDA_MAX.punteggi], ["domande", SCHEDA_MAX.domande]].forEach(function (coppia) {
+        const gruppo = coppia[0];
+        const massimo = coppia[1];
+        const caselle = document.querySelectorAll('#schedaScelte input[data-gruppo="' + gruppo + '"]');
+        const quante = document.querySelectorAll('#schedaScelte input[data-gruppo="' + gruppo + '"]:checked').length;
+        Array.prototype.forEach.call(caselle, function (c) { c.disabled = !c.checked && quante >= massimo; });
+        const conto = document.querySelector('[data-conteggio="' + gruppo + '"]');
+        if (conto) conto.textContent = quante + " di " + massimo;
+      });
+
+      const body = document.getElementById("schedaBody");
+      if (body) body.innerHTML = schedaHTML(schedaContenuto(d, scelte));
+    };
+
+    document.querySelectorAll("#schedaScelte input").forEach(function (input) {
+      input.addEventListener("change", aggiorna);
+    });
+    aggiorna();
+
+    const pdfBtn = document.getElementById("schedaPdfBtn");
+    if (pdfBtn) pdfBtn.addEventListener("click", function () {
+      try {
+        const pdf = buildSchedaPdf(d, scelte);
+        downloadPdf(pdf, "scheda-colloquio-" + quando.toISOString().slice(0, 10) + ".pdf");
+        A.toast("Scheda generata.");
+      } catch (e) {
+        A.toast("Non riesco a generare il PDF: usa Stampa.");
+      }
+    });
+
+    const printBtn = document.getElementById("schedaPrintBtn");
+    if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
   };
 
   /* ------------------------------------------------------------------ PDF 1.4 */
@@ -560,18 +844,7 @@
     pages.push(current);
 
     const pageCount = pages.length;
-    const objects = [];
-    const pageIds = [];
-    for (let i = 0; i < pageCount; i++) pageIds.push(5 + i * 2);
-
-    objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
-    objects[2] = "<< /Type /Pages /Kids [" + pageIds.map(function (id) { return id + " 0 R"; }).join(" ") + "] /Count " + pageCount + " >>";
-    objects[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
-    objects[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
-
-    pages.forEach(function (pageOps, i) {
-      const pid = 5 + i * 2;
-      const cid = pid + 1;
+    const streams = pages.map(function (pageOps, i) {
       const content = [];
       pageOps.forEach(function (op) {
         if (op.kind === "text") {
@@ -586,7 +859,28 @@
       // piè di pagina
       content.push("0.45 g BT /F1 7 Tf 1 0 0 1 " + M + " " + (M - 22) + " Tm (" + pdfString("Psicologo Digitale - Danilo D'Auria - CC BY-NC-SA 4.0 - Documento generato localmente. Emergenze: 112.") + ") Tj ET");
       content.push("0.45 g BT /F1 7 Tf 1 0 0 1 " + (W - M - 45) + " " + (M - 22) + " Tm (Pag. " + (i + 1) + "/" + pageCount + ") Tj ET");
-      const stream = content.join("\n");
+      return content.join("\n");
+    });
+
+    return serializePdf(streams);
+  }
+
+  // Serializzazione PDF 1.4, una volta sola: la usano la relazione e la scheda.
+  function serializePdf(streams) {
+    const W = 595.28, H = 841.89;
+    const pageCount = streams.length;
+    const objects = [];
+    const pageIds = [];
+    for (let i = 0; i < pageCount; i++) pageIds.push(5 + i * 2);
+
+    objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+    objects[2] = "<< /Type /Pages /Kids [" + pageIds.map(function (id) { return id + " 0 R"; }).join(" ") + "] /Count " + pageCount + " >>";
+    objects[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+    objects[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+
+    streams.forEach(function (stream, i) {
+      const pid = 5 + i * 2;
+      const cid = pid + 1;
       objects[pid] = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + W + " " + H + "] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents " + cid + " 0 R >>";
       objects[cid] = "<< /Length " + stream.length + " >>\nstream\n" + stream + "\nendstream";
     });
@@ -611,6 +905,78 @@
     return bytes;
   }
 
+  // La scheda sta per costruzione su una pagina: i testi sono accorciati e le
+  // parti sono al massimo tre, tre e quattro. Il PDF non pagina e non firma:
+  // è un foglio da tenere in mano, non un documento clinico.
+  function buildSchedaPdf(d, opz) {
+    const W = 595.28, H = 841.89, M = 50, CONTENT_W = W - M * 2;
+    const contenuto = schedaContenuto(d, opz);
+    const quando = new Date();
+    const content = [];
+    let y = H - M;
+
+    const text = function (s, size, bold, color, indent) {
+      content.push("BT /" + (bold ? "F2" : "F1") + " " + size.toFixed(1) + " Tf " + (color || 0.12).toFixed(2) + " g 1 0 0 1 " +
+        (M + (indent || 0)).toFixed(1) + " " + y.toFixed(1) + " Tm (" + pdfString(s) + ") Tj ET");
+    };
+    const par = function (s, size, color) {
+      const s2 = size || 9.8;
+      const lines = wrap(s, CONTENT_W, s2, false);
+      lines.forEach(function (l) {
+        y -= s2 * 1.32;
+        text(l, s2, false, color);
+      });
+      y -= 3;
+    };
+    const heading = function (s) {
+      y -= 17;
+      content.push("0.84 G 0.6 w " + M + " " + y.toFixed(1) + " m " + (W - M) + " " + y.toFixed(1) + " l S");
+      y -= 3;
+      text(s, 11.2, true, 0.08);
+      y -= 1;
+    };
+    const list = function (voci, numerata) {
+      voci.forEach(function (v, i) {
+        const lines = wrap(v, CONTENT_W - 12, 9.8, false);
+        lines.forEach(function (l, k) {
+          y -= 12.4;
+          text((k === 0 ? (numerata ? (i + 1) + ". " : "- ") : "") + l, 9.8, false, 0.2, k === 0 ? 0 : 10);
+        });
+      });
+      y -= 2;
+    };
+
+    content.push("0.08 g BT /F2 16 Tf 1 0 0 1 " + M + " " + (H - M).toFixed(1) + " Tm (Psicologo Digitale) Tj ET");
+    content.push("0.45 g BT /F1 8 Tf 1 0 0 1 " + M + " " + (H - M - 12).toFixed(1) + " Tm (Scheda da portare al colloquio - uso educativo - non e una diagnosi) Tj ET");
+    content.push("0.12 g BT /F2 8.5 Tf 1 0 0 1 " + (W - M - 150) + " " + (H - M).toFixed(1) + " Tm (Preparata il " + pdfString(quando.toLocaleDateString("it-IT")) + ") Tj ET");
+    y = H - M - 26;
+    content.push("0.2 G 1.4 w " + M + " " + y.toFixed(1) + " m " + (W - M) + " " + y.toFixed(1) + " l S");
+    y -= 12;
+    par("Una pagina scelta da me, da leggere o consegnare. Non sostituisce la relazione completa: le domande e i dati estesi restano là.", 8.6, 0.42);
+    y -= 2;
+
+    if (contenuto.avviso) {
+      y -= 5;
+      content.push("0.97 g " + M + " " + (y - 18).toFixed(1) + " " + CONTENT_W + " 24 re f");
+      content.push("0.64 g " + M + " " + (y - 18).toFixed(1) + " 3 24 re f");
+      y -= 3;
+      par("Da non rimandare: " + contenuto.avviso, 8.8, 0.35);
+      y -= 3;
+    }
+
+    contenuto.sezioni.forEach(function (s) {
+      heading(s.titolo);
+      if (s.paragrafi) s.paragrafi.forEach(function (p) { par(p, 9.8, 0.18); });
+      if (s.voci) list(s.voci, s.numerata);
+    });
+
+    y = M + 16;
+    content.push("0.84 G 0.6 w " + M + " " + y.toFixed(1) + " m " + (W - M) + " " + y.toFixed(1) + " l S");
+    content.push("0.45 g BT /F1 7 Tf 1 0 0 1 " + M + " " + (y - 12).toFixed(1) + " Tm (" + pdfString("Psicologo Digitale - Danilo D'Auria - documento generato localmente. Emergenze: 112. Telefono Amico 02 2327 2327.") + ") Tj ET");
+
+    return serializePdf([content.join("\n")]);
+  }
+
   function downloadPdf(bytes, filename) {
     const blob = new Blob([bytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
@@ -631,6 +997,11 @@
     generate: function (opz) {
       const d = collect();
       return buildPdf(sections(d, opz), d, docId(), new Date());
-    }
+    },
+    scheda: function (opz) {
+      const d = collect();
+      return buildSchedaPdf(d, opz);
+    },
+    schedaContenuto: schedaContenuto
   };
 })();

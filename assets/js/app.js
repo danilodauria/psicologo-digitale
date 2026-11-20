@@ -421,7 +421,7 @@ NP.app = (function () {
     return { name: parts[0] || "home", params: parts.slice(1) };
   }
 
-  const MORE_ROUTES = ["sedute", "esercizi", "nutrizione", "manuale", "palestra", "glossario", "sicurezza", "relazione", "licenze", "installa", "versioni"];
+  const MORE_ROUTES = ["sedute", "esercizi", "nutrizione", "manuale", "palestra", "glossario", "sicurezza", "relazione", "scheda", "licenze", "installa", "versioni"];
 
   function updateNav(name) {
     document.querySelectorAll("[data-nav]").forEach(function (a) {
@@ -429,8 +429,10 @@ NP.app = (function () {
     });
     const moreBtn = document.getElementById("moreBtn");
     if (moreBtn) moreBtn.classList.toggle("is-active", MORE_ROUTES.indexOf(name) >= 0);
+    // La scheda è una pagina della relazione: nel menu resta accesa Relazione.
+    const voceMenu = name === "scheda" ? "relazione" : name;
     document.querySelectorAll("#moreMenu a").forEach(function (a) {
-      a.classList.toggle("is-active", a.getAttribute("data-nav") === name);
+      a.classList.toggle("is-active", a.getAttribute("data-nav") === voceMenu);
     });
   }
 
