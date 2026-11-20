@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.15**, 20 novembre 2026.
+Ultimo aggiornamento: versione **1.7.16**, 20 novembre 2026.
 
 ---
 
@@ -126,7 +126,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 702 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande e sua selezione nella relazione e nella scheda |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 708 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande, sua selezione nella relazione e nella scheda, e campo per scriverne una direttamente nella scheda |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -136,7 +136,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | `scripts/riepilogo-copertura.cjs` | Scrive `artifacts/copertura/riepilogo.md`: quante viste, quante pagine di singoli elementi (30), quali controlli sono verdi |
 | `PROVE-A-MANO-<versione>.md` | **Non è automatico**: le prove che una persona deve fare a mano (voce, telefoni, messaggi al momento giusto), con il risultato atteso per ciascuna. Si leggono prima di dichiarare chiusa una release. Lo stesso foglio esiste in PDF A4 (`assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`), generato dal markdown da `scripts/build_prove_a_mano_pdf.py`: `verify.cjs` controlla che ogni prova del markdown sia anche nel PDF |
 
-Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono. La scheda da portare è stata controllata in un browser vero a larghezza telefono e in stampa A4 nella 1.7.15, ma resta una verifica da rifare quando cambiano il foglio o i suoi stili.
+Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono. La scheda da portare e il campo per scrivere le domande sono stati controllati in un browser vero a larghezza telefono e in stampa A4 nella 1.7.16, ma resta una verifica da rifare quando cambiano il foglio o i suoi stili.
 
 Numeri aggiornati a ogni `npm test`: 22 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
 

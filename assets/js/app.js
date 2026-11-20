@@ -198,7 +198,7 @@ NP.app = (function () {
       '<label class="field-label" for="' + idInput + '">La tua domanda</label>' +
       '<div class="taccuino-riga"><input class="input" id="' + idInput + '" maxlength="200" placeholder="Per esempio: che cosa posso chiedere alla prima visita?" aria-describedby="' + idInput + 'Nota">' +
       '<button type="submit" class="btn btn-soft btn-sm">Aggiungi</button></div>' +
-      '<p class="text-small muted mb-0" id="' + idInput + 'Nota">Massimo 200 caratteri. Resta su questo dispositivo. <a id="' + idLink + '" href="#/taccuino">' + etichettaTaccuino() + "</a></p></form>";
+      '<p class="text-small muted mb-0" id="' + idInput + 'Nota">Massimo 200 caratteri. Resta su questo dispositivo: non viene interpretata né inviata. <a id="' + idLink + '" href="#/taccuino">' + etichettaTaccuino() + "</a></p></form>";
   }
 
   function collegaFormDomanda(idForm, idInput, idLink) {

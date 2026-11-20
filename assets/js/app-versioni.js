@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.15";
+  const VERSIONE = "1.7.16";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.16",
+      data: "20 novembre 2026",
+      titolo: "Le domande si scrivono anche dalla scheda",
+      punti: [
+        "Nella scheda da portare c'è un campo per scrivere una domanda senza cambiare pagina: finisce nel taccuino e, se c'è posto, viene già scelta per il PDF.",
+        "Il testo resta quello che hai scritto: nessuna interpretazione, nessun invio, nessuna riscrittura. Decidi tu se tenerlo nella scheda o togliere la spunta.",
+        "Le domande scritte restano accanto a quelle generate, segnate come tue, e si possono correggere o togliere dal taccuino anche dopo."
+      ]
+    },
     {
       v: "1.7.15",
       data: "20 novembre 2026",

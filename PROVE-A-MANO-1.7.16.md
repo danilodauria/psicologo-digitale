@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.15
+# Prove a mano · versione 1.7.16
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono settantanove prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono ottantuno prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.15. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza; per la 1.7.11 le tre della sezione 20, sulle parti da includere nella relazione; per la 1.7.12 le tre della sezione 21, sulla scheda da portare; per la 1.7.13 le tre della sezione 22, sul taccuino delle domande; per la 1.7.14 le tre della sezione 23, sul backup protetto da password; per la 1.7.15 le due della sezione 24, sulla scheda da portare a schermo e sulla carta.
+Vale dalla 1.4.0 alla 1.7.16. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza; per la 1.7.11 le tre della sezione 20, sulle parti da includere nella relazione; per la 1.7.12 le tre della sezione 21, sulla scheda da portare; per la 1.7.13 le tre della sezione 22, sul taccuino delle domande; per la 1.7.14 le tre della sezione 23, sul backup protetto da password; per la 1.7.15 le due della sezione 24, sulla scheda da portare a schermo e sulla carta; per la 1.7.16 le due della sezione 25, sulle domande scritte direttamente nella scheda.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -229,6 +229,13 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 24.1 Apri **Relazione** → **Prepara la scheda** a larghezza telefono, con la modalità discreta spenta. Poi premi **Stampa** e guarda l'anteprima | La barra «Modalità discreta attiva» non compare, né a schermo né nell'anteprima. La scheda resta leggibile, senza testo tagliato o sovrapposto, e la stampa esce su una pagina sola, senza testata, menu, caselle o pulsanti |
 | ☐ | 24.2 Con un segnale di rischio emerso, scarica il **PDF** della scheda e aprila | L'avviso «Da non rimandare» sta in cima dentro il suo riquadro, con il testo staccato dalla barra laterale e dal bordo. Il PDF è di una pagina sola e il piè di pagina resta in fondo, senza sovrapposizioni |
 
+## 25. Le domande scritte nella scheda (dalla 1.7.16)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 25.1 Apri **Relazione** → **Prepara la scheda**: scrivi una domanda nel campo sotto «Le domande che vuoi fare» e premi **Aggiungi** | La domanda entra nel taccuino e, se c'è posto, viene già spuntata nella scheda. Il testo è quello scritto, senza interpretazioni né invii, e compare anche nel PDF e nella stampa. Il campo si svuota e il collegamento al taccuino aggiorna il numero |
+| ☐ | 25.2 Con quattro domande già spuntate, scrivine un'altra dalla scheda; poi togli una spunta | La nuova domanda entra nel taccuino ma resta fuori dalla scheda finché non si libera un posto: il messaggio lo dice. Togliendo una spunta la nuova si può scegliere. Ricaricando la pagina la domanda resta nel taccuino, senza essere interpretata o inviata |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -237,4 +244,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.15 | /79 |  |
+|  |  | 1.7.16 | /81 |  |

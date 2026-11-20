@@ -89,7 +89,7 @@
 
   function domandeDisponibili(d) {
     return clinicoQuestions(d).map(function (t) { return { testo: t, mia: false }; })
-      .concat((state.domandePersonali || []).map(function (q) { return { testo: q.testo, mia: true }; }));
+      .concat((state.domandePersonali || []).map(function (q) { return { id: q.id, testo: q.testo, mia: true }; }));
   }
 
   function labelsFor(qid, values) {
@@ -245,6 +245,24 @@
     if (t.length <= max) return t;
     const tagliato = t.slice(0, max - 1);
     return tagliato.replace(/\s+\S*$/, "") + "…";
+  }
+
+  // Dopo aver scritto una domanda dalla scheda, la si ritrova in fondo
+  // all'elenco: la spunta da sola se c'è ancora posto. Il testo resta quello
+  // scritto dalla persona, senza riscriverlo o interpretarlo.
+  function selezionaDomandaScheda(testo) {
+    const cercato = String(testo || "").toLowerCase();
+    const casella = Array.prototype.find.call(
+      document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]'),
+      function (input) {
+        const etichetta = input.closest("label");
+        return etichetta && /\(tua\)/.test(etichetta.textContent) && etichetta.textContent.toLowerCase().indexOf(cercato) >= 0;
+      }
+    );
+    if (!casella || casella.disabled) return false;
+    casella.checked = true;
+    casella.dispatchEvent(new window.Event("change", { bubbles: true }));
+    return true;
   }
 
   function punteggiRecenti(d) {
@@ -532,7 +550,7 @@
 
   views.scheda = function () {
     const d = collect();
-    const haDati = Object.keys(state.intake.answers || {}).length > 0 || d.scales.length > 0 || d.diary.length > 0 || d.thoughts.length > 0;
+    const haDati = Object.keys(state.intake.answers || {}).length > 0 || d.scales.length > 0 || d.diary.length > 0 || d.thoughts.length > 0 || (state.domandePersonali || []).length > 0;
     if (!haDati) {
       A.setTitle("Scheda da portare");
       A.page(
@@ -542,15 +560,27 @@
           "<h2>Non ci sono ancora dati</h2>" +
           '<p class="text-small muted">Inizia dal colloquio o scrivi una voce di diario: la scheda si costruisce da lì.</p>' +
           '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/diario">Vai al diario</a></div>' +
+          '<div class="mt-2" style="max-width:34rem;margin-left:auto;margin-right:auto;text-align:left">' +
+            A.moduloDomanda("schedaDomandaTestoVuota", "schedaDomandaFormVuota", "schedaDomandaLinkVuota") + "</div>" +
         "</div>"
       );
+      const formVuota = document.getElementById("schedaDomandaFormVuota");
+      if (formVuota) formVuota.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const input = document.getElementById("schedaDomandaTestoVuota");
+        const esito = A.aggiungiDomanda(input ? input.value : "");
+        if (esito.ok === false) { A.toast(esito.motivo, 5000); return; }
+        A.toast("Domanda aggiunta al taccuino.");
+        A.go("scheda");
+        selezionaDomandaScheda(esito.domanda.testo);
+      });
       return;
     }
 
     const scelte = scelteScheda(d);
     const punteggi = punteggiRecenti(d);
     const pensieri = pensieriRecenti(d);
-    const domande = domandeDisponibili(d);
+    let domande = domandeDisponibili(d);
     const quando = new Date();
 
     const casella = function (gruppo, valore, testo, attivo, disabilitato) {
@@ -593,10 +623,12 @@
         }).join("") + "</div>"
       : '<p class="text-small muted">Non ci sono schede del pensiero: la scheda esce senza quella parte.</p>';
 
-    const domandeList = '<div class="report-opzioni-lista">' + domande.map(function (q, i) {
-      const attivo = scelte.domande.indexOf(i) >= 0;
-      return casella("domande", String(i), esc(q.testo) + (q.mia ? ' <span class="muted">(tua)</span>' : ""), attivo, !attivo && scelte.domande.length >= SCHEDA_MAX.domande);
-    }).join("") + "</div>";
+    const domandeMarkup = function () {
+      return '<div class="report-opzioni-lista" id="schedaDomandeList">' + domande.map(function (q, i) {
+        const attivo = scelte.domande.indexOf(i) >= 0;
+        return casella("domande", String(i), esc(q.testo) + (q.mia ? ' <span class="muted">(tua)</span>' : ""), attivo, !attivo && scelte.domande.length >= SCHEDA_MAX.domande);
+      }).join("") + "</div>";
+    };
 
     A.setTitle("Scheda da portare");
     A.page(
@@ -610,7 +642,8 @@
         '<fieldset class="scheda-gruppo"><legend>Punteggi <span class="muted text-small">(fino a tre)</span> ' + contatore("punteggi", SCHEDA_MAX.punteggi) + "</legend>" + punteggiList + "</fieldset>" +
         '<fieldset class="scheda-gruppo"><legend>Una voce di diario</legend>' + voceList + "</fieldset>" +
         '<fieldset class="scheda-gruppo"><legend>Una scheda del pensiero</legend>' + pensieriList + "</fieldset>" +
-        '<fieldset class="scheda-gruppo"><legend>Le domande che vuoi fare <span class="muted text-small">(fino a quattro)</span> ' + contatore("domande", SCHEDA_MAX.domande) + "</legend>" + domandeList + "</fieldset>" +
+        '<fieldset class="scheda-gruppo"><legend>Le domande che vuoi fare <span class="muted text-small">(fino a quattro)</span> ' + contatore("domande", SCHEDA_MAX.domande) + "</legend>" +
+          A.moduloDomanda("schedaDomandaTesto", "schedaDomandaForm", "schedaDomandaLink") + domandeMarkup() + "</fieldset>" +
       "</div>" +
 
       '<div class="report-actions no-print"><span class="grow">Il PDF viene generato sul tuo dispositivo. Contiene dati sensibili: conservalo con cura.</span>' +
@@ -652,10 +685,42 @@
       if (body) body.innerHTML = schedaHTML(schedaContenuto(d, scelte));
     };
 
-    document.querySelectorAll("#schedaScelte input").forEach(function (input) {
+    const collegaInput = function (input) {
       input.addEventListener("change", aggiorna);
-    });
+    };
+    document.querySelectorAll("#schedaScelte input").forEach(collegaInput);
     aggiorna();
+
+    const formDomanda = document.getElementById("schedaDomandaForm");
+    if (formDomanda) formDomanda.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const input = document.getElementById("schedaDomandaTesto");
+      const chiave = function (q) { return q && (q.id ? "id:" + q.id : "testo:" + q.testo); };
+      const prima = Array.prototype.map.call(
+        document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]:checked'),
+        function (c) { return chiave(domande[Number(c.value)]); }
+      ).filter(Boolean);
+      const esito = A.aggiungiDomanda(input ? input.value : "");
+      if (esito.ok === false) { A.toast(esito.motivo, 5000); return; }
+
+      domande = domandeDisponibili(d);
+      scelte.domande = prima.map(function (k) {
+        return domande.findIndex(function (q) { return chiave(q) === k; });
+      }).filter(function (i) { return i >= 0; });
+      const indice = domande.findIndex(function (q) { return q.id === esito.domanda.id; });
+      if (indice >= 0 && scelte.domande.length < SCHEDA_MAX.domande) scelte.domande.push(indice);
+
+      const lista = document.getElementById("schedaDomandeList");
+      if (lista) lista.outerHTML = domandeMarkup();
+      document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]').forEach(collegaInput);
+      const link = document.getElementById("schedaDomandaLink");
+      if (link) link.textContent = A.etichettaTaccuino();
+      if (input) { input.value = ""; input.focus(); }
+      aggiorna();
+      A.toast(scelte.domande.indexOf(indice) >= 0
+        ? "Domanda aggiunta al taccuino."
+        : "Domanda aggiunta al taccuino. Togli una spunta per metterla nella scheda.", 5000);
+    });
 
     const pdfBtn = document.getElementById("schedaPdfBtn");
     if (pdfBtn) pdfBtn.addEventListener("click", function () {

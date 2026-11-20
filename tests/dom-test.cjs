@@ -559,6 +559,23 @@ caselleScheda[indiceTua].checked = true;
 caselleScheda[indiceTua].dispatchEvent(new window.Event("change", { bubbles: true }));
 ok(/Che cosa posso fare se arriva la sera\?/.test(document.getElementById("schedaBody").textContent), "e scegliendola entra nella scheda");
 
+// La scheda non è solo un elenco: la domanda si può scrivere lì, e il testo
+// resta quello della persona. Non viene interpretato né mandato altrove.
+const formScheda = document.getElementById("schedaDomandaForm");
+const campoScheda = document.getElementById("schedaDomandaTesto");
+ok(!!formScheda && !!campoScheda, "la scheda offre il campo per scrivere una domanda propria");
+ok(/non viene interpretata né inviata/.test(formScheda.textContent), "e dice che resta sul dispositivo, senza interpretazioni né invii");
+campoScheda.value = "  Posso chiedere una pausa durante il colloquio?  ";
+formScheda.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+ok(NP.app.state.domandePersonali[0].testo === "Posso chiedere una pausa durante il colloquio?", "la domanda scritta dalla scheda entra nel taccuino, con gli spazi tolti");
+const casellaNuova = Array.prototype.find.call(document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]'), function (c) {
+  return /\(tua\)/.test(c.closest(".report-opzione").textContent) && /Posso chiedere una pausa/.test(c.closest(".report-opzione").textContent);
+});
+ok(!!casellaNuova && casellaNuova.checked, "e la scheda la spunta da sola, se c'è posto");
+ok(/Posso chiedere una pausa durante il colloquio\?/.test(document.getElementById("schedaBody").textContent), "così compare subito nella scheda");
+const pdfDomandaScheda = NP.reportPdf.scheda({ domande: [Number(casellaNuova.value)] });
+ok(/Posso chiedere una pausa durante il colloquio\?/.test(Buffer.from(pdfDomandaScheda).toString("latin1")), "e il PDF scelto la porta con sé");
+
 NP.app.state.domandePersonali = [];
 NP.app.saveDomandePersonali();
 NP.app.state.diary = diarioPrimaScheda;
