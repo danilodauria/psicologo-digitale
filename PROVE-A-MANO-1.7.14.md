@@ -1,8 +1,8 @@
-# Prove a mano · versione 1.7.13
+# Prove a mano · versione 1.7.14
 
-Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono settantaquattro prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
+Quello che i test automatici non possono vedere: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto. Sono settantasette prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release.
 
-Vale dalla 1.4.0 alla 1.7.13. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza; per la 1.7.11 le tre della sezione 20, sulle parti da includere nella relazione; per la 1.7.12 le tre della sezione 21, sulla scheda da portare; per la 1.7.13 le tre della sezione 22, sul taccuino delle domande.
+Vale dalla 1.4.0 alla 1.7.14. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza; per la 1.7.11 le tre della sezione 20, sulle parti da includere nella relazione; per la 1.7.12 le tre della sezione 21, sulla scheda da portare; per la 1.7.13 le tre della sezione 22, sul taccuino delle domande; per la 1.7.14 le tre della sezione 23, sul backup protetto da password.
 
 C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
 
@@ -214,6 +214,14 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 | ☐ | 22.2 Apri **Relazione** con almeno una domanda nel taccuino: trovi «Le domande che hai scritto», tutte spuntate. Togli una spunta, scarica il **PDF**, poi rimettila | La domanda tolta sparisce dal foglio, dalla stampa e dal PDF, ma resta nel taccuino. Rimettendo la spunta torna sotto «Le domande che ho scritto:», dopo quelle generate. Se togli tutte le domande scritte, l'etichetta sparisce e la sezione delle domande resta quella di sempre |
 | ☐ | 22.3 In **Taccuino** correggi una domanda e togli un'altra; poi esporta un **backup**, cancella i dati e reimportalo. Prova anche un backup vecchio, senza domande | La correzione resta dopo aver riaperto la pagina; «Togli» chiede conferma e toglie solo quella scelta. Il backup riporta le domande e il ripristino le rimette. Un file del formato precedente si importa lo stesso, con il taccuino vuoto: nessuna domanda inventata e nessun errore |
 
+## 23. Il backup protetto da password (dalla 1.7.14)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 23.1 Apri **Licenze**, scegli una password di almeno otto caratteri nel backup protetto e esporta. Prova prima con due password diverse e con una troppo corta | Con password diverse o troppo corta il file non viene scaricato e il messaggio dice perché. Con una password valida si scarica un file `.json` che, aperto con un editor di testo, mostra solo formato, algoritmo e parametri: nessun dato di diario, colloquio o taccuino è leggibile |
+| ☐ | 23.2 Da **Importa backup** scegli il file protetto. Scrivi prima una password sbagliata, poi quella giusta | Con la password sbagliata compare «Password errata o file danneggiato» e i dati attuali non cambiano. Con quella giusta l'app chiede conferma, importa colloquio, diario, questionari, note e taccuino, e chiude con «Backup importato» |
+| ☐ | 23.3 Controlla il **backup in chiaro** accanto a quello protetto; poi rileggi l'avviso del backup cifrato | Il pulsante in chiaro esporta ancora il solito JSON leggibile e si importa senza password. L'avviso dice, a parole, che una password persa è un file perso e che non c'è un recupero: il backup in chiaro resta la strada per chi non vuole usare una password |
+
 ## Se qualcosa non torna
 
 Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
@@ -222,4 +230,4 @@ Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità
 
 | Data | Dispositivo | Versione | Prove superate | Note |
 |---|---|---|---|---|
-|  |  | 1.7.13 | /74 |  |
+|  |  | 1.7.14 | /77 |  |

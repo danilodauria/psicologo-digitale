@@ -1475,6 +1475,8 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
    Report
    -------------------------------------------------------------------------- */
 
+#backupSblocco[hidden] { display: none; }
+
 .report-options { margin-bottom: 1rem; }
 .report-options fieldset { border: 0; margin: 0; padding: 0; }
 .report-options legend { font-family: var(--serif); font-size: 1.06rem; font-weight: 600; color: var(--text); padding: 0; }

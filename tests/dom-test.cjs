@@ -7,6 +7,8 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const nodeCrypto = require("crypto");
+const { TextEncoder, TextDecoder } = require("util");
 
 const root = path.join(__dirname, "..");
 let checks = 0;
@@ -28,6 +30,12 @@ const dom = new JSDOM(html, {
 });
 const { window } = dom;
 const { document } = window;
+
+// jsdom non porta Web Crypto: il browser vero ce l'ha, e i test devono usare
+// gli stessi algoritmi del programma, non una scorciatoia in Node.
+Object.defineProperty(window, "crypto", { value: nodeCrypto.webcrypto, configurable: true });
+window.TextEncoder = TextEncoder;
+window.TextDecoder = TextDecoder;
 
 window.scrollTo = function () {};
 window.matchMedia = function () {
@@ -1759,6 +1767,97 @@ setTimeout(async function () {
   window.confirm = confermaVeraImport;
   ok(JSON.stringify(NP.app.state.diary) === primaDelNo, "dicendo no alla conferma, i dati restano quelli di prima");
   ok(esitoNo === esitoFuturo, "e non compare nessuna frase di backup importato");
+
+  /* ------------------------------------------ Backup protetto da password */
+
+  // La cifratura vera, con gli stessi algoritmi del browser: AES-GCM e PBKDF2.
+  // Se il file contiene anche una sola parola in chiaro, questo test lo vede.
+  console.log("\nBackup protetto da password");
+  const bustaProva = await NP.app.cifraBackup({
+    app: "Psicologo Digitale", version: 3,
+    diary: [paginaDiario("enc-a", "2026-11-18T09:00:00.000Z", "contenuto segreto")],
+    domandePersonali: [{ id: "qe1", testo: "Domanda cifrata", creato: "2026-11-18T09:00:00.000Z" }]
+  }, "password-lunga");
+  ok(bustaProva.formato === "backup-cifrato", "un backup protetto dichiara il suo formato");
+  ok(!JSON.stringify(bustaProva).includes("contenuto segreto"), "i dati non restano in chiaro nel file cifrato");
+  const bustaAperta = await NP.app.decifraBackup(bustaProva, "password-lunga");
+  ok(bustaAperta.diary[0].note === "contenuto segreto", "con la password giusta il backup si riapre");
+  let passwordRifiutata = false;
+  try { await NP.app.decifraBackup(bustaProva, "password-sbagliata"); }
+  catch (e) { passwordRifiutata = /Password errata/.test(e.message); }
+  ok(passwordRifiutata, "con la password sbagliata resta chiuso, con un messaggio chiaro");
+
+  navigate("#/licenze");
+  const cartaCifrata = document.getElementById("backupCifrato");
+  ok(!!cartaCifrata, "Licenze offre il backup protetto da password");
+  ok(/password persa è un file perso/i.test(cartaCifrata.textContent), "avvisa che una password persa è un file perso");
+  ok(/Esporta backup in chiaro/.test(document.getElementById("backupBtn").textContent), "il backup in chiaro resta disponibile accanto");
+  ok(!!document.getElementById("backupPassword") && !!document.getElementById("backupPassword2"), "chiede la password due volte, prima di esportare");
+
+  const clickCifrato = window.HTMLAnchorElement.prototype.click;
+  const creaCifrato = window.URL.createObjectURL;
+  let scaricatiCifrati = 0;
+  let blobCifrato = null;
+  window.HTMLAnchorElement.prototype.click = function () { scaricatiCifrati++; };
+  window.URL.createObjectURL = function (blob) { blobCifrato = blob; return "blob:cifrato"; };
+  const campoPwd = document.getElementById("backupPassword");
+  const campoPwd2 = document.getElementById("backupPassword2");
+  const formCifrato = document.getElementById("backupCifratoForm");
+  campoPwd.value = "password-lunga";
+  campoPwd2.value = "password-diversa";
+  formCifrato.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  ok(/non coincidono/.test(document.getElementById("backupCifratoStato").textContent), "se le due password non coincidono si ferma prima di scaricare");
+  ok(scaricatiCifrati === 0, "e non produce nessun file");
+  campoPwd.value = "corta";
+  campoPwd2.value = "corta";
+  formCifrato.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  ok(/almeno 8 caratteri/.test(document.getElementById("backupCifratoStato").textContent), "una password troppo corta viene rifiutata");
+
+  NP.app.state.diary = [paginaDiario("enc-exp", "2026-11-18T09:00:00.000Z", "segreto esportato")];
+  NP.app.saveDiary();
+  campoPwd.value = "password-lunga";
+  campoPwd2.value = "password-lunga";
+  formCifrato.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await new Promise(function (r) { setTimeout(r, 900); });
+  ok(scaricatiCifrati === 1, "con la password giusta il file cifrato viene scaricato");
+  ok(/Backup cifrato esportato/.test(document.getElementById("backupCifratoStato").textContent), "e lo stato dice che è andato");
+  ok(campoPwd.value === "" && campoPwd2.value === "", "le password vengono tolte dai campi, non restano scritte");
+  if (blobCifrato && typeof blobCifrato.text === "function") {
+    const testoBusta = await blobCifrato.text();
+    const bustaScaricata = JSON.parse(testoBusta);
+    ok(bustaScaricata.formato === "backup-cifrato" && !testoBusta.includes("segreto esportato"), "il file scaricato è cifrato e non porta i dati in chiaro");
+  }
+  window.HTMLAnchorElement.prototype.click = clickCifrato;
+  window.URL.createObjectURL = creaCifrato;
+
+  // Importare un file cifrato: prima la password, poi la stessa conferma del
+  // backup in chiaro. Una password sbagliata non deve toccare i dati.
+  const datiCifrati = {
+    app: "Psicologo Digitale", version: 3,
+    diary: [paginaDiario("enc-import", "2026-11-19T09:00:00.000Z", "dal file cifrato")],
+    domandePersonali: [{ id: "qe-import", testo: "Domanda dal file cifrato", creato: "2026-11-19T09:00:00.000Z" }]
+  };
+  const bustaImport = await NP.app.cifraBackup(datiCifrati, "password-import");
+  NP.app.state.diary = [paginaDiario("enc-old", "2026-11-20T09:00:00.000Z", "da sovrascrivere")];
+  NP.app.state.domandePersonali = [];
+  NP.app.saveDiary();
+  NP.app.saveDomandePersonali();
+  navigate("#/licenze");
+  await scegli(JSON.stringify(bustaImport), "protetto.json");
+  const sblocco = document.getElementById("backupSblocco");
+  ok(!!sblocco && sblocco.hidden === false, "scegliendo un file cifrato compare il campo per la password");
+  const pwdSblocco = document.getElementById("backupSbloccoPassword");
+  pwdSblocco.value = "password-sbagliata";
+  document.getElementById("backupSbloccoForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await new Promise(function (r) { setTimeout(r, 900); });
+  ok(/Password errata/.test(document.getElementById("backupSbloccoStato").textContent), "una password sbagliata lo dice, senza aprire il file");
+  ok(NP.app.state.diary[0].note === "da sovrascrivere", "e i dati attuali restano al loro posto");
+  pwdSblocco.value = "password-import";
+  document.getElementById("backupSbloccoForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await new Promise(function (r) { setTimeout(r, 1200); });
+  ok(NP.app.state.diary[0].note === "dal file cifrato", "con la password giusta i dati del file tornano al loro posto");
+  ok(NP.app.state.domandePersonali.some(function (q) { return q.testo === "Domanda dal file cifrato"; }), "anche le domande del taccuino tornano dal backup");
+  ok(/Backup importato/.test(document.getElementById("toast").textContent), "e la frase finale è la stessa dell'import in chiaro");
 
   window.FileReader = FileReaderVero;
 

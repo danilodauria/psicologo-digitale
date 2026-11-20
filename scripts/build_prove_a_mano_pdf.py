@@ -123,11 +123,11 @@ def stili_prove():
     s["th"] = ParagraphStyle(
         "th", fontName="Helvetica-Bold", fontSize=8.6, leading=11, textColor=INDACO
     )
-    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=9.5)
+    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=9.0)
     # Il foglio è cresciuto con le prove, non con l'aria fra i paragrafi: le
     # sezioni restano staccate, ma senza lasciare una pagina quasi vuota in coda.
-    s["h2"] = ParagraphStyle("h2", parent=s["h2"], spaceBefore=5, spaceAfter=3)
-    s["p"] = ParagraphStyle("p", parent=s["p"], leading=12.8, spaceAfter=2)
+    s["h2"] = ParagraphStyle("h2", parent=s["h2"], spaceBefore=4, spaceAfter=3)
+    s["p"] = ParagraphStyle("p", parent=s["p"], leading=12.4, spaceAfter=2)
     return s
 
 
@@ -158,8 +158,8 @@ def tabella(righe, s):
                 ("ALIGN", (0, 0), (0, -1), "CENTER"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 4),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                ("TOPPADDING", (0, 0), (-1, -1), 1.2),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 1.2),
+                ("TOPPADDING", (0, 0), (-1, -1), 0.8),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 0.8),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
             ]
         )

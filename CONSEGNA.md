@@ -2,13 +2,13 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.13**, 20 novembre 2026.
+Ultimo aggiornamento: versione **1.7.14**, 20 novembre 2026.
 
 ---
 
 ## 1. Che cos'è, in cinque righe
 
-Una PWA statica in italiano — nessun build, nessun server, nessun account — che accompagna una persona a mettere in ordine quello che sente prima di parlarne con un professionista: colloquio guidato con Neura, sei questionari di autovalutazione, un percorso in otto tappe, un diario, una relazione PDF da portare al clinico. Tutto vive nel `localStorage` del browser. Il sito è su GitHub Pages; esiste anche un contenitore Electron (`desktop/`) che apre la stessa app in locale e, se c'è Ollama, le dà una voce più naturale.
+Una PWA statica in italiano — nessun build, nessun server, nessun account — che accompagna una persona a mettere in ordine quello che sente prima di parlarne con un professionista: colloquio guidato con Neura, sei questionari di autovalutazione, un percorso in otto tappe, un diario, una relazione PDF da portare al clinico, un backup in chiaro o cifrato con password. Tutto vive nel `localStorage` del browser. Il sito è su GitHub Pages; esiste anche un contenitore Electron (`desktop/`) che apre la stessa app in locale e, se c'è Ollama, le dà una voce più naturale.
 
 Non è una terapia, non fa diagnosi, non manda niente in rete. Queste tre frasi non sono marketing: sono vincoli di progetto e compaiono nei testi, nei PDF e nei test.
 
@@ -54,6 +54,7 @@ Punti fermi dell'impianto:
 12. **La relazione si consegna per parti, ma i dati restano.** Prima del PDF tre caselle scelgono diario, schede del pensiero e note personali; senza scelte sono tutte incluse. L'esclusione vale per il foglio, la stampa e il PDF, non cancella niente dal dispositivo, e la numerazione delle sezioni si ricalcola. Domande per il clinico e spazio del professionista non sono parti personali e restano sempre.
 13. **La scheda da portare non è una seconda relazione.** È una pagina sola, con un massimo dichiarato (`SCHEDA_MAX`: tre aree, tre punteggi, quattro domande), una voce di diario e una scheda del pensiero scelte dalla persona. Non aggiunge dati, non interpreta e non cancella: legge quello che c'è. Il PDF è costruito per stare su una pagina e un segnale di rischio resta in cima, non viene tolto per fare spazio.
 14. **Il taccuino è testo della persona, non un'altra fonte clinica.** Le domande scritte a mano vivono in `domandePersonali` (`{id, testo, creato}`, massimo 200 caratteri e 50 voci), entrano in `raccogliDati` e nelle copie, e si scelgono prima della relazione o della scheda. Non vengono interpretate, non generano punteggi e togliere una spunta non cancella la domanda: le domande generate dai dati restano separate e vengono prima.
+15. **Il backup cifrato è una busta, non una seconda copia in chiaro.** `cifraBackup()` produce `formato: "backup-cifrato"` con AES-GCM a 256 bit e chiave derivata con PBKDF2-SHA-256 (250.000 iterazioni, sale di 16 byte e IV di 12 byte). La password non viene scritta da nessuna parte; il file contiene solo parametri e blocchetto cifrato. `decifraBackup()` rifiuta password errata, formato futuro o parametri fuori scala senza toccare i dati. Il backup in chiaro resta sempre disponibile accanto. Cambiando la busta si incrementa `BACKUP_CIFRATO_VERSIONE`; i test verificano assenza di testo in chiaro, andata e ritorno, password sbagliata e import da file.
 
 ---
 
@@ -125,7 +126,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 679 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande e sua selezione nella relazione e nella scheda |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 702 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande e sua selezione nella relazione e nella scheda |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -163,6 +164,7 @@ Numeri aggiornati a ogni `npm test`: 22 viste, 30 pagine di singoli elementi, 3 
 - **La ricerca è letterale, con una tabella di sinonimi curata a mano**: trentotto gruppi di parole equivalenti (sonno/dormire, ansia/ansioso, …) allargano la ricerca nei contenuti e nelle cose scritte. Fuori da quella tabella resta letterale: se un argomento c'è ma è scritto con un'altra parola non prevista, non lo trova — ed è dichiarato nella pagina.
 - **La modalità discreta non è cifratura.** Copre lo schermo da chi passa dietro; chi apre gli strumenti di sviluppo vede i dati, come in qualsiasi app locale.
 - **Nessuna sincronizzazione tra dispositivi.** Il backup JSON è l'unico passaggio di consegne, e richiede un gesto esplicito.
+- **La cifratura del backup dipende dal browser.** Serve Web Crypto (AES-GCM e PBKDF2): senza, il backup cifrato non si crea e resta quello in chiaro. Una password persa non si recupera, e non esiste una copia della chiave da nessuna parte.
 - **L'uscita rapida non cancella la cronologia.** «Esci subito», in cima a Sicurezza, apre una pagina neutra con ora e data, senza testata né contenuti. La visita al programma resta nella cronologia del browser, e Indietro riporta alla pagina di prima: è una copertura dello schermo, non una cancellazione delle tracce.
 - **L'avviso di versione nuova del sito** nei test automatici è simulato: jsdom non ha un service worker. La prova vera è la 13.1 del foglio, che richiede una pubblicazione mentre la scheda è aperta.
 - **La protezione dello spazio è una richiesta, non una garanzia**: decide il browser e può revocarla. I test simulano le tre risposte (concessa, rifiutata, API assente); la prova nei browser veri è la sezione 14 del foglio.

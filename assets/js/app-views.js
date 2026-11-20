@@ -27,6 +27,9 @@
     }).join("") + "</div>";
   }
   const state = A.state;
+  // La busta cifrata resta qui fra la scelta del file e la password: è solo
+  // testo cifrato, e serve a non rileggere il file ogni volta che si sbaglia.
+  let backupCifratoInAttesa = null;
 
   /* ------------------------------------------------------------------ Manuale */
 
@@ -636,10 +639,27 @@
         return '<p class="text-small muted mt-1" id="backupPromemoria">Ultima esportazione: ' + esc(A.fmtDate(quando)) +
           (giorni === 0 ? " (oggi)." : " (" + giorni + (giorni === 1 ? " giorno fa)." : " giorni fa).")) + "</p>";
       })() +
-      '<div class="btn-row mt-2"><button type="button" class="btn btn-soft btn-sm" id="backupBtn">' + A.icon("download") + "Esporta backup</button>" +
+      '<div class="btn-row mt-2"><button type="button" class="btn btn-soft btn-sm" id="backupBtn">' + A.icon("download") + "Esporta backup in chiaro</button>" +
         '<label class="btn btn-ghost btn-sm" for="importFile">' + A.icon("refresh") + 'Importa backup</label><input type="file" id="importFile" accept="application/json,.json" hidden>' +
         '<button type="button" class="btn btn-danger btn-sm" id="resetBtn">Cancella tutti i dati</button></div>' +
+        '<p class="text-small muted mt-1 mb-0">Il backup in chiaro è un file JSON leggibile: scegli tu se basta, o se proteggerlo qui sotto. Un backup cifrato si importa dallo stesso pulsante.</p>' +
+        '<div class="callout info mt-2" id="backupSblocco" hidden><p><strong>Questo backup è protetto.</strong> Scrivi la password scelta quando l\'hai esportato: non è stata salvata, serve solo ora per aprirlo.</p>' +
+          '<form id="backupSbloccoForm"><div class="form-field"><label class="field-label" for="backupSbloccoPassword">Password del backup</label>' +
+            '<input class="input" type="password" id="backupSbloccoPassword" autocomplete="current-password"></div>' +
+            '<div class="btn-row"><button type="submit" class="btn btn-primary btn-sm" id="backupSbloccoApri">Apri il backup</button>' +
+            '<button type="button" class="btn btn-ghost btn-sm" id="backupSbloccoAnnulla">Annulla</button></div>' +
+            '<p class="text-small muted mb-0" id="backupSbloccoStato" role="status"></p></form></div>' +
       "</div>" +
+
+      '<div class="card mt-2" id="backupCifrato"><h2 class=h-sub>Un backup protetto da password</h2>' +
+        '<p>Se il file deve uscire dal computer, puoi cifrarlo qui, sul dispositivo, con AES-GCM. La password non viene salvata e non viene inviata a nessuno: senza di essa il file non si apre.</p>' +
+        '<div class="callout warn"><p><strong>Una password persa è un file perso.</strong> Non c\'è un pulsante «recupera»: se la dimentichi, il file resta chiuso anche per noi. Il backup in chiaro resta disponibile qui sopra, senza password.</p></div>' +
+        '<form id="backupCifratoForm"><div class="form-field"><label class="field-label" for="backupPassword">Password <span class="muted text-small">(almeno ' + A.passwordMinima + " caratteri)</span></label>" +
+          '<input class="input" type="password" id="backupPassword" autocomplete="new-password" minlength="' + A.passwordMinima + '" required></div>' +
+          '<div class="form-field"><label class="field-label" for="backupPassword2">Ripeti la password</label>' +
+          '<input class="input" type="password" id="backupPassword2" autocomplete="new-password" minlength="' + A.passwordMinima + '" required></div>' +
+          '<div class="btn-row"><button type="submit" class="btn btn-soft btn-sm" id="backupCifratoBtn">Esporta cifrato</button></div>' +
+          '<p class="text-small muted mb-0" id="backupCifratoStato" role="status"></p></form></div>' +
 
       (function () {
         const d = A.spazioDati();
@@ -871,7 +891,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.13 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.14 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -915,39 +935,114 @@
       if (A.impostaGiorniCompatta(soglia.value)) A.render();
     });
 
+    const importa = function (letto) {
+      // Un file vecchio si completa prima di leggerlo: importare un formato
+      // che nel frattempo è cambiato sarebbe una perdita silenziosa.
+      const esito = A.migraBackup(letto);
+      if (esito.errore) { A.toast(esito.errore, 8000); return false; }
+      if (!confirm("Importare il backup? I dati attuali verranno sostituiti.")) return false;
+      // Una sola strada per rimettere a posto i dati: import da file, ripristino
+      // di una copia e annullamento non possono divergere sui campi toccati.
+      A.applicaBackup(esito.dati);
+      A.toast("Backup importato" + (esito.migrato ? " e aggiornato al formato attuale." : "."));
+      A.render();
+      return true;
+    };
+
+    const mostraSblocco = function (busta, nome) {
+      backupCifratoInAttesa = busta;
+      const box = document.getElementById("backupSblocco");
+      if (!box) return;
+      box.hidden = false;
+      const pwd = document.getElementById("backupSbloccoPassword");
+      if (pwd) { pwd.value = ""; pwd.focus(); }
+      const stato = document.getElementById("backupSbloccoStato");
+      if (stato) stato.textContent = "Backup «" + nome + "»: scrivi la password per aprirlo.";
+    };
+
     const imp = document.getElementById("importFile");
     if (imp) imp.addEventListener("change", function () {
       const file = imp.files && imp.files[0];
       if (!file) return;
+      const box = document.getElementById("backupSblocco");
+      if (box) box.hidden = true;
+      backupCifratoInAttesa = null;
       const reader = new FileReader();
       reader.onload = function () {
         try {
           const letto = JSON.parse(reader.result);
           if (!letto || letto.app !== "Psicologo Digitale") throw new Error("Formato non valido");
-          // Un file vecchio si completa prima di leggerlo: importare un formato
-          // che nel frattempo è cambiato sarebbe una perdita silenziosa.
-          const esito = A.migraBackup(letto);
-          if (esito.errore) { A.toast(esito.errore, 8000); return; }
-          const data = esito.dati;
-          if (!confirm("Importare il backup? I dati attuali verranno sostituiti.")) return;
-          state.intake = data.intake || state.intake;
-          state.scales = data.scales || {};
-          state.diary = data.diary || [];
-          state.course = data.course || { done: [], notes: {} };
-          state.quizStats = data.quizStats || state.quizStats;
-          state.reportNotes = data.reportNotes || { note: "", clinician: "" };
-          A.writeJSON("thoughts", Array.isArray(data.thoughts) ? data.thoughts : []);
-          A.writeJSON("storicoPunteggi", data.storicoPunteggi && typeof data.storicoPunteggi === "object" &&
-            !Array.isArray(data.storicoPunteggi) ? data.storicoPunteggi : {});
-          A.writeJSON("pianoSicurezza", data.pianoSicurezza && typeof data.pianoSicurezza === "object" ? data.pianoSicurezza : null);
-          A.saveIntake(); A.saveScales(); A.saveDiary(); A.saveCourse(); A.saveQuizStats(); A.saveReportNotes();
-          A.toast("Backup importato" + (esito.migrato ? " e aggiornato al formato attuale." : "."));
-          A.render();
+          if (A.isBackupCifrato(letto)) { mostraSblocco(letto, file.name); return; }
+          importa(letto);
         } catch (e) {
           alert("Il file non sembra un backup valido di Psicologo Digitale.");
         }
       };
       reader.readAsText(file, "utf-8");
+    });
+
+    const sblocco = document.getElementById("backupSbloccoForm");
+    if (sblocco) sblocco.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const pwd = document.getElementById("backupSbloccoPassword");
+      const stato = document.getElementById("backupSbloccoStato");
+      const bottone = document.getElementById("backupSbloccoApri");
+      if (!backupCifratoInAttesa) { if (stato) stato.textContent = "Scegli prima un file."; return; }
+      if (!pwd || !pwd.value) { if (stato) stato.textContent = "Scrivi la password del backup."; if (pwd) pwd.focus(); return; }
+      if (stato) stato.textContent = "Apro il file sul dispositivo…";
+      if (bottone) bottone.disabled = true;
+      A.decifraBackup(backupCifratoInAttesa, pwd.value).then(function (dati) {
+        backupCifratoInAttesa = null;
+        pwd.value = "";
+        const box = document.getElementById("backupSblocco");
+        if (box) box.hidden = true;
+        importa(dati);
+      }).catch(function (err) {
+        if (stato) stato.textContent = err && err.message ? err.message : "Password errata o file danneggiato.";
+        if (pwd) { pwd.focus(); pwd.select(); }
+      }).finally(function () { if (bottone) bottone.disabled = false; });
+    });
+
+    const annullaSblocco = document.getElementById("backupSbloccoAnnulla");
+    if (annullaSblocco) annullaSblocco.addEventListener("click", function () {
+      backupCifratoInAttesa = null;
+      const box = document.getElementById("backupSblocco");
+      if (box) box.hidden = true;
+      const pwd = document.getElementById("backupSbloccoPassword");
+      if (pwd) pwd.value = "";
+      if (imp) imp.value = "";
+    });
+
+    const cifraForm = document.getElementById("backupCifratoForm");
+    if (cifraForm) cifraForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const pwd = document.getElementById("backupPassword");
+      const pwd2 = document.getElementById("backupPassword2");
+      const stato = document.getElementById("backupCifratoStato");
+      const bottone = document.getElementById("backupCifratoBtn");
+      if (!pwd || pwd.value.length < A.passwordMinima) {
+        if (stato) stato.textContent = "La password deve avere almeno " + A.passwordMinima + " caratteri.";
+        if (pwd) pwd.focus();
+        return;
+      }
+      if (!pwd2 || pwd.value !== pwd2.value) {
+        if (stato) stato.textContent = "Le due password non coincidono.";
+        if (pwd2) pwd2.focus();
+        return;
+      }
+      if (!A.cifraturaDisponibile()) {
+        if (stato) stato.textContent = "Questo browser non sa cifrare i backup: usa quello in chiaro.";
+        return;
+      }
+      if (stato) stato.textContent = "Cifro il file sul dispositivo…";
+      if (bottone) bottone.disabled = true;
+      A.esportaBackupCifrato(pwd.value).then(function () {
+        pwd.value = "";
+        if (pwd2) pwd2.value = "";
+        if (stato) stato.textContent = "Backup cifrato esportato. La password non è stata salvata: senza di essa il file non si apre.";
+      }).catch(function (err) {
+        if (stato) stato.textContent = err && err.message ? err.message : "Non è stato possibile cifrare il backup: usa quello in chiaro.";
+      }).finally(function () { if (bottone) bottone.disabled = false; });
     });
 
     const reset = document.getElementById("resetBtn");

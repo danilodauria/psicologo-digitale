@@ -44,7 +44,7 @@ Il programma non prova a "fare lo psicologo". Prova a fare bene una cosa diversa
 | **Sicurezza** | 112, Telefono Amico, Samaritans, Telefono Azzurro, 1522, 114. Segnali d'allarme, cosa fare subito, indicazioni per minori e violenza. In cima c'è **Esci subito**: apre una pagina neutra senza contenuti del programma, e dice che non cancella la cronologia del browser. Più sotto, **Il mio piano di sicurezza**: un modulo da compilare e stampare con i tuoi segnali, i primi minuti, chi chiamare, l'ambiente e una ragione per chiamare. |
 | **Nutrizione** | Alimentazione e umore: cinque principi, un piatto di riferimento, ritmo dei pasti, differenze tra dietista, dietologo e biologo nutrizionista, segnali dei disturbi alimentari, domande per il professionista. Nessuna dieta e nessuna prescrizione. |
 | **Installa** | Installazione come app su Android, iPhone e computer, uso offline e guida facoltativa a **Ollama**: riconosce sistema e memoria dichiarata dal browser, indica il pacchetto giusto e il modello adatto, verifica il collegamento locale. |
-| **Licenze** | Attribuzione, licenze, privacy, backup, cancellazione dati, FAQ e fonti. |
+| **Licenze** | Attribuzione, licenze, privacy, backup in chiaro o protetto da password, cancellazione dati, FAQ e fonti. |
 
 ## Neura, il consulente digitale
 
@@ -408,7 +408,9 @@ Le preferenze di lettura stanno in *Licenze e progetto*: dimensione del testo (`
 
 Il movimento segue l'impostazione del sistema: con `prefers-reduced-motion: reduce` il blocco in fondo a `styles.css` spegne ogni animazione e ogni transizione (`animation: none`, `transition: none`, non durate accorciate), quindi l'orbita di Neura — il respiro, l'anello che ruota, il nucleo — resta ferma. Non c'è un interruttore nel programma: la preferenza è di chi usa il dispositivo, e il programma non deve chiedergliela due volte.
 
-Il backup dichiara il proprio formato (`version`, attualmente 2): `migraBackup()` completa un file vecchio e rifiuta un file di una versione più recente, invece di leggerlo alla cieca e perdere quello che non conosce. `segnaBackup()` registra la data dell'ultima esportazione: è un promemoria, non un dato della persona, quindi non entra nella coda dei salvataggi rimasti fuori.
+Il backup dichiara il proprio formato (`version`, attualmente 3): `migraBackup()` completa un file vecchio e rifiuta un file di una versione più recente, invece di leggerlo alla cieca e perdere quello che non conosce. `segnaBackup()` registra la data dell'ultima esportazione: è un promemoria, non un dato della persona, quindi non entra nella coda dei salvataggi rimasti fuori.
+
+In **Licenze** il backup si può anche proteggere con una password. Il file viene cifrato sul dispositivo con **AES-GCM** e una chiave derivata con **PBKDF2-SHA-256** (250.000 iterazioni, sale e vettore casuali): nell'involucro JSON restano visibili solo formato, algoritmo e parametri, mentre colloquio, diario, questionari, note e taccuino sono nel blocchetto cifrato. La password non viene salvata e non viene inviata da nessuna parte. Il file protetto si sceglie dallo stesso «Importa backup»: l'app chiede la password e, se è sbagliata, non tocca i dati attuali. **Una password persa è un file perso**: non esiste un recupero. Per questo il backup in chiaro resta disponibile accanto, con un pulsante separato, e chi non vuole una password non è obbligato a usarla.
 
 ## Come si installa: la pagina pubblica
 
@@ -426,7 +428,7 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 ## Prove a mano prima di una release
 
-I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.13 è [PROVE-A-MANO-1.7.13.md](PROVE-A-MANO-1.7.13.md): settantaquattro controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito, protezione dello spazio, piano di sicurezza personale, parti da includere nella relazione, scheda da portare e taccuino delle domande, ognuno con il risultato atteso e una casella da spuntare.
+I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.14 è [PROVE-A-MANO-1.7.14.md](PROVE-A-MANO-1.7.14.md): settantasette controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito, protezione dello spazio, piano di sicurezza personale, parti da includere nella relazione, scheda da portare, taccuino delle domande e backup protetto da password, ognuno con il risultato atteso e una casella da spuntare.
 
 Lo stesso foglio esiste in **PDF A4**, per stamparlo e spuntarlo a penna: [assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf](assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf), casella per ogni prova e tabella d'esito in fondo, con versione e provenienza nel piè di pagina. Non è una seconda copia del testo: `scripts/build_prove_a_mano_pdf.py` legge il markdown delle prove — il più recente per versione — e lo impagina con la stessa testata degli altri fogli, riusando l'impaginatore di `build_come_installare_pdf.py`. Il file è allegato alla release insieme agli altri PDF (`.github/workflows/foglio.yml`), e `tests/verify.cjs` confronta le prove del markdown con quelle stampate: una prova aggiunta e mai rigenerata diventa una build rossa.
 
@@ -463,6 +465,7 @@ Un 404 appena dopo un ri-caricamento viene ritentato tre volte prima di essere s
 - I questionari non sono strumenti diagnostici validati: sono indicatori divulgativi ispirati a costrutti noti.
 - Neura è un motore di regole e recupero, non un'IA generativa: non risponde fuori dal corpus e non apprende.
 - Il programma non raccoglie dati, quindi non sincronizza tra dispositivi: il backup JSON serve a questo, e la copia automatica resta comunque dentro quel browser soltanto.
+- La cifratura del backup dipende dalla Web Crypto del browser: senza, resta disponibile il backup in chiaro. Una password persa non si recupera, e non esiste una copia della chiave da nessuna parte.
 - La sintesi vocale dipende dalle voci installate sul dispositivo; la dettatura dipende dal browser.
 - Il PDF è volutamente essenziale: testo, tabelle e firme. Non è un documento con valore medico-legale.
 - I protocolli di seduta sono un modello didattico, non un manuale di condotta clinica.
@@ -483,4 +486,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.7.13** · novembre 2026.
+Versione **1.7.14** · novembre 2026.

@@ -734,6 +734,115 @@ NP.app = (function () {
     setTimeout(function () { URL.revokeObjectURL(url); }, 800);
   }
 
+  /* ------------------------------------------------ Backup protetto */
+
+  // Il file cifrato è una busta JSON: fuori restano solo i parametri per
+  // riaprirla, dentro i dati veri. Non c'è una seconda copia in chiaro nel file.
+  function cifraturaDisponibile() {
+    return !!(window.crypto && window.crypto.subtle && window.crypto.getRandomValues &&
+      window.TextEncoder && window.TextDecoder && window.btoa && window.atob);
+  }
+
+  function bytesInBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binario = "";
+    // A pezzi: un backup può superare il limite di argomenti di apply().
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+      binario += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return window.btoa(binario);
+  }
+
+  function base64InBytes(testo) {
+    const binario = window.atob(String(testo || ""));
+    const bytes = new Uint8Array(binario.length);
+    for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+    return bytes;
+  }
+
+  function isBackupCifrato(busta) {
+    return !!busta && busta.formato === BACKUP_CIFRATO;
+  }
+
+  async function chiaveBackup(password, salt, iterazioni, uso) {
+    const materiale = await window.crypto.subtle.importKey(
+      "raw", new window.TextEncoder().encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+    );
+    return window.crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: salt, iterations: iterazioni, hash: "SHA-256" },
+      materiale, { name: "AES-GCM", length: 256 }, false, [uso]
+    );
+  }
+
+  async function cifraBackup(dati, password) {
+    if (!cifraturaDisponibile()) {
+      throw new Error("Questo browser non sa cifrare i backup. Puoi esportare quello in chiaro.");
+    }
+    if (typeof password !== "string" || password.length < PASSWORD_MINIMA) {
+      throw new Error("La password deve avere almeno " + PASSWORD_MINIMA + " caratteri.");
+    }
+    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const chiave = await chiaveBackup(password, salt, ITERAZIONI_PBKDF2, "encrypt");
+    const chiaro = new window.TextEncoder().encode(JSON.stringify(dati));
+    const cifrato = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, chiave, chiaro);
+    return {
+      app: "Psicologo Digitale",
+      formato: BACKUP_CIFRATO,
+      formatoVersione: BACKUP_CIFRATO_VERSIONE,
+      versioneDati: VERSIONE_BACKUP,
+      exportedAt: new Date().toISOString(),
+      cifratura: {
+        algoritmo: "AES-GCM",
+        kdf: "PBKDF2",
+        hash: "SHA-256",
+        iterazioni: ITERAZIONI_PBKDF2,
+        salt: bytesInBase64(salt),
+        iv: bytesInBase64(iv)
+      },
+      dati: bytesInBase64(cifrato)
+    };
+  }
+
+  async function decifraBackup(busta, password) {
+    if (!isBackupCifrato(busta)) throw new Error("Questo file non è un backup cifrato.");
+    if (!cifraturaDisponibile()) {
+      throw new Error("Questo browser non sa aprire i backup cifrati. Usa un browser aggiornato.");
+    }
+    if (typeof password !== "string" || !password) throw new Error("Scrivi la password del backup.");
+    if (Number(busta.formatoVersione) !== BACKUP_CIFRATO_VERSIONE) {
+      throw new Error("Il file usa un formato di cifratura più recente di questo programma.");
+    }
+    const c = busta.cifratura || {};
+    const iterazioni = Number(c.iterazioni);
+    if (!isFinite(iterazioni) || iterazioni < 100000 || iterazioni > 1000000) {
+      throw new Error("Il file dichiara un metodo di cifratura non supportato.");
+    }
+    try {
+      const salt = base64InBytes(c.salt);
+      const iv = base64InBytes(c.iv);
+      if (salt.length < 8 || iv.length !== 12) throw new Error("Parametri non validi");
+      const chiave = await chiaveBackup(password, salt, iterazioni, "decrypt");
+      const chiaro = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, chiave, base64InBytes(busta.dati));
+      const dati = JSON.parse(new window.TextDecoder().decode(chiaro));
+      if (!dati || dati.app !== "Psicologo Digitale") throw new Error("Contenuto non valido");
+      return dati;
+    } catch (e) {
+      throw new Error("Password errata o file danneggiato.");
+    }
+  }
+
+  async function esportaBackupCifrato(password) {
+    const busta = await cifraBackup(raccogliDati(), password);
+    scaricaJSON(busta, "psicologo-digitale-backup-protetto.json");
+    segnaBackup();
+    const recupero = riprovaSalvataggi();
+    toast(recupero
+      ? "Backup cifrato esportato, e la modifica in sospeso è stata salvata."
+      : "Backup cifrato esportato.", recupero ? 6000 : 3200);
+    return true;
+  }
+
   /* --------------------------------------------- Promemoria e preferenze */
 
   // I dati vivono in un solo posto, il browser: una svuotata dei dati del sito
@@ -762,6 +871,10 @@ NP.app = (function () {
   }
 
   const VERSIONE_BACKUP = 3;
+  const BACKUP_CIFRATO = "backup-cifrato";
+  const BACKUP_CIFRATO_VERSIONE = 1;
+  const ITERAZIONI_PBKDF2 = 250000;
+  const PASSWORD_MINIMA = 8;
 
   // Un backup vecchio si completa invece di essere letto alla cieca: la forma
   // del file è cambiata nel tempo (versione 1 = senza campo `version` né
@@ -1501,7 +1614,7 @@ NP.app = (function () {
 
   // Un solo punto che scrive uno stato: lo usano sia il ripristino sia
   // l'annullamento, così le due strade non possono divergere su cosa toccare.
-  function applicaDati(d) {
+  function applicaDati(d, conStorico) {
     state.intake = d.intake || state.intake;
     state.scales = d.scales || {};
     state.diary = d.diary || [];
@@ -1511,7 +1624,17 @@ NP.app = (function () {
     state.domandePersonali = Array.isArray(d.domandePersonali) ? d.domandePersonali : [];
     writeJSON("thoughts", Array.isArray(d.thoughts) ? d.thoughts : []);
     writeJSON("pianoSicurezza", d.pianoSicurezza && typeof d.pianoSicurezza === "object" ? d.pianoSicurezza : null);
+    if (conStorico) {
+      writeJSON("storicoPunteggi", d.storicoPunteggi && typeof d.storicoPunteggi === "object" &&
+        !Array.isArray(d.storicoPunteggi) ? d.storicoPunteggi : {});
+    }
     saveIntake(); saveScales(); saveDiary(); saveCourse(); saveQuizStats(); saveReportNotes(); salvaDomandePersonali();
+  }
+
+  // L'import da file riporta anche lo storico, a differenza del ripristino di
+  // una copia automatica: è un file scelto dalla persona, non una foto di ieri.
+  function applicaBackup(d) {
+    applicaDati(d, true);
   }
 
   function annullaRipristino() {
@@ -1618,6 +1741,13 @@ NP.app = (function () {
     collegaFormDomanda: collegaFormDomanda,
     saveChat: saveChat,
     esportaBackup: esportaBackup,
+    esportaBackupCifrato: esportaBackupCifrato,
+    cifraBackup: cifraBackup,
+    decifraBackup: decifraBackup,
+    isBackupCifrato: isBackupCifrato,
+    cifraturaDisponibile: cifraturaDisponibile,
+    passwordMinima: PASSWORD_MINIMA,
+    applicaBackup: applicaBackup,
     esportaCopia: esportaCopia,
     datiCopia: datiCopia,
     nomeFileCopia: nomeFileCopia,

@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.13";
+  const VERSIONE = "1.7.14";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.14",
+      data: "20 novembre 2026",
+      titolo: "Un backup che puoi chiudere con una password",
+      punti: [
+        "In Licenze il backup si può esportare in chiaro, come prima, oppure proteggerlo con una password: il file viene cifrato sul dispositivo con AES-GCM e la password non viene salvata né inviata.",
+        "Per riaprirlo, scegli il file da «Importa backup» e scrivi la password. Se è sbagliata il file resta chiuso e i dati attuali non vengono toccati.",
+        "Una password persa è un file perso: non c'è un modo per recuperarla. Il backup in chiaro resta disponibile, per chi non vuole o non può usare una password."
+      ]
+    },
     {
       v: "1.7.13",
       data: "20 novembre 2026",
