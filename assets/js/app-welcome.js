@@ -135,7 +135,14 @@
     return pannello;
   }
 
+  function sullaScheda() {
+    return /^#\/scheda(\/|$)/.test(location.hash || "");
+  }
+
   function avvia() {
+    // La scheda è un campo da compilare: il pannello, che su telefono occupa
+    // mezza pagina, coprirebbe proprio la domanda da scrivere.
+    if (sullaScheda()) return;
     if (leggi(CHIAVE_NASCOSTO) === "1") return;
     if (giaVista()) return;
 
@@ -150,6 +157,15 @@
       }, 700);
     }
   }
+
+  // Anche arrivando alla scheda da un'altra pagina il pannello va tolto di
+  // mezzo: altrimenti resterebbe sopra il campo. Si chiude una volta sola, non
+  // si riapre al ritorno: il benvenuto è già stato fatto.
+  window.addEventListener("hashchange", function () {
+    if (!sullaScheda()) return;
+    const pannello = document.querySelector(".welcome-panel.is-open");
+    if (pannello) chiudi(pannello, false);
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", avvia);

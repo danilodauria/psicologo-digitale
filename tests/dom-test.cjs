@@ -108,6 +108,15 @@ function navigate(route) {
   NP.app.render();
 }
 
+// Il benvenuto di Neura non deve coprire il campo della scheda: se è aperto
+// quando si arriva alla scheda, si chiude; se la scheda è la prima pagina, non
+// si apre proprio (la seconda parte si prova in fondo, con la rotta già attiva).
+const benvenuto = document.querySelector(".welcome-panel");
+ok(!!benvenuto, "all'apertura Neura si presenta");
+navigate("#/scheda");
+window.dispatchEvent(new window.Event("hashchange"));
+ok(!!benvenuto && !benvenuto.classList.contains("is-open"), "arrivando alla scheda il benvenuto si chiude, invece di coprire il campo");
+
 navigate("#/manuale");
 ok(document.querySelectorAll('a[href^="#/manuale/"]').length === 12, "l'elenco del manuale mostra dodici capitoli");
 
@@ -374,6 +383,59 @@ const intakePrimaScheda = JSON.parse(JSON.stringify(NP.app.state.intake));
 const scalesPrimaScheda = JSON.parse(JSON.stringify(NP.app.state.scales));
 const diarioPrimaScheda = NP.app.state.diary;
 const pensieriPrimaScheda = NP.app.readJSON("thoughts", []);
+
+// Il primo accesso, quando non c'è ancora niente: la scheda non ha un foglio da
+// mostrare, ma il campo per scrivere c'è lo stesso, e la domanda deve entrare
+// nel taccuino. La spunta automatica si prova più sotto, partendo da zero
+// spunte: con la scheda vuota la domanda nuova cadrebbe comunque fra quelle
+// scelte di partenza, e la verifica non dimostrerebbe niente.
+const vuotoPrimaScheda = {
+  intake: NP.app.state.intake,
+  scales: NP.app.state.scales,
+  diary: NP.app.state.diary,
+  thoughts: NP.app.readJSON("thoughts", []),
+  domande: NP.app.state.domandePersonali
+};
+NP.app.state.intake = { answers: {}, started: false, completedAt: null, consent: false, updatedAt: null };
+NP.app.state.scales = {};
+NP.app.state.diary = [];
+NP.app.writeJSON("thoughts", []);
+NP.app.state.domandePersonali = [];
+NP.app.saveDomandePersonali();
+
+navigate("#/scheda");
+const campoVuoto = document.getElementById("schedaDomandaTestoVuota");
+const formVuoto = document.getElementById("schedaDomandaFormVuota");
+ok(/Non ci sono ancora dati/.test(document.getElementById("app").textContent) && !!campoVuoto && !!formVuoto, "senza dati la scheda lo dice e offre lo stesso il campo per scrivere");
+campoVuoto.value = "  Che cosa posso chiedere alla prima visita?  ";
+formVuoto.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+ok(NP.app.state.domandePersonali.length === 1 && NP.app.state.domandePersonali[0].testo === "Che cosa posso chiedere alla prima visita?", "la domanda scritta a dati vuoti entra nel taccuino, con gli spazi tolti");
+const casellaVuota = Array.prototype.find.call(document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]'), function (c) {
+  return /\(tua\)/.test(c.closest(".report-opzione").textContent) && /prima visita/.test(c.closest(".report-opzione").textContent);
+});
+ok(!!document.getElementById("schedaSheet") && !!casellaVuota && /Che cosa posso chiedere alla prima visita\?/.test(document.getElementById("schedaBody").textContent), "la scheda si costruisce e porta la domanda, nell'elenco e nel foglio");
+ok(document.activeElement === casellaVuota, "dopo l'invio il focus è sulla domanda appena aggiunta, non sul body");
+
+// La spunta che conta è quella che nasce dalla scelta, non dai valori di
+// partenza: si tolgono tutte, si aggiunge una domanda e deve restare scelta
+// solo la nuova (con il foglio che la segue).
+Array.prototype.forEach.call(document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]'), function (c) {
+  c.checked = false;
+  c.dispatchEvent(new window.Event("change", { bubbles: true }));
+});
+const campoPieno = document.getElementById("schedaDomandaTesto");
+campoPieno.value = "  Posso portare qualcuno con me?  ";
+document.getElementById("schedaDomandaForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+const spuntateDopo = Array.prototype.slice.call(document.querySelectorAll('#schedaScelte input[data-gruppo="domande"]:checked'));
+ok(spuntateDopo.length === 1 && /Posso portare qualcuno/.test(spuntateDopo[0].closest(".report-opzione").textContent), "con le spunte vuote, aggiungendo una domanda resta scelta solo quella nuova");
+ok(/Posso portare qualcuno con me\?/.test(document.getElementById("schedaBody").textContent) && !/Che cosa posso chiedere alla prima visita\?/.test(document.getElementById("schedaBody").textContent), "e il foglio segue la scelta, invece di rimettere le domande di partenza");
+
+NP.app.state.intake = vuotoPrimaScheda.intake;
+NP.app.state.scales = vuotoPrimaScheda.scales;
+NP.app.state.diary = vuotoPrimaScheda.diary;
+NP.app.writeJSON("thoughts", vuotoPrimaScheda.thoughts);
+NP.app.state.domandePersonali = vuotoPrimaScheda.domande;
+NP.app.saveDomandePersonali();
 
 NP.app.state.intake.answers = Object.assign({}, NP.app.state.intake.answers, {
   aree: ["ansia", "sonno", "umore"],
@@ -1893,8 +1955,12 @@ setTimeout(async function () {
   navigate("#/sicurezza/piano");
   ok(!!document.getElementById("pianoForm") && !!document.getElementById("pianoSegnali"), "il piano ha un modulo compilabile");
   ok(!!document.getElementById("pianoPrimiMinuti") && !!document.getElementById("pianoAmbiente") && !!document.getElementById("pianoRagione"), "con i cinque campi del piano");
+  const numeriPiano = NP.data.sicurezza.numeri;
+  const bloccoNumeri = document.getElementById("pianoNumeri");
+  ok(!!bloccoNumeri && numeriPiano.every(function (n) { return bloccoNumeri.textContent.indexOf(n.numero) >= 0; }) && !!bloccoNumeri.querySelector('a[href="tel:112"]'), "il piano mostra i numeri utili, con il 112 chiamabile");
   const foglioVuoto = document.getElementById("pianoStampa").textContent;
   ok(/I miei segnali/.test(foglioVuoto) && /Chi chiamo/.test(foglioVuoto) && /Una ragione per chiamare/.test(foglioVuoto), "il foglio stampabile ha le cinque voci anche vuoto");
+  ok(numeriPiano.every(function (n) { return foglioVuoto.indexOf(n.numero) >= 0 && foglioVuoto.indexOf(n.nome) >= 0; }), "il foglio stampabile porta i numeri utili, anche vuoto");
   ok(!/respira|prova a|consiglio/i.test(foglioVuoto), "senza consigli già scritti");
 
   document.getElementById("pianoSegnali").value = "Dormo male e mi isolo";
@@ -2212,6 +2278,15 @@ setTimeout(async function () {
 
   if (storageVero === undefined) delete window.navigator.storage;
   else Object.defineProperty(window.navigator, "storage", { configurable: true, value: storageVero });
+
+  // Se la scheda è la prima pagina aperta non c'è nessun cambio di rotta che
+  // possa chiudere il benvenuto: non deve proprio nascere, o coprirebbe il
+  // campo appena mostrato.
+  document.querySelectorAll(".welcome-panel").forEach(function (p) { p.remove(); });
+  window.sessionStorage.clear();
+  window.location.hash = "#/scheda";
+  window.eval(fs.readFileSync(path.join(root, "assets/js/app-welcome.js"), "utf8"));
+  ok(!document.querySelector(".welcome-panel"), "con la scheda come prima pagina il benvenuto non si apre");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {

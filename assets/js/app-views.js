@@ -223,6 +223,13 @@
     const piano = A.readJSON("pianoSicurezza", null) || {};
     const contatti = Array.isArray(piano.contatti) ? piano.contatti : [];
     const valore = function (v) { return v == null ? "" : String(v); };
+    // I numeri di servizio vengono dall'unica fonte della pagina Sicurezza:
+    // non si ricopiano qui, così un numero corretto vale per entrambe.
+    const numeri = (NP.data.sicurezza && NP.data.sicurezza.numeri) || [];
+    const numeriStampa = '<section class="piano-voce piano-numeri-voce"><h2>Numeri utili</h2><ul class="piano-numeri">' +
+      numeri.map(function (n) {
+        return '<li><strong>' + esc(n.numero) + '</strong><span>' + esc(n.nome) + '</span></li>';
+      }).join("") + "</ul></section>";
 
     const campo = function (id, titolo, aiuto, testo, righe) {
       return '<div class="piano-campo"><label class="field-label" for="' + id + '">' + titolo + '</label>' +
@@ -255,7 +262,8 @@
               '<span class="piano-riga">' + esc(valore(x.tel)) + '</span></li>';
           }).join("") + "</ul></section>" +
         voceStampa("Come rendo l'ambiente più sicuro", p.ambiente) +
-        voceStampa("Una ragione per chiamare", p.ragione);
+        voceStampa("Una ragione per chiamare", p.ragione) +
+        numeriStampa;
     };
 
     A.setTitle("Il mio piano di sicurezza");
@@ -264,6 +272,13 @@
         '<p class="lead">Cinque cose scritte da te, da rileggere quando è difficile decidere. Il programma non aggiunge consigli: i campi restano come li lasci.</p>' +
         '<p class="mt-1 mb-0"><a class="chip" href="#/sicurezza">Torna a Sicurezza</a></p></div>' +
       '<div class="callout info no-print"><p><strong>Resta su questo dispositivo.</strong> Il piano si salva qui, viaggia nel backup e non viene inviato a nessuno. Se c\'è un pericolo immediato, chiama il <strong>112</strong>.</p></div>' +
+      '<div class="card mt-2 piano-numeri-scheda no-print" id="pianoNumeri">' +
+        '<h2 class="h-sub">Numeri utili</h2>' +
+        '<p class="text-small muted mb-1">Da chiamare adesso, se serve. Sono gli stessi che trovi sul foglio stampato.</p>' +
+        '<ul class="piano-numeri">' + numeri.map(function (n) {
+          return '<li><a href="tel:' + esc(n.tel) + '"><strong>' + esc(n.numero) + '</strong></a><span>' + esc(n.nome) + '</span></li>';
+        }).join("") + "</ul>" +
+      "</div>" +
       '<form class="card mt-2 piano-modulo no-print" id="pianoForm">' +
         campo("pianoSegnali", "I miei segnali", "Come mi accorgo che le cose stanno peggiorando: sensazioni, pensieri, comportamenti.", valore(piano.segnali), 3) +
         campo("pianoPrimiMinuti", "Cosa faccio nei primi minuti", "I passi che ho deciso di fare, uno per riga.", valore(piano.primiMinuti), 4) +
@@ -891,7 +906,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.16 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.17 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

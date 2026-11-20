@@ -259,10 +259,10 @@
         return etichetta && /\(tua\)/.test(etichetta.textContent) && etichetta.textContent.toLowerCase().indexOf(cercato) >= 0;
       }
     );
-    if (!casella || casella.disabled) return false;
+    if (!casella || casella.disabled) return null;
     casella.checked = true;
     casella.dispatchEvent(new window.Event("change", { bubbles: true }));
-    return true;
+    return casella;
   }
 
   function punteggiRecenti(d) {
@@ -572,7 +572,15 @@
         if (esito.ok === false) { A.toast(esito.motivo, 5000); return; }
         A.toast("Domanda aggiunta al taccuino.");
         A.go("scheda");
-        selezionaDomandaScheda(esito.domanda.testo);
+        // Il campo appena usato sparisce con la vista: senza spostare il focus,
+        // chi usa la tastiera ripartirebbe dal body. Lo si porta sulla domanda
+        // appena scelta, che è anche la conferma di cosa è entrato nella scheda.
+        const scelta = selezionaDomandaScheda(esito.domanda.testo);
+        if (scelta) scelta.focus();
+        else {
+          const titolo = document.querySelector("#app h1");
+          if (titolo) { titolo.setAttribute("tabindex", "-1"); titolo.focus(); }
+        }
       });
       return;
     }

@@ -195,6 +195,14 @@ body.nuova-scheda .page.wrap { max-width: none; margin: 0; padding: 0; }
 .piano-riga { display: inline-block; min-width: 8rem; min-height: 1.2em; border-bottom: 1px solid #777; vertical-align: bottom; }
 .piano-contatti-stampa { list-style: none; padding: 0; margin: 0; }
 .piano-contatti-stampa li { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: .55rem; }
+/* I numeri di servizio stanno sul foglio e si possono chiamare dallo schermo:
+   due colonne per stare in una pagina, una sola sui telefoni stretti. */
+.piano-numeri { list-style: none; padding: 0; margin: .35rem 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: .35rem 1.1rem; }
+.piano-numeri li { display: flex; align-items: baseline; gap: .45rem; min-width: 0; }
+.piano-numeri strong { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.piano-numeri span { color: var(--text-soft, #4a5365); font-size: .88rem; }
+.piano-numeri a { color: inherit; text-decoration: underline; text-underline-offset: .15em; }
+@media (max-width: 560px) { .piano-numeri { grid-template-columns: 1fr; } }
 
 .skip-link {
   position: absolute;
@@ -1532,7 +1540,9 @@ html[data-theme="dark"] .exercise-steps li::before { color: #a7d8d2; }
   box-shadow: var(--ombra-alta);
   max-width: 900px;
   margin-inline: auto;
-  font-size: 14px;
+  /* Misura relativa alla radice: con il testo ingrandito («data-testo»)
+     cresce tutto il foglio insieme, senza che piccoli e titoli si invertano. */
+  font-size: .82rem;
   line-height: 1.55;
 }
 html[data-theme="dark"] .report-sheet { background: #fffdf8; color: #1b2333; }
@@ -1803,6 +1813,14 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   .summary-band { grid-template-columns: 1fr 1fr; }
 }
 
+/* Con il testo ingrandito su un telefono stretto l'etichetta «Menu» non ci
+   sta accanto al marchio e alle altre azioni, e faceva scorrere la pagina in
+   orizzontale. Resta il simbolo, e il pulsante conserva il suo nome. */
+@media (max-width: 420px) {
+  html[data-testo] .menu-label { display: none; }
+  html[data-testo] .menu-btn { padding: .5rem .55rem; }
+}
+
 @media (max-width: 620px) {
   body { font-size: 16px; }
   .wrap, .wrap-narrow { width: calc(100% - 1.6rem); }
@@ -1821,7 +1839,7 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   .tl-item { grid-template-columns: 1fr; }
   .tl-num { width: 36px; height: 36px; font-size: 1rem; }
   .footer-grid { grid-template-columns: 1fr; }
-  .report-sheet { padding: 1.2rem; font-size: 13px; }
+  .report-sheet { padding: 1.2rem; }
   .report-sheet .report-head { flex-direction: column; gap: .6rem; }
   .report-sheet .report-id { text-align: left; }
   .report-sheet .kv { grid-template-columns: 1fr; gap: .1rem; }
@@ -1858,7 +1876,10 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   @page { margin: 16mm 15mm; }
 
   html, body { background: #fff !important; color: #111 !important; font-size: 11.5pt; }
-  .site-header, .site-footer, .avviso-discreto, .report-actions, .toast, .skip-link, .no-print { display: none !important; }
+  /* Sulla carta la misura è fissa in punti: il testo ingrandito per lo schermo
+     non deve gonfiare testata e piè di pagina né spingere la scheda fuori margine. */
+  html[data-testo] { font-size: 11.5pt; }
+  .site-header, .site-footer, .avviso-discreto, .avviso-aggiornamento, .report-actions, .toast, .skip-link, .no-print { display: none !important; }
   .app { padding: 0 !important; }
   .wrap, .wrap-narrow { width: 100% !important; margin: 0 !important; }
   .page-head { padding: 0 0 .6rem !important; }
@@ -1885,6 +1906,16 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   .scheda-sheet h2 { font-size: 11pt; margin: .7rem 0 .2rem; }
   .scheda-sheet p, .scheda-sheet li { font-size: 9.6pt; line-height: 1.32; }
   .scheda-sheet .report-head { padding-bottom: .5rem; margin-bottom: .6rem; }
+  /* Il piano resta una pagina sola: i numeri utili entrano in coda al foglio
+     senza allargare i margini né rimpicciolire il testo delle voci. */
+  .piano-stampa .piano-voce { margin-bottom: .7rem; }
+  /* Con il tema scuro i titoli delle voci ereditano il chiaro dello schermo:
+     sulla carta quasi spariscono. Il foglio è sempre nero su bianco. */
+  .piano-stampa h2, .piano-stampa .piano-testo, .piano-stampa strong { color: #111 !important; }
+  .piano-stampa .piano-riga { border-bottom-color: #555 !important; }
+  .piano-stampa .piano-numeri { grid-template-columns: 1fr 1fr; gap: .1rem .8rem; }
+  .piano-stampa .piano-numeri li { font-size: 9.5pt; }
+  .piano-stampa .piano-numeri span { color: #333 !important; font-size: 9pt; }
 
   .card, .callout, .quiz-card, .intake-card { break-inside: avoid; box-shadow: none !important; }
 

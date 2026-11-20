@@ -13,11 +13,21 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.16";
+  const VERSIONE = "1.7.17";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.17",
+      data: "20 novembre 2026",
+      titolo: "Il piano di sicurezza porta con sé i numeri utili",
+      punti: [
+        "Il piano di sicurezza ora porta i numeri di servizio: 112, Telefono Amico, Samaritans, Telefono Azzurro, 1522 e 114. Sono sul foglio stampato anche quando i campi sono vuoti, e a schermo si toccano per chiamare.",
+        "Sulla carta il piano si legge anche partendo dal tema scuro: titoli, righe e numeri restano neri su bianco, e una barra di aggiornamento aperta non finisce più in mezzo al foglio.",
+        "Nella scheda il benvenuto non copre più il campo e dopo l'invio il focus va sulla domanda appena aggiunta; la misura del testo scelta vale anche in stampa, e su uno schermo stretto il menu resta compatto."
+      ]
+    },
     {
       v: "1.7.16",
       data: "20 novembre 2026",

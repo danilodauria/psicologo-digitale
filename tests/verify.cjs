@@ -247,6 +247,7 @@ ok(/params\[0\] === "piano"/.test(pianoVista) && /id="pianoForm"/.test(pianoVist
 ok(/pianoNome' \+ i/.test(pianoVista) && /pianoTel' \+ i/.test(pianoVista), "il piano ha i contatti da chiamare");
 ok(/A\.writeJSON\("pianoSicurezza", dati\)/.test(pianoVista), "il piano si salva in locale");
 ok(/solo-stampa piano-stampa/.test(pianoVista) && /window\.print\(\)/.test(pianoVista), "il piano si stampa, con un foglio suo");
+ok(/Numeri utili/.test(pianoVista) && /NP\.data\.sicurezza\.numeri/.test(pianoVista), "il foglio del piano porta i numeri utili, presi dalla pagina Sicurezza");
 ok(/pianoSicurezza: readJSON\("pianoSicurezza", null\)/.test(read("assets/js/app.js")), "il piano entra nel backup");
 ok(/writeJSON\("pianoSicurezza", d\.pianoSicurezza/.test(read("assets/js/app.js")), "e torna al suo posto con un ripristino");
 ok(/pianoHaContenuto/.test(read("assets/js/app.js")) && /pianoSicurezza: "Piano di sicurezza"/.test(read("assets/js/app.js")), "il piano conta come dato e ha un nome nello spazio occupato");

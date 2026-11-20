@@ -121,13 +121,13 @@ def casella():
 def stili_prove():
     s = stili()
     s["th"] = ParagraphStyle(
-        "th", fontName="Helvetica-Bold", fontSize=8.6, leading=11, textColor=INDACO
+        "th", fontName="Helvetica-Bold", fontSize=8.5, leading=10.5, textColor=INDACO
     )
-    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.5, leading=9.0)
+    s["cella"] = ParagraphStyle("cella", fontName="Helvetica", fontSize=8.4, leading=8.7)
     # Il foglio è cresciuto con le prove, non con l'aria fra i paragrafi: le
     # sezioni restano staccate, ma senza lasciare una pagina quasi vuota in coda.
-    s["h2"] = ParagraphStyle("h2", parent=s["h2"], spaceBefore=3, spaceAfter=2)
-    s["p"] = ParagraphStyle("p", parent=s["p"], leading=12.2, spaceAfter=2)
+    s["h2"] = ParagraphStyle("h2", parent=s["h2"], spaceBefore=2, spaceAfter=1.5)
+    s["p"] = ParagraphStyle("p", parent=s["p"], leading=11.8, spaceAfter=2)
     return s
 
 
@@ -158,8 +158,8 @@ def tabella(righe, s):
                 ("ALIGN", (0, 0), (0, -1), "CENTER"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 4),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                ("TOPPADDING", (0, 0), (-1, -1), 0.8),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 0.8),
+                ("TOPPADDING", (0, 0), (-1, -1), 0.5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 0.5),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
             ]
         )
@@ -197,7 +197,7 @@ def impagina(markdown, s):
         nonlocal tabella_righe
         if tabella_righe:
             elementi.append(tabella(tabella_righe, s))
-            elementi.append(Spacer(1, 4))
+            elementi.append(Spacer(1, 3))
             tabella_righe = []
 
     def chiudi_elenco():
