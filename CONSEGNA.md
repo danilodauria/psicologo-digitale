@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.17**, 20 novembre 2026.
+Ultimo aggiornamento: versione **1.7.18**, 25 novembre 2026.
 
 ---
 
@@ -40,7 +40,7 @@ Punti fermi dell'impianto:
 
 ## 3. Invarianti da non rompere
 
-1. **Nessun dato esce dal dispositivo.** Niente richieste di rete con dati della persona, niente analytics, niente chiavi. L'unica chiamata di rete opzionale è verso Ollama su `127.0.0.1:11434`, e solo se l'utente la attiva.
+1. **Nessun dato esce dal dispositivo.** Niente richieste di rete con dati della persona, niente analytics, niente chiavi. L'unica chiamata di rete opzionale è verso Ollama su `127.0.0.1:11434`, e solo se l'utente la attiva. `scripts/controlla-rete.cjs` lo verifica a ogni `npm test`: legge le pagine, il service worker e tutto `assets/`, e diventa rosso alla prima chiamata che non sia quella.
 2. **Nessun segreto nel repository.** Il token di pubblicazione vive nella configurazione git locale, non nei file. Non scrivere mai un token in un comando che finisce in un log o in un file versionato.
 3. **I workflow si toccano solo dall'integrazione GitHub.** Il token di push non ha lo scope `workflow`: un commit che modifica `.github/workflows/` viene rifiutato. Prima di ogni commit: `git reset -q .github/workflows`. Se serve cambiare una GitHub Action, si fa dall'integrazione GitHub, non da qui.
 4. **La versione è una sola, nei file che la dichiarano.** `package.json`, `package-lock.json`, `desktop/package.json`, `desktop/package-lock.json`, `sw.js` (`psd-vX.Y.Z`), `come-installare.html`, `scheda-rapida.html`, il piè di pagina in `assets/js/app-views.js`, più `VERSIONE` in `assets/js/app-versioni.js`. Un test confronta `VERSIONE` con `package.json`: se restano indietro, la build è rossa. I due lockfile si allineano con `npm install --package-lock-only`, mai con una sostituzione di testo, e `tests/verify.cjs` controlla per entrambi che dichiarino la stessa versione del proprio `package.json` e che ogni pacchetto risolto corrisponda alla versione che dichiara: il lockfile principale era rimasto a 1.3.37 mentre il programma era alla 1.4.2, perché solo quello desktop era controllato.
@@ -126,10 +126,11 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 719 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande, sua selezione nella relazione e nella scheda, campo per scriverne una direttamente nella scheda, primo accesso senza dati con benvenuto che non copre il campo e focus sulla domanda appena scritta, spunta automatica partendo da zero spunte, numeri utili sul piano a schermo e sul foglio |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 780 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande, sua selezione nella relazione e nella scheda, campo per scriverne una direttamente nella scheda, primo accesso senza dati con benvenuto che non copre il campo e focus sulla domanda appena scritta, spunta automatica partendo da zero spunte, numeri utili sul piano a schermo e sul foglio, fascicolo unico (cinque parti in un PDF solo, senza aggiungere dati) |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
+| `scripts/controlla-rete.cjs` | Nessuna chiamata di rete, WebSocket, beacon, worker esterno o risorsa caricata da un altro sito nelle pagine e in `assets/`: l'unica eccezione è Ollama su `127.0.0.1:11434` |
 | `scripts/controlla-impronte.cjs` | Le impronte SHA-256 dichiarate corrispondono ai file |
 | `scripts/controlla-archivi.cjs` | Gli archivi scaricabili si aprono e contengono quello che devono |
 | `scripts/controlla-dipendenze.cjs` | Nessuna dipendenza non dichiarata o non usata |
@@ -138,7 +139,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 
 Cosa **non** coprono: il comportamento reale dei browser (nessun test end-to-end), la sintesi vocale vera (nei test è simulata), il service worker in condizioni di rete vere, l'aspetto visivo. Se cambi il CSS, guarda la pagina: i test non la vedono. Il piano di sicurezza, la scheda da portare e il campo per scrivere le domande sono stati controllati in un browser vero a larghezza telefono e in stampa A4 nella 1.7.17, anche con il tema scuro, ma resta una verifica da rifare quando cambiano i fogli o i loro stili.
 
-Numeri aggiornati a ogni `npm test`: 22 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
+Numeri aggiornati a ogni `npm test`: 23 viste, 30 pagine di singoli elementi, 3 pagine del sito (`index.html`, `come-installare.html`, `scheda-rapida.html`).
 
 ---
 

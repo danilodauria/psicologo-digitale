@@ -372,9 +372,11 @@ html[data-theme="dark"] .main-nav > a.is-active { color: #dce6fb; }
   background: var(--surface);
   color: var(--text-soft);
   cursor: pointer;
+  text-decoration: none;
   transition: background .18s ease, color .18s ease, border-color .18s ease;
 }
-.icon-btn:hover { background: var(--surface-2); color: var(--text); border-color: var(--bordo-forte); }
+.icon-btn:hover,
+.icon-btn.is-active { background: var(--surface-2); color: var(--text); border-color: var(--bordo-forte); }
 .icon-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .icon-btn[aria-pressed="false"] .wave { opacity: .18; }
 .icon-btn[aria-pressed="false"] { color: var(--text-faint); }
@@ -1813,12 +1815,28 @@ html[data-theme="dark"] .confronto-barra { background: #1d2b45; }
   .summary-band { grid-template-columns: 1fr 1fr; }
 }
 
-/* Con il testo ingrandito su un telefono stretto l'etichetta «Menu» non ci
-   sta accanto al marchio e alle altre azioni, e faceva scorrere la pagina in
-   orizzontale. Resta il simbolo, e il pulsante conserva il suo nome. */
+/* Su un telefono stretto il marchio, la ricerca, la voce, il tema e il menu
+   non stanno sulla stessa riga: le icone si stringono un poco. */
 @media (max-width: 420px) {
-  html[data-testo] .menu-label { display: none; }
-  html[data-testo] .menu-btn { padding: .5rem .55rem; }
+  .header-actions { gap: .25rem; }
+  .header-actions .icon-btn { width: 36px; height: 36px; }
+}
+
+/* Sotto i 380 px nemmeno le icone strette bastano accanto all'etichetta
+   «Menu»: resta il simbolo, e il pulsante conserva il suo nome per chi non
+   vede lo schermo. */
+@media (max-width: 380px) {
+  .menu-label { display: none; }
+  .menu-btn { padding: .5rem .55rem; }
+}
+
+/* Sotto i 360 px nemmeno le icone strette bastano: si riduce lo spazio fra il
+   marchio e le azioni, senza togliere nessun pulsante dalla testata. */
+@media (max-width: 359px) {
+  .header-inner { gap: .6rem; }
+  .header-actions { gap: .18rem; }
+  .header-actions .icon-btn { width: 33px; height: 33px; }
+  .header-actions .icon-btn svg { width: 17px; height: 17px; }
 }
 
 @media (max-width: 620px) {

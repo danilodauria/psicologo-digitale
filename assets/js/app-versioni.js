@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.17";
+  const VERSIONE = "1.7.18";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.18",
+      data: "25 novembre 2026",
+      titolo: "Cercare dalla testata, provare un backup, portare un fascicolo solo",
+      punti: [
+        "La ricerca ha un pulsante nella testata, accanto alla voce e al tema: si raggiunge con un tocco anche dal telefono, e resta acceso quando sei nella pagina Cerca.",
+        "In Licenze, «Prova un backup» apre un file scelto e racconta cosa contiene e cosa cambierebbe, senza applicarlo. Funziona anche con i backup protetti da password, e un file di una versione futura lo dice senza toccare i dati.",
+        "Dalla pagina Relazione si apre il fascicolo completo: un solo PDF, o una sola stampa, con relazione, scheda da portare, piano di sicurezza, confronto dei periodi a sette e trenta giorni e domande scelte. Non aggiunge dati: mette in fila quelli che ci sono già.",
+        "Un controllo automatico verifica a ogni pubblicazione che nessuna parte del programma parli con la rete: l'unica eccezione resta Ollama, sul tuo computer, e solo se lo colleghi."
+      ]
+    },
     {
       v: "1.7.17",
       data: "20 novembre 2026",

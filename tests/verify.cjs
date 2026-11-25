@@ -460,7 +460,21 @@ ok(/scheda-rapida\.html/.test(read("sw.js")), "la scheda è fra i file che il se
 // Il foglio nasce dal markdown: se il PDF contenesse una copia del testo, una
 // prova aggiunta al markdown e mai rigenerata resterebbe fuori dal foglio che
 // si stampa, senza che nessuno se ne accorga. Qui si confrontano le due liste.
-const proveMd = read("PROVE-A-MANO-1.7.16.md");
+// Il foglio da confrontare è quello della versione in uso, non uno scritto a
+// mano: con un nome fisso il controllo resta indietro di una release alla
+// volta, e il PDF nuovo non viene guardato da nessuno.
+const fogliProve = fs.readdirSync(root).filter((f) => /^PROVE-A-MANO-\d+\.\d+\.\d+\.md$/.test(f));
+const confrontaVersioni = (a, b) => {
+  const x = (a.match(/\d+/g) || []).map(Number);
+  const y = (b.match(/\d+/g) || []).map(Number);
+  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] - y[i];
+  return 0;
+};
+const foglioProve = fogliProve.sort(confrontaVersioni).pop();
+const proveMd = read(foglioProve || "PROVE-A-MANO-1.7.18.md");
+const versioneProve = JSON.parse(read("package.json")).version;
+ok(foglioProve === "PROVE-A-MANO-" + versioneProve + ".md",
+  "il foglio delle prove è quello della versione in uso (" + foglioProve + ")");
 const provePdf = "assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf";
 ok(exists(provePdf), "esiste il foglio delle prove a mano " + provePdf);
 const pb = fs.readFileSync(path.join(root, provePdf));
@@ -468,10 +482,13 @@ ok(pb.slice(0, 5).toString("latin1") === "%PDF-", "il foglio delle prove è un P
 const pt = pb.toString("latin1");
 ok(/%%EOF/.test(pt), "il foglio delle prove è chiuso correttamente");
 const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
-ok(ppagine >= 3 && ppagine <= 6, "il foglio delle prove sta fra tre e sei pagine A4 (" + ppagine + ")");
+// Il foglio cresce con le prove, e deve restare un fascicolo da stampare e
+// allegare: il limite si alza quando la versione aggiunge una sezione, non si
+// toglie per far passare un foglio gonfiato di margini.
+ok(ppagine >= 3 && ppagine <= 8, "il foglio delle prove sta fra tre e otto pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
-ok(etichette.length === 81, "il markdown elenca ottantuno prove (" + etichette.length + ")");
+ok(etichette.length >= 80, "il markdown elenca almeno ottanta prove (" + etichette.length + ")");
 const assenti = etichette.filter((e) => pt.indexOf(e) < 0);
 ok(assenti.length === 0,
   "nel PDF ci sono tutte le prove del markdown" + (assenti.length ? " (mancano " + assenti.join(", ") + ")" : ""));

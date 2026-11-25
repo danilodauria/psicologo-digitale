@@ -26,10 +26,38 @@
           '<span class="confronto-barra copia"><span style="width:' + larghezza(q.copiaPunti).toFixed(1) + '%"></span></span></div>';
     }).join("") + "</div>";
   }
+  // Le righe del confronto sono le stesse per una copia automatica e per un
+  // file scelto: se stessero in due punti, una delle due anteprime tacerebbe
+  // su qualcosa che l'altra racconta.
+  function htmlVociConfronto(voci) {
+    return '<ul class="text-small">' + voci.map(function (v) {
+      const riga = esc(v.cosa) + ": da " + v.ora + " a " + v.copia;
+      if (v.questionari && v.questionari.length) {
+        return "<li>" + riga + " — punteggi:" +
+          '<ul class="text-small">' + v.questionari.map(function (q) {
+            return "<li>" + esc(q.titolo) + ": oggi " + esc(q.oggi) + ", nella copia " + esc(q.copia) + "</li>";
+          }).join("") + "</ul>" + graficoConfronto(v.questionari) + "</li>";
+      }
+      if (!v.perse || !v.perse.length) return "<li>" + riga + ".</li>";
+      const mostrate = v.perse.slice(0, 5);
+      const resto = v.perse.length - mostrate.length;
+      return "<li>" + riga +
+        (v.perse.length === 1 ? " — mancherebbe questa voce:" : " — mancherebbero " + v.perse.length + " voci:") +
+        '<ul class="text-small">' + mostrate.map(function (p) {
+          return "<li>" + esc(A.fmtDate(p.data)) + " — " + esc(p.testo) + "</li>";
+        }).join("") +
+        (resto > 0 ? "<li>e altre " + resto + " voci.</li>" : "") +
+        "</ul></li>";
+    }).join("") + "</ul>";
+  }
+
   const state = A.state;
   // La busta cifrata resta qui fra la scelta del file e la password: è solo
   // testo cifrato, e serve a non rileggere il file ogni volta che si sbaglia.
   let backupCifratoInAttesa = null;
+  let backupCifratoNome = "";
+  // Cosa fare quando la password è giusta: importare il file o solo guardarlo.
+  let sbloccoDopo = "importa";
 
   /* ------------------------------------------------------------------ Manuale */
 
@@ -614,6 +642,9 @@
   // Quale copia si sta guardando prima di ripristinarla: sta qui perché la
   // vista si ridisegna a ogni scelta, e la scelta deve restare.
   let copiaInEsame = null;
+  // Un backup scelto da un file e guardato senza applicarlo: anche questa
+  // scelta sopravvive al ridisegno della pagina, come quella della copia.
+  let backupInEsame = null;
 
   views.licenze = function () {
     A.setTitle("Licenze e progetto");
@@ -656,8 +687,9 @@
       })() +
       '<div class="btn-row mt-2"><button type="button" class="btn btn-soft btn-sm" id="backupBtn">' + A.icon("download") + "Esporta backup in chiaro</button>" +
         '<label class="btn btn-ghost btn-sm" for="importFile">' + A.icon("refresh") + 'Importa backup</label><input type="file" id="importFile" accept="application/json,.json" hidden>' +
+        '<label class="btn btn-ghost btn-sm" for="provaFile">' + A.icon("search") + 'Prova un backup</label><input type="file" id="provaFile" accept="application/json,.json" hidden>' +
         '<button type="button" class="btn btn-danger btn-sm" id="resetBtn">Cancella tutti i dati</button></div>' +
-        '<p class="text-small muted mt-1 mb-0">Il backup in chiaro è un file JSON leggibile: scegli tu se basta, o se proteggerlo qui sotto. Un backup cifrato si importa dallo stesso pulsante.</p>' +
+        '<p class="text-small muted mt-1 mb-0">Il backup in chiaro è un file JSON leggibile: scegli tu se basta, o se proteggerlo qui sotto. Un backup cifrato si importa dallo stesso pulsante. «Prova un backup» lo apre e racconta cosa contiene e cosa cambierebbe, senza applicarlo.</p>' +
         '<div class="callout info mt-2" id="backupSblocco" hidden><p><strong>Questo backup è protetto.</strong> Scrivi la password scelta quando l\'hai esportato: non è stata salvata, serve solo ora per aprirlo.</p>' +
           '<form id="backupSbloccoForm"><div class="form-field"><label class="field-label" for="backupSbloccoPassword">Password del backup</label>' +
             '<input class="input" type="password" id="backupSbloccoPassword" autocomplete="current-password"></div>' +
@@ -832,31 +864,30 @@
             if (c) {
               html += '<div class="callout info" id="copiaAnteprima"><p><strong>Copia del ' + esc(A.fmtDateTime(c.quando)) + ".</strong> " +
                 (c.voci.length ? "Rispetto a oggi cambierebbe:" : "Rispetto a oggi non cambierebbe nulla.") + "</p>" +
-                (c.voci.length ? '<ul class="text-small">' + c.voci.map(function (v) {
-                  const riga = esc(v.cosa) + ": da " + v.ora + " a " + v.copia;
-                  if (v.questionari && v.questionari.length) {
-                    return "<li>" + riga + " — punteggi:" +
-                      '<ul class="text-small">' + v.questionari.map(function (q) {
-                        return "<li>" + esc(q.titolo) + ": oggi " + esc(q.oggi) + ", nella copia " + esc(q.copia) + "</li>";
-                      }).join("") + "</ul>" + graficoConfronto(v.questionari) + "</li>";
-                  }
-                  if (!v.perse || !v.perse.length) return "<li>" + riga + ".</li>";
-                  const mostrate = v.perse.slice(0, 5);
-                  const resto = v.perse.length - mostrate.length;
-                  return "<li>" + riga +
-                    (v.perse.length === 1 ? " — mancherebbe questa voce:" : " — mancherebbero " + v.perse.length + " voci:") +
-                    '<ul class="text-small">' + mostrate.map(function (p) {
-                      return "<li>" + esc(A.fmtDate(p.data)) + " — " + esc(p.testo) + "</li>";
-                    }).join("") +
-                    (resto > 0 ? "<li>e altre " + resto + " voci.</li>" : "") +
-                    "</ul></li>";
-                }).join("") + "</ul>" : "") +
+                (c.voci.length ? htmlVociConfronto(c.voci) : "") +
                 '<p class="text-small muted">Prima di sostituire, i dati di adesso diventano una copia: se il ripristino non convince, si torna indietro ripristinando quella. Tema e numero di copie non vengono toccati.</p>' +
                 '<div class="btn-row">' +
                   '<button type="button" class="btn btn-primary btn-sm" id="copiaConferma">Ripristina questa copia</button>' +
                   '<button type="button" class="btn btn-ghost btn-sm" id="copiaAnnulla">Annulla</button>' +
                 "</div></div>";
             }
+          }
+          // Un backup guardato e non applicato: stessa anteprima del ripristino,
+          // ma senza il pulsante che sostituisce i dati.
+          if (backupInEsame) {
+            const b = backupInEsame;
+            const c = b.confronto;
+            html += '<div class="callout info" id="backupAnteprima"><p><strong>Backup «' + esc(b.nome) + '".</strong>' +
+              (b.migrato ? " È in un formato precedente: se lo importassi verrebbe aggiornato al formato attuale." : "") + "</p>" +
+              (b.contenuto.length
+                ? '<p class="text-small mb-0"><strong>Il file contiene:</strong></p><ul class="text-small">' +
+                  b.contenuto.map(function (v) { return "<li>" + esc(v.cosa) + ": " + v.quanti + "</li>"; }).join("") + "</ul>"
+                : '<p class="text-small muted">Il file non contiene dati personali: è la struttura vuota del programma.</p>') +
+              (c ? '<p class="text-small mb-0"><strong>' +
+                (c.voci.length ? "Rispetto ai dati di oggi cambierebbe:" : "Rispetto ai dati di oggi non cambierebbe nulla.") +
+                "</strong></p>" + (c.voci.length ? htmlVociConfronto(c.voci) : "") : "") +
+              '<p class="text-small muted">Nessun dato è stato toccato: qui si guarda soltanto. Per applicarlo si usa «Importa backup», che chiede conferma.</p>' +
+              '<div class="btn-row"><button type="button" class="btn btn-ghost btn-sm" id="backupAnteprimaChiudi">Chiudi l\'anteprima</button></div></div>';
           }
           return html;
         })() +
@@ -906,7 +937,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.17 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.18 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -958,14 +989,28 @@
       if (!confirm("Importare il backup? I dati attuali verranno sostituiti.")) return false;
       // Una sola strada per rimettere a posto i dati: import da file, ripristino
       // di una copia e annullamento non possono divergere sui campi toccati.
+      backupInEsame = null;
       A.applicaBackup(esito.dati);
       A.toast("Backup importato" + (esito.migrato ? " e aggiornato al formato attuale." : "."));
       A.render();
       return true;
     };
 
-    const mostraSblocco = function (busta, nome) {
+    // Un file scelto per guardarlo: si completa come farebbe l'import, si
+    // confronta con i dati di oggi e si mette in pagina. Nessuna scrittura.
+    const mostraProva = function (letto, nome) {
+      const esito = A.provaBackup(letto);
+      if (esito.errore) { A.toast(esito.errore, 8000); return false; }
+      copiaInEsame = null;
+      backupInEsame = { nome: nome, contenuto: esito.contenuto, confronto: esito.confronto, migrato: esito.migrato };
+      A.render();
+      return true;
+    };
+
+    const mostraSblocco = function (busta, nome, dopo) {
       backupCifratoInAttesa = busta;
+      backupCifratoNome = nome;
+      sbloccoDopo = dopo || "importa";
       const box = document.getElementById("backupSblocco");
       if (!box) return;
       box.hidden = false;
@@ -982,6 +1027,7 @@
       const box = document.getElementById("backupSblocco");
       if (box) box.hidden = true;
       backupCifratoInAttesa = null;
+      sbloccoDopo = "importa";
       const reader = new FileReader();
       reader.onload = function () {
         try {
@@ -989,6 +1035,30 @@
           if (!letto || letto.app !== "Psicologo Digitale") throw new Error("Formato non valido");
           if (A.isBackupCifrato(letto)) { mostraSblocco(letto, file.name); return; }
           importa(letto);
+        } catch (e) {
+          alert("Il file non sembra un backup valido di Psicologo Digitale.");
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    });
+
+    // «Prova un backup»: stesso file, stessa lettura, ma dopo si guarda e basta.
+    // La strada della password è la stessa: cambia solo cosa si fa alla fine.
+    const prova = document.getElementById("provaFile");
+    if (prova) prova.addEventListener("change", function () {
+      const file = prova.files && prova.files[0];
+      if (!file) return;
+      const box = document.getElementById("backupSblocco");
+      if (box) box.hidden = true;
+      backupCifratoInAttesa = null;
+      sbloccoDopo = "importa";
+      const reader = new FileReader();
+      reader.onload = function () {
+        try {
+          const letto = JSON.parse(reader.result);
+          if (!letto || letto.app !== "Psicologo Digitale") throw new Error("Formato non valido");
+          if (A.isBackupCifrato(letto)) { mostraSblocco(letto, file.name, "prova"); return; }
+          mostraProva(letto, file.name);
         } catch (e) {
           alert("Il file non sembra un backup valido di Psicologo Digitale.");
         }
@@ -1011,7 +1081,8 @@
         pwd.value = "";
         const box = document.getElementById("backupSblocco");
         if (box) box.hidden = true;
-        importa(dati);
+        if (sbloccoDopo === "prova") mostraProva(dati, backupCifratoNome);
+        else importa(dati);
       }).catch(function (err) {
         if (stato) stato.textContent = err && err.message ? err.message : "Password errata o file danneggiato.";
         if (pwd) { pwd.focus(); pwd.select(); }
@@ -1021,6 +1092,7 @@
     const annullaSblocco = document.getElementById("backupSbloccoAnnulla");
     if (annullaSblocco) annullaSblocco.addEventListener("click", function () {
       backupCifratoInAttesa = null;
+      sbloccoDopo = "importa";
       const box = document.getElementById("backupSblocco");
       if (box) box.hidden = true;
       const pwd = document.getElementById("backupSbloccoPassword");
@@ -1077,6 +1149,7 @@
     document.querySelectorAll("[data-copia]").forEach(function (b) {
       b.addEventListener("click", function () {
         copiaInEsame = Number(b.getAttribute("data-copia"));
+        backupInEsame = null;
         A.render();
       });
     });
@@ -1118,6 +1191,14 @@
     const annullaCopia = document.getElementById("copiaAnnulla");
     if (annullaCopia) annullaCopia.addEventListener("click", function () {
       copiaInEsame = null;
+      A.render();
+    });
+
+    const chiudiBackup = document.getElementById("backupAnteprimaChiudi");
+    if (chiudiBackup) chiudiBackup.addEventListener("click", function () {
+      backupInEsame = null;
+      const campo = document.getElementById("provaFile");
+      if (campo) campo.value = "";
       A.render();
     });
   };

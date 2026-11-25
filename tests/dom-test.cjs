@@ -316,6 +316,75 @@ ok(pdfText.indexOf("Psicologo Digitale") >= 0, "il PDF contiene l'intestazione d
 ok(pdfText.indexOf("/Type /Page") >= 0, "il PDF contiene almeno una pagina");
 ok(pdfText.indexOf("%%EOF") > 0, "il PDF è chiuso correttamente");
 
+/* Fascicolo unico --------------------------------------------------------- */
+
+console.log("\nFascicolo unico");
+
+// Il piano di sicurezza è una delle cinque parti: si mette un valore
+// temporaneo per vedere che il fascicolo legge quello e non un testo di
+// esempio, e si toglie subito dopo per non lasciare dati alle sezioni che
+// vengono più avanti.
+const pianoPrimaDelFascicolo = NP.app.readJSON("pianoSicurezza", null);
+NP.app.writeJSON("pianoSicurezza", {
+  segnali: "non dormo da tre notti",
+  primiMinuti: "esco e chiamo mia sorella",
+  contatti: [{ nome: "Sara", tel: "333 0000000" }],
+  ambiente: "lascio le medicine a Sara",
+  ragione: "voglio esserci domani"
+});
+const domandePrimaFascicolo = JSON.stringify(NP.app.state.domandePersonali);
+const diarioPrimaFascicolo = JSON.stringify(NP.app.state.diary);
+const ultimoBackupPrimaFascicolo = NP.app.ultimoBackup();
+
+navigate("#/fascicolo");
+ok(!!document.getElementById("fascicoloSheet"), "il fascicolo si apre con il suo foglio");
+const corpoFascicolo = document.getElementById("fascicoloBody").textContent;
+ok(/Parte 1 — Relazione preliminare/.test(corpoFascicolo), "contiene la relazione");
+ok(/Parte 2 — Scheda da portare/.test(corpoFascicolo), "contiene la scheda da portare");
+ok(/Parte 3 — Piano di sicurezza/.test(corpoFascicolo), "contiene il piano di sicurezza");
+ok(/non dormo da tre notti/.test(corpoFascicolo) && /Sara/.test(corpoFascicolo), "con quello che la persona ci ha scritto, non un testo di esempio");
+ok(/Parte 4 — Confronto dei periodi/.test(corpoFascicolo), "contiene il confronto dei periodi");
+ok(/Ultimi 7 giorni/.test(corpoFascicolo) && /Ultimi 30 giorni/.test(corpoFascicolo), "con i due periodi, non uno solo");
+ok(/Parte 5 — Domande scelte per il colloquio/.test(corpoFascicolo), "contiene le domande scelte");
+ok(/Numeri utili/.test(corpoFascicolo) && /112/.test(corpoFascicolo), "e i numeri di servizio, presi dall'unica fonte della pagina Sicurezza");
+ok(/Non è una diagnosi/.test(document.getElementById("fascicoloSheet").textContent), "il foglio dichiara che non è una diagnosi");
+
+const fascicoloPdf = NP.reportPdf.fascicolo();
+ok(fascicoloPdf && fascicoloPdf.length > 3000, "il fascicolo si costruisce come un solo PDF (" + (fascicoloPdf ? fascicoloPdf.length : 0) + " byte)");
+const fascicoloTesto = fascicoloPdf ? Buffer.from(fascicoloPdf).toString("latin1") : "";
+ok(fascicoloTesto.indexOf("%PDF-1.4") === 0, "il file è un PDF 1.4");
+ok((fascicoloTesto.match(/\/Type \/Page/g) || []).length >= 2, "e occupa più di una pagina: cinque parti non stanno su un foglio");
+ok(fascicoloTesto.indexOf("FASCICOLO UNICO") >= 0, "l'intestazione dice che è un fascicolo unico");
+ok(fascicoloTesto.indexOf("Piano di sicurezza") >= 0, "contiene il piano anche nel PDF");
+ok(fascicoloTesto.indexOf("Confronto dei periodi") >= 0, "e il confronto dei periodi");
+ok(fascicoloTesto.indexOf("%%EOF") > 0, "ed è chiuso correttamente");
+
+// I due comandi: uno scarica, l'altro stampa. Nessuno dei due cambia i dati.
+const clickVeroFascicolo = window.HTMLAnchorElement.prototype.click;
+const creaUrlVeroFascicolo = window.URL.createObjectURL;
+let scaricatiFascicolo = 0;
+window.HTMLAnchorElement.prototype.click = function () { scaricatiFascicolo++; };
+window.URL.createObjectURL = function () { return "blob:fascicolo"; };
+document.getElementById("fascicoloPdfBtn").click();
+ok(scaricatiFascicolo === 1, "«Scarica il fascicolo PDF» scarica un file");
+ok(/Fascicolo generato/.test(document.getElementById("toast").textContent), "e lo dice");
+window.HTMLAnchorElement.prototype.click = clickVeroFascicolo;
+window.URL.createObjectURL = creaUrlVeroFascicolo;
+
+const stampaVeraFascicolo = window.print;
+let stampeFascicolo = 0;
+window.print = function () { stampeFascicolo++; };
+document.getElementById("fascicoloPrintBtn").click();
+window.print = stampaVeraFascicolo;
+ok(stampeFascicolo === 1, "«Stampa il fascicolo» chiama la stampa del browser");
+
+ok(JSON.stringify(NP.app.state.diary) === diarioPrimaFascicolo, "aprire e generare il fascicolo non tocca il diario");
+ok(JSON.stringify(NP.app.state.domandePersonali) === domandePrimaFascicolo, "né le domande del taccuino");
+ok(NP.app.ultimoBackup() === ultimoBackupPrimaFascicolo, "né segna un backup che non è stato esportato: il fascicolo non aggiunge dati");
+
+if (pianoPrimaDelFascicolo) NP.app.writeJSON("pianoSicurezza", pianoPrimaDelFascicolo);
+else window.localStorage.removeItem(NP.app.PREFIX + "pianoSicurezza");
+
 /* Cosa finisce nella relazione -------------------------------------------- */
 
 console.log("\nCosa finisce nella relazione");
@@ -1772,8 +1841,8 @@ setTimeout(async function () {
   // Il file si sceglie in un campo vero e si legge da un FileReader vero, con
   // l'attesa della lettura vera: niente scorciatoie che salterebbero il codice
   // che si vuole provare.
-  const scegli = async function (contenuto, nome) {
-    const campo = document.getElementById("importFile");
+  const scegliDa = async function (id, contenuto, nome) {
+    const campo = document.getElementById(id);
     const file = new window.File([contenuto], nome, { type: "application/json" });
     Object.defineProperty(campo, "files", { value: [file], configurable: true });
     const quante = letture.length;
@@ -1787,6 +1856,7 @@ setTimeout(async function () {
     ok(arrivato, "la lettura di «" + nome + "» arriva a compimento");
     return document.getElementById("toast").textContent;
   };
+  const scegli = function (contenuto, nome) { return scegliDa("importFile", contenuto, nome); };
 
   navigate("#/licenze");
   const campoFile = document.getElementById("importFile");
@@ -1937,6 +2007,97 @@ setTimeout(async function () {
   ok(NP.app.state.diary[0].note === "dal file cifrato", "con la password giusta i dati del file tornano al loro posto");
   ok(NP.app.state.domandePersonali.some(function (q) { return q.testo === "Domanda dal file cifrato"; }), "anche le domande del taccuino tornano dal backup");
   ok(/Backup importato/.test(document.getElementById("toast").textContent), "e la frase finale è la stessa dell'import in chiaro");
+
+  /* ---------------------------------------- Provare un backup senza applicarlo */
+
+  // «Prova un backup» apre un file scelto e racconta cosa contiene. Il rischio
+  // è che l'anteprima somigli all'import e qualcuno pensi che i dati siano già
+  // cambiati: qui si controlla che restino quelli di prima.
+  console.log("\nProva di un backup");
+  NP.app.state.diary = [paginaDiario("prova-oggi", "2026-11-21T09:00:00.000Z", "quello che resta")];
+  NP.app.saveDiary();
+  NP.app.state.domandePersonali = [];
+  NP.app.saveDomandePersonali();
+  navigate("#/licenze");
+
+  const campoProva = document.getElementById("provaFile");
+  ok(!!campoProva && campoProva.type === "file", "la pagina Licenze ha il campo per provare un backup");
+  ok(!!campoProva && /json/i.test(campoProva.getAttribute("accept")), "e accetta gli stessi file JSON dell'import");
+
+  let confermeProva = 0;
+  const confermaVeraProva = window.confirm;
+  window.confirm = function () { confermeProva++; return false; };
+  await scegliDa("provaFile", JSON.stringify({
+    app: "Psicologo Digitale", version: 3,
+    diary: [
+      paginaDiario("prova-a", "2026-11-19T09:00:00.000Z", "dal backup uno"),
+      paginaDiario("prova-b", "2026-11-20T09:00:00.000Z", "dal backup due")
+    ],
+    domandePersonali: [{ id: "qp1", testo: "Domanda nel file", creato: "2026-11-20T09:00:00.000Z" }]
+  }), "prova.json");
+  window.confirm = confermaVeraProva;
+
+  const anteprimaProva = document.getElementById("backupAnteprima");
+  ok(!!anteprimaProva, "scegliendo un backup compare l'anteprima");
+  ok(!!anteprimaProva && /prova\.json/.test(anteprimaProva.textContent), "l'anteprima dice quale file si sta guardando");
+  ok(!!anteprimaProva && /Voci di diario: 2/.test(anteprimaProva.textContent), "racconta cosa contiene il file, non solo cosa cambierebbe");
+  ok(!!anteprimaProva && /Domande per il clinico: 1/.test(anteprimaProva.textContent), "e nomina anche il taccuino");
+  ok(!!anteprimaProva && /Voci di diario: da 1 a 2/.test(anteprimaProva.textContent), "confronta il file con i dati di oggi, come l'anteprima del ripristino");
+  ok(!!anteprimaProva && /Nessun dato è stato toccato/.test(anteprimaProva.textContent), "e dice a parole che non è stato applicato niente");
+  ok(!document.getElementById("copiaConferma"), "l'anteprima di un file non offre il pulsante che sostituisce i dati");
+  ok(confermeProva === 0, "guardare un backup non chiede conferme: non c'è niente da confermare");
+  ok(NP.app.state.diary.length === 1 && NP.app.state.diary[0].note === "quello che resta", "i dati di oggi restano quelli di prima");
+  ok(NP.app.readJSON("diary", []).length === 1, "e non viene scritto niente nel browser");
+  ok(NP.app.state.domandePersonali.length === 0, "il taccuino del file non entra in quello di oggi");
+
+  document.getElementById("backupAnteprimaChiudi").click();
+  ok(!document.getElementById("backupAnteprima"), "«Chiudi l'anteprima» la toglie");
+  ok(NP.app.state.diary.length === 1, "senza aver toccato i dati");
+
+  // Un file del primo formato si guarda nel formato in cui si importerebbe, e
+  // l'anteprima lo dice: la conversione non avviene di nascosto né sui dati.
+  await scegliDa("provaFile", JSON.stringify({
+    app: "Psicologo Digitale",
+    diary: [paginaDiario("prova-vecchia", "2026-11-18T09:00:00.000Z", "file del primo formato")]
+  }), "vecchio-prova.json");
+  const anteprimaVecchia = document.getElementById("backupAnteprima");
+  ok(!!anteprimaVecchia && /formato precedente/.test(anteprimaVecchia.textContent), "un file vecchio dice che verrebbe aggiornato");
+  ok(!!anteprimaVecchia && /Voci di diario: 1/.test(anteprimaVecchia.textContent), "e il contenuto si legge dal formato completato, non dal file grezzo");
+  ok(!!anteprimaVecchia && /Rispetto ai dati di oggi cambierebbe:/.test(anteprimaVecchia.textContent), "e dice cosa cambierebbe rispetto a oggi");
+  ok(NP.app.state.diary[0].note === "quello che resta", "guardarlo non converte né applica niente");
+  document.getElementById("backupAnteprimaChiudi").click();
+
+  // Un file identico ai dati di oggi: l'anteprima lo dice, invece di fingere
+  // un rischio che non c'è. È il caso di chi ricontrolla il backup appena fatto.
+  await scegliDa("provaFile", JSON.stringify(NP.app.raccogliDati()), "oggi-prova.json");
+  const anteprimaOggi = document.getElementById("backupAnteprima");
+  ok(!!anteprimaOggi && /non cambierebbe nulla/.test(anteprimaOggi.textContent), "un file uguale ai dati di oggi dice che non cambierebbe nulla");
+  ok(!!anteprimaOggi && /Nessun dato è stato toccato/.test(anteprimaOggi.textContent), "e resta un'anteprima, non un'importazione");
+  document.getElementById("backupAnteprimaChiudi").click();
+
+  // Un file di una versione futura non si guarda nemmeno: si dice perché.
+  await scegliDa("provaFile", JSON.stringify({ app: "Psicologo Digitale", version: 9, diary: [] }), "futuro-prova.json");
+  ok(/versione più recente/.test(document.getElementById("toast").textContent), "un file di una versione futura lo dice, invece di mostrare un'anteprima");
+  ok(!document.getElementById("backupAnteprima"), "e non apre nessuna anteprima");
+  ok(NP.app.state.diary[0].note === "quello che resta", "né tocca i dati");
+
+  // Un backup cifrato si prova lo stesso: prima la password, poi l'anteprima.
+  const bustaProvaFile = await NP.app.cifraBackup({
+    app: "Psicologo Digitale", version: 3,
+    diary: [paginaDiario("prova-cifrata", "2026-11-22T09:00:00.000Z", "dal file cifrato provato")],
+    domandePersonali: []
+  }, "password-prova");
+  navigate("#/licenze");
+  await scegliDa("provaFile", JSON.stringify(bustaProvaFile), "protetto-prova.json");
+  ok(document.getElementById("backupSblocco").hidden === false, "un backup cifrato chiede la password anche per la sola anteprima");
+  const pwdProva = document.getElementById("backupSbloccoPassword");
+  pwdProva.value = "password-prova";
+  document.getElementById("backupSbloccoForm").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await new Promise(function (r) { setTimeout(r, 1200); });
+  const anteprimaCifrata = document.getElementById("backupAnteprima");
+  ok(!!anteprimaCifrata, "con la password giusta compare l'anteprima del file cifrato");
+  ok(!!anteprimaCifrata && /Voci di diario: 1/.test(anteprimaCifrata.textContent), "che racconta il contenuto del file cifrato");
+  ok(NP.app.state.diary.length === 1 && NP.app.state.diary[0].note === "quello che resta", "e i dati di oggi restano intatti anche aprendo un file cifrato");
 
   window.FileReader = FileReaderVero;
 

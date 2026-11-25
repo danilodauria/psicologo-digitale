@@ -392,6 +392,14 @@
   const include = { diario: true, pensieri: true, note: true };
   const personaliIncluse = {};
 
+  // Le stesse scelte valgono per la relazione da sola e per il fascicolo che la
+  // contiene: in due posti diversi, prima o poi direbbero cose diverse.
+  function opzioniDocumento() {
+    return Object.assign({}, include, {
+      personali: (state.domandePersonali || []).filter(function (q) { return personaliIncluse[q.id] !== false; }).map(function (q) { return q.id; })
+    });
+  }
+
   function renderHTML(sectionsData, d) {
     return sectionsData.map(function (s) {
       if (s.type === "h") return "<h2>" + esc(s.text) + "</h2>";
@@ -421,7 +429,7 @@
         '<div class="card report-empty"><div class="report-ico">' + A.icon("print") + "</div>" +
           "<h2>Non ci sono ancora dati</h2>" +
           '<p class="text-small muted">Inizia dal colloquio: bastano poche domande. Puoi aggiungere i questionari in un secondo momento.</p>' +
-          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/valutazione">Vai ai questionari</a><a class="btn btn-ghost" href="#/scheda">Prepara la scheda</a><a class="btn btn-ghost" href="#/taccuino">Scrivi le domande</a></div>' +
+          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/valutazione">Vai ai questionari</a><a class="btn btn-ghost" href="#/scheda">Prepara la scheda</a><a class="btn btn-ghost" href="#/taccuino">Scrivi le domande</a><a class="btn btn-ghost" href="#/fascicolo">Fascicolo completo</a></div>' +
         "</div>"
       );
       return;
@@ -429,11 +437,7 @@
 
     // Le domande scritte dalla persona restano nel taccuino: qui si sceglie solo quali
     // affiancare a quelle generate, senza cancellarle dal taccuino.
-    const opzioni = function () {
-      return Object.assign({}, include, {
-        personali: (state.domandePersonali || []).filter(function (q) { return personaliIncluse[q.id] !== false; }).map(function (q) { return q.id; })
-      });
-    };
+    const opzioni = opzioniDocumento;
     const data = sections(d, opzioni());
     const when = new Date();
     const casella = function (id, chiave, testo, vuoto) {
@@ -449,7 +453,7 @@
       '<div class="page-head"><p class="eyebrow">Relazione preliminare</p><h1>Da consegnare al professionista</h1>' +
         '<p class="lead">Un riassunto leggibile di ciò che hai raccolto. Portala a uno psicologo, a uno psicoterapeuta o al medico di base: serve a rendere il colloquio più preciso, non a sostituirlo.</p></div>' +
 
-      '<div class="card card-soft no-print" id="schedaInvito"><div class="btn-row" style="justify-content:space-between;align-items:center;gap:1rem"><div><h2 class="h-sub" style="margin-bottom:.2rem">Un foglio solo per il colloquio</h2><p class="text-small mb-0">La relazione è completa; se vuoi una pagina da tenere in mano, scegli tu cosa metterci.</p></div><a class="btn btn-soft btn-sm" href="#/scheda">Prepara la scheda</a></div></div>' +
+      '<div class="card card-soft no-print" id="schedaInvito"><div class="btn-row" style="justify-content:space-between;align-items:center;gap:1rem"><div><h2 class="h-sub" style="margin-bottom:.2rem">Un foglio solo per il colloquio</h2><p class="text-small mb-0">La relazione è completa; se vuoi una pagina da tenere in mano, scegli tu cosa metterci. Oppure raccogli tutto in un fascicolo: un solo PDF con relazione, scheda, piano di sicurezza, periodi e domande.</p></div><a class="btn btn-soft btn-sm" href="#/scheda">Prepara la scheda</a><a class="btn btn-ghost btn-sm" href="#/fascicolo">Fascicolo completo</a></div></div>' +
 
       '<div class="card report-options no-print" id="reportOptions"><fieldset>' +
         '<legend>Cosa includere nella relazione</legend>' +
@@ -745,6 +749,186 @@
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
   };
 
+  /* ------------------------------------------------------- Fascicolo unico */
+
+  // Cinque cose che la persona porta al colloquio, in un documento solo. Non
+  // aggiunge niente: la relazione e la scheda sono le stesse che si scaricano
+  // da sole, il piano è quello salvato, i periodi sono gli stessi conti della
+  // pagina Riepilogo e le domande sono quelle già scelte per la scheda.
+  const PARTI_FASCICOLO = [
+    "Relazione preliminare",
+    "Scheda da portare",
+    "Piano di sicurezza",
+    "Confronto dei periodi",
+    "Domande scelte per il colloquio"
+  ];
+
+  function partHeading(n) {
+    return "Parte " + n + " — " + PARTI_FASCICOLO[n - 1];
+  }
+
+  function pianoSalvato() {
+    const p = A.readJSON("pianoSicurezza", null);
+    return p && typeof p === "object" ? p : {};
+  }
+
+  function pianoHaTesto(p) {
+    if (!p || typeof p !== "object") return false;
+    return ["segnali", "primiMinuti", "ambiente", "ragione"].some(function (k) {
+      return typeof p[k] === "string" && p[k].trim();
+    }) || (Array.isArray(p.contatti) && p.contatti.some(function (c) {
+      return c && (String(c.nome || "").trim() || String(c.tel || "").trim());
+    }));
+  }
+
+  // Il contenuto della scheda è già scelto e impaginato per la sua pagina: qui
+  // si converte nella forma comune alle altre parti, senza ricalcolarlo.
+  function sezioniScheda(contenuto) {
+    const out = [];
+    if (contenuto.avviso) out.push({ type: "flag", text: "Da non rimandare: " + contenuto.avviso });
+    contenuto.sezioni.forEach(function (s) {
+      out.push({ type: "h", text: s.titolo });
+      (s.paragrafi || []).forEach(function (p) { out.push({ type: "p", text: p }); });
+      if (s.voci && s.voci.length) {
+        out.push({ type: "ul", items: s.voci.map(function (v, i) { return (s.numerata ? (i + 1) + ". " : "") + v; }) });
+      }
+    });
+    return out;
+  }
+
+  function sezioniPiano() {
+    const p = pianoSalvato();
+    const vuoto = "(da scrivere: questo campo è ancora vuoto)";
+    const out = [];
+    const voce = function (titolo, testo) {
+      out.push({ type: "h", text: titolo });
+      out.push({ type: "p", text: testo && String(testo).trim() ? String(testo) : vuoto });
+    };
+    voce("I miei segnali", p.segnali);
+    voce("Cosa faccio nei primi minuti", p.primiMinuti);
+    out.push({ type: "h", text: "Chi chiamo" });
+    const contatti = Array.isArray(p.contatti) ? p.contatti : [];
+    out.push({ type: "ul", items: [0, 1, 2].map(function (i) {
+      const c = contatti[i] || {};
+      const nome = String(c.nome || "").trim();
+      const tel = String(c.tel || "").trim();
+      return (nome || "persona " + (i + 1) + ": nome da scrivere") + " — " + (tel || "numero da scrivere");
+    }) });
+    voce("Come rendo l'ambiente più sicuro", p.ambiente);
+    voce("Una ragione per chiamare", p.ragione);
+    const numeri = (NP.data.sicurezza && NP.data.sicurezza.numeri) || [];
+    out.push({ type: "p", text: "Numeri utili: " + numeri.map(function (n) { return n.numero + " (" + n.nome + ")"; }).join(" — ") });
+    return out;
+  }
+
+  function sezioniPeriodi() {
+    const numero = function (n) {
+      if (n == null || !isFinite(n)) return "—";
+      return (Math.round(n * 10) / 10).toString().replace(".", ",");
+    };
+    const riga = function (giorni) {
+      const ora = A.statistichePeriodo(giorni, 0);
+      const prima = A.statistichePeriodo(giorni, giorni);
+      return [
+        giorni === 7 ? "Ultimi 7 giorni" : "Ultimi 30 giorni",
+        ora.voci + " (prima: " + prima.voci + ")",
+        ora.schede + " (prima: " + prima.schede + ")",
+        ora.misure + " (prima: " + prima.misure + ")",
+        numero(ora.media.umore) + " (prima: " + numero(prima.media.umore) + ")"
+      ];
+    };
+    return [
+      { type: "table", head: ["Periodo", "Voci di diario", "Schede", "Misure", "Umore medio"], rows: [riga(7), riga(30)] },
+      { type: "p", text: "Il confronto è con i sette o trenta giorni precedenti. Una media con poche voci si muove facilmente, e un numero non è un giudizio: serve a vedere se qualcosa cambia." }
+    ];
+  }
+
+  function sezioniDomandeScelte(d) {
+    const disponibili = domandeDisponibili(d);
+    const scelte = scelteScheda(d).domande.map(function (i) { return disponibili[i]; }).filter(Boolean);
+    if (!scelte.length) return [{ type: "p", text: "Nessuna domanda scelta: si scelgono nella pagina Scheda da portare, e restano le stesse anche qui." }];
+    return [{ type: "ul", items: scelte.map(function (q) { return q.testo + (q.mia ? " (scritta da me)" : ""); }) }];
+  }
+
+  function sezioniFascicolo(d) {
+    const out = [];
+    out.push({ type: "h", text: partHeading(1) });
+    out.push.apply(out, sections(d, opzioniDocumento()));
+    out.push({ type: "h", text: partHeading(2) });
+    out.push.apply(out, sezioniScheda(schedaContenuto(d, scelteScheda(d))));
+    out.push({ type: "h", text: partHeading(3) });
+    out.push.apply(out, sezioniPiano());
+    out.push({ type: "h", text: partHeading(4) });
+    out.push.apply(out, sezioniPeriodi());
+    out.push({ type: "h", text: partHeading(5) });
+    out.push.apply(out, sezioniDomandeScelte(d));
+    return out;
+  }
+
+  function buildFascicoloPdf(when) {
+    const d = collect();
+    return buildPdf(sezioniFascicolo(d), d, docId(), when || new Date(), {
+      sottotitolo: "FASCICOLO UNICO - USO EDUCATIVO - NON E UNA DIAGNOSI",
+      introduzione: "Un solo documento con la relazione preliminare, la scheda da portare, il piano di sicurezza, il confronto dei periodi e le domande scelte. Non aggiunge dati: mette in fila quelli che hai gia sul dispositivo. I punteggi sono indicatori di intensita, non diagnosi."
+    });
+  }
+
+  views.fascicolo = function () {
+    const d = collect();
+    const piano = pianoSalvato();
+    const haDati = Object.keys(state.intake.answers || {}).length > 0 || d.scales.length > 0 ||
+      d.diary.length > 0 || d.thoughts.length > 0 || (state.domandePersonali || []).length > 0 || pianoHaTesto(piano);
+    const quando = new Date();
+
+    if (!haDati) {
+      A.setTitle("Fascicolo");
+      A.page(
+        '<div class="page-head"><p class="eyebrow">Fascicolo</p><h1>Un documento solo, quando ci sarà qualcosa dentro</h1>' +
+          '<p class="lead">Il fascicolo raccoglie relazione, scheda da portare, piano di sicurezza, confronto dei periodi e domande scelte. Per ora non c\'è ancora niente da mettere insieme.</p></div>' +
+        '<div class="card report-empty"><div class="report-ico">' + A.icon("layers") + "</div>" +
+          "<h2>Non ci sono ancora dati</h2>" +
+          '<p class="text-small muted">Inizia dal colloquio, scrivi una voce di diario o compila il piano di sicurezza: il fascicolo si costruisce da lì, senza chiederti altro.</p>' +
+          '<div class="btn-row" style="justify-content:center"><a class="btn btn-primary" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost" href="#/diario">Vai al diario</a><a class="btn btn-ghost" href="#/sicurezza/piano">Apri il piano</a></div>' +
+        "</div>"
+      );
+      return;
+    }
+
+    A.setTitle("Fascicolo");
+    A.page(
+      '<div class="page-head no-print"><p class="eyebrow">Fascicolo</p><h1>Tutto in un documento</h1>' +
+        '<p class="lead">Relazione, scheda da portare, piano di sicurezza, confronto dei periodi e domande scelte: un solo PDF o una sola stampa. Non aggiunge niente a quello che hai già scritto.</p></div>' +
+      '<div class="callout info no-print"><p><strong>Un file solo, con dentro dati sensibili.</strong> Il fascicolo si costruisce sul dispositivo e non viene inviato a nessuno. Conservalo con la stessa cura di un diario cartaceo.</p></div>' +
+      '<div class="report-actions no-print"><span class="grow">Cinque parti, un documento. Se una parte è vuota, il fascicolo lo dice invece di inventarla.</span>' +
+        '<button type="button" class="btn btn-primary" id="fascicoloPdfBtn">' + A.icon("download") + "Scarica il fascicolo PDF</button>" +
+        '<button type="button" class="btn btn-ghost" id="fascicoloPrintBtn">' + A.icon("print") + "Stampa il fascicolo</button></div>" +
+
+      '<article class="report-sheet" id="fascicoloSheet">' +
+        '<header class="report-head"><div class="report-brand">Psicologo Digitale<span>Fascicolo per il colloquio · uso educativo</span></div>' +
+          '<div class="report-id"><b>' + esc(docId()) + "</b><br>Preparato il " + esc(quando.toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })) + "</div></header>" +
+        '<p class="small" style="margin-top:0">Cinque parti scelte da me, da leggere o consegnare insieme. <strong>Non è una diagnosi</strong> e non sostituisce una valutazione clinica: mette in fila quello che c\'è già.</p>' +
+        '<div id="fascicoloBody">' + renderHTML(sezioniFascicolo(d), d) + "</div>" +
+        '<div class="signatures"><div>Firma della persona</div><div>Firma del professionista</div></div>' +
+        '<p class="report-foot">«Psicologo Digitale — La stanza d\'ascolto» di Danilo D\'Auria · progetto FeniceOS · contenuti CC BY-NC-SA 4.0 · codice MIT. Documento generato localmente: nessun dato è stato inviato. In caso di emergenza: 112. Telefono Amico 02 2327 2327.</p>' +
+      "</article>" +
+
+      '<p class="text-small muted mt-2 no-print">Se una parte contiene un segnale di rischio, non aspettare l\'appuntamento: chiama il 112 o uno dei numeri nella sezione <a href="#/sicurezza">Sicurezza</a>.</p>'
+    );
+
+    const pdfBtn = document.getElementById("fascicoloPdfBtn");
+    if (pdfBtn) pdfBtn.addEventListener("click", function () {
+      try {
+        downloadPdf(buildFascicoloPdf(new Date()), "fascicolo-psicologo-digitale-" + quando.toISOString().slice(0, 10) + ".pdf");
+        A.toast("Fascicolo generato.");
+      } catch (e) {
+        A.toast("Non riesco a generare il fascicolo: usa Stampa.");
+      }
+    });
+
+    const printBtn = document.getElementById("fascicoloPrintBtn");
+    if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
+  };
+
   /* ------------------------------------------------------------------ PDF 1.4 */
 
   const CP1252 = {
@@ -821,7 +1005,8 @@
     return lines.length ? lines : [""];
   }
 
-  function buildPdf(sectionsData, d, id, when) {
+  function buildPdf(sectionsData, d, id, when, meta) {
+    const testata = meta || {};
     const W = 595.28, H = 841.89, M = 54, CONTENT_W = W - M * 2;
     const ops = [];
     let y = H - M;
@@ -864,14 +1049,14 @@
 
     // Intestazione
     ops.push({ kind: "text", x: M, y: H - M, size: 16, bold: true, color: 0.08, text: "Psicologo Digitale" });
-    ops.push({ kind: "text", x: M, y: H - M - 12, size: 8, bold: false, color: 0.45, text: "RELAZIONE PRELIMINARE - USO EDUCATIVO - NON E UNA DIAGNOSI" });
+    ops.push({ kind: "text", x: M, y: H - M - 12, size: 8, bold: false, color: 0.45, text: testata.sottotitolo || "RELAZIONE PRELIMINARE - USO EDUCATIVO - NON E UNA DIAGNOSI" });
     ops.push({ kind: "text", x: W - M - 160, y: H - M, size: 8.5, bold: true, color: 0.12, text: id });
     ops.push({ kind: "text", x: W - M - 160, y: H - M - 11, size: 8, bold: false, color: 0.4, text: "Generata il " + when.toLocaleDateString("it-IT") });
     y = H - M - 22;
     ops.push({ kind: "line", x1: M, y1: y, x2: W - M, y2: y, gray: 0.2, width: 1.4 });
     y -= 2;
 
-    para("Documento preparato dalla persona con un programma di psicoeducazione e autovalutazione. I punteggi sono indicatori di intensita, non diagnosi. La valutazione clinica resta al professionista.", 8.6, 0.42);
+    para(testata.introduzione || "Documento preparato dalla persona con un programma di psicoeducazione e autovalutazione. I punteggi sono indicatori di intensita, non diagnosi. La valutazione clinica resta al professionista.", 8.6, 0.42);
 
     sectionsData.forEach(function (s) {
       if (s.type === "h") heading(s.text);
@@ -1123,6 +1308,9 @@
     scheda: function (opz) {
       const d = collect();
       return buildSchedaPdf(d, opz);
+    },
+    fascicolo: function () {
+      return buildFascicoloPdf(new Date());
     },
     schedaContenuto: schedaContenuto
   };

@@ -1447,6 +1447,16 @@ NP.app = (function () {
     return out;
   }
 
+  // Cosa contiene un backup, campo per campo: serve a chi apre un file per
+  // guardarlo prima di importarlo. Legge gli stessi campi dell'anteprima, così
+  // non può nascere un secondo elenco da tenere allineato a mano.
+  function riassuntoDati(dati) {
+    const stato = statoDati(dati);
+    return CAMPI_COPIA
+      .map(function (c) { return { chiave: c[0], cosa: c[1], quanti: stato[c[0]] }; })
+      .filter(function (v) { return v.quanti > 0; });
+  }
+
   // Le voci che ci sono oggi e non nella copia: sono quelle che si perderebbero,
   // e vederle per data è più utile di un conto che non dice quali.
   function accorcia(testo, max) {
@@ -1528,18 +1538,17 @@ NP.app = (function () {
 
   // Cosa cambierebbe ripristinando: si mostrano solo le differenze, perché è
   // quello che serve sapere prima di sostituire i dati di oggi.
-  function confrontoCopia(indice) {
-    const copia = copieAutomatiche()[indice || 0];
-    if (!copia || !copia.dati) return null;
+  function confrontoDati(datiCopia, quando) {
+    if (!datiCopia) return null;
     const datiOggi = raccogliDati();
     const oggi = statoDati(datiOggi);
-    const salvato = statoDati(copia.dati);
+    const salvato = statoDati(datiCopia);
     const elenchi = { diario: "diary", pensieri: "thoughts" };
     const voci = [];
     CAMPI_COPIA.forEach(function (c) {
       const cambiato = oggi[c[0]] !== salvato[c[0]];
       if (c[0] === "questionari") {
-        const dettaglio = confrontoQuestionari(datiOggi.scales, copia.dati && copia.dati.scales);
+        const dettaglio = confrontoQuestionari(datiOggi.scales, datiCopia.scales);
         if (!cambiato && !dettaglio.length) return;
         const voce = { chiave: c[0], cosa: c[1], ora: oggi[c[0]], copia: salvato[c[0]] };
         if (dettaglio.length) voce.questionari = dettaglio;
@@ -1549,10 +1558,29 @@ NP.app = (function () {
       if (!cambiato) return;
       const voce = { chiave: c[0], cosa: c[1], ora: oggi[c[0]], copia: salvato[c[0]] };
       const campo = elenchi[c[0]];
-      if (campo && oggi[c[0]] > salvato[c[0]]) voce.perse = vociPerse(datiOggi[campo], copia.dati[campo], RICONOSCI_VOCI[c[0]]);
+      if (campo && oggi[c[0]] > salvato[c[0]]) voce.perse = vociPerse(datiOggi[campo], datiCopia[campo], RICONOSCI_VOCI[c[0]]);
       voci.push(voce);
     });
-    return { quando: copia.quando, voci: voci };
+    return { quando: quando, voci: voci };
+  }
+
+  function confrontoCopia(indice) {
+    const copia = copieAutomatiche()[indice || 0];
+    if (!copia || !copia.dati) return null;
+    return confrontoDati(copia.dati, copia.quando);
+  }
+
+  // Un file scelto dalla persona si legge, si completa e si racconta: non si
+  // applica. Il confronto è lo stesso del ripristino, così l'anteprima di un
+  // backup non può dire cose diverse da quella di una copia automatica.
+  function provaBackup(dati) {
+    const esito = migraBackup(dati);
+    if (esito.errore) return { errore: esito.errore };
+    return {
+      migrato: !!esito.migrato,
+      contenuto: riassuntoDati(esito.dati),
+      confronto: confrontoDati(esito.dati, null)
+    };
   }
 
   // Una copia si può togliere da sola, senza toccare le altre né i dati di
@@ -1793,6 +1821,7 @@ NP.app = (function () {
     campiCopia: CAMPI_COPIA,
     campiRipristinati: RIPRISTINATI,
     confrontoCopia: confrontoCopia,
+    provaBackup: provaBackup,
     cancellaCopia: cancellaCopia,
     copieDaTenere: copieDaTenere,
     cancellaCopieVecchie: cancellaCopieVecchie,
