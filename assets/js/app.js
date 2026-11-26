@@ -1742,6 +1742,71 @@ NP.app = (function () {
     return true;
   }
 
+  /* ------------------------------------------------ Dati che non si leggono */
+
+  // Il browser può lasciare una chiave a metà — una scrittura interrotta, uno
+  // spazio esaurito, un'estensione che riscrive — e `readJSON` la tratta come
+  // «assente»: il programma riparte vuoto e nessuno se ne accorge. Qui si
+  // guarda la forma di ogni dato prima di dichiararlo perso, e se c'è una copia
+  // automatica si offre di tornarci invece di lasciare la persona a cercarla.
+  const FORME_DATI = [
+    ["intake", "Colloquio", "oggetto"],
+    ["scales", "Questionari", "oggetto"],
+    ["diary", "Diario", "elenco"],
+    ["thoughts", "Schede del pensiero", "elenco"],
+    ["course", "Percorso", "oggetto"],
+    ["quiz", "Palestra", "oggetto"],
+    ["reportNotes", "Note della relazione", "oggetto"],
+    ["domandePersonali", "Domande per il clinico", "elenco"],
+    ["pianoSicurezza", "Piano di sicurezza", "oggetto"],
+    ["storicoPunteggi", "Storico dei punteggi", "oggetto"]
+  ];
+
+  function diagnosiDati() {
+    const problemi = [];
+    FORME_DATI.forEach(function (voce) {
+      const chiave = voce[0], nome = voce[1], forma = voce[2];
+      let grezzo = null;
+      try { grezzo = localStorage.getItem(PREFIX + chiave); } catch (e) { return; }
+      // Una chiave assente non è rotta: è un dato che non è mai stato scritto.
+      if (grezzo === null) return;
+      let valore;
+      try { valore = JSON.parse(grezzo); }
+      catch (e) { problemi.push({ chiave: chiave, nome: nome, motivo: "non si legge" }); return; }
+      // Il piano di sicurezza può essere `null`: è il modo con cui l'app dice
+      // «non c'è», non un dato rotto.
+      const vuotoAmmesso = chiave === "pianoSicurezza" && valore === null;
+      const giusto = forma === "elenco"
+        ? Array.isArray(valore)
+        : (vuotoAmmesso || (!!valore && typeof valore === "object" && !Array.isArray(valore)));
+      if (!giusto) problemi.push({ chiave: chiave, nome: nome, motivo: "ha una forma inattesa" });
+    });
+    const copie = copieAutomatiche();
+    return { problemi: problemi, copia: copie.length ? copie[0] : null, copie: copie.length };
+  }
+
+  // L'avviso non ripara niente da solo: dice cosa non si legge e, se può, offre
+  // il ritorno alla copia più recente, spiegando che le modifiche successive a
+  // quella data si perdono. Ripristinare è una scelta, non una sorpresa.
+  function avvisaDatiRotti(diag) {
+    const d = diag || diagnosiDati();
+    if (!d.problemi.length) return false;
+    const nomi = d.problemi.map(function (p) { return p.nome; }).join(", ");
+    const testa = "Alcuni dati non si leggono: " + nomi + ".";
+    if (d.copia && d.copia.dati) {
+      toast(testa + " C'è una copia del " + fmtDate(d.copia.quando) +
+        ": ripristinarla riporta i dati a quel giorno, e le modifiche successive si perdono.", 20000, {
+        etichetta: "Ripristina la copia",
+        fai: function () {
+          if (ripristinaCopia(0) && typeof render === "function") render();
+        }
+      });
+    } else {
+      toast(testa + " Non c'è una copia automatica da cui ripartire: se hai esportato un backup, aprilo da Licenze.", 20000);
+    }
+    return true;
+  }
+
   /* --------------------------------------------- Cancellare solo il colloquio */
 
   // Rifare il colloquio non deve costare i questionari già compilati né il
@@ -1877,6 +1942,8 @@ NP.app = (function () {
     copieDaTenere: copieDaTenere,
     cancellaCopieVecchie: cancellaCopieVecchie,
     ripristinaCopia: ripristinaCopia,
+    diagnosiDati: diagnosiDati,
+    avvisaDatiRotti: avvisaDatiRotti,
     cancellaColloquio: cancellaColloquio,
     cancellaDati: cancellaDati,
     fmtDate: fmtDate,

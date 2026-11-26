@@ -230,9 +230,13 @@
   // apre Licenze, e non una volta per pagina.
   A.chiediSpazioPersistente();
 
-  // La copia automatica si prende all'avvio, una volta al giorno: è il momento
-  // in cui i dati delle volte precedenti sono ancora tutti lì.
-  A.salvaCopia(false);
+  // Prima di tutto si guarda se i dati si leggono: se una chiave è rimasta a
+  // metà, la copia di oggi non va scritta, o metterebbe al posto della rete
+  // una fotografia già rotta. L'avviso dice cosa non si legge e offre la copia
+  // più recente, senza ripristinare niente da solo.
+  const diagnosi = A.diagnosiDati();
+  if (diagnosi.problemi.length) A.avvisaDatiRotti(diagnosi);
+  else A.salvaCopia(false);
 
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
     window.addEventListener("load", function () {

@@ -1846,6 +1846,23 @@ setTimeout(async function () {
   NP.app.impostaBlocco(0);
   ok(!document.documentElement.hasAttribute("data-blocco"), "spegnendo il blocco la copertura sparisce subito");
 
+  console.log("\nDati che non si leggono");
+  const chiaveDiario = NP.app.PREFIX + "diary";
+  const diarioSano = window.localStorage.getItem(chiaveDiario);
+  ok(NP.app.diagnosiDati().problemi.length === 0, "con i dati interi la diagnosi non segnala niente");
+  window.localStorage.setItem(chiaveDiario, "{[non-json");
+  const diagnostica = NP.app.diagnosiDati();
+  ok(diagnostica.problemi.length === 1 && diagnostica.problemi[0].nome === "Diario",
+    "una chiave rimasta a metà viene nominata, invece di passare per «dato assente»");
+  ok(NP.app.avvisaDatiRotti(diagnostica) === true, "e l'avviso parte");
+  ok(/Diario/.test(document.getElementById("toast").textContent), "dicendo quale dato non si legge");
+  window.localStorage.setItem(chiaveDiario, JSON.stringify({ non: "un elenco" }));
+  ok(NP.app.diagnosiDati().problemi.length === 1, "anche una forma sbagliata (un oggetto al posto di un elenco) viene vista");
+  ok(NP.app.avvisaDatiRotti() === true, "l'avviso funziona anche senza passargli la diagnosi");
+  window.localStorage.setItem(chiaveDiario, diarioSano);
+  ok(NP.app.diagnosiDati().problemi.length === 0, "rimessi a posto i dati, la diagnosi tace");
+  ok(NP.app.avvisaDatiRotti() === false, "e non c'è niente da avvisare");
+
   // L'invito non è una serie da mantenere: dice un fatto e apre una porta.
   console.log("\nInviti gentili");
   NP.app.state.diary = [paginaDiario("g1", giorniFa(9), "vecchia")];
