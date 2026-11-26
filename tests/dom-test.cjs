@@ -1820,6 +1820,32 @@ setTimeout(async function () {
   ok(!document.getElementById("app").classList.contains("svelato"), "cambiando pagina i contenuti tornano coperti");
   ok(NP.app.impostaDiscreto(false) === true && !document.documentElement.hasAttribute("data-discreto"), "si può spegnere");
 
+  console.log("\nBlocco dopo l'inattività");
+  ok(NP.app.bloccoScelto() === 0, "di partenza il blocco automatico è spento");
+  ok(NP.app.attivaBlocco() === false && !document.documentElement.hasAttribute("data-blocco"), "spento, non copre niente");
+  ok(NP.app.impostaBlocco(5) === true, "si può scegliere dopo quanti minuti coprire i contenuti");
+  ok(NP.app.bloccoScelto() === 5, "e la scelta resta salvata");
+  ok(NP.app.impostaBlocco(7) === false, "tempi inventati vengono rifiutati");
+  ok(NP.app.attivaBlocco() === true, "a tempo scaduto i contenuti si coprono da soli");
+  ok(document.documentElement.getAttribute("data-blocco") === "1", "la copertura vale per tutta l'app, non solo per la pagina aperta");
+  ok(document.getElementById("avvisoBlocco").hidden === false, "una barra dice cosa è successo");
+  document.getElementById("mostraBlocco").click();
+  ok(NP.app.bloccoAttivo() === false && document.getElementById("avvisoBlocco").hidden === true,
+    "e il pulsante scopre i contenuti senza spegnere la scelta");
+  ok(NP.app.bloccoScelto() === 5, "che resta accesa per la prossima volta");
+  ok(NP.app.impostaBlocco(0) === true && NP.app.bloccoScelto() === 0, "si può tornare a spento");
+  ok(NP.app.impostaBlocco(5) === true, "e riaccendere");
+  NP.app.attivaBlocco();
+  navigate("#/licenze");
+  ok(NP.app.bloccoScelto() === 5, "la scelta non dipende dalla pagina in cui è stata fatta");
+  const bloccoScelta = document.getElementById("bloccoScelta");
+  ok(!!bloccoScelta && bloccoScelta.value === "5", "la pagina Licenze mostra il tempo scelto");
+  bloccoScelta.value = "2";
+  bloccoScelta.dispatchEvent(new window.Event("change", { bubbles: true }));
+  ok(NP.app.bloccoScelto() === 2, "cambiando il tempo la preferenza si aggiorna");
+  NP.app.impostaBlocco(0);
+  ok(!document.documentElement.hasAttribute("data-blocco"), "spegnendo il blocco la copertura sparisce subito");
+
   // L'invito non è una serie da mantenere: dice un fatto e apre una porta.
   console.log("\nInviti gentili");
   NP.app.state.diary = [paginaDiario("g1", giorniFa(9), "vecchia")];

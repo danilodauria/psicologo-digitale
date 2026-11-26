@@ -1696,6 +1696,10 @@ html[data-testo="125"] { font-size: 20px; }
    vederli, e tornano coperti al cambio pagina. La barra resta leggibile. */
 html[data-discreto="1"] #app:not(.svelato) { filter: blur(7px); }
 html[data-discreto="1"] #app { transition: filter .18s ease; }
+/* Blocco dopo l'inattività: stessa copertura della modalità discreta, ma si
+   accende da solo. Il pulsante della barra resta leggibile e raggiungibile. */
+html[data-blocco="1"] #app { filter: blur(7px); transition: filter .18s ease; }
+html[data-blocco="1"] .avviso-blocco { box-shadow: 0 0 0 2px var(--ambra-scura); }
 .avviso-discreto { max-width: 72rem; margin: 1rem auto 0; padding: .7rem 1rem; border-radius: 12px; background: var(--ambra-chiara); color: var(--ambra-scura); display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
 .avviso-discreto p { margin: 0; font-size: .9rem; }
 .avviso-discreto[hidden] { display: none; }

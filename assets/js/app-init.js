@@ -122,6 +122,33 @@
   const mostraDiscreto = document.getElementById("mostraDiscreto");
   if (mostraDiscreto) mostraDiscreto.addEventListener("click", function () { A.svelaContenuti(); });
 
+  /* Blocco dopo l'inattività ------------------------------------------------ */
+
+  // Il timer conta i minuti senza gesti, non il tempo passato nella pagina: chi
+  // sta leggendo non deve vedersi coprire lo schermo. Si riarma a ogni gesto e
+  // quando si torna sulla scheda; a tempo scaduto i contenuti si coprono soli e
+  // si scoprono con il pulsante della barra.
+  const mostraBlocco = document.getElementById("mostraBlocco");
+  if (mostraBlocco) mostraBlocco.addEventListener("click", function () { A.togliBlocco(); });
+
+  (function collegaBlocco() {
+    let timer = null;
+    function arma() {
+      if (timer) { clearTimeout(timer); timer = null; }
+      const minuti = A.bloccoScelto();
+      if (!minuti) return;
+      timer = setTimeout(function () { A.attivaBlocco(); }, minuti * 60000);
+    }
+    ["pointerdown", "keydown", "touchstart", "wheel"].forEach(function (evento) {
+      document.addEventListener(evento, arma, { passive: true });
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) arma();
+    });
+    arma();
+    A.rearmaBlocco = arma;
+  })();
+
   /* Aggiornamento del sito -------------------------------------------------- */
 
   // Il service worker nuovo si installa e prende il controllo da solo, ma la

@@ -965,6 +965,43 @@ NP.app = (function () {
     else radice.removeAttribute("data-discreto");
   }
 
+  // Blocco dopo l'inattività: la modalità discreta si accende a mano, ma chi si
+  // alza dal computer acceso non lo fa. Dopo N minuti senza gesti i contenuti
+  // si coprono da soli e si scoprono con un tocco. Non è una cifratura e non
+  // chiude l'app: è la stessa copertura dello schermo della modalità discreta,
+  // che serve contro chi passa dietro, non contro chi apre gli strumenti di
+  // sviluppo. Il tempo si sceglie in Licenze; spento è il valore di partenza.
+  const TEMPI_BLOCCO = [0, 2, 5, 10, 15];
+  function bloccoScelto() {
+    const n = parseInt(localStorage.getItem(PREFIX + "bloccoAuto"), 10);
+    return TEMPI_BLOCCO.indexOf(n) >= 0 ? n : 0;
+  }
+  function impostaBlocco(n) {
+    const minuti = parseInt(n, 10);
+    if (TEMPI_BLOCCO.indexOf(minuti) < 0) return false;
+    try { localStorage.setItem(PREFIX + "bloccoAuto", String(minuti)); } catch (e) { return false; }
+    if (!minuti) togliBlocco();
+    return true;
+  }
+  function bloccoAttivo() {
+    return document.documentElement.getAttribute("data-blocco") === "1";
+  }
+  function attivaBlocco() {
+    if (!bloccoScelto()) return false;
+    document.documentElement.setAttribute("data-blocco", "1");
+    const avviso = document.getElementById("avvisoBlocco");
+    if (avviso) avviso.hidden = false;
+    const appEl = document.getElementById("app");
+    if (appEl) appEl.classList.remove("svelato");
+    return true;
+  }
+  function togliBlocco() {
+    document.documentElement.removeAttribute("data-blocco");
+    const avviso = document.getElementById("avvisoBlocco");
+    if (avviso) avviso.hidden = true;
+    return true;
+  }
+
   /* ------------------------------------------------ Riepilogo dei periodi */
 
   // Un periodo di N giorni e quello precedente: le stesse misure affiancate,
@@ -1814,6 +1851,12 @@ NP.app = (function () {
     impostaTesto: impostaTesto,
     discretoAttivo: discretoAttivo,
     impostaDiscreto: impostaDiscreto,
+    bloccoScelto: bloccoScelto,
+    tempiBlocco: function () { return TEMPI_BLOCCO.slice(); },
+    impostaBlocco: impostaBlocco,
+    attivaBlocco: attivaBlocco,
+    togliBlocco: togliBlocco,
+    bloccoAttivo: bloccoAttivo,
     statistichePeriodo: statistichePeriodo,
     numeroUno: numeroUno,
     leggiCapitolo: leggiCapitolo,

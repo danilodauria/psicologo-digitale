@@ -953,7 +953,16 @@
           '<span class="text-small muted">vale per tutta l\'app, non solo per questa pagina</span></div>' +
         '<div class="btn-row mt-1"><button type="button" class="btn btn-soft btn-sm" id="discretoToggle">' +
           (A.discretoAttivo() ? "Mostra i contenuti sensibili" : "Attiva la modalità discreta") + "</button>" +
-          '<span class="text-small muted">copre i contenuti finché non li scopri: utile in un posto affollato</span></div></div>' +
+          '<span class="text-small muted">copre i contenuti finché non li scopri: utile in un posto affollato</span></div>' +
+        '<div class="btn-row mt-1"><label class="text-small" for="bloccoScelta">Blocco automatico</label>' +
+          '<select id="bloccoScelta" style="width:auto;padding:.35rem .6rem;font-size:.85rem">' +
+            A.tempiBlocco().map(function (n) {
+              return '<option value="' + n + '"' + (n === A.bloccoScelto() ? " selected" : "") + ">" +
+                (n ? n + " minuti senza gesti" : "spento") + "</option>";
+            }).join("") +
+          "</select>" +
+          '<span class="text-small muted">se ti allontani, i contenuti si coprono da soli</span></div>' +
+        '<p class="text-small muted mt-1 mb-0">Il blocco automatico copre lo schermo come la modalità discreta: non cifra i dati e non chiude il programma. Chi apre gli strumenti di sviluppo li vede lo stesso, come in qualsiasi app che salva sul dispositivo.</p></div>' +
 
       '<div class="card mt-2"><h2 class=h-sub>Copia di sicurezza automatica</h2>' +
         (function () {
@@ -1071,6 +1080,15 @@
     if (discretoToggle) discretoToggle.addEventListener("click", function () {
       A.impostaDiscreto(!A.discretoAttivo());
       A.render();
+    });
+
+    const bloccoScelta = document.getElementById("bloccoScelta");
+    if (bloccoScelta) bloccoScelta.addEventListener("change", function () {
+      A.impostaBlocco(Number(bloccoScelta.value));
+      if (A.rearmaBlocco) A.rearmaBlocco();
+      A.toast(Number(bloccoScelta.value)
+        ? "I contenuti si copriranno dopo " + bloccoScelta.value + " minuti senza gesti."
+        : "Blocco automatico spento.");
     });
 
     const protezioneEsporta = document.getElementById("protezioneEsporta");
