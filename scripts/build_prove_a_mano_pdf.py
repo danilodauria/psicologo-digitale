@@ -158,8 +158,8 @@ def tabella(righe, s):
                 ("ALIGN", (0, 0), (0, -1), "CENTER"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 4),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                ("TOPPADDING", (0, 0), (-1, -1), 0.5),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 0.5),
+                ("TOPPADDING", (0, 0), (-1, -1), 0.3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 0.3),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
             ]
         )
