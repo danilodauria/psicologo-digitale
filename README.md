@@ -319,6 +319,7 @@ npm run test:links        # solo collegamenti interni
 npm run test:a11y         # solo accessibilità
 npm run test:text         # solo testi
 npm run test:impronte     # solo impronte del pacchetto
+npm run test:peso         # solo peso di quello che si scarica al primo avvio
 npm run test:browser      # solo le prove nel browser (telefono e computer)
 npm run test:archivi      # archivi già costruiti (desktop/dist)
 python3 -m http.server 3000 --bind 0.0.0.0   # anteprima con service worker
