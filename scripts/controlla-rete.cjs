@@ -11,9 +11,14 @@
 
    L'unica eccezione ammessa è Ollama su http://127.0.0.1:11434: resta dentro
    il computer e parte solo se la persona lo collega. Sono ammesse anche le
-   richieste alla stessa origine (`fetch(request)` in `sw.js`) e i collegamenti
-   che la persona sceglie di aprire: un <a href="https://…"> non carica niente
-   da solo, quindi non è una risorsa esterna.
+   richieste che prendono un file dell'app — una pagina, `sw.js`, il manifest,
+   qualcosa dentro `assets/` — e la sola `fetch(request)` di `sw.js`, che
+   ripassa dalla cache la richiesta del browser. Un percorso relativo vale solo
+   se quel file esiste davvero: `fetch("assets/js/app.js?dati=1")` è rosso,
+   perché una query è un dato che esce dal programma anche restando sulla
+   stessa origine. Sono ammessi i collegamenti che la persona sceglie di
+   aprire: un <a href="https://…"> non carica niente da solo, quindi non è una
+   risorsa esterna.
 
    Cosa guarda: le pagine della cartella, `sw.js`, `manifest.webmanifest` e
    tutto `assets/` (JavaScript, CSS, JSON). Non guarda `desktop/`: il
@@ -37,10 +42,6 @@ const radice = path.join(__dirname, "..");
 // l'origine va bene (`/api/tags`, `/api/generate`).
 const OLLAMA = /^http:\/\/127\.0\.0\.1:11434(?:\/|$)/;
 
-// Le richieste alla stessa origine sono i file dell'app: `sw.js` li ripassa
-// dalla cache. Un percorso relativo letterale non porta dati fuori.
-const STESSA_ORIGINE = /^(?:\.{0,2}\/)?[\w./-]+\.(?:js|json|css|webmanifest|html)(?:\?[\w=&.-]*)?$/;
-
 const ESTENSIONI = [".js", ".css", ".json", ".webmanifest", ".html"];
 
 const problemi = [];
@@ -56,13 +57,13 @@ function problema(dove, cosa) {
 
 /* Lettura dei file --------------------------------------------------------- */
 
-function fileRicorsivi(cartella, prefisso) {
+function fileRicorsivi(cartella, prefisso, estensioni) {
   const risultati = [];
   for (const voce of fs.readdirSync(cartella, { withFileTypes: true })) {
     const relativo = prefisso ? prefisso + "/" + voce.name : voce.name;
     const pieno = path.join(cartella, voce.name);
-    if (voce.isDirectory()) risultati.push(...fileRicorsivi(pieno, relativo));
-    else if (voce.isFile() && ESTENSIONI.includes(path.extname(voce.name))) risultati.push(relativo);
+    if (voce.isDirectory()) risultati.push(...fileRicorsivi(pieno, relativo, estensioni));
+    else if (voce.isFile() && (!estensioni || estensioni.includes(path.extname(voce.name)))) risultati.push(relativo);
   }
   return risultati;
 }
@@ -71,8 +72,34 @@ const daLeggere = [
   ...fs.readdirSync(radice).filter((f) => f.endsWith(".html")).sort(),
   "sw.js",
   "manifest.webmanifest",
-  ...fileRicorsivi(path.join(radice, "assets"), "assets"),
+  ...fileRicorsivi(path.join(radice, "assets"), "assets", ESTENSIONI),
 ].filter((f) => fs.existsSync(path.join(radice, f)));
+
+// I file che l'app può chiedere a sé stessa: le pagine, `sw.js`, il manifest e
+// tutto quello che sta in `assets/`, compresi PDF e immagini. Un percorso che
+// non è qui dentro non è un file dell'app, nemmeno se esiste nel progetto:
+// `scripts/`, `tests/` e `desktop/` non arrivano al browser.
+const FILE_APP = new Set(
+  [
+    ...fs.readdirSync(radice).filter((f) => f.endsWith(".html")),
+    "sw.js",
+    "manifest.webmanifest",
+    ...fileRicorsivi(path.join(radice, "assets"), "assets"),
+  ].filter((f) => fs.existsSync(path.join(radice, f)))
+);
+
+// Un indirizzo relativo vale solo se porta a uno di quei file. `?` e `#` lo
+// rendono subito estraneo: dopo il punto interrogativo viaggiano i dati, e la
+// promessa è che non ne esca nessuno. Un percorso assoluto (`/assets/…`) non
+// vale perché il programma vive in una sottocartella, non alla radice del sito.
+function fileDellApp(destinazione) {
+  const testo = String(destinazione || "").trim();
+  if (!testo || /[?#]/.test(testo)) return null;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(testo) || /^[\\/]/.test(testo)) return null;
+  const normalizzato = path.posix.normalize(testo.replace(/\\/g, "/"));
+  if (normalizzato === "." || normalizzato.startsWith("..")) return null;
+  return FILE_APP.has(normalizzato) ? normalizzato : null;
+}
 
 /* Il sorgente senza commenti ----------------------------------------------- */
 
@@ -205,12 +232,13 @@ function controllaJs(dove, grezzo) {
       continue;
     }
     // In `sw.js` la richiesta è l'oggetto `request` del browser: è un file
-    // dell'app, non un altro sito.
-    if (nomeFile === "sw.js" && /^[A-Za-z_$][\w$]*$/.test(argomento)) {
+    // dell'app, non un altro sito. Solo `request`: un altro nome potrebbe
+    // portarsi dietro una query.
+    if (nomeFile === "sw.js" && argomento === "request") {
       stessaOrigine++;
       continue;
     }
-    if (!/:\/\//.test(destinazione) && STESSA_ORIGINE.test(destinazione)) {
+    if (!/:\/\//.test(destinazione) && fileDellApp(destinazione)) {
       stessaOrigine++;
       continue;
     }

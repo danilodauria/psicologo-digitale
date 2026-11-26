@@ -130,7 +130,8 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
-| `scripts/controlla-rete.cjs` | Nessuna chiamata di rete, WebSocket, beacon, worker esterno o risorsa caricata da un altro sito nelle pagine e in `assets/`: l'unica eccezione è Ollama su `127.0.0.1:11434` |
+| `scripts/controlla-rete.cjs` | Nessuna chiamata di rete, WebSocket, beacon, worker esterno o risorsa caricata da un altro sito nelle pagine e in `assets/`: l'unica eccezione è Ollama su `127.0.0.1:11434`. Una `fetch` relativa passa solo se prende un file dell'app davvero esistente (pagine, `sw.js`, manifest, `assets/`), senza `?` né `#`; in `sw.js` solo `fetch(request)` |
+| `tests/controlla-rete-test.cjs` | Prova il controllo al contrario, su un progetto in miniatura: un `fetch("assets/js/app.js?dati=1")` verso la stessa origine deve essere rosso, e con lui un file inesistente e un file del progetto che al browser non arriva (`scripts/`); un `fetch` verso un file dell'app senza query deve passare |
 | `scripts/controlla-impronte.cjs` | Le impronte SHA-256 dichiarate corrispondono ai file |
 | `scripts/controlla-archivi.cjs` | Gli archivi scaricabili si aprono e contengono quello che devono |
 | `scripts/controlla-dipendenze.cjs` | Nessuna dipendenza non dichiarata o non usata |
