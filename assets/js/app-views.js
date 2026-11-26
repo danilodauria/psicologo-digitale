@@ -646,6 +646,47 @@
   // scelta sopravvive al ridisegno della pagina, come quella della copia.
   let backupInEsame = null;
 
+  // L'anteprima di un ripristino o di un backup guardato appartiene alla scheda
+  // dei backup, non a quella delle copie automatiche: lì stava dopo il ritorno
+  // anticipato di «nessuna copia ancora», quindi chi non aveva copie non vedeva
+  // mai l'anteprima di «Prova un backup».
+  function htmlAnteprime() {
+    let html = "";
+    // Anteprima: prima di sostituire i dati si vede cosa cambierebbe, e se non
+    // cambierebbe niente lo dice invece di fingere un rischio.
+    if (copiaInEsame !== null) {
+      const c = A.confrontoCopia(copiaInEsame);
+      if (c) {
+        html += '<div class="callout info" id="copiaAnteprima"><p><strong>Copia del ' + esc(A.fmtDateTime(c.quando)) + ".</strong> " +
+          (c.voci.length ? "Rispetto a oggi cambierebbe:" : "Rispetto a oggi non cambierebbe nulla.") + "</p>" +
+          (c.voci.length ? htmlVociConfronto(c.voci) : "") +
+          '<p class="text-small muted">Prima di sostituire, i dati di adesso diventano una copia: se il ripristino non convince, si torna indietro ripristinando quella. Tema e numero di copie non vengono toccati.</p>' +
+          '<div class="btn-row">' +
+            '<button type="button" class="btn btn-primary btn-sm" id="copiaConferma">Ripristina questa copia</button>' +
+            '<button type="button" class="btn btn-ghost btn-sm" id="copiaAnnulla">Annulla</button>' +
+          "</div></div>";
+      }
+    }
+    // Un backup guardato e non applicato: stessa anteprima del ripristino, ma
+    // senza il pulsante che sostituisce i dati.
+    if (backupInEsame) {
+      const b = backupInEsame;
+      const c = b.confronto;
+      html += '<div class="callout info" id="backupAnteprima"><p><strong>Backup «' + esc(b.nome) + '".</strong>' +
+        (b.migrato ? " È in un formato precedente: se lo importassi verrebbe aggiornato al formato attuale." : "") + "</p>" +
+        (b.contenuto.length
+          ? '<p class="text-small mb-0"><strong>Il file contiene:</strong></p><ul class="text-small">' +
+            b.contenuto.map(function (v) { return "<li>" + esc(v.cosa) + ": " + v.quanti + "</li>"; }).join("") + "</ul>"
+          : '<p class="text-small muted">Il file non contiene dati personali: è la struttura vuota del programma.</p>') +
+        (c ? '<p class="text-small mb-0"><strong>' +
+          (c.voci.length ? "Rispetto ai dati di oggi cambierebbe:" : "Rispetto ai dati di oggi non cambierebbe nulla.") +
+          "</strong></p>" + (c.voci.length ? htmlVociConfronto(c.voci) : "") : "") +
+        '<p class="text-small muted">Nessun dato è stato toccato: qui si guarda soltanto. Per applicarlo si usa «Importa backup», che chiede conferma.</p>' +
+        '<div class="btn-row"><button type="button" class="btn btn-ghost btn-sm" id="backupAnteprimaChiudi">Chiudi l\'anteprima</button></div></div>';
+    }
+    return html;
+  }
+
   views.licenze = function () {
     A.setTitle("Licenze e progetto");
     A.page(
@@ -696,6 +737,7 @@
             '<div class="btn-row"><button type="submit" class="btn btn-primary btn-sm" id="backupSbloccoApri">Apri il backup</button>' +
             '<button type="button" class="btn btn-ghost btn-sm" id="backupSbloccoAnnulla">Annulla</button></div>' +
             '<p class="text-small muted mb-0" id="backupSbloccoStato" role="status"></p></form></div>' +
+        htmlAnteprime() +
       "</div>" +
 
       '<div class="card mt-2" id="backupCifrato"><h2 class=h-sub>Un backup protetto da password</h2>' +
@@ -857,38 +899,6 @@
                 (contoVecchie.quante === 1 ? " copia più vecchia sparisce" : " copie più vecchie spariscono") +
                 ", quella del " + esc(A.fmtDate(contoVecchie.resta.quando)) + " resta.</span></div>";
           }
-          // Anteprima: prima di sostituire i dati si vede cosa cambierebbe,
-          // e se non cambierebbe niente lo dice invece di fingere un rischio.
-          if (copiaInEsame !== null) {
-            const c = A.confrontoCopia(copiaInEsame);
-            if (c) {
-              html += '<div class="callout info" id="copiaAnteprima"><p><strong>Copia del ' + esc(A.fmtDateTime(c.quando)) + ".</strong> " +
-                (c.voci.length ? "Rispetto a oggi cambierebbe:" : "Rispetto a oggi non cambierebbe nulla.") + "</p>" +
-                (c.voci.length ? htmlVociConfronto(c.voci) : "") +
-                '<p class="text-small muted">Prima di sostituire, i dati di adesso diventano una copia: se il ripristino non convince, si torna indietro ripristinando quella. Tema e numero di copie non vengono toccati.</p>' +
-                '<div class="btn-row">' +
-                  '<button type="button" class="btn btn-primary btn-sm" id="copiaConferma">Ripristina questa copia</button>' +
-                  '<button type="button" class="btn btn-ghost btn-sm" id="copiaAnnulla">Annulla</button>' +
-                "</div></div>";
-            }
-          }
-          // Un backup guardato e non applicato: stessa anteprima del ripristino,
-          // ma senza il pulsante che sostituisce i dati.
-          if (backupInEsame) {
-            const b = backupInEsame;
-            const c = b.confronto;
-            html += '<div class="callout info" id="backupAnteprima"><p><strong>Backup «' + esc(b.nome) + '".</strong>' +
-              (b.migrato ? " È in un formato precedente: se lo importassi verrebbe aggiornato al formato attuale." : "") + "</p>" +
-              (b.contenuto.length
-                ? '<p class="text-small mb-0"><strong>Il file contiene:</strong></p><ul class="text-small">' +
-                  b.contenuto.map(function (v) { return "<li>" + esc(v.cosa) + ": " + v.quanti + "</li>"; }).join("") + "</ul>"
-                : '<p class="text-small muted">Il file non contiene dati personali: è la struttura vuota del programma.</p>') +
-              (c ? '<p class="text-small mb-0"><strong>' +
-                (c.voci.length ? "Rispetto ai dati di oggi cambierebbe:" : "Rispetto ai dati di oggi non cambierebbe nulla.") +
-                "</strong></p>" + (c.voci.length ? htmlVociConfronto(c.voci) : "") : "") +
-              '<p class="text-small muted">Nessun dato è stato toccato: qui si guarda soltanto. Per applicarlo si usa «Importa backup», che chiede conferma.</p>' +
-              '<div class="btn-row"><button type="button" class="btn btn-ghost btn-sm" id="backupAnteprimaChiudi">Chiudi l\'anteprima</button></div></div>';
-          }
           return html;
         })() +
       "</div>" +
@@ -937,7 +947,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.18 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.19 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
@@ -1011,6 +1021,11 @@
       backupCifratoInAttesa = busta;
       backupCifratoNome = nome;
       sbloccoDopo = dopo || "importa";
+      // Il file è cambiato: l'anteprima aperta era di un altro backup e non
+      // deve restare accanto alla richiesta di password.
+      backupInEsame = null;
+      copiaInEsame = null;
+      A.render();
       const box = document.getElementById("backupSblocco");
       if (!box) return;
       box.hidden = false;
@@ -1216,7 +1231,6 @@
     const parole = giorni === 30 ? "trenta" : "sette";
     const totale = giorni === 30 ? "sessanta" : "quattordici";
     const vuoto = !ora.voci && !ora.schede && !ora.misure && !prima.voci && !prima.schede && !prima.misure;
-    const num = function (n) { return n === null ? "—" : (Math.round(n * 10) / 10).toString().replace(".", ","); };
     const diff = function (a, b) {
       if (a === null || b === null) return "—";
       const d = Math.round((a - b) * 10) / 10;
@@ -1224,8 +1238,8 @@
       return (d > 0 ? "+" : "−") + Math.abs(d).toString().replace(".", ",");
     };
     const riga = function (etichetta, campo) {
-      return '<tr><th scope="row">' + etichetta + "</th><td>" + num(ora.media[campo]) + "</td><td>" +
-        num(prima.media[campo]) + "</td><td>" + diff(ora.media[campo], prima.media[campo]) + "</td></tr>";
+      return '<tr><th scope="row">' + etichetta + "</th><td>" + A.numeroUno(ora.media[campo]) + "</td><td>" +
+        A.numeroUno(prima.media[campo]) + "</td><td>" + diff(ora.media[campo], prima.media[campo]) + "</td></tr>";
     };
 
     const dalAl = function (s) { return "dal " + A.fmtDate(s.dal) + " al " + A.fmtDate(s.al); };
@@ -1510,5 +1524,13 @@
       const valore = (document.getElementById("cercaInput").value || "").trim();
       A.go(valore ? "cerca/" + encodeURIComponent(valore) : "cerca");
     });
+
+    // Chi arriva qui dal pulsante della testata vuole scrivere subito: il
+    // cursore va nel campo. Il titolo lo prende solo quando la vista non ha già
+    // scelto dove metterlo, quindi l'annuncio della pagina nuova resta.
+    if (!q) {
+      const campo = document.getElementById("cercaInput");
+      if (campo) { try { campo.focus({ preventScroll: true }); } catch (e) { campo.focus(); } }
+    }
   };
 })();

@@ -1001,6 +1001,13 @@ NP.app = (function () {
     };
   }
 
+  // Un numero decimale con la virgola, il trattino quando non c'è: lo usano
+  // il riepilogo e il fascicolo, così la stessa media non si scrive in due modi.
+  function numeroUno(n) {
+    if (n == null || !isFinite(n)) return "—";
+    return (Math.round(n * 10) / 10).toString().replace(".", ",");
+  }
+
   // Leggere un capitolo: la voce è una sola in tutta l'app, quella di Neura.
   // Passare da lì significa che scelta della voce, ritmo e pulsante Stop
   // valgono anche qui, invece di avere un secondo modo di parlare.
@@ -1808,6 +1815,7 @@ NP.app = (function () {
     discretoAttivo: discretoAttivo,
     impostaDiscreto: impostaDiscreto,
     statistichePeriodo: statistichePeriodo,
+    numeroUno: numeroUno,
     leggiCapitolo: leggiCapitolo,
     svelaContenuti: function () { app.classList.add("svelato"); },
     riprovaSalvataggi: riprovaSalvataggi,

@@ -752,33 +752,44 @@
   /* ------------------------------------------------------- Fascicolo unico */
 
   // Cinque cose che la persona porta al colloquio, in un documento solo. Non
-  // aggiunge niente: la relazione e la scheda sono le stesse che si scaricano
-  // da sole, il piano è quello salvato, i periodi sono gli stessi conti della
-  // pagina Riepilogo e le domande sono quelle già scelte per la scheda.
+  // aggiunge niente: la relazione è quella che si scarica da sola, la scheda è
+  // quella della sua pagina — senza la lista delle domande, che nel fascicolo
+  // sta una volta sola nella parte 5 —, il piano è quello salvato e i periodi
+  // sono gli stessi conti della pagina Riepilogo. Ogni parte è titolo e
+  // funzione: aggiungerne una è una riga, non due blocchi da tenere allineati.
   const PARTI_FASCICOLO = [
-    "Relazione preliminare",
-    "Scheda da portare",
-    "Piano di sicurezza",
-    "Confronto dei periodi",
-    "Domande scelte per il colloquio"
+    ["Relazione preliminare", function (d) { return sections(d, opzioniDocumento()); }],
+    ["Scheda da portare", function (d) { return sezioniScheda(schedaContenuto(d, scelteScheda(d, { domande: [] }))); }],
+    ["Piano di sicurezza", sezioniPiano],
+    ["Confronto dei periodi", sezioniPeriodi],
+    ["Domande scelte per il colloquio", sezioniDomandeScelte]
   ];
-
-  function partHeading(n) {
-    return "Parte " + n + " — " + PARTI_FASCICOLO[n - 1];
-  }
 
   function pianoSalvato() {
     const p = A.readJSON("pianoSicurezza", null);
     return p && typeof p === "object" ? p : {};
   }
 
+  const CAMPI_PIANO = ["segnali", "primiMinuti", "ambiente", "ragione"];
+  const VUOTO_PIANO = "(da scrivere: questo campo è ancora vuoto)";
+
+  function testoPiano(v) {
+    const t = v == null ? "" : String(v).trim();
+    return t || VUOTO_PIANO;
+  }
+
+  function contattiPiano(p) {
+    const contatti = Array.isArray(p.contatti) ? p.contatti : [];
+    return [0, 1, 2].map(function (i) {
+      const c = contatti[i] || {};
+      return { nome: String(c.nome || "").trim(), tel: String(c.tel || "").trim() };
+    });
+  }
+
   function pianoHaTesto(p) {
     if (!p || typeof p !== "object") return false;
-    return ["segnali", "primiMinuti", "ambiente", "ragione"].some(function (k) {
-      return typeof p[k] === "string" && p[k].trim();
-    }) || (Array.isArray(p.contatti) && p.contatti.some(function (c) {
-      return c && (String(c.nome || "").trim() || String(c.tel || "").trim());
-    }));
+    return CAMPI_PIANO.some(function (k) { return String(p[k] || "").trim(); }) ||
+      contattiPiano(p).some(function (c) { return c.nome || c.tel; });
   }
 
   // Il contenuto della scheda è già scelto e impaginato per la sua pagina: qui
@@ -789,30 +800,23 @@
     contenuto.sezioni.forEach(function (s) {
       out.push({ type: "h", text: s.titolo });
       (s.paragrafi || []).forEach(function (p) { out.push({ type: "p", text: p }); });
-      if (s.voci && s.voci.length) {
-        out.push({ type: "ul", items: s.voci.map(function (v, i) { return (s.numerata ? (i + 1) + ". " : "") + v; }) });
-      }
+      // L'unica lista numerata della scheda sono le domande, che stanno nella
+      // parte 5: qui ogni elenco è puntato.
+      if (s.voci && s.voci.length) out.push({ type: "ul", items: s.voci });
     });
     return out;
   }
 
   function sezioniPiano() {
     const p = pianoSalvato();
-    const vuoto = "(da scrivere: questo campo è ancora vuoto)";
     const out = [];
     const voce = function (titolo, testo) {
-      out.push({ type: "h", text: titolo });
-      out.push({ type: "p", text: testo && String(testo).trim() ? String(testo) : vuoto });
+      out.push({ type: "h", text: titolo }, { type: "p", text: testoPiano(testo) });
     };
     voce("I miei segnali", p.segnali);
     voce("Cosa faccio nei primi minuti", p.primiMinuti);
-    out.push({ type: "h", text: "Chi chiamo" });
-    const contatti = Array.isArray(p.contatti) ? p.contatti : [];
-    out.push({ type: "ul", items: [0, 1, 2].map(function (i) {
-      const c = contatti[i] || {};
-      const nome = String(c.nome || "").trim();
-      const tel = String(c.tel || "").trim();
-      return (nome || "persona " + (i + 1) + ": nome da scrivere") + " — " + (tel || "numero da scrivere");
+    out.push({ type: "h", text: "Chi chiamo" }, { type: "ul", items: contattiPiano(p).map(function (c, i) {
+      return (c.nome || "persona " + (i + 1) + ": nome da scrivere") + " — " + (c.tel || "numero da scrivere");
     }) });
     voce("Come rendo l'ambiente più sicuro", p.ambiente);
     voce("Una ragione per chiamare", p.ragione);
@@ -822,46 +826,44 @@
   }
 
   function sezioniPeriodi() {
-    const numero = function (n) {
-      if (n == null || !isFinite(n)) return "—";
-      return (Math.round(n * 10) / 10).toString().replace(".", ",");
-    };
-    const riga = function (giorni) {
-      const ora = A.statistichePeriodo(giorni, 0);
-      const prima = A.statistichePeriodo(giorni, giorni);
-      return [
-        giorni === 7 ? "Ultimi 7 giorni" : "Ultimi 30 giorni",
-        ora.voci + " (prima: " + prima.voci + ")",
-        ora.schede + " (prima: " + prima.schede + ")",
-        ora.misure + " (prima: " + prima.misure + ")",
-        numero(ora.media.umore) + " (prima: " + numero(prima.media.umore) + ")"
-      ];
-    };
+    const periodi = [7, 30].map(function (giorni) {
+      return { giorni: giorni, ora: A.statistichePeriodo(giorni, 0), prima: A.statistichePeriodo(giorni, giorni) };
+    });
+    const vuoto = periodi.every(function (p) {
+      return !p.ora.voci && !p.ora.schede && !p.ora.misure && !p.prima.voci && !p.prima.schede && !p.prima.misure;
+    });
+    if (vuoto) {
+      return [{ type: "p", text: "Nessuna voce di diario né misura in questi periodi: non c'è ancora niente da confrontare." }];
+    }
+    const confronto = function (a, b) { return a + " (prima: " + b + ")"; };
     return [
-      { type: "table", head: ["Periodo", "Voci di diario", "Schede", "Misure", "Umore medio"], rows: [riga(7), riga(30)] },
+      { type: "table", head: ["Periodo", "Voci di diario", "Schede", "Misure", "Umore medio"], rows: periodi.map(function (p) {
+        return [
+          "Ultimi " + p.giorni + " giorni",
+          confronto(p.ora.voci, p.prima.voci),
+          confronto(p.ora.schede, p.prima.schede),
+          confronto(p.ora.misure, p.prima.misure),
+          confronto(A.numeroUno(p.ora.media.umore), A.numeroUno(p.prima.media.umore))
+        ];
+      }) },
       { type: "p", text: "Il confronto è con i sette o trenta giorni precedenti. Una media con poche voci si muove facilmente, e un numero non è un giudizio: serve a vedere se qualcosa cambia." }
     ];
   }
 
+  // Una domanda suggerita c'è sempre (l'ultima è fissa), quindi la lista non
+  // può restare vuota e non serve il caso «nessuna domanda scelta».
   function sezioniDomandeScelte(d) {
     const disponibili = domandeDisponibili(d);
-    const scelte = scelteScheda(d).domande.map(function (i) { return disponibili[i]; }).filter(Boolean);
-    if (!scelte.length) return [{ type: "p", text: "Nessuna domanda scelta: si scelgono nella pagina Scheda da portare, e restano le stesse anche qui." }];
-    return [{ type: "ul", items: scelte.map(function (q) { return q.testo + (q.mia ? " (scritta da me)" : ""); }) }];
+    return [{ type: "ul", items: scelteScheda(d).domande.map(function (i) { return disponibili[i]; }).filter(Boolean)
+      .map(function (q) { return q.testo + (q.mia ? " (scritta da me)" : ""); }) }];
   }
 
   function sezioniFascicolo(d) {
     const out = [];
-    out.push({ type: "h", text: partHeading(1) });
-    out.push.apply(out, sections(d, opzioniDocumento()));
-    out.push({ type: "h", text: partHeading(2) });
-    out.push.apply(out, sezioniScheda(schedaContenuto(d, scelteScheda(d))));
-    out.push({ type: "h", text: partHeading(3) });
-    out.push.apply(out, sezioniPiano());
-    out.push({ type: "h", text: partHeading(4) });
-    out.push.apply(out, sezioniPeriodi());
-    out.push({ type: "h", text: partHeading(5) });
-    out.push.apply(out, sezioniDomandeScelte(d));
+    PARTI_FASCICOLO.forEach(function (parte, i) {
+      out.push({ type: "h", text: "Parte " + (i + 1) + " — " + parte[0] });
+      out.push.apply(out, parte[1](d));
+    });
     return out;
   }
 
@@ -1032,8 +1034,10 @@
       lines.forEach(function (l) { text(l, s, false, color, M, indent || 0); });
       y -= 3;
     }
+    // Il titolo si porta dietro almeno tre righe: da solo in fondo alla pagina
+    // sembrerebbe l'ultima cosa detta, e la parte comincerebbe sul foglio dopo.
     function heading(str, size) {
-      ensure((size || 11.5) * 3.2);
+      ensure((size || 11.5) * 3.2 + 40);
       y -= 14;
       ops.push({ kind: "line", x1: M, y1: y, x2: W - M, y2: y, gray: 0.84, width: 0.7 });
       y -= 4;
@@ -1062,15 +1066,19 @@
       if (s.type === "h") heading(s.text);
       else if (s.type === "p") para(s.text, 9.4, 0.2);
       else if (s.type === "flag") {
-        ensure(28);
+        // L'altezza del riquadro viene dal testo: un avviso lungo non deve
+        // scriversi sopra il paragrafo successivo, uno corto non deve lasciare
+        // un rettangolo grigio mezzo vuoto.
+        const righe = wrap(s.text, CONTENT_W - 16, 9, true);
+        const alto = righe.length * 11 + 10;
+        ensure(alto + 12);
         y -= 6;
-        ops.push({ kind: "rect", x: M, y: y - 22, w: CONTENT_W, h: 26, gray: 0.97 });
-        ops.push({ kind: "rect", x: M, y: y - 22, w: 3, h: 26, gray: 0.64 });
-        y -= 2;
-        wrap(s.text, CONTENT_W - 10, 9, true).forEach(function (l, i) {
-          ops.push({ kind: "text", x: M + 8, y: y - 10 - i * 11, size: 9, bold: true, color: 0.55, text: l });
+        ops.push({ kind: "rect", x: M, y: y - alto, w: CONTENT_W, h: alto, gray: 0.97 });
+        ops.push({ kind: "rect", x: M, y: y - alto, w: 3, h: alto, gray: 0.64 });
+        righe.forEach(function (l, i) {
+          ops.push({ kind: "text", x: M + 8, y: y - 11 - i * 11, size: 9, bold: true, color: 0.55, text: l });
         });
-        y -= 24;
+        y -= alto + 6;
       } else if (s.type === "ul") {
         s.items.forEach(function (item) {
           const lines = wrap(item, CONTENT_W - 12, 9.2, false);
@@ -1095,7 +1103,9 @@
       } else if (s.type === "table") {
         const cols = s.head.length;
         const colW = CONTENT_W / cols;
-        ensure(24);
+        // Intestazione e prima riga restano insieme: una tabella che comincia
+        // con i titoli delle colonne e nient'altro non dice niente.
+        ensure(46);
         y -= 14;
         ops.push({ kind: "rect", x: M, y: y - 5, w: CONTENT_W, h: 16, gray: 0.95 });
         s.head.forEach(function (h, i) {

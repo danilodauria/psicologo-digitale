@@ -13,11 +13,22 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.18";
+  const VERSIONE = "1.7.19";
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.19",
+      data: "26 novembre 2026",
+      titolo: "Provato in un browser vero: ricerca, backup, fascicolo e stampa",
+      punti: [
+        "Premendo la lente nella testata il cursore è già nel campo: si scrive subito, senza cercare dove scrivere.",
+        "«Prova un backup» mostra l'anteprima anche a chi non ha ancora copie automatiche — prima la scheda restava vuota — e scegliendo un file protetto l'anteprima del file precedente sparisce, invece di restare accanto alla richiesta di password.",
+        "Chiudendo il messaggio di benvenuto mentre Neura parla, la voce si ferma e «Ferma l'audio» si spegne: prima restava acceso su una voce già muta.",
+        "Nel fascicolo le domande scelte non si ripetono più nella scheda, un campo del piano mai compilato resta «da scrivere» invece di sparire, e nessun titolo di parte resta da solo in fondo alla pagina, anche stampando."
+      ]
+    },
     {
       v: "1.7.18",
       data: "25 novembre 2026",

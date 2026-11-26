@@ -89,8 +89,15 @@
       "</div>";
   }
 
-  function chiudi(pannello, definitivo) {    if (definitivo) scrivi(CHIAVE_NASCOSTO, "1");
-    if (window.speechSynthesis) {
+  function chiudi(pannello, definitivo) {
+    if (definitivo) scrivi(CHIAVE_NASCOSTO, "1");
+    // La voce si ferma da dove si ferma sempre: il modulo di Neura spegne il
+    // suono, azzera il suo stato e avvisa la barra. Chiamando qui
+    // speechSynthesis.cancel() il suono si interrompeva ma lo stato restava
+    // «in corso», e «Ferma l'audio» rimaneva acceso su una voce già muta.
+    if (NP.neuraUI && typeof NP.neuraUI.stop === "function") {
+      NP.neuraUI.stop();
+    } else if (window.speechSynthesis) {
       try { window.speechSynthesis.cancel(); } catch (e) { /* niente */ }
     }
     pannello.classList.remove("is-open");

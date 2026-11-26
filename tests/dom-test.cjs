@@ -346,6 +346,7 @@ ok(/non dormo da tre notti/.test(corpoFascicolo) && /Sara/.test(corpoFascicolo),
 ok(/Parte 4 — Confronto dei periodi/.test(corpoFascicolo), "contiene il confronto dei periodi");
 ok(/Ultimi 7 giorni/.test(corpoFascicolo) && /Ultimi 30 giorni/.test(corpoFascicolo), "con i due periodi, non uno solo");
 ok(/Parte 5 — Domande scelte per il colloquio/.test(corpoFascicolo), "contiene le domande scelte");
+ok(!/Cosa voglio chiedere/.test(corpoFascicolo), "le domande non si ripetono nella scheda: stanno una volta sola, nella parte 5");
 ok(/Numeri utili/.test(corpoFascicolo) && /112/.test(corpoFascicolo), "e i numeri di servizio, presi dall'unica fonte della pagina Sicurezza");
 ok(/Non è una diagnosi/.test(document.getElementById("fascicoloSheet").textContent), "il foglio dichiara che non è una diagnosi");
 
@@ -357,7 +358,28 @@ ok((fascicoloTesto.match(/\/Type \/Page/g) || []).length >= 2, "e occupa più di
 ok(fascicoloTesto.indexOf("FASCICOLO UNICO") >= 0, "l'intestazione dice che è un fascicolo unico");
 ok(fascicoloTesto.indexOf("Piano di sicurezza") >= 0, "contiene il piano anche nel PDF");
 ok(fascicoloTesto.indexOf("Confronto dei periodi") >= 0, "e il confronto dei periodi");
-ok(fascicoloTesto.indexOf("%%EOF") > 0, "ed è chiuso correttamente");
+
+// Le interruzioni di pagina cadono fra un blocco e l'altro: niente testo
+// sotto il margine e nessun titolo di parte lasciato solo in fondo al foglio.
+const pagineFascicolo = fascicoloTesto.split("endstream").slice(0, -1);
+const testiFascicolo = function (pagina) {
+  const out = [];
+  const re = /1 0 0 1 ([\d.]+) ([\d.]+) Tm \(((?:\\.|[^)])*)\) Tj/g;
+  let m;
+  while ((m = re.exec(pagina))) out.push({ y: Number(m[2]), text: m[3] });
+  return out;
+};
+ok(pagineFascicolo.length >= 2, "il fascicolo è fatto di pagine vere (" + pagineFascicolo.length + ")");
+ok(pagineFascicolo.every(function (p) { return testiFascicolo(p).every(function (r) { return r.y >= 30; }); }),
+  "nessuna riga finisce sotto il margine inferiore");
+const orfaniFascicolo = pagineFascicolo.some(function (p) {
+  const righe = testiFascicolo(p);
+  return righe.some(function (r, i) {
+    if (!/^Parte \d/.test(r.text)) return false;
+    return !righe.slice(i + 1).some(function (dopo) { return dopo.y < r.y && dopo.y > 40; });
+  });
+});
+ok(!orfaniFascicolo, "nessun titolo di parte resta in fondo alla pagina da solo");
 
 // I due comandi: uno scarica, l'altro stampa. Nessuno dei due cambia i dati.
 const clickVeroFascicolo = window.HTMLAnchorElement.prototype.click;
@@ -377,6 +399,13 @@ window.print = function () { stampeFascicolo++; };
 document.getElementById("fascicoloPrintBtn").click();
 window.print = stampaVeraFascicolo;
 ok(stampeFascicolo === 1, "«Stampa il fascicolo» chiama la stampa del browser");
+
+// Le parti vuote: senza un piano salvato i campi restano da scrivere, invece
+// di stampare «undefined» al posto del testo che manca.
+window.localStorage.removeItem(NP.app.PREFIX + "pianoSicurezza");
+const senzaPianoPdf = Buffer.from(NP.reportPdf.fascicolo()).toString("latin1");
+ok(/da scrivere/.test(senzaPianoPdf) && !/undefined|NaN/.test(senzaPianoPdf),
+  "senza piano i campi restano da scrivere, non diventano undefined");
 
 ok(JSON.stringify(NP.app.state.diary) === diarioPrimaFascicolo, "aprire e generare il fascicolo non tocca il diario");
 ok(JSON.stringify(NP.app.state.domandePersonali) === domandePrimaFascicolo, "né le domande del taccuino");
@@ -1651,6 +1680,7 @@ setTimeout(async function () {
   console.log("\nCerca nei contenuti");
   navigate("#/cerca");
   ok(!!document.getElementById("cercaInput"), "la ricerca ha un campo dove scrivere");
+  ok(document.activeElement === document.getElementById("cercaInput"), "arrivando alla ricerca il cursore è già nel campo, senza doverlo cercare");
   navigate("#/cerca/sonno");
   ok(/\d+ risultat/.test(document.getElementById("app").textContent), "cercando «sonno» escono risultati");
   ok(document.querySelectorAll('#app a[href^="#/manuale/"], #app a[href^="#/esercizi/"]').length > 0, "che portano a capitoli o esercizi");
@@ -2054,6 +2084,18 @@ setTimeout(async function () {
   ok(!document.getElementById("backupAnteprima"), "«Chiudi l'anteprima» la toglie");
   ok(NP.app.state.diary.length === 1, "senza aver toccato i dati");
 
+  // Senza copie automatiche l'anteprima deve comparire lo stesso: prima stava
+  // dentro la scheda delle copie, dopo il ritorno anticipato di «nessuna copia
+  // ancora», e chi non ne aveva non vedeva niente (il caso di un browser nuovo).
+  const chiaveCopie = NP.app.PREFIX + "copie";
+  const copiePrima = window.localStorage.getItem(chiaveCopie);
+  window.localStorage.removeItem(chiaveCopie);
+  navigate("#/licenze");
+  await scegliDa("provaFile", JSON.stringify({ app: "Psicologo Digitale", version: 3, diary: [paginaDiario("senza-copie", "2026-11-19T09:00:00.000Z", "file senza copie")] }), "senza-copie.json");
+  ok(!!document.getElementById("backupAnteprima"), "l'anteprima compare anche quando non ci sono copie automatiche");
+  if (copiePrima) window.localStorage.setItem(chiaveCopie, copiePrima);
+  document.getElementById("backupAnteprimaChiudi").click();
+
   // Un file del primo formato si guarda nel formato in cui si importerebbe, e
   // l'anteprima lo dice: la conversione non avviene di nascosto né sui dati.
   await scegliDa("provaFile", JSON.stringify({
@@ -2088,7 +2130,12 @@ setTimeout(async function () {
     domandePersonali: []
   }, "password-prova");
   navigate("#/licenze");
+  // Un'anteprima già aperta non deve restare accanto alla richiesta di password
+  // di un altro file: era la fotografia di una cosa diversa.
+  await scegliDa("provaFile", JSON.stringify({ app: "Psicologo Digitale", version: 3, diary: [paginaDiario("prima-del-cifrato", "2026-11-21T09:00:00.000Z", "anteprima di un altro file")] }), "altro-file.json");
+  ok(!!document.getElementById("backupAnteprima"), "prima del file cifrato c'è l'anteprima di un altro file");
   await scegliDa("provaFile", JSON.stringify(bustaProvaFile), "protetto-prova.json");
+  ok(!document.getElementById("backupAnteprima"), "scegliendo il file cifrato l'anteprima del file precedente sparisce");
   ok(document.getElementById("backupSblocco").hidden === false, "un backup cifrato chiede la password anche per la sola anteprima");
   const pwdProva = document.getElementById("backupSbloccoPassword");
   pwdProva.value = "password-prova";
@@ -2448,6 +2495,24 @@ setTimeout(async function () {
   window.location.hash = "#/scheda";
   window.eval(fs.readFileSync(path.join(root, "assets/js/app-welcome.js"), "utf8"));
   ok(!document.querySelector(".welcome-panel"), "con la scheda come prima pagina il benvenuto non si apre");
+
+  // Chiudere il benvenuto mentre parla deve spegnere anche il pulsante «Ferma
+  // l'audio»: prima il suono si interrompeva, ma Neura restava convinta di
+  // stare parlando e la barra non riceveva l'avviso.
+  console.log("\nChiudere il benvenuto spegne la voce");
+  window.localStorage.removeItem(NP.app.PREFIX + "welcome-hidden");
+  window.localStorage.removeItem(NP.app.PREFIX + "voice");
+  window.location.hash = "#/";
+  window.eval(fs.readFileSync(path.join(root, "assets/js/app-welcome.js"), "utf8"));
+  const pannelloBenvenuto = document.querySelector(".welcome-panel");
+  ok(!!pannelloBenvenuto, "la home riapre il benvenuto");
+  NP.neuraUI.speak("<p>Ti do il benvenuto.</p>");
+  const stopVoce = document.getElementById("statusStop");
+  ok(NP.neuraUI.isSpeaking(), "la voce del benvenuto sta parlando");
+  ok(!!stopVoce && stopVoce.getAttribute("data-active") === "true", "e il pulsante «Ferma l'audio» è acceso");
+  pannelloBenvenuto.querySelector(".welcome-x").click();
+  ok(!NP.neuraUI.isSpeaking(), "chiudendo con la × la voce si ferma");
+  ok(stopVoce.getAttribute("data-active") === "false", "e il pulsante «Ferma l'audio» si spegne");
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
