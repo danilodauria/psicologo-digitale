@@ -1677,6 +1677,38 @@ setTimeout(async function () {
   ok(stampe === 1, "il pulsante stampa apre la stampa del browser");
   NP.app.state.diary = [];
 
+  console.log("\nIl tuo percorso");
+  const statoBilancio = {
+    diary: NP.app.state.diary, scales: NP.app.state.scales, course: NP.app.state.course, quizStats: NP.app.state.quizStats
+  };
+  NP.app.state.diary = [];
+  NP.app.state.scales = {};
+  NP.app.state.course = { done: [], notes: {} };
+  NP.app.state.quizStats = { played: 0, best: 0, correct: 0, total: 0, byCat: {} };
+  window.localStorage.removeItem(NP.app.PREFIX + "thoughts");
+  navigate("#/bilancio");
+  ok(/Il tuo percorso/.test(document.title), "c'è una pagina che raccoglie quello che la persona ha fatto");
+  ok(/Non c'è ancora niente da riassumere/.test(document.getElementById("app").textContent),
+    "senza dati lo dice, invece di mostrare una tabella di zeri");
+  ok(!/voto|premio|serie|streak/i.test(document.getElementById("app").textContent),
+    "e non promette premi né serie da mantenere");
+  NP.app.state.diary = [voce("b1", 3, 6), voce("b2", 1, 7)];
+  window.localStorage.setItem(NP.app.PREFIX + "thoughts", JSON.stringify([{ id: "t1" }]));
+  NP.app.state.course.done = ["respiro-4-6"];
+  navigate("#/bilancio");
+  const testoBilancio = document.getElementById("app").textContent;
+  ok(/2 giornate nel diario/.test(testoBilancio), "conta le giornate di diario davvero scritte");
+  ok(/1 scheda del pensiero/.test(testoBilancio), "conta le schede del pensiero");
+  ok(/1 esercizio/.test(testoBilancio), "conta gli esercizi portati a termine");
+  ok(!!document.getElementById("stampaBilancio"), "e la pagina si può stampare");
+  document.getElementById("stampaBilancio").click();
+  ok(stampe === 2, "con la stampa del browser");
+  NP.app.state.diary = statoBilancio.diary;
+  NP.app.state.scales = statoBilancio.scales;
+  NP.app.state.course = statoBilancio.course;
+  NP.app.state.quizStats = statoBilancio.quizStats;
+  window.localStorage.removeItem(NP.app.PREFIX + "thoughts");
+
   // La ricerca confronta parole con i testi del programma, tutto sul dispositivo.
   console.log("\nCerca nei contenuti");
   navigate("#/cerca");

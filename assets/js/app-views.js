@@ -1425,6 +1425,64 @@
     if (stampa) stampa.addEventListener("click", function () { window.print(); });
   };
 
+  /* ------------------------------------------------------- Il tuo percorso */
+
+  // Una pagina per chi ha usato il programma, non per il clinico: mette in fila
+  // quello che c'è già — quanto hai scritto, quanto hai provato, cosa puoi
+  // portare a un colloquio — senza calcolare niente per conto proprio e senza
+  // premi o serie da mantenere. Legge i dati, non li interpreta.
+  views.bilancio = function () {
+    const diario = Array.isArray(A.state.diary) ? A.state.diary : [];
+    const pensieri = A.readJSON("thoughts", []);
+    const schede = Array.isArray(pensieri) ? pensieri.length : 0;
+    const questionari = Object.keys(A.state.scales || {}).length;
+    const esercizi = (A.state.course && Array.isArray(A.state.course.done)) ? A.state.course.done.length : 0;
+    const eserciziTotali = (NP.data.percorso && A.state.course) ? NP.data.percorso.esercizi.length : 0;
+    const quiz = (A.state.quizStats && A.state.quizStats.total) || 0;
+    const domande = (A.state.domandePersonali || []).length;
+    const primaVoce = diario.length
+      ? diario.map(function (v) { return v.date; }).filter(Boolean).sort()[0]
+      : null;
+    const vuoto = !diario.length && !schede && !questionari && !esercizi && !quiz;
+
+    const riga = function (testo) { return "<li>" + testo + "</li>"; };
+
+    A.setTitle("Il tuo percorso");
+    A.page(
+      '<div class="page-head"><p class="eyebrow">Il tuo percorso</p><h1>Quello che hai raccolto finora</h1>' +
+        '<p class="lead">Quello che hai scritto e provato in questo programma, tutto insieme: è il materiale che hai già in mano per il prossimo colloquio.</p>' +
+        (vuoto ? "" : '<button type="button" class="btn btn-ghost btn-sm no-print" id="stampaBilancio">' + A.icon("print") + "Stampa questa pagina</button>") +
+      "</div>" +
+      (vuoto
+        ? '<div class="callout info"><p><strong>Non c\'è ancora niente da riassumere.</strong> Il colloquio e una voce di diario bastano per cominciare: questa pagina si riempie da sola, senza un altro lavoro da fare.</p>' +
+          '<div class="btn-row"><a class="btn btn-primary btn-sm" href="#/colloquio">Inizia il colloquio</a><a class="btn btn-ghost btn-sm" href="#/diario">Scrivi nel diario</a></div></div>'
+        : '<div class="grid grid-2">' +
+          '<div class="card"><h2 class="h-sub">Quello che hai scritto</h2><ul class="list-check">' +
+            riga("Hai annotato <strong>" + diario.length + "</strong> " + (diario.length === 1 ? "giornata" : "giornate") + " nel diario" +
+              (primaVoce ? ", dalla prima del " + esc(A.fmtDate(primaVoce)) : "")) +
+            riga("Hai compilato <strong>" + schede + "</strong> " + (schede === 1 ? "scheda del pensiero" : "schede del pensiero")) +
+            riga("Hai risposto a <strong>" + questionari + "</strong> " + (questionari === 1 ? "questionario" : "questionari") + " di autovalutazione") +
+            (domande ? riga("Hai messo da parte <strong>" + domande + "</strong> " + (domande === 1 ? "domanda" : "domande") + " da fare al clinico") : "") +
+          "</ul></div>" +
+          '<div class="card"><h2 class="h-sub">Quello che hai provato</h2><ul class="list-check">' +
+            riga("Hai portato a termine <strong>" + esercizi + "</strong> " + (esercizi === 1 ? "esercizio" : "esercizi") + " del percorso" +
+              (eserciziTotali ? " su " + eserciziTotali : "")) +
+            riga("Hai risposto a <strong>" + quiz + "</strong> " + (quiz === 1 ? "domanda" : "domande") + " della Palestra della mente") +
+          "</ul>" +
+          '<p class="text-small muted mb-0">Se un numero è fermo non c\'è niente da recuperare: questa pagina racconta, non assegna un voto.</p></div>' +
+        "</div>" +
+        '<div class="card mt-2"><h2 class="h-sub">Da qui puoi portare qualcosa a un colloquio</h2>' +
+          '<p>La relazione mette insieme colloquio, punteggi e quello che hai scelto di includere; la scheda è una pagina sola; il fascicolo tiene tutto in un documento unico. Sono tre modi di dire la stessa cosa, e nessuno aggiunge dati che non hai già scritto.</p>' +
+          '<div class="btn-row"><a class="btn btn-soft btn-sm" href="#/relazione">Apri la relazione</a>' +
+            '<a class="btn btn-ghost btn-sm" href="#/scheda">Prepara la scheda</a>' +
+            '<a class="btn btn-ghost btn-sm" href="#/fascicolo">Fascicolo completo</a>' +
+            '<a class="btn btn-ghost btn-sm" href="#/taccuino">Taccuino delle domande</a></div></div>')
+    );
+
+    const stampa = document.getElementById("stampaBilancio");
+    if (stampa) stampa.addEventListener("click", function () { window.print(); });
+  };
+
   /* ---------------------------------------------------------------- Cerca */
 
   // Cercare dentro i contenuti: dodici capitoli, glossario ed esercizi sono
