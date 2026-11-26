@@ -301,6 +301,29 @@ ok(/respiro|ancoraggio/i.test(esercizio.html), "Neura propone un esercizio perti
 const privacy = ask("dove finiscono i miei dati?");
 ok(/localStorage|dispositivo/i.test(privacy.html), "Neura spiega dove restano i dati");
 
+/* Le domande che Neura deve saper riconoscere ------------------------------ */
+
+// I pochi casi scritti a mano qui sopra dicono che il motore risponde; questo
+// elenco dice che risponde alla cosa giusta. Senza, una modifica ai sinonimi o
+// ai capitoli può spostare in silenzio una domanda sul sonno nella privacy, e
+// nessuno se ne accorge finché non succede a una persona.
+const casiNeura = JSON.parse(read("tests/neura-casi.json")).casi;
+ok(casiNeura.length >= 40, "l'elenco delle domande di prova è abbastanza ampio (" + casiNeura.length + " casi)");
+let casiOk = 0;
+casiNeura.forEach(function (c) {
+  const a = ask(c.domanda);
+  // Le virgolette e gli apostrofi sono già sfuggiti nell'HTML: si confronta
+  // con il testo che una persona legge, non con le entità.
+  const testo = String(a.html || "").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+  const urgenzaGiusta = c.urgente == null || !!a.urgent === !!c.urgente;
+  const rispostaGiusta = new RegExp(c.contiene, "i").test(testo);
+  if (urgenzaGiusta && rispostaGiusta) casiOk++;
+  else console.error("    ✗ «" + c.domanda + "» → atteso /" + c.contiene + "/" +
+    (c.urgente ? " con urgenza" : "") + ", ottenuto: " + testo.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 120));
+});
+ok(casiOk === casiNeura.length, "Neura porta ogni domanda di prova alla sezione giusta (" + casiOk + "/" + casiNeura.length + ")");
+ok(casiNeura.every((c) => !/zzz/.test(c.contiene)), "nessuna aspettativa è un segnaposto");
+
 /* Nutrizione e IA locale --------------------------------------------------- */
 
 const nut = NP.data.nutrizione;
@@ -498,6 +521,29 @@ ok(exists("scripts/build_prove_a_mano_pdf.py"), "il generatore del foglio delle 
 const genProve = read("scripts/build_prove_a_mano_pdf.py");
 ok(/PROVE-A-MANO-/.test(genProve), "il generatore parte dal markdown delle prove, non da un testo a parte");
 ok(!/Riepilogo dei periodi|Modalità discreta/.test(genProve), "il generatore non contiene una seconda copia delle prove");
+
+/* Cosa la suite nel browser copre già ------------------------------------- */
+
+// Dalle sezioni 27 in poi il foglio dichiara, prova per prova, se la suite nel
+// browser la esegue per intero, solo in parte o per niente. Se una prova nuova
+// arrivasse senza il marcatore, chi prepara la release rifarebbe a mano quello
+// che `npm test` fa già — o, peggio, salterebbe quello che la suite non fa. Il
+// valore ammesso è uno dei tre, così il foglio non può dire «forse».
+let sezioneSuite = 0;
+const proveSuite = [];
+proveMd.split("\n").forEach(function (riga) {
+  const intestazione = riga.match(/^##\s+(\d+)\./);
+  if (intestazione) sezioneSuite = Number(intestazione[1]);
+  const prova = riga.match(/^\|\s*☐\s*\|\s*(\d+\.\d+)/);
+  if (prova && sezioneSuite >= 27 && sezioneSuite <= 31) {
+    proveSuite.push({ etichetta: prova[1], riga: riga });
+  }
+});
+ok(proveSuite.length > 0, "il foglio ha prove nelle sezioni 27-31 (" + proveSuite.length + ")");
+proveSuite.forEach(function (p) {
+  const marcato = /\*\*Suite:\*\*\s*(sì|no|in parte)(?=\s|\(|$)/.test(p.riga);
+  ok(marcato, "la prova " + p.etichetta + " dice cosa fa la suite (**Suite:** sì, in parte o no)");
+});
 
 /* Quello che il foglio delle prove promette davvero ------------------------ */
 

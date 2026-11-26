@@ -36,7 +36,11 @@ NP.neura = (function () {
     return norm(s).split(" ").filter(function (w) { return w.length > 2; });
   }
 
-  const RISK = /(voglio morire|voglio ammazzarmi|voglio uccidermi|farla finita|togliermi la vita|non voglio piu vivere|non voglio vivere|farmi del male|mi voglio tagliare|impiccarmi|buttarmi di sotto|buttarmi dal|prendere tutte le pastiglie|sto pensando al suicidio|pensieri suicidi|suicidarmi|voglio sparire per sempre)/;
+  // Le frasi di rischio si scrivono in molti modi: «pensieri di morte» è lo
+  // stesso pensiero di «pensieri suicidi», e «voglio sparire» senza «per
+  // sempre» non è meno urgente. Meglio chiedere una volta in più che mancare
+  // l'unica risposta che conta davvero.
+  const RISK = /(voglio morire|voglio ammazzarmi|voglio uccidermi|farla finita|togliermi la vita|togliersi la vita|non voglio piu vivere|non voglio vivere|non voglio svegliarmi|farmi del male|mi voglio tagliare|impiccarmi|buttarmi di sotto|buttarmi dal|prendere tutte le pastiglie|sto pensando al suicidio|pensieri suicidi|pensieri di morte|pensiero di morte|ideazione suicidaria|suicidarmi|voglio sparire|sparire per sempre|non ha senso vivere|non vale la pena vivere)/;
   const VIOLENZA = /(mi picchia|mi mena|mi strangola|violenza domestica|mi minaccia|mi controlla il telefono|mi stalker|mi ha stuprato|abuso sessuale|sono in pericolo a casa)/;
 
   const SALUTI = /^(ciao|buongiorno|buonasera|salve|hey|ehi|ciao neura)\b/;
@@ -202,7 +206,7 @@ NP.neura = (function () {
       };
     }
 
-    if (/(relazione|pdf|stamp|portare al medico|report)/.test(t)) {
+    if (/(relazione|scheda|pdf|stamp|portare al medico|report)/.test(t)) {
       return {
         html: "<p>La <strong>relazione</strong> raccoglie ciò che hai inserito: dati del colloquio, punteggi dei questionari con le fasce, segnali di sicurezza, obiettivi e domande suggerite per il professionista. Prima di generare il PDF puoi scegliere se includere il diario recente, le schede del pensiero e le tue note personali. Puoi scaricarla in PDF o stamparla.</p>" +
           "<p>Se ti serve qualcosa di più corto, dalla relazione si apre la <strong>scheda da portare</strong>: una pagina sola con le aree, fino a tre punteggi, una voce di diario, una scheda del pensiero e le domande che scegli tu.</p>" +
@@ -210,6 +214,11 @@ NP.neura = (function () {
           '<p class="mini">' + link("relazione", "Apri la relazione") + " · " + link("scheda", "Prepara la scheda") + " · " + link("manuale/etica-ia", "Privacy e limiti") + "</p>",
         suggest: ["Cosa contiene la relazione?", "I miei dati sono al sicuro?", "Come preparo il primo colloquio?"]
       };
+    }
+
+    if (/(colloquio|primo incontro|cosa aspettarsi)/.test(t)) {
+      const ch = manuale.filter(function (c) { return c.id === "primo-colloquio"; })[0];
+      if (ch) return { html: chapterHTML(ch), suggest: ["Come mi preparo?", "Quanto dura?", "Che domande mi faranno?"] };
     }
 
     if (/(quanto (dura|costa)|prezzo|tariffa|costo|frequenza|quante sedute)/.test(t)) {
@@ -221,7 +230,7 @@ NP.neura = (function () {
       };
     }
 
-    if (/(psichiatra|psicoterapeuta|albo|differenza tra psicologo|come scelgo)/.test(t)) {
+    if (/(psichiatra|psicoterapeuta|psicoterapia|albo|differenza tra psicologo|come scelgo|ricetta|medico di base|servizio pubblico|consultorio|csm)/.test(t)) {
       const ch = manuale.filter(function (c) { return c.id === "scegliere-professionista"; })[0];
       if (ch) return { html: chapterHTML(ch), suggest: ["Quanto costa una terapia?", "Come verifico l'albo?", "Primo colloquio: cosa aspettarsi?"] };
     }
@@ -244,7 +253,7 @@ NP.neura = (function () {
       };
     }
 
-    if (/(dieta|dietolog|dietista|nutrizion|alimentaz|mangiare|cibo|peso|corpo|colazione|pranzo|cena|spuntino)/.test(t)) {
+    if (/(dieta|dietolog|dietista|nutrizion|alimentaz|mangiare|mangio|cibo|peso|corpo|colazione|pranzo|cena|spuntino)/.test(t)) {
       return {
         html: "<p>Il cibo e l'umore si muovono insieme: pasti regolari, fibra, sonno e luce del mattino contano più di qualsiasi «superfood». Non esiste un alimento che curi l'ansia o la depressione, e non esiste una dieta valida per tutti.</p>" +
           "<p>Nella sezione dedicata trovo cosa dicono le indicazioni italiane, un'immagine pratica del piatto, i segnali da non aspettare e la differenza tra <strong>dietista</strong>, <strong>dietologo</strong> e <strong>biologo nutrizionista</strong>. Non ti prescrivo diete: non è il mio ruolo e non sarebbe sicuro.</p>" +
@@ -253,7 +262,7 @@ NP.neura = (function () {
       };
     }
 
-    if (/(esercizio|cosa posso fare (adesso|subito|ora)|tecnica|calmarmi|respirare|respir)/.test(t)) {
+    if (/(esercizio|cosa posso fare (adesso|subito|ora)|tecnica|calmarmi|calmo|calmare|tranquill|respirare|respir)/.test(t)) {
       const ex = findExercise(t, ws) || esercizi.filter(function (e) { return e.id === "respiro-4-6"; })[0];
       return { html: exerciseHTML(ex), suggest: ["Un esercizio per l'ansia", "Un esercizio per dormire", "Tutti gli esercizi"] };
     }
@@ -263,12 +272,12 @@ NP.neura = (function () {
       if (ch) return { html: chapterHTML(ch), suggest: ["Questionario esaurimento", "Un esercizio sui confini", "Quanto dura un percorso?"] };
     }
 
-    if (/(lutto|perdita|morte di|trauma|incidente|violenza|abuso)/.test(t)) {
+    if (/(lutto|perdita|perso|perduto|morte|funerale|trauma|incidente|violenza|abuso)/.test(t)) {
       const ch = manuale.filter(function (c) { return c.id === "trauma-lutto"; })[0];
       if (ch) return { html: chapterHTML(ch), suggest: ["Come trovo un professionista?", "Un esercizio di ancoraggio", "Numeri utili"] };
     }
 
-    if (/(sonno|dormire|insonnia|sveglio di notte)/.test(t)) {
+    if (/(sonno|dormire|dormo|insonnia|svegl|riaddorment|notte)/.test(t)) {
       const ch = manuale.filter(function (c) { return c.id === "sonno"; })[0];
       if (ch) return { html: chapterHTML(ch), suggest: ["Questionario sonno", "Le sei regole del sonno", "Perché mi sveglio di notte?"] };
     }
@@ -278,7 +287,7 @@ NP.neura = (function () {
       if (ch) return { html: chapterHTML(ch), suggest: ["Questionario ansia", "Esercizio di respiro", "Come smetto di evitare?"] };
     }
 
-    if (/(depression|umore|triste|vuoto|non ho voglia|energia)/.test(t)) {
+    if (/(depression|umore|triste|vuoto|non ho voglia|voglia di niente|non provo piu|niente mi interessa|energia)/.test(t)) {
       const ch = manuale.filter(function (c) { return c.id === "umore"; })[0];
       if (ch) return { html: chapterHTML(ch), suggest: ["Questionario umore", "Come ricomincio a fare?", "Quando chiedere aiuto"] };
     }
@@ -288,7 +297,7 @@ NP.neura = (function () {
       if (ch) return { html: chapterHTML(ch), suggest: ["Esercizio DESC", "Come metto un confine?", "Questionario relazioni"] };
     }
 
-    if (/(caffeina|alcol|fumo|sostanze|dieta|movimento|sport|corpo)/.test(t)) {
+    if (/(caffeina|alcol|bevo|bere|fumo|fumare|sostanze|dieta|movimento|sport|corpo)/.test(t)) {
       const ch = manuale.filter(function (c) { return c.id === "corpo-abitudini"; })[0];
       if (ch) return { html: chapterHTML(ch), suggest: ["Come smetto di bere la sera?", "Quanta caffeina è troppa?", "Il movimento aiuta l'umore?"] };
     }
