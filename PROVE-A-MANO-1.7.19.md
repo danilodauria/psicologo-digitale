@@ -247,31 +247,31 @@ Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
 
 | ✓ | Prova | Risultato atteso |
 |---|---|---|
-| ☐ | 27.1 Da qualsiasi pagina, guarda la testata: c'è un pulsante con la lente accanto alla voce e al tema. Premilo | Si apre la pagina **Cerca**, il campo ha il focus e il pulsante nella testata resta acceso. Su un telefono stretto il pulsante c'è ancora e la testata non spinge la pagina in orizzontale |
-| ☐ | 27.2 Raggiungi la lente con Tab e attivala con Invio; poi torna indietro con il pulsante Indietro del browser | Il pulsante si raggiunge e si attiva da tastiera, ha un nome leggibile («Cerca nei contenuti») e non porta via il focus al campo. Tornando indietro la pagina è quella di prima e la lente si spegne |
+| ☐ | 27.1 Apri la home e premi la lente nella testata, accanto alla voce e al tema | L'indirizzo diventa `#/cerca` e si apre la pagina Cerca: la lente resta evidenziata, il cursore è già nel campo «Parole da cercare» e le parole scritte compaiono nei risultati senza altri clic. Con la finestra a 360 px la lente c'è ancora e la testata non crea scorrimento orizzontale |
+| ☐ | 27.2 Con la tastiera: premi Tab finché il contorno non è sulla lente, poi Invio; infine torna indietro con il pulsante Indietro del browser | Il contorno si ferma sulla lente — è un collegamento, non un disegno — e Invio apre la pagina Cerca; il lettore di schermo legge «Cerca nei contenuti». Indietro riporta alla pagina di prima e la lente non è più evidenziata |
 
 ## 28. Provare un backup senza applicarlo (dalla 1.7.18)
 
 | ✓ | Prova | Risultato atteso |
 |---|---|---|
-| ☐ | 28.1 Licenze → **Prova un backup**, scegli un backup in chiaro con qualche voce in più di quelle di oggi | Compare un riquadro con il nome del file, cosa contiene e cosa cambierebbe rispetto a oggi. Il diario resta quello di prima: nessuna conferma, nessun dato sostituito. «Chiudi l'anteprima» toglie il riquadro |
-| ☐ | 28.2 Prova un backup protetto da password, prima con la password sbagliata e poi con quella giusta | Con la password sbagliata il messaggio lo dice e non compare nessuna anteprima. Con quella giusta compare l'anteprima del contenuto, e i dati di oggi restano intatti |
-| ☐ | 28.3 Prova un file di una versione futura (per esempio `"version": 9`) e uno che non è un backup | Il primo lo dice («versione più recente») senza aprire nessuna anteprima; il secondo avvisa che non è un backup valido. In nessuno dei due casi i dati cambiano |
+| ☐ | 28.1 Esporta un backup in chiaro (Licenze → **Esporta backup in chiaro**), poi togli una voce dal Diario, così il file ne ha una in più. Torna in Licenze → **Prova un backup** e scegli quel file | Compare un riquadro con il nome del file, «**Il file contiene:**» con il numero di voci, «**Rispetto ai dati di oggi cambierebbe:**» e la frase «Nessun dato è stato toccato». Il Diario ha ancora le voci di prima e nessuna finestra chiede conferma; **Chiudi l'anteprima** toglie il riquadro |
+| ☐ | 28.2 Esporta un backup protetto da password, poi Licenze → **Prova un backup** e scegli quel file: prima una password sbagliata, poi quella giusta | Con la password sbagliata compare «Password errata o file danneggiato.» e nessun riquadro di anteprima. Con quella giusta il riquadro compare come nella prova 28.1, il campo della password sparisce e il Diario resta com'è |
+| ☐ | 28.3 Apri un backup in chiaro con un editor di testo, cambia `"version": 3` in `"version": 9`, salvalo con un altro nome; scrivi poi in un file di testo `{ "ciao": "mondo" }`. Provali uno alla volta con **Prova un backup** | Il primo avvisa che il file viene da una versione più recente dell'app (formato 9) e non apre nessuna anteprima; il secondo che non sembra un backup valido. In nessuno dei due casi il Diario cambia |
 
 ## 29. Il fascicolo unico (dalla 1.7.18)
 
 | ✓ | Prova | Risultato atteso |
 |---|---|---|
-| ☐ | 29.1 Relazione → **Fascicolo completo**. Scorri il foglio | Ci sono cinque parti: relazione, scheda da portare, piano di sicurezza, confronto dei periodi (sette e trenta giorni) e domande scelte. Il piano mostra quello che hai scritto, non un testo di esempio; le parti vuote lo dicono |
-| ☐ | 29.2 Premi **Scarica il fascicolo PDF** | Si scarica un solo PDF, di più pagine, con le cinque parti e in fondo le firme. Il messaggio dice «Fascicolo generato». Non viene creato nessun altro file e nessun dato cambia |
-| ☐ | 29.3 Premi **Stampa il fascicolo** e guarda l'anteprima | Compare solo il foglio del fascicolo, senza testata, menu, pulsanti né avvisi. Le parti si susseguono senza sovrapposizioni e la stampa non taglia il testo |
+| ☐ | 29.1 Scrivi una frase riconoscibile nel piano di sicurezza (per esempio «Prova del nove») e una domanda nel taccuino; poi Relazione → **Fascicolo completo** | Cinque titoli: «Parte 1 — Relazione preliminare», «Parte 2 — Scheda da portare», «Parte 3 — Piano di sicurezza», «Parte 4 — Confronto dei periodi», «Parte 5 — Domande scelte per il colloquio». «Prova del nove» compare nel piano, la domanda in fondo, e un campo mai compilato dice «(da scrivere: questo campo è ancora vuoto)» |
+| ☐ | 29.2 Premi **Scarica il fascicolo PDF** e apri il file comparso tra i download | Un solo file `fascicolo-psicologo-digitale-AAAA-MM-GG.pdf`, di più pagine, con le cinque parti e le firme in fondo; il messaggio dice «Fascicolo generato.» e il Diario non cambia |
+| ☐ | 29.3 Premi **Stampa il fascicolo** e nell'anteprima guarda la prima e l'ultima pagina | C'è solo il foglio del fascicolo: niente testata, menu, pulsanti o avvisi. Ogni titolo di parte ha il suo testo sotto — nessuno resta da solo in fondo alla pagina — e l'ultima pagina porta le firme |
 
 ## 30. Niente rete (dalla 1.7.18)
 
 | ✓ | Prova | Risultato atteso |
 |---|---|---|
-| ☐ | 30.1 Apri gli strumenti di sviluppo, scheda **Rete**, svuota l'elenco e usa il programma: colloquio, diario, ricerca, relazione, fascicolo, backup | Nessuna richiesta verso altri siti. Le uniche voci sono i file dell'app; con Ollama scollegato non compare nessuna chiamata a `127.0.0.1:11434` |
-| ☐ | 30.2 Se hai Ollama, collegalo da **Installa l'app** e genera una risposta di Neura | Compaiono solo richieste a `127.0.0.1:11434` (`/api/tags`, `/api/generate`). Non parte niente verso internet, e senza Ollama il programma funziona lo stesso |
+| ☐ | 30.1 Apri gli strumenti di sviluppo (F12) → scheda **Rete**, spunta «Preserva log», svuota l'elenco, poi usa il programma: un colloquio, una voce di diario, una ricerca, la relazione, il fascicolo, l'esportazione di un backup | Nella colonna del dominio ci sono solo l'indirizzo del programma e i suoi file; con Ollama scollegato nessuna riga porta a `127.0.0.1:11434` né a un sito esterno |
+| ☐ | 30.2 Se hai Ollama: **Installa l'app** → collega Ollama, poi chiedi una risposta a Neura con la scheda Rete aperta | Compaiono richieste solo a `127.0.0.1:11434` (`/api/tags`, `/api/generate`) e nessuna verso internet. Scollegandolo la barra di stato dice «IA locale: essenziale» e il programma funziona lo stesso |
 
 ## 31. Le stesse cose in un browser vero (dalla 1.7.19)
 

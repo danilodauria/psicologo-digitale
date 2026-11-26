@@ -111,7 +111,7 @@ endobj
 endobj
 15 0 obj
 <<
-/Author (Danilo D'Auria) /CreationDate (D:20261126112233+00'00') /Creator (scripts/build_prove_a_mano_pdf.py) /Keywords () /ModDate (D:20261126112233+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Danilo D'Auria) /CreationDate (D:20261126115554+00'00') /Creator (scripts/build_prove_a_mano_pdf.py) /Keywords () /ModDate (D:20261126115554+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (Prove da fare a mano prima di considerare chiusa una release) /Title (Psicologo Digitale \267 Prove a mano) /Trapped /False
 >>
 endobj
@@ -4030,7 +4030,7 @@ endstream
 endobj
 22 0 obj
 <<
-/Length 17987
+/Length 18931
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -4568,39 +4568,39 @@ BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (27. Il pulsante Cerca nella testata \(dalla 1
 Q
 Q
 q
-1 0 0 1 51.02362 258.2276 cm
+1 0 0 1 51.02362 240.8276 cm
 q
 .968627 .960784 .937255 rg
-n 0 65.7 493.2283 -11.5 re f*
+n 0 83.1 493.2283 -11.5 re f*
 1 1 1 rg
-n 0 54.2 493.2283 -27.1 re f*
+n 0 71.6 493.2283 -35.8 re f*
 .984314 .980392 .968627 rg
-n 0 27.1 493.2283 -27.1 re f*
+n 0 35.8 493.2283 -35.8 re f*
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 4 54.7 cm
+1 0 0 1 4 72.1 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Fatto) Tj T* ET
 Q
 Q
 q
-1 0 0 1 35.1811 54.7 cm
+1 0 0 1 35.1811 72.1 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Prova) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 54.7 cm
+1 0 0 1 192.2772 72.1 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Risultato atteso) Tj T* ET
 Q
 Q
 q
-1 0 0 1 11.29055 45.1 cm
+1 0 0 1 11.29055 62.5 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -4618,20 +4618,20 @@ Q
 Q
 Q
 q
-1 0 0 1 35.1811 27.6 cm
+1 0 0 1 35.1811 53.7 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (27.1 Da qualsiasi pagina, guarda la) Tj T* (testata: c'\350 un pulsante con la lente) Tj T* (accanto alla voce e al tema. Premilo) Tj T* ET
+BT 1 0 0 1 0 9 Tm /F1 8.4 Tf 8.7 TL (27.1 Apri la home e premi la lente nella) Tj T* (testata, accanto alla voce e al tema) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 27.6 cm
+1 0 0 1 192.2772 36.3 cm
 q
-BT 1 0 0 1 0 17.7 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (Si apre la pagina ) Tj /F2 8.4 Tf (Cerca) Tj /F1 8.4 Tf (, il campo ha il focus e il pulsante nella testata resta) Tj T* (acceso. Su un telefono stretto il pulsante c'\350 ancora e la testata non spinge la) Tj T* (pagina in orizzontale) Tj T* ET
+BT 1 0 0 1 0 26.2 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (L'indirizzo diventa ) Tj /F3 8.6 Tf (#/cerca) Tj /F1 8.4 Tf ( e si apre la pagina Cerca: la lente resta) Tj T* (evidenziata, il cursore \350 gi\340 nel campo \253Parole da cercare\273 e le parole scritte) Tj T* (compaiono nei risultati senza altri clic. Con la finestra a 360 px la lente c'\350) Tj T* (ancora e la testata non crea scorrimento orizzontale) Tj T* ET
 Q
 Q
 q
-1 0 0 1 11.29055 18 cm
+1 0 0 1 11.29055 26.7 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -4652,14 +4652,14 @@ q
 1 0 0 1 35.1811 .5 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (27.2 Raggiungi la lente con Tab e) Tj T* (attivala con Invio; poi torna indietro con) Tj T* (il pulsante Indietro del browser) Tj T* ET
+BT 1 0 0 1 0 26.4 Tm /F1 8.4 Tf 8.7 TL (27.2 Con la tastiera: premi Tab finch\351 il) Tj T* (contorno non \350 sulla lente, poi Invio;) Tj T* (infine torna indietro con il pulsante) Tj T* (Indietro del browser) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 .5 cm
+1 0 0 1 192.2772 9.2 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Il pulsante si raggiunge e si attiva da tastiera, ha un nome leggibile \(\253Cerca nei) Tj T* (contenuti\273\) e non porta via il focus al campo. Tornando indietro la pagina \350) Tj T* (quella di prima e la lente si spegne) Tj T* ET
+BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Il contorno si ferma sulla lente \227 \350 un collegamento, non un disegno \227 e Invio) Tj T* (apre la pagina Cerca; il lettore di schermo legge \253Cerca nei contenuti\273. Indietro) Tj T* (riporta alla pagina di prima e la lente non \350 pi\371 evidenziata) Tj T* ET
 Q
 Q
 q
@@ -4667,63 +4667,63 @@ q
 1 j
 .788235 .768627 .721569 RG
 .4 w
-n 0 65.7 m 493.2283 65.7 l S
+n 0 83.1 m 493.2283 83.1 l S
 n 0 0 m 493.2283 0 l S
-n 0 0 m 0 65.7 l S
-n 493.2283 0 m 493.2283 65.7 l S
-n 0 54.2 m 493.2283 54.2 l S
-n 0 27.1 m 493.2283 27.1 l S
-n 31.1811 0 m 31.1811 65.7 l S
-n 188.2772 0 m 188.2772 65.7 l S
+n 0 0 m 0 83.1 l S
+n 493.2283 0 m 493.2283 83.1 l S
+n 0 71.6 m 493.2283 71.6 l S
+n 0 35.8 m 493.2283 35.8 l S
+n 31.1811 0 m 31.1811 83.1 l S
+n 188.2772 0 m 188.2772 83.1 l S
 Q
 Q
 Q
 q
-1 0 0 1 57.02362 255.2276 cm
+1 0 0 1 57.02362 237.8276 cm
 Q
 q
-1 0 0 1 57.02362 237.2276 cm
+1 0 0 1 57.02362 219.8276 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (28. Provare un backup senza applicarlo \(dalla 1.7.18\)) Tj T* ET
 Q
 Q
 q
-1 0 0 1 51.02362 142.9276 cm
+1 0 0 1 51.02362 73.32756 cm
 q
 .968627 .960784 .937255 rg
-n 0 92.8 493.2283 -11.5 re f*
+n 0 145 493.2283 -11.5 re f*
 1 1 1 rg
-n 0 81.3 493.2283 -27.1 re f*
+n 0 133.5 493.2283 -44.5 re f*
 .984314 .980392 .968627 rg
-n 0 54.2 493.2283 -27.1 re f*
+n 0 89 493.2283 -35.8 re f*
 1 1 1 rg
-n 0 27.1 493.2283 -27.1 re f*
+n 0 53.2 493.2283 -53.2 re f*
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 4 81.8 cm
+1 0 0 1 4 134 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Fatto) Tj T* ET
 Q
 Q
 q
-1 0 0 1 35.1811 81.8 cm
+1 0 0 1 35.1811 134 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Prova) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 81.8 cm
+1 0 0 1 192.2772 134 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Risultato atteso) Tj T* ET
 Q
 Q
 q
-1 0 0 1 11.29055 72.2 cm
+1 0 0 1 11.29055 124.4 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -4741,20 +4741,19 @@ Q
 Q
 Q
 q
-1 0 0 1 35.1811 54.7 cm
+1 0 0 1 35.1811 89.5 cm
 q
-BT 1 0 0 1 0 17.7 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (28.1 Licenze -) Tj (> ) Tj /F2 8.4 Tf (Prova un backup) Tj /F1 8.4 Tf (,) Tj T* (scegli un backup in chiaro con qualche) Tj T* (voce in pi\371 di quelle di oggi) Tj T* ET
+BT 1 0 0 1 0 35.1 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (28.1 Esporta un backup in chiaro) Tj T* -0.103267 Tw (\(Licenze -) Tj (> ) Tj /F2 8.4 Tf (Esporta backup in chiaro) Tj /F1 8.4 Tf (\),) Tj T* 0 Tw (poi togli una voce dal Diario, cos\354 il file) Tj T* (ne ha una in pi\371. Torna in Licenze -) Tj (>) Tj T* /F2 8.4 Tf (Prova un backup) Tj /F1 8.4 Tf ( e scegli quel file) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 54.7 cm
+1 0 0 1 192.2772 98.2 cm
 q
-0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Compare un riquadro con il nome del file, cosa contiene e cosa cambierebbe) Tj T* (rispetto a oggi. Il diario resta quello di prima: nessuna conferma, nessun dato) Tj T* (sostituito. \253Chiudi l'anteprima\273 toglie il riquadro) Tj T* ET
+BT 1 0 0 1 0 26.4 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (Compare un riquadro con il nome del file, \253) Tj /F2 8.4 Tf (Il file contiene:) Tj /F1 8.4 Tf (\273 con il numero di) Tj T* (voci, \253) Tj /F2 8.4 Tf (Rispetto ai dati di oggi cambierebbe:) Tj /F1 8.4 Tf (\273 e la frase \253Nessun dato \350 stato) Tj T* (toccato\273. Il Diario ha ancora le voci di prima e nessuna finestra chiede) Tj T* (conferma; ) Tj /F2 8.4 Tf (Chiudi l'anteprima) Tj /F1 8.4 Tf ( toglie il riquadro) Tj T* ET
 Q
 Q
 q
-1 0 0 1 11.29055 45.1 cm
+1 0 0 1 11.29055 79.9 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -4772,21 +4771,20 @@ Q
 Q
 Q
 q
-1 0 0 1 35.1811 27.6 cm
+1 0 0 1 35.1811 53.7 cm
+q
+BT 1 0 0 1 0 26.4 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (28.2 Esporta un backup protetto da) Tj T* (password, poi Licenze -) Tj (> ) Tj /F2 8.4 Tf (Prova un) Tj T* (backup) Tj /F1 8.4 Tf ( e scegli quel file: prima una) Tj T* (password sbagliata, poi quella giusta) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 62.4 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (28.2 Prova un backup protetto da) Tj T* (password, prima con la password) Tj T* (sbagliata e poi con quella giusta) Tj T* ET
+BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Con la password sbagliata compare \253Password errata o file danneggiato.\273 e) Tj T* (nessun riquadro di anteprima. Con quella giusta il riquadro compare come nella) Tj T* (prova 28.1, il campo della password sparisce e il Diario resta com'\350) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 27.6 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Con la password sbagliata il messaggio lo dice e non compare nessuna) Tj T* (anteprima. Con quella giusta compare l'anteprima del contenuto, e i dati di oggi) Tj T* (restano intatti) Tj T* ET
-Q
-Q
-q
-1 0 0 1 11.29055 18 cm
+1 0 0 1 11.29055 44.1 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -4806,14 +4804,14 @@ Q
 q
 1 0 0 1 35.1811 .5 cm
 q
-BT 1 0 0 1 0 17.7 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (28.3 Prova un file di una versione futura) Tj T* (\(per esempio ) Tj /F3 8.6 Tf ("version": 9) Tj /F1 8.4 Tf (\) e uno) Tj T* (che non \350 un backup) Tj T* ET
+BT 1 0 0 1 0 43.8 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (28.3 Apri un backup in chiaro con un) Tj T* (editor di testo, cambia ) Tj /F3 8.6 Tf ("version": 3) Tj /F1 8.4 Tf  T* (in ) Tj /F3 8.6 Tf ("version": 9) Tj /F1 8.4 Tf (, salvalo con un altro) Tj T* (nome; scrivi poi in un file di testo ) Tj /F3 8.6 Tf ({) Tj T* -0.154467 Tw ("ciao": "mondo" }) Tj /F1 8.4 Tf (. Provali uno alla) Tj T* 0 Tw (volta con ) Tj /F2 8.4 Tf (Prova un backup) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 .5 cm
+1 0 0 1 192.2772 26.6 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Il primo lo dice \(\253versione pi\371 recente\273\) senza aprire nessuna anteprima; il) Tj T* (secondo avvisa che non \350 un backup valido. In nessuno dei due casi i dati) Tj T* (cambiano) Tj T* ET
+BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL -0.105095 Tw (Il primo avvisa che il file viene da una versione pi\371 recente dell'app \(formato 9\) e) Tj T* 0 Tw (non apre nessuna anteprima; il secondo che non sembra un backup valido. In) Tj T* (nessuno dei due casi il Diario cambia) Tj T* ET
 Q
 Q
 q
@@ -4821,27 +4819,27 @@ q
 1 j
 .788235 .768627 .721569 RG
 .4 w
-n 0 92.8 m 493.2283 92.8 l S
+n 0 145 m 493.2283 145 l S
 n 0 0 m 493.2283 0 l S
-n 0 0 m 0 92.8 l S
-n 493.2283 0 m 493.2283 92.8 l S
-n 0 81.3 m 493.2283 81.3 l S
-n 0 54.2 m 493.2283 54.2 l S
-n 0 27.1 m 493.2283 27.1 l S
-n 31.1811 0 m 31.1811 92.8 l S
-n 188.2772 0 m 188.2772 92.8 l S
+n 0 0 m 0 145 l S
+n 493.2283 0 m 493.2283 145 l S
+n 0 133.5 m 493.2283 133.5 l S
+n 0 89 m 493.2283 89 l S
+n 0 53.2 m 493.2283 53.2 l S
+n 31.1811 0 m 31.1811 145 l S
+n 188.2772 0 m 188.2772 145 l S
 Q
 Q
 Q
 q
-1 0 0 1 57.02362 139.9276 cm
+1 0 0 1 57.02362 70.32756 cm
 Q
  
 endstream
 endobj
 23 0 obj
 <<
-/Length 14135
+/Length 14895
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -4864,41 +4862,41 @@ BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (29. Il fascicolo unico \(dalla 1.7.18\)) Tj T
 Q
 Q
 q
-1 0 0 1 51.02362 671.9276 cm
+1 0 0 1 51.02362 645.8276 cm
 q
 .968627 .960784 .937255 rg
-n 0 84.1 493.2283 -11.5 re f*
+n 0 110.2 493.2283 -11.5 re f*
 1 1 1 rg
-n 0 72.6 493.2283 -27.1 re f*
+n 0 98.7 493.2283 -44.5 re f*
 .984314 .980392 .968627 rg
-n 0 45.5 493.2283 -27.1 re f*
+n 0 54.2 493.2283 -27.1 re f*
 1 1 1 rg
-n 0 18.4 493.2283 -18.4 re f*
+n 0 27.1 493.2283 -27.1 re f*
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 4 73.1 cm
+1 0 0 1 4 99.2 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Fatto) Tj T* ET
 Q
 Q
 q
-1 0 0 1 35.1811 73.1 cm
+1 0 0 1 35.1811 99.2 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Prova) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 73.1 cm
+1 0 0 1 192.2772 99.2 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Risultato atteso) Tj T* ET
 Q
 Q
 q
-1 0 0 1 11.29055 63.5 cm
+1 0 0 1 11.29055 89.6 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -4916,20 +4914,20 @@ Q
 Q
 Q
 q
-1 0 0 1 35.1811 54.7 cm
+1 0 0 1 35.1811 63.4 cm
 q
-BT 1 0 0 1 0 9 Tm -0.015684 Tw 8.7 TL /F1 8.4 Tf 0 0 0 rg (29.1 Relazione -) Tj (> ) Tj /F2 8.4 Tf (Fascicolo completo) Tj /F1 8.4 Tf (.) Tj T* 0 Tw (Scorri il foglio) Tj T* ET
+BT 1 0 0 1 0 26.4 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (29.1 Scrivi una frase riconoscibile nel) Tj T* (piano di sicurezza \(per esempio \253Prova) Tj T* -0.053856 Tw (del nove\273\) e una domanda nel taccuino;) Tj T* 0 Tw (poi Relazione -) Tj (> ) Tj /F2 8.4 Tf (Fascicolo completo) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 46 cm
+1 0 0 1 192.2772 54.7 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Ci sono cinque parti: relazione, scheda da portare, piano di sicurezza, confronto) Tj T* (dei periodi \(sette e trenta giorni\) e domande scelte. Il piano mostra quello che) Tj T* (hai scritto, non un testo di esempio; le parti vuote lo dicono) Tj T* ET
+BT 1 0 0 1 0 35.1 Tm /F1 8.4 Tf 8.7 TL (Cinque titoli: \253Parte 1 \227 Relazione preliminare\273, \253Parte 2 \227 Scheda da) Tj T* (portare\273, \253Parte 3 \227 Piano di sicurezza\273, \253Parte 4 \227 Confronto dei periodi\273,) Tj T* (\253Parte 5 \227 Domande scelte per il colloquio\273. \253Prova del nove\273 compare nel) Tj T* (piano, la domanda in fondo, e un campo mai compilato dice \253\(da scrivere:) Tj T* (questo campo \350 ancora vuoto\)\273) Tj T* ET
 Q
 Q
 q
-1 0 0 1 11.29055 36.4 cm
+1 0 0 1 11.29055 45.1 cm
 q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
@@ -4949,134 +4947,13 @@ Q
 q
 1 0 0 1 35.1811 36.3 cm
 q
-BT 1 0 0 1 0 .3 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (29.2 Premi ) Tj /F2 8.4 Tf (Scarica il fascicolo PDF) Tj T* ET
+BT 1 0 0 1 0 9 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (29.2 Premi ) Tj /F2 8.4 Tf (Scarica il fascicolo PDF) Tj /F1 8.4 Tf ( e) Tj T* (apri il file comparso tra i download) Tj T* ET
 Q
 Q
 q
-1 0 0 1 192.2772 18.9 cm
+1 0 0 1 192.2772 27.6 cm
 q
-0 0 0 rg
-BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (Si scarica un solo PDF, di pi\371 pagine, con le cinque parti e in fondo le firme. Il) Tj T* (messaggio dice \253Fascicolo generato\273. Non viene creato nessun altro file e) Tj T* (nessun dato cambia) Tj T* ET
-Q
-Q
-q
-1 0 0 1 11.29055 9.3 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 0 2 Tm  T* ET
-q
-1 J
-1 j
-.356863 .392157 .447059 RG
-.7 w
-n 0 8.6 m 8.6 8.6 l S
-n 0 0 m 8.6 0 l S
-n 0 0 m 0 8.6 l S
-n 8.6 0 m 8.6 8.6 l S
-Q
-Q
-Q
-q
-1 0 0 1 35.1811 .5 cm
-q
-BT 1 0 0 1 0 9 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (29.3 Premi ) Tj /F2 8.4 Tf (Stampa il fascicolo) Tj /F1 8.4 Tf ( e) Tj T* (guarda l'anteprima) Tj T* ET
-Q
-Q
-q
-1 0 0 1 192.2772 .5 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 9 Tm /F1 8.4 Tf 8.7 TL (Compare solo il foglio del fascicolo, senza testata, menu, pulsanti n\351 avvisi. Le) Tj T* (parti si susseguono senza sovrapposizioni e la stampa non taglia il testo) Tj T* ET
-Q
-Q
-q
-1 J
-1 j
-.788235 .768627 .721569 RG
-.4 w
-n 0 84.1 m 493.2283 84.1 l S
-n 0 0 m 493.2283 0 l S
-n 0 0 m 0 84.1 l S
-n 493.2283 0 m 493.2283 84.1 l S
-n 0 72.6 m 493.2283 72.6 l S
-n 0 45.5 m 493.2283 45.5 l S
-n 0 18.4 m 493.2283 18.4 l S
-n 31.1811 0 m 31.1811 84.1 l S
-n 188.2772 0 m 188.2772 84.1 l S
-Q
-Q
-Q
-q
-1 0 0 1 57.02362 668.9276 cm
-Q
-q
-1 0 0 1 57.02362 650.9276 cm
-q
-.133333 .203922 .360784 rg
-BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (30. Niente rete \(dalla 1.7.18\)) Tj T* ET
-Q
-Q
-q
-1 0 0 1 51.02362 575.0276 cm
-q
-.968627 .960784 .937255 rg
-n 0 74.4 493.2283 -11.5 re f*
-1 1 1 rg
-n 0 62.9 493.2283 -35.8 re f*
-.984314 .980392 .968627 rg
-n 0 27.1 493.2283 -27.1 re f*
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 4 63.4 cm
-q
-.133333 .203922 .360784 rg
-BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Fatto) Tj T* ET
-Q
-Q
-q
-1 0 0 1 35.1811 63.4 cm
-q
-.133333 .203922 .360784 rg
-BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Prova) Tj T* ET
-Q
-Q
-q
-1 0 0 1 192.2772 63.4 cm
-q
-.133333 .203922 .360784 rg
-BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Risultato atteso) Tj T* ET
-Q
-Q
-q
-1 0 0 1 11.29055 53.8 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-BT 1 0 0 1 0 2 Tm  T* ET
-q
-1 J
-1 j
-.356863 .392157 .447059 RG
-.7 w
-n 0 8.6 m 8.6 8.6 l S
-n 0 0 m 8.6 0 l S
-n 0 0 m 0 8.6 l S
-n 8.6 0 m 8.6 8.6 l S
-Q
-Q
-Q
-q
-1 0 0 1 35.1811 27.6 cm
-q
-BT 1 0 0 1 0 26.4 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (30.1 Apri gli strumenti di sviluppo,) Tj T* (scheda ) Tj /F2 8.4 Tf (Rete) Tj /F1 8.4 Tf (, svuota l'elenco e usa il) Tj T* (programma: colloquio, diario, ricerca,) Tj T* (relazione, fascicolo, backup) Tj T* ET
-Q
-Q
-q
-1 0 0 1 192.2772 45 cm
-q
-BT 1 0 0 1 0 9 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (Nessuna richiesta verso altri siti. Le uniche voci sono i file dell'app; con Ollama) Tj T* (scollegato non compare nessuna chiamata a ) Tj /F3 8.6 Tf (127.0.0.1:11434) Tj T* ET
+BT 1 0 0 1 0 17.5 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (Un solo file ) Tj /F3 8.6 Tf (fascicolo-psicologo-digitale-AAAA-MM-GG.pdf) Tj /F1 8.4 Tf (, di pi\371) Tj T* (pagine, con le cinque parti e le firme in fondo; il messaggio dice \253Fascicolo) Tj T* (generato.\273 e il Diario non cambia) Tj T* ET
 Q
 Q
 q
@@ -5100,13 +4977,14 @@ Q
 q
 1 0 0 1 35.1811 .5 cm
 q
-BT 1 0 0 1 0 17.7 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (30.2 Se hai Ollama, collegalo da) Tj T* /F2 8.4 Tf (Installa l'app) Tj /F1 8.4 Tf ( e genera una risposta di) Tj T* (Neura) Tj T* ET
+BT 1 0 0 1 0 17.7 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (29.3 Premi ) Tj /F2 8.4 Tf (Stampa il fascicolo) Tj /F1 8.4 Tf ( e) Tj T* (nell'anteprima guarda la prima e l'ultima) Tj T* (pagina) Tj T* ET
 Q
 Q
 q
 1 0 0 1 192.2772 .5 cm
 q
-BT 1 0 0 1 0 17.5 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (Compaiono solo richieste a ) Tj /F3 8.6 Tf (127.0.0.1:11434) Tj /F1 8.4 Tf ( \() Tj /F3 8.6 Tf (/api/tags) Tj /F1 8.4 Tf (,) Tj T* /F3 8.6 Tf (/api/generate) Tj /F1 8.4 Tf (\). Non parte niente verso internet, e senza Ollama il) Tj T* (programma funziona lo stesso) Tj T* ET
+0 0 0 rg
+BT 1 0 0 1 0 17.7 Tm /F1 8.4 Tf 8.7 TL (C'\350 solo il foglio del fascicolo: niente testata, menu, pulsanti o avvisi. Ogni titolo) Tj T* (di parte ha il suo testo sotto \227 nessuno resta da solo in fondo alla pagina \227 e) Tj T* (l'ultima pagina porta le firme) Tj T* ET
 Q
 Q
 q
@@ -5114,29 +4992,148 @@ q
 1 j
 .788235 .768627 .721569 RG
 .4 w
-n 0 74.4 m 493.2283 74.4 l S
+n 0 110.2 m 493.2283 110.2 l S
 n 0 0 m 493.2283 0 l S
-n 0 0 m 0 74.4 l S
-n 493.2283 0 m 493.2283 74.4 l S
-n 0 62.9 m 493.2283 62.9 l S
+n 0 0 m 0 110.2 l S
+n 493.2283 0 m 493.2283 110.2 l S
+n 0 98.7 m 493.2283 98.7 l S
+n 0 54.2 m 493.2283 54.2 l S
 n 0 27.1 m 493.2283 27.1 l S
-n 31.1811 0 m 31.1811 74.4 l S
-n 188.2772 0 m 188.2772 74.4 l S
+n 31.1811 0 m 31.1811 110.2 l S
+n 188.2772 0 m 188.2772 110.2 l S
 Q
 Q
 Q
 q
-1 0 0 1 57.02362 572.0276 cm
+1 0 0 1 57.02362 642.8276 cm
 Q
 q
-1 0 0 1 57.02362 554.0276 cm
+1 0 0 1 57.02362 624.8276 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (30. Niente rete \(dalla 1.7.18\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.02362 531.5276 cm
+q
+.968627 .960784 .937255 rg
+n 0 91.8 493.2283 -11.5 re f*
+1 1 1 rg
+n 0 80.3 493.2283 -53.2 re f*
+.984314 .980392 .968627 rg
+n 0 27.1 493.2283 -27.1 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 4 80.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Fatto) Tj T* ET
+Q
+Q
+q
+1 0 0 1 35.1811 80.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Prova) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 80.8 cm
+q
+.133333 .203922 .360784 rg
+BT 1 0 0 1 0 2 Tm /F2 8.5 Tf 10.5 TL (Risultato atteso) Tj T* ET
+Q
+Q
+q
+1 0 0 1 11.29055 71.2 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 J
+1 j
+.356863 .392157 .447059 RG
+.7 w
+n 0 8.6 m 8.6 8.6 l S
+n 0 0 m 8.6 0 l S
+n 0 0 m 0 8.6 l S
+n 8.6 0 m 8.6 8.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 35.1811 27.6 cm
+q
+BT 1 0 0 1 0 43.8 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (30.1 Apri gli strumenti di sviluppo \(F12\)) Tj T* (-) Tj (> scheda ) Tj /F2 8.4 Tf (Rete) Tj /F1 8.4 Tf (, spunta \253Preserva log\273,) Tj T* (svuota l'elenco, poi usa il programma:) Tj T* (un colloquio, una voce di diario, una) Tj T* (ricerca, la relazione, il fascicolo,) Tj T* (l'esportazione di un backup) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 53.7 cm
+q
+BT 1 0 0 1 0 17.7 Tm -0.111401 Tw 8.7 TL /F1 8.4 Tf 0 0 0 rg (Nella colonna del dominio ci sono solo l'indirizzo del programma e i suoi file; con) Tj T* 0 Tw (Ollama scollegato nessuna riga porta a ) Tj /F3 8.6 Tf (127.0.0.1:11434) Tj /F1 8.4 Tf ( n\351 a un sito) Tj T* (esterno) Tj T* ET
+Q
+Q
+q
+1 0 0 1 11.29055 18 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 0 2 Tm  T* ET
+q
+1 J
+1 j
+.356863 .392157 .447059 RG
+.7 w
+n 0 8.6 m 8.6 8.6 l S
+n 0 0 m 8.6 0 l S
+n 0 0 m 0 8.6 l S
+n 8.6 0 m 8.6 8.6 l S
+Q
+Q
+Q
+q
+1 0 0 1 35.1811 .5 cm
+q
+BT 1 0 0 1 0 17.7 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (30.2 Se hai Ollama: ) Tj /F2 8.4 Tf (Installa l'app) Tj /F1 8.4 Tf ( -) Tj (>) Tj T* (collega Ollama, poi chiedi una risposta) Tj T* (a Neura con la scheda Rete aperta) Tj T* ET
+Q
+Q
+q
+1 0 0 1 192.2772 .5 cm
+q
+BT 1 0 0 1 0 17.5 Tm 8.7 TL /F1 8.4 Tf 0 0 0 rg (Compaiono richieste solo a ) Tj /F3 8.6 Tf (127.0.0.1:11434) Tj /F1 8.4 Tf ( \() Tj /F3 8.6 Tf (/api/tags) Tj /F1 8.4 Tf (,) Tj T* /F3 8.6 Tf (/api/generate) Tj /F1 8.4 Tf (\) e nessuna verso internet. Scollegandolo la barra di stato) Tj T* (dice \253IA locale: essenziale\273 e il programma funziona lo stesso) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.788235 .768627 .721569 RG
+.4 w
+n 0 91.8 m 493.2283 91.8 l S
+n 0 0 m 493.2283 0 l S
+n 0 0 m 0 91.8 l S
+n 493.2283 0 m 493.2283 91.8 l S
+n 0 80.3 m 493.2283 80.3 l S
+n 0 27.1 m 493.2283 27.1 l S
+n 31.1811 0 m 31.1811 91.8 l S
+n 188.2772 0 m 188.2772 91.8 l S
+Q
+Q
+Q
+q
+1 0 0 1 57.02362 528.5276 cm
+Q
+q
+1 0 0 1 57.02362 510.5276 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (31. Le stesse cose in un browser vero \(dalla 1.7.19\)) Tj T* ET
 Q
 Q
 q
-1 0 0 1 51.02362 387.1276 cm
+1 0 0 1 51.02362 343.6276 cm
 q
 .968627 .960784 .937255 rg
 n 0 165.4 493.2283 -11.5 re f*
@@ -5385,30 +5382,30 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 384.1276 cm
+1 0 0 1 57.02362 340.6276 cm
 Q
 q
-1 0 0 1 57.02362 366.1276 cm
+1 0 0 1 57.02362 322.6276 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Se qualcosa non torna) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 329.2276 cm
+1 0 0 1 57.02362 285.7276 cm
 q
 BT 1 0 0 1 0 25.5 Tm .116426 Tw 11.8 TL /F1 9.9 Tf 0 0 0 rg (Annota, senza correggere niente a mano: la versione \(pagina ) Tj /F2 9.9 Tf (Versioni e novit\340) Tj /F1 9.9 Tf (\), il dispositivo e il browser, la) Tj T* 0 Tw .102608 Tw (prova \(per esempio \2533.3\273\), i passi e ) Tj /F2 9.9 Tf (cosa \350 successo invece) Tj /F1 9.9 Tf ( di quello atteso. Se il problema riguarda un file) Tj T* 0 Tw (importato, allega il file di prova \() Tj /F3 8.6 Tf (prova-1.4.0.json) Tj /F1 9.9 Tf (\), ) Tj /F2 9.9 Tf (mai un backup vero) Tj /F1 9.9 Tf (: contiene dati personali.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 311.2276 cm
+1 0 0 1 57.02362 267.7276 cm
 q
 .133333 .203922 .360784 rg
 BT 1 0 0 1 0 3 Tm /F2 13 Tf 16 TL (Esito) Tj T* ET
 Q
 Q
 q
-1 0 0 1 51.02362 288.5276 cm
+1 0 0 1 51.02362 245.0276 cm
 q
 .968627 .960784 .937255 rg
 n 0 21.2 493.2283 -11.5 re f*
@@ -5492,13 +5489,13 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 285.5276 cm
+1 0 0 1 57.02362 242.0276 cm
 Q
 q
-1 0 0 1 57.02362 279.5276 cm
+1 0 0 1 57.02362 236.0276 cm
 Q
 q
-1 0 0 1 57.02362 241.7276 cm
+1 0 0 1 57.02362 198.2276 cm
 q
 BT 1 0 0 1 0 28.6 Tm 12.6 TL /F2 9.2 Tf 0 0 0 rg (Questo foglio non sostituisce i test.) Tj /F1 9.2 Tf ( ) Tj /F3 8.6 Tf (npm test) Tj /F1 9.2 Tf ( copre dati, interfaccia, collegamenti, accessibilit\340 e testi; qui resta) Tj T* (quello che solo una persona pu\362 vedere e sentire. Nasce da ) Tj /F3 8.6 Tf (PROVE-A-MANO-1.7.19.md) Tj /F1 9.2 Tf (: se una prova cambia,) Tj T* (cambiano il markdown e questo PDF insieme.) Tj T* ET
 Q
@@ -5531,11 +5528,11 @@ xref
 0000052637 00000 n 
 0000071849 00000 n 
 0000088935 00000 n 
-0000106975 00000 n 
+0000107919 00000 n 
 trailer
 <<
 /ID 
-[<3d3167e28b298e7a06ceb176f3884111><3d3167e28b298e7a06ceb176f3884111>]
+[<f158e2e890b8315db8dfe224400061aa><f158e2e890b8315db8dfe224400061aa>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 15 0 R
@@ -5543,5 +5540,5 @@ trailer
 /Size 24
 >>
 startxref
-121163
+122867
 %%EOF
