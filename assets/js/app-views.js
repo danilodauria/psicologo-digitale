@@ -687,6 +687,110 @@
     return html;
   }
 
+  /* Versione in uso e copia offline ---------------------------------------- */
+
+  // Il nome della cache del service worker è la versione del service worker
+  // («psd-v1.7.19»): leggerlo dice quale copia offline sta servendo la pagina
+  // senza chiedere niente alla rete, e senza fidarsi di quello che la pagina
+  // crede di essere.
+  const CACHE_VERSIONE = /^psd-v(\d+\.\d+\.\d+)$/;
+
+  function confrontaVersioni(a, b) {
+    const pa = String(a).split(".").map(Number);
+    const pb = String(b).split(".").map(Number);
+    for (let i = 0; i < 3; i++) {
+      if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) - (pb[i] || 0);
+    }
+    return 0;
+  }
+
+  // Le versioni delle copie offline, dalla più recente. Le cache che non
+  // portano il nostro nome restano fuori: non sono nostre e non si toccano.
+  function versioniInCache(chiavi) {
+    return (chiavi || [])
+      .map(function (k) { const m = CACHE_VERSIONE.exec(String(k)); return m ? m[1] : null; })
+      .filter(Boolean)
+      .sort(function (a, b) { return confrontaVersioni(b, a); });
+  }
+
+  // Cosa c'è nella copia offline rispetto alla versione in uso: si guarda e
+  // basta. Se le cache non si possono leggere lo dice, invece di far finta
+  // che vada tutto bene.
+  function statoCopiaOffline(opzioni) {
+    const o = opzioni || {};
+    const cacheApi = o.caches || (typeof window !== "undefined" ? window.caches : null);
+    const programma = o.programma || A.VERSIONE || "";
+    const senzaLettura = { stato: "illeggibile", programma: programma, copia: null, altre: [] };
+    if (!cacheApi || typeof cacheApi.keys !== "function") return Promise.resolve(senzaLettura);
+    return Promise.resolve(cacheApi.keys()).then(function (chiavi) {
+      const versioni = versioniInCache(chiavi);
+      if (!versioni.length) return { stato: "assente", programma: programma, copia: null, altre: [] };
+      return {
+        stato: programma && versioni.indexOf(programma) >= 0 ? "pari" : "diversa",
+        programma: programma,
+        copia: versioni[0],
+        altre: versioni.slice(1)
+      };
+    }).catch(function () { return senzaLettura; });
+  }
+
+  // Aggiornare davvero: via le registrazioni del service worker, via le copie
+  // offline dell'app, poi una ricarica. Con il service worker ancora al suo
+  // posto la pagina ripartirebbe dalla copia vecchia, che è esattamente il
+  // problema che si sta cercando di risolvere.
+  function aggiornaProgramma(opzioni) {
+    const o = opzioni || {};
+    const nav = o.nav || (typeof navigator !== "undefined" ? navigator : null);
+    const cacheApi = o.caches || (typeof window !== "undefined" ? window.caches : null);
+    const ricarica = o.ricarica || A.ricarica;
+    const registrazioni = nav && nav.serviceWorker &&
+      typeof nav.serviceWorker.getRegistrations === "function"
+      ? nav.serviceWorker.getRegistrations()
+      : Promise.resolve([]);
+    return Promise.resolve(registrazioni).then(function (elenco) {
+      return Promise.all((elenco || []).map(function (r) {
+        return r && typeof r.unregister === "function" ? r.unregister() : null;
+      }));
+    }).then(function () {
+      if (!cacheApi || typeof cacheApi.keys !== "function") return null;
+      return Promise.resolve(cacheApi.keys()).then(function (chiavi) {
+        return Promise.all((chiavi || [])
+          .filter(function (k) { return /^psd-/.test(String(k)); })
+          .map(function (k) { return cacheApi.delete(k); }));
+      });
+    }).then(function () {
+      ricarica();
+      return true;
+    }).catch(function () { return false; });
+  }
+
+  // Una porta sola per ricaricare: la usa questa scheda, e i test la
+  // sostituiscono invece di far navigare jsdom.
+  A.ricarica = function () { window.location.reload(); };
+  A.statoCopiaOffline = statoCopiaOffline;
+  A.aggiornaProgramma = aggiornaProgramma;
+  A.versioniInCache = versioniInCache;
+
+  function htmlCopiaOffline(s) {
+    const programma = s.programma || "non leggibile";
+    if (s.stato === "illeggibile") {
+      return "<p>Questo ambiente non permette di leggere la copia offline. Succede nel programma installato, dove l'aggiornamento lo segue il programma stesso, e nei browser che tengono le cache fuori portata.</p>";
+    }
+    if (s.stato === "assente") {
+      return "<p><strong>Non c'è ancora una copia offline.</strong> La pagina arriva dal sito a ogni apertura: niente da confrontare e niente da aggiornare.</p>";
+    }
+    if (s.stato === "pari") {
+      return "<p><strong>Programma " + esc(programma) + ", copia offline " + esc(s.copia) + ": coincidono.</strong> Quello che vedi è quello che è stato pubblicato.</p>";
+    }
+    return "<p><strong>Non coincidono.</strong> Il programma in uso è la " + esc(programma) +
+      ", la copia offline è la " + esc(s.copia) +
+      (s.altre.length ? " (e altre " + s.altre.length + " copie più vecchie)" : "") +
+      ". Finché resta così qualche pagina può arrivare dalla versione precedente.</p>" +
+      '<div class="btn-row mt-1"><button type="button" class="btn btn-soft btn-sm" id="copiaOfflineAggiorna">' +
+      A.icon("refresh") + "Aggiorna il programma</button></div>" +
+      '<p class="text-small muted mb-0 mt-1" id="copiaOfflineEsito" role="status">Aggiornare cancella la copia locale e ricarica la pagina: i dati non vengono toccati.</p>';
+  }
+
   views.licenze = function () {
     A.setTitle("Licenze e progetto");
     A.page(
@@ -835,6 +939,9 @@
         }
         return '<div class="card mt-2" id="protezioneSpazio"><h2 class=h-sub>Protezione dello spazio</h2>' + corpo + "</div>";
       })() +
+
+      '<div class="card mt-2" id="copiaOffline"><h2 class=h-sub>Versione in uso e copia offline</h2>' +
+        '<p id="copiaOfflineStato">Controllo la copia offline…</p></div>' +
 
       '<div class="card mt-2" id="letturaPrivacy"><h2 class=h-sub>Lettura e privacy</h2>' +
         '<div class="btn-row"><label class="text-small" for="testoScelta">Dimensione del testo</label>' +
@@ -1216,6 +1323,30 @@
       if (campo) campo.value = "";
       A.render();
     });
+
+    // La scheda si riempie quando le cache hanno risposto: il resto della
+    // pagina non deve aspettare una lettura che di solito è immediata.
+    const schedaCopia = document.getElementById("copiaOffline");
+    if (schedaCopia) {
+      statoCopiaOffline().then(function (s) {
+        // Se nel frattempo si è cambiata pagina, non si scrive in un elemento
+        // che non è più quello che si sta guardando.
+        if (!document.body.contains(schedaCopia)) return;
+        schedaCopia.innerHTML = "<h2 class=h-sub>Versione in uso e copia offline</h2>" + htmlCopiaOffline(s);
+        const aggiorna = document.getElementById("copiaOfflineAggiorna");
+        if (!aggiorna) return;
+        aggiorna.addEventListener("click", function () {
+          aggiorna.disabled = true;
+          const esito = document.getElementById("copiaOfflineEsito");
+          if (esito) esito.textContent = "Cancello la copia offline e ricarico…";
+          aggiornaProgramma().then(function (fatto) {
+            if (fatto) return;
+            aggiorna.disabled = false;
+            if (esito) esito.textContent = "Non è stato possibile aggiornare: ricarica la pagina a mano.";
+          });
+        });
+      });
+    }
   };
 
   /* ------------------------------------------------------------- Riepilogo */

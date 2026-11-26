@@ -14,6 +14,9 @@
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
   const VERSIONE = "1.7.19";
+  // La stessa versione serve anche a Licenze, che la confronta con quella
+  // della copia offline: un solo numero, scritto in un solo posto.
+  A.VERSIONE = VERSIONE;
 
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.

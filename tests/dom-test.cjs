@@ -76,6 +76,7 @@ const scripts = [
   "assets/js/app-course.js",
   "assets/js/app-neura.js",
   "assets/js/app-views.js",
+  "assets/js/app-versioni.js",
   "assets/js/app-nutrizione.js",
   "assets/js/app-installa.js",
   "assets/js/app-status.js",
@@ -2513,6 +2514,74 @@ setTimeout(async function () {
   pannelloBenvenuto.querySelector(".welcome-x").click();
   ok(!NP.neuraUI.isSpeaking(), "chiudendo con la × la voce si ferma");
   ok(stopVoce.getAttribute("data-active") === "false", "e il pulsante «Ferma l'audio» si spegne");
+
+  /* Versione in uso e copia offline --------------------------------------- */
+
+  // Il caso che conta: la pagina è la 1.7.19 e la copia offline è la 1.7.18.
+  // Da dentro il programma non c'era modo di accorgersene, e la pagina
+  // continuava a servire i file vecchi sembrando aggiornata.
+  console.log("\nVersione in uso e copia offline");
+  const attesa = function (ms) { return new Promise(function (r) { setTimeout(r, ms || 30); }); };
+  const mettiCache = function (c) {
+    Object.defineProperty(window, "caches", { value: c, configurable: true, writable: true });
+  };
+  const cacheFinta = function (chiavi) {
+    const c = {
+      cancellate: [],
+      keys: function () { return Promise.resolve(chiavi.slice()); },
+      delete: function (k) { c.cancellate.push(k); return Promise.resolve(true); }
+    };
+    return c;
+  };
+  const swFinto = {
+    annullate: [],
+    getRegistrations: function () {
+      return Promise.resolve([{ unregister: function () { swFinto.annullate.push("registrazione"); return Promise.resolve(true); } }]);
+    }
+  };
+  Object.defineProperty(window.navigator, "serviceWorker", { value: swFinto, configurable: true });
+  const ricaricaVera = NP.app.ricarica;
+  let ricariche = 0;
+  NP.app.ricarica = function () { ricariche++; };
+
+  // Senza copie offline la scheda lo dice e non offre niente da fare.
+  mettiCache(cacheFinta([]));
+  navigate("#/licenze");
+  await attesa();
+  const schedaCopia = document.getElementById("copiaOffline");
+  ok(!!schedaCopia && schedaCopia.textContent.indexOf("Non c'è ancora una copia offline") >= 0,
+    "senza copie offline la scheda lo dice");
+  ok(!document.getElementById("copiaOfflineAggiorna"), "e non offre un aggiornamento che non servirebbe");
+
+  // Disallineamento: la copia offline è più vecchia del programma.
+  const cacheVecchia = cacheFinta(["psd-v1.7.18", "una-cache-di-un-altro-sito"]);
+  mettiCache(cacheVecchia);
+  navigate("#/licenze");
+  await attesa();
+  const testoCopia = document.getElementById("copiaOffline").textContent;
+  ok(testoCopia.indexOf("Non coincidono") >= 0, "con versioni diverse la scheda lo dice");
+  ok(testoCopia.indexOf("1.7.18") >= 0 && testoCopia.indexOf(NP.app.VERSIONE) >= 0,
+    "e scrive le due versioni, quella in uso e quella della copia");
+  const aggiornaCopia = document.getElementById("copiaOfflineAggiorna");
+  ok(!!aggiornaCopia, "e offre il pulsante per aggiornare");
+
+  aggiornaCopia.click();
+  await attesa(60);
+  ok(swFinto.annullate.length === 1, "il pulsante disregistra il service worker");
+  ok(cacheVecchia.cancellate.join(",") === "psd-v1.7.18",
+    "cancella la copia offline dell'app e lascia stare le cache degli altri");
+  ok(ricariche === 1, "e ricarica la pagina una volta sola");
+  ok(aggiornaCopia.disabled === true, "il pulsante resta spento mentre la pagina si ricarica");
+
+  // Allineate: niente pulsante, perché non c'è niente da rifare.
+  mettiCache(cacheFinta(["psd-v" + NP.app.VERSIONE]));
+  navigate("#/licenze");
+  await attesa();
+  const copiaPari = document.getElementById("copiaOffline").textContent;
+  ok(copiaPari.indexOf("coincidono") >= 0, "con le stesse versioni la scheda dice che coincidono");
+  ok(!document.getElementById("copiaOfflineAggiorna"), "e non mostra il pulsante");
+
+  NP.app.ricarica = ricaricaVera;
 
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
