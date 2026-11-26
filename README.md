@@ -311,13 +311,15 @@ Serve Node 20+ solo per i test.
 
 ```bash
 npm install
-npm test                  # verify + dom + collegamenti
+npx playwright install chromium   # una volta sola, per le prove nel browser
+npm test                  # verify + dom + collegamenti + browser
 npm run test:data         # solo integrità
 npm run test:dom          # solo interfaccia
 npm run test:links        # solo collegamenti interni
 npm run test:a11y         # solo accessibilità
 npm run test:text         # solo testi
 npm run test:impronte     # solo impronte del pacchetto
+npm run test:browser      # solo le prove nel browser (telefono e computer)
 npm run test:archivi      # archivi già costruiti (desktop/dist)
 python3 -m http.server 3000 --bind 0.0.0.0   # anteprima con service worker
 ```
