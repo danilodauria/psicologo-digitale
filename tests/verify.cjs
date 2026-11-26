@@ -508,7 +508,7 @@ const ppagine = (pt.match(/\/Type\s*\/Page[^s]/g) || []).length;
 // Il foglio cresce con le prove, e deve restare un fascicolo da stampare e
 // allegare: il limite si alza quando la versione aggiunge una sezione, non si
 // toglie per far passare un foglio gonfiato di margini.
-ok(ppagine >= 3 && ppagine <= 8, "il foglio delle prove sta fra tre e otto pagine A4 (" + ppagine + ")");
+ok(ppagine >= 3 && ppagine <= 10, "il foglio delle prove sta fra tre e dieci pagine A4 (" + ppagine + ")");
 ok(pb.length > 15000 && pb.length < 400000, "il foglio delle prove si può allegare a un'email (" + pb.length + " byte)");
 const etichette = Array.from(proveMd.matchAll(/^\|\s*☐\s*\|\s*(\d+\.\d+)/gm)).map((m) => m[1]);
 ok(etichette.length >= 80, "il markdown elenca almeno ottanta prove (" + etichette.length + ")");
@@ -535,11 +535,11 @@ proveMd.split("\n").forEach(function (riga) {
   const intestazione = riga.match(/^##\s+(\d+)\./);
   if (intestazione) sezioneSuite = Number(intestazione[1]);
   const prova = riga.match(/^\|\s*☐\s*\|\s*(\d+\.\d+)/);
-  if (prova && sezioneSuite >= 27 && sezioneSuite <= 31) {
+  if (prova && sezioneSuite >= 27 && sezioneSuite <= 33) {
     proveSuite.push({ etichetta: prova[1], riga: riga });
   }
 });
-ok(proveSuite.length > 0, "il foglio ha prove nelle sezioni 27-31 (" + proveSuite.length + ")");
+ok(proveSuite.length > 0, "il foglio ha prove nelle sezioni 27-33 (" + proveSuite.length + ")");
 proveSuite.forEach(function (p) {
   const marcato = /\*\*Suite:\*\*\s*(sì|no|in parte)(?=\s|\(|$)/.test(p.riga);
   ok(marcato, "la prova " + p.etichetta + " dice cosa fa la suite (**Suite:** sì, in parte o no)");

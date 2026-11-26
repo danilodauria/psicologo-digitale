@@ -3,7 +3,7 @@
    Licenza del codice: MIT · Danilo D'Auria
    ========================================================================== */
 
-// Coprono le sezioni 27–31 di PROVE-A-MANO-1.7.19.md: cursore nel campo della
+// Coprono le sezioni 27–31 di PROVE-A-MANO-1.7.20.md: cursore nel campo della
 // ricerca, anteprima del backup, fascicolo e stampa, nessuna richiesta esterna.
 // Ogni prova gira due volte: con la finestra di un telefono e con quella di un
 // computer (vedi playwright.config.cjs).

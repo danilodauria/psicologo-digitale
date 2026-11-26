@@ -13,7 +13,7 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.19";
+  const VERSIONE = "1.7.20";
   // La stessa versione serve anche a Licenze, che la confronta con quella
   // della copia offline: un solo numero, scritto in un solo posto.
   A.VERSIONE = VERSIONE;
@@ -21,6 +21,18 @@
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.7.20",
+      data: "26 novembre 2026",
+      titolo: "Lo schermo si copre da solo, i dati rotti si vedono, Neura riconosce di più",
+      punti: [
+        "Se ti allontani dal computer acceso, i contenuti si coprono da soli: in Licenze scegli dopo quanti minuti senza gesti, e un pulsante li scopre. Non cifra niente e non chiude il programma.",
+        "All'avvio il programma controlla che i dati si leggano. Se una parte è rimasta a metà te lo dice per nome e ti offre la copia automatica più recente, invece di ripartire come se non avessi mai scritto nulla.",
+        "Neura riconosce meglio le domande: «pensieri di morte» e «voglio sparire» aprono subito i numeri di emergenza, e lutto, alcol, scheda da portare e psicoterapia arrivano alla sezione giusta invece che a una risposta fuori tema.",
+        "«Il tuo percorso», nel menu Altro, raccoglie in una pagina quante giornate hai annotato, quante schede e questionari hai fatto e quante pratiche hai portato a termine.",
+        "Un controllo misura quanto pesa quello che si scarica al primo avvio e non lo lascia crescere in silenzio."
+      ]
+    },
     {
       v: "1.7.19",
       data: "26 novembre 2026",

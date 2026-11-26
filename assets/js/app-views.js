@@ -690,7 +690,7 @@
   /* Versione in uso e copia offline ---------------------------------------- */
 
   // Il nome della cache del service worker è la versione del service worker
-  // («psd-v1.7.19»): leggerlo dice quale copia offline sta servendo la pagina
+  // («psd-v1.7.20»): leggerlo dice quale copia offline sta servendo la pagina
   // senza chiedere niente alla rete, e senza fidarsi di quello che la pagina
   // crede di essere.
   const CACHE_VERSIONE = /^psd-v(\d+\.\d+\.\d+)$/;
@@ -1063,7 +1063,7 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.19 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.7.20 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");

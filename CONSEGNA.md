@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.19**, 26 novembre 2026.
+Ultimo aggiornamento: versione **1.7.20**, 26 novembre 2026.
 
 ---
 
@@ -128,8 +128,8 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 
 | Comando | Cosa verifica davvero |
 |---|---|
-| `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 808 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande, sua selezione nella relazione e nella scheda, campo per scriverne una direttamente nella scheda, primo accesso senza dati con benvenuto che non copre il campo e focus sulla domanda appena scritta, spunta automatica partendo da zero spunte, numeri utili sul piano a schermo e sul foglio, fascicolo unico (cinque parti in un PDF solo, senza aggiungere dati, con le domande una volta sola, i campi vuoti da scrivere e nessun titolo di parte orfano in fondo alla pagina), chiusura del benvenuto che ferma la voce e spegne «Ferma l'audio», versione in uso e copia offline (coincidono, diverse, assenti, e il pulsante che disregistra il service worker, cancella solo le cache dell'app e ricarica una volta sola) |
+| `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release. Da questa versione chiede a Neura le cinquantadue domande di `tests/neura-casi.json` e pretende la sezione giusta (o l'urgenza, per le frasi di rischio): una modifica ai sinonimi che sposta una domanda altrove diventa rossa, invece di scoprirsi da una persona |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 808 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande, sua selezione nella relazione e nella scheda, campo per scriverne una direttamente nella scheda, primo accesso senza dati con benvenuto che non copre il campo e focus sulla domanda appena scritta, spunta automatica partendo da zero spunte, numeri utili sul piano a schermo e sul foglio, fascicolo unico (cinque parti in un PDF solo, senza aggiungere dati, con le domande una volta sola, i campi vuoti da scrivere e nessun titolo di parte orfano in fondo alla pagina), chiusura del benvenuto che ferma la voce e spegne «Ferma l'audio», versione in uso e copia offline (coincidono, diverse, assenti, e il pulsante che disregistra il service worker, cancella solo le cache dell'app e ricarica una volta sola), blocco automatico dello schermo (spento di partenza, tempi ammessi, copertura e scoperta, scelta che resta), diagnosi dei dati all'avvio (una chiave a metà o di forma sbagliata viene nominata, il piano di sicurezza vuoto non è un errore), pagina «Il tuo percorso» (conteggi veri e stato vuoto) |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -175,17 +175,31 @@ Numeri aggiornati a ogni `npm test`: 23 viste, 30 pagine di singoli elementi, 3 
 - **L'uscita rapida non cancella la cronologia.** «Esci subito», in cima a Sicurezza, apre una pagina neutra con ora e data, senza testata né contenuti. La visita al programma resta nella cronologia del browser, e Indietro riporta alla pagina di prima: è una copertura dello schermo, non una cancellazione delle tracce.
 - **L'avviso di versione nuova del sito** nei test automatici è simulato: jsdom non ha un service worker. La prova vera è la 13.1 del foglio, che richiede una pubblicazione mentre la scheda è aperta.
 - **La protezione dello spazio è una richiesta, non una garanzia**: decide il browser e può revocarla. I test simulano le tre risposte (concessa, rifiutata, API assente); la prova nei browser veri è la sezione 14 del foglio.
+- **Il blocco automatico copre lo schermo, non cifra i dati.** Dopo i minuti scelti i contenuti si sfocano e un pulsante li scopre; chi apre gli strumenti di sviluppo li vede lo stesso, come con la modalità discreta. Non chiude il programma e non chiede una password: una password dimenticata sarebbe una perdita di dati, non una protezione.
+- **La diagnosi dei dati all'avvio riconosce una chiave illeggibile, non la ripara.** Se una parte è rotta e c'è una copia automatica, l'avviso la offre; se non c'è, resta il backup da importare a mano. Non ricostruisce un dato a metà e non fonde due copie.
 - **Il runner macOS di GitHub** a volte si blocca in coda: si rilancia il job fallito, non si cambia il codice per farlo passare.
 
 ---
 
 ## 8. Prossimi passi sensati (con il criterio per farli)
 
-Il riepilogo a 30 giorni è già nella 1.6.0 e non è più un passo da fare. I promemoria con notifiche di sistema restano fuori per scelta: quelli dell'app sono dentro l'app, senza permessi e senza cose che suonano di notte.
+Il riepilogo a 30 giorni è nella 1.6.0. I promemoria con notifiche di sistema restano fuori per scelta: quelli dell'app sono dentro l'app, senza permessi e senza cose che suonano di notte. La verifica visiva con screenshot di riferimento resta fuori: su macchine diverse produce rumore.
 
-1. **Prova su dispositivi veri** (iOS Safari, Android Chrome) per la sintesi vocale, il salvataggio offline e l'apertura dei backup cifrati. È il buco più grande dei controlli attuali: jsdom simula voce e Web Crypto, ma non un telefono vero. Criterio: provare almeno un iPhone e un Android, anche con l'app installata, e annotare sistema, browser e risultato.
-2. **Esportazione della sola relazione** oltre al backup completo. Criterio: resta un file locale, nessun invio.
-3. **Verifica automatica dell'aspetto** con uno screenshot di riferimento. Criterio: solo se il confronto è stabile tra macchine, altrimenti produce rumore e viene ignorato.
+**Fatte nella 1.7.20** (e coperte da un controllo, non solo dal codice): il blocco automatico dello schermo, la diagnosi dei dati all'avvio con l'offerta della copia, le cinquantadue domande di prova per Neura, la pagina «Il tuo percorso», il budget sul peso di quello che si scarica, e la correzione delle frasi di rischio che Neura non riconosceva («pensieri di morte», «voglio sparire»).
+
+**Restano**, in ordine di valore e con il verdetto di fattibilità:
+
+| Idea | A che punto è | Cosa manca per farla |
+|---|---|---|
+| **Collaudo su un telefono vero** (iOS Safari e Android Chrome: voce, uso offline, backup cifrato, app installata) | È il buco più grande dei controlli. Il protocollo sta nella sezione 33 del foglio prove, con le caselle da spuntare | Un iPhone e un Android in mano: in un ambiente senza dispositivi non si può fare, e simulare non serve a niente |
+| **Archivio leggibile senza l'app** (un file HTML autonomo con diario, punteggi e relazione, apribile con doppio clic anche fra dieci anni) | Fattibile: il generatore HTML esiste già per le pagine | Una funzione in Licenze e un test che confronti i conteggi con il backup; il file non deve contenere più dati di quelli che la persona ha scritto |
+| **Sezione «Se è una persona cara a stare male»** | Fattibile: è un capitolo in più nei dati | Aggiornare i conteggi dichiarati in README, testi e vademecum, e rigenerare i PDF: è il lavoro che costa, non la scrittura |
+| **PDF con titolo, lingua e ordine di lettura per i lettori di schermo** | Parzialmente fattibile: metadati e lingua sono un lavoro piccolo; una struttura taggata in un PDF 1.4 scritto a mano è un lavoro grande | Decidere se basta la lettura lineare (oggi il testo è già in ordine) o se serve il tagging vero, che cambia il generatore |
+| **Prove nel browser su stampa, tastiera e ruoli** (27.2, 28.3, 31.5, 31.6 del foglio) | Fattibile: Chromium in CI c'è già, e `emulateMedia` copre la stampa | Scrivere gli scenari e alzare il limite `sezioneSuite <= 31` in `verify.cjs`; ogni prova che passa da «a mano» a «sì» va segnata nel foglio |
+| **Dati di esempio** per provare senza scrivere niente | Fattibile, ma con una condizione | Vanno tenuti fuori da backup, copie automatiche e riepilogo, o inquinano i dati veri: prima si decide la regola, poi si scrive il pulsante |
+| **Prova con anni di dati addosso** (2.000 voci: quota, tempi, stampa) | Fattibile come test sintetico | Fissare la soglia prima di misurare, altrimenti è un test che si aggiusta da solo |
+
+Una cosa che sembrava un passo e non lo è: **esportare la sola relazione** è già possibile, il pulsante «Scarica PDF» nella pagina Relazione esporta solo quella e le parti scelte, senza scheda, piano o fascicolo.
 
 Cose da **non** fare, per coerenza con l'impianto: account e sincronizzazione cloud, streak o premi, una IA che interpreta i punteggi al posto del clinico, qualunque tracciamento, notifiche di sistema o promemoria a orari — i promemoria restano dentro l'app, senza chiedere permessi.
 
