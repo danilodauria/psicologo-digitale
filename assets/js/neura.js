@@ -37,10 +37,24 @@ NP.neura = (function () {
   }
 
   // Le frasi di rischio si scrivono in molti modi: «pensieri di morte» è lo
-  // stesso pensiero di «pensieri suicidi», e «voglio sparire» senza «per
-  // sempre» non è meno urgente. Meglio chiedere una volta in più che mancare
-  // l'unica risposta che conta davvero.
-  const RISK = /(voglio morire|voglio ammazzarmi|voglio uccidermi|farla finita|togliermi la vita|togliersi la vita|non voglio piu vivere|non voglio vivere|non voglio svegliarmi|farmi del male|mi voglio tagliare|impiccarmi|buttarmi di sotto|buttarmi dal|prendere tutte le pastiglie|sto pensando al suicidio|pensieri suicidi|pensieri di morte|pensiero di morte|ideazione suicidaria|suicidarmi|voglio sparire|sparire per sempre|non ha senso vivere|non vale la pena vivere)/;
+  // stesso pensiero di «pensieri suicidi». Meglio chiedere una volta in più che
+  // mancare l'unica risposta che conta davvero.
+  const RISK = /(voglio morire|voglio ammazzarmi|voglio uccidermi|farla finita|togliermi la vita|togliersi la vita|non voglio piu vivere|non voglio vivere|non voglio svegliarmi|farmi del male|mi voglio tagliare|impiccarmi|buttarmi di sotto|buttarmi dal|prendere tutte le pastiglie|sto pensando al suicidio|pensieri suicidi|pensieri di morte|pensiero di morte|ideazione suicidaria|suicidarmi|sparire per sempre|non ha senso vivere|non vale la pena vivere)/;
+
+  // «Voglio sparire» da sola parla di sé — «voglio sparire e basta», «non voglio
+  // più esserci» — ed è una frase di rischio. Ma la stessa frase dice anche da
+  // dove si vorrebbe uscire: «voglio sparire dal lavoro», «da qui», «dai social
+  // per un po» è il desiderio di ritirarsi da un contesto, non di non esserci
+  // più. Lì la risposta giusta è quella che parla di quel contesto, non il 112:
+  // un'emergenza inventata toglie forza a quelle vere. Quindi resta urgente
+  // tutto ciò che riguarda il senso di sé, e solo il ritiro da un contesto
+  // riconoscibile viene letto come tale.
+  const SPARIRE = /voglio sparire/;
+  const RITIRO = /voglio sparire (?:dal|dallo|dalla|dai|dagli|dalle|del|della) (?:lavoro|ufficio|turno|citta|paese|quartiere|scuola|universita|gruppo|chat|famiglia|social|rete|casa|palestra)|voglio sparire (?:da qui|di casa)|voglio sparire per (?:un po|qualche|un ora|un pomeriggio|un giorno|due giorni|una settimana|due settimane|un mese|una vacanza|il weekend)/;
+
+  function rischio(t) {
+    return RISK.test(t) || (SPARIRE.test(t) && !RITIRO.test(t));
+  }
   const VIOLENZA = /(mi picchia|mi mena|mi strangola|violenza domestica|mi minaccia|mi controlla il telefono|mi stalker|mi ha stuprato|abuso sessuale|sono in pericolo a casa)/;
 
   const SALUTI = /^(ciao|buongiorno|buonasera|salve|hey|ehi|ciao neura)\b/;
@@ -146,7 +160,7 @@ NP.neura = (function () {
       return { html: "<p>Scrivimi una domanda, anche breve. Per esempio: «che cos'è l'ansia?», «come inizio?», «un esercizio per dormire».</p>", suggest: ["Come inizio?", "Che cos'è l'ansia?", "Un esercizio per dormire"] };
     }
 
-    if (RISK.test(t)) {
+    if (rischio(t)) {
       return {
         urgent: true,
         tag: "sicurezza",
