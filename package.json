@@ -1,6 +1,6 @@
 {
   "name": "psicologo-digitale",
-  "version": "1.7.20",
+  "version": "1.8.0",
   "private": true,
   "homepage": "https://danilodauria.github.io/psicologo-digitale/",
   "repository": {
@@ -27,7 +27,10 @@
     "icons": "python3 scripts/make_icons.py",
     "vademecum": "node scripts/export-data.cjs && python3 scripts/build_vademecum.py && python3 scripts/build_vademecum_clinico.py",
     "desktop:prepare": "node scripts/prepare-desktop.cjs",
-    "test": "node tests/verify.cjs && node tests/dom-test.cjs && node scripts/controlla-collegamenti.cjs && node scripts/controlla-accessibilita.cjs && node scripts/controlla-testi.cjs && node scripts/controlla-rete.cjs && node tests/controlla-rete-test.cjs && node scripts/controlla-impronte.cjs && node scripts/controlla-peso.cjs && node tests/browser/esegui.cjs --consenti-salto && node scripts/riepilogo-copertura.cjs",
+    "test": "node tests/verify.cjs && node tests/dom-test.cjs && node scripts/controlla-collegamenti.cjs && node scripts/controlla-accessibilita.cjs && node scripts/controlla-testi.cjs && node scripts/controlla-rete.cjs && node tests/controlla-rete-test.cjs && node scripts/controlla-impronte.cjs && node scripts/controlla-peso.cjs && node scripts/controlla-pdf.cjs && node tests/browser/esegui.cjs --consenti-salto && node scripts/prossimi-passi.cjs && node scripts/riepilogo-copertura.cjs",
+    "migliorie": "node scripts/prossimi-passi.cjs",
+    "backup": "node scripts/backup.cjs",
+    "pdf:meta": "python3 scripts/pdf_meta.py",
     "test:browser": "node tests/browser/esegui.cjs",
     "test:copertura": "node scripts/riepilogo-copertura.cjs",
     "test:links": "node scripts/controlla-collegamenti.cjs",
@@ -35,6 +38,7 @@
     "test:text": "node scripts/controlla-testi.cjs",
     "test:impronte": "node scripts/controlla-impronte.cjs",
     "test:peso": "node scripts/controlla-peso.cjs",
+    "test:pdf": "node scripts/controlla-pdf.cjs",
     "test:rete": "node scripts/controlla-rete.cjs",
     "test:archivi": "node scripts/controlla-archivi.cjs",
     "test:dipendenze": "node scripts/controlla-dipendenze.cjs",

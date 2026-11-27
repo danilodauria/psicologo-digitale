@@ -1,0 +1,336 @@
+# Prove a mano · versione 1.8.0
+
+Quello che i test automatici non possono vedere del tutto: la voce che parte davvero, la pagina che si legge su un telefono, il messaggio che compare al momento giusto — e, segnato prova per prova, quel tanto che la suite nel browser vede ormai da sola. Sono centodiciassette prove, un quarto d'ora in tutto, da fare **prima** di considerare chiusa una release. Delle sedici prove delle sezioni 27–31, tre le esegue già per intero la suite nel browser vero, nove le guarda in parte e quattro restano a mano: non si ripete a penna quello che la macchina fa già.
+
+Vale dalla 1.4.0 alla 1.8.0. Per la 1.4.1 vale il messaggio dell'import corretto, indicato nella prova 3.3; per la 1.5.0 ci sono le cinque prove della sezione 7, sulla ricerca nelle cose scritte; per la 1.6.0 le tre della sezione 8, sul confronto a sette o trenta giorni e sulla sua stampa; per la 1.7.0 le tre della sezione 9, sugli estratti e sul movimento ridotto; per la 1.7.1 la prova della sezione 10, sull'estratto che non ripete il titolo; per la 1.7.2 le due della sezione 11, sui campi della scheda e sullo scorrimento con movimento ridotto; per la 1.7.3 la prova della sezione 12, sull'installazione della voce naturale; per la 1.7.4 le due della sezione 13, sull'avviso di versione nuova del sito; per la 1.7.5 le due della sezione 14, sulla protezione dello spazio; per la 1.7.6 le tre della sezione 15, su elenco completo, modifica e schede del pensiero; per la 1.7.7 le due della sezione 16, sui sinonimi della ricerca; per la 1.7.8 le quattro della sezione 17, sugli estratti della ricerca; per la 1.7.9 le due della sezione 18, sull'uscita rapida; per la 1.7.10 le tre della sezione 19, sul piano di sicurezza; per la 1.7.11 le tre della sezione 20, sulle parti da includere nella relazione; per la 1.7.12 le tre della sezione 21, sulla scheda da portare; per la 1.7.13 le tre della sezione 22, sul taccuino delle domande; per la 1.7.14 le tre della sezione 23, sul backup protetto da password; per la 1.7.15 le due della sezione 24, sulla scheda da portare a schermo e sulla carta; per la 1.7.16 le due della sezione 25, sulle domande scritte direttamente nella scheda; per la 1.7.17 le due della sezione 26, sui numeri utili nel piano; per la 1.7.18 le dieci delle sezioni 27–30, sulla ricerca in testata, la prova di un backup, il fascicolo unico e il controllo della rete; per la 1.7.19 le sei della sezione 31, sulle stesse cose ripetute in un browser vero, a larghezza telefono e computer; per la 1.7.20 le sei della sezione 32, sul blocco automatico, sui dati che non si leggono, sulle frasi di rischio di Neura e sulla pagina «Il tuo percorso», quelle della sezione 33, che si fanno solo con un telefono in mano, e per la 1.8.0 le sei della sezione 34, sull'archivio leggibile e sui metadati dei PDF.
+
+C'è anche in PDF A4, per stamparlo e spuntarlo a penna: `assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf`, con una casella per ogni prova e la tabella d'esito in fondo, allegato alla release insieme agli altri fogli. Nasce da questo file con `scripts/build_prove_a_mano_pdf.py`: le prove si scrivono qui, il PDF si rigenera.
+
+**Dove si prova.** Sul sito — <https://danilodauria.github.io/psicologo-digitale/> — e nell'app installata. La pagina per scaricare i pacchetti è **Installa l'app** (`#/installa`), che porta alle [release su GitHub](https://github.com/danilodauria/psicologo-digitale/releases/latest); lì c'è anche il backup dei sorgenti. Quando una prova dipende dal dispositivo, è scritto nella riga.
+
+**Cosa serve.** Un browser con i dati del programma già un po' popolati (qualche voce di diario, almeno un questionario compilato). Per le prove su riepilogo e invito al diario serve qualche giorno di dati: si può simulare come spiegato qui sotto, senza aspettare una settimana.
+
+> **Prima di iniziare: esporta un backup.** Diverse prove importano file e sostituiscono i dati. Se qualcosa va storto, il file esportato è il modo per tornare indietro.
+
+---
+
+## Come preparare i dati per il riepilogo (2 minuti)
+
+1. Licenze e progetto → **Esporta backup**. Salva il file `psicologo-digitale-backup.json`.
+2. Aprilo con un editor di testo. Dentro `"diary"` copia due volte una voce che hai già, cambiando solo `"date"`:
+   - una copia a **2 giorni fa**, una a **3 giorni fa** (finiscono negli «ultimi 7 giorni»);
+   - una copia a **9 giorni fa**, una a **10 giorni fa** (finiscono nei «7 giorni prima»).
+   La data è in formato ISO, per esempio `"2026-11-15T09:00:00.000Z"`.
+3. Cambia anche `"mood"` delle copie (per esempio 7 e 5 nella settimana recente, 3 e 3 in quella prima) così la differenza si vede.
+4. Salva con un altro nome — `prova-1.4.0.json` — e reimportalo da Licenze → **Importa backup**.
+
+Se non vuoi toccare i file: salta le prove 1.2 e 1.3 e fai le altre.
+
+---
+
+## 1. Riepilogo dei periodi
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 1.1 Dalla home, sotto l'invito, premi **Confronta con la settimana prima** | Si apre `#/riepilogo`, titolo «Gli ultimi sette giorni, accanto ai sette prima»; la scheda in home si chiama «La tua settimana» e dice quante voci di diario, quante schede del pensiero e quanti questionari ci sono negli ultimi sette giorni |
+| ☐ | 1.2 Con i dati preparati sopra, guarda la tabella «Medie del diario» | Quattro righe (Umore, Ansia, Sonno, Energia) e tre colonne: «Ultimi 7 giorni», «7 giorni prima», «Differenza». Numeri con la virgola, tra 0 e 10. La differenza ha il segno (`+2`, `−1,5`) oppure dice «uguale» o «—» |
+| ☐ | 1.3 Controlla una media a mano | La media è la somma dei valori del periodo diviso **quante voci hanno quel valore**: una voce con il campo vuoto non conta e non abbassa la media. Se nella settimana ci sono solo le due copie con 7 e 5, la media è 6; se è rimasta anche la voce di partenza entra nel conto anche lei (per esempio 7, 5 e 8 danno 6,7). Il numero mostrato è arrotondato a una cifra dopo la virgola. Se non torna, annota le voci usate e i valori che avevano |
+| ☐ | 1.4 Guarda «Cosa hai fatto» | Tre righe con il conteggio dei sette giorni e, fra parentesi, quello dei sette prima. Devono coincidere con le voci che hai inserito |
+| ☐ | 1.5 Cancella tutti i dati (Licenze → in fondo) e riapri `#/riepilogo` | Compare solo l'avviso «Non ci sono ancora dati in questi quattordici giorni.» — nessuna tabella di trattini, nessun errore. La scheda «La tua settimana» sparisce dalla home |
+
+## 2. Ricerca nei contenuti
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 2.1 Dal piè di pagina apri **Cerca nei contenuti** | Campo con il suggerimento «per esempio: sonno, rimuginio, respiro» e il pulsante **Cerca** |
+| ☐ | 2.2 Cerca `sonno` e premi Invio | Compare «N risultati» e un elenco dove ogni riga dice il titolo, il tipo (Capitolo 3, Glossario, Esercizio) e porta alla pagina giusta: aprendone una, il titolo corrisponde |
+| ☐ | 2.3 Cerca `sonno igiene` | Meno risultati di prima, e ognuno contiene davvero entrambe le parole. Le parole si cercano tutte insieme |
+| ☐ | 2.4 Cerca `zxqv` | «Nessun risultato per «zxqv».» con il suggerimento di provare una parola più corta o il termine clinico |
+| ☐ | 2.5 Cerca `Sonno` con la maiuscola | Gli stessi risultati della prova 2.2: la ricerca non distingue maiuscole e minuscole |
+| ☐ | 2.6 Stacca la rete e ripeti la 2.2 | Funziona lo stesso, senza attese. Con gli strumenti di sviluppo aperti, la scheda Rete non mostra nessuna richiesta durante la ricerca |
+
+## 3. Backup e migrazione
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 3.1 Licenze → **Esporta backup** | Si scarica `psicologo-digitale-backup.json`. Aprendolo: `"app": "Psicologo Digitale"`, `"version": 2`, e dentro `"storicoPunteggi"` le misure dei questionari |
+| ☐ | 3.2 Guarda la riga dell'esportazione | «Ultima esportazione: <data> (oggi).» — e resta la stessa dopo aver ricaricato la pagina |
+| ☐ | 3.3 Reimporta subito lo stesso file | Chiede conferma, poi dice **«Backup importato.»** e basta. Non deve dire «e aggiornato al formato attuale»: quel file era già nel formato attuale (è il difetto corretto nella 1.4.1) |
+| ☐ | 3.4 Apri il file, togli la riga `"version": 2` (o metti `1`), salvalo e importalo | «Backup importato e aggiornato al formato attuale.» — il file vecchio viene completato, non rifiutato |
+| ☐ | 3.5 Metti `"version": 9` e importa | Messaggio «Il file viene da una versione più recente dell'app (formato 9). Aggiorna l'app e riprova.» e **i dati restano quelli di prima**: controlla il diario |
+| ☐ | 3.6 Importa un file che non è un backup (per esempio una foto rinominata `.json`) | «Il file non sembra un backup valido di Psicologo Digitale.» e dati intatti |
+| ☐ | 3.7 Su un browser pulito, con qualche dato inserito ma senza aver mai esportato, apri Licenze | Avviso «Non hai ancora esportato un backup.» con la spiegazione che i dati vivono solo lì. Dopo la prova 3.1 l'avviso diventa la riga con la data |
+
+## 4. Dimensione del testo
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 4.1 Licenze → **Lettura e privacy** → menu «Dimensione del testo» | Tre voci: 100%, 112%, 125% |
+| ☐ | 4.2 Scegli 125% | Tutto il testo cresce subito — anche menu, piè di pagina e pulsanti — senza sovrapposizioni né righe tagliate. Ricarica: resta 125% |
+| ☐ | 4.3 Scegli 100% | Il testo torna alla dimensione di prima e l'attributo `data-testo` sparisce dall'elemento `<html>` (si vede negli strumenti di sviluppo). Non torna nemmeno dopo aver ricaricato: all'avvio la pagina applica solo 112 e 125. Se resta scritto `data-testo="100"` è un difetto, perché quel valore non serve a niente |
+| ☐ | 4.4 Con 125%, su un telefono o con lo zoom al 200% | I menu si aprono, i pulsanti restano raggiungibili e nessun testo esce dallo schermo in orizzontale |
+
+## 5. Modalità discreta
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 5.1 Licenze → **Attiva la modalità discreta** | Compare in alto la barra «Modalità discreta attiva. I contenuti sono coperti.» con il pulsante **Mostra i contenuti**; il contenuto dell'app è sfocato e illeggibile, la barra no |
+| ☐ | 5.2 Premi **Mostra i contenuti** | I contenuti tornano leggibili; la barra resta al suo posto |
+| ☐ | 5.3 Cambia pagina (per esempio apri il diario) | I contenuti tornano sfocati da soli: è il comportamento voluto, non un difetto |
+| ☐ | 5.4 Ricarica l'app | La modalità resta attiva e i contenuti coperti (attributo `data-discreto="1"` su `<html>`) |
+| ☐ | 5.5 Da Licenze spegni la modalità | La barra sparisce, i contenuti sono nitidi, e la scelta resta spenta anche dopo aver ricaricato |
+
+## 6. Lettura ad alta voce
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 6.1 Apri un capitolo del manuale | Sotto il tempo di lettura c'è **Ascolta il capitolo** |
+| ☐ | 6.2 Con l'altoparlante in alto attivo, premi il pulsante | Parte la lettura in italiano del capitolo. Si interrompe subito con **Ferma l'audio** nella barra in alto o con **Esc** |
+| ☐ | 6.3 Spegni l'altoparlante in alto e premi di nuovo | Avviso «La voce è spenta: accendila con l'altoparlante in alto, poi riprova.» e nessun audio: non deve partire lo stesso |
+| ☐ | 6.4 Su un dispositivo senza voci italiane (o con una sola voce) | La lettura parte comunque con la voce disponibile; nella sezione Neura → Voce la pagina dice quali voci mancano e come aggiungerle |
+| ☐ | 6.5 Blocca lo schermo o cambia app durante la lettura, poi torna | Qui **non c'è una promessa**: dipende dal sistema e dal browser. Su alcuni la voce si interrompe, su altri continua anche a schermo bloccato. Quello che deve valere sempre: tornando nell'app la pagina è al suo posto, la lettura non riparte da sola e **Ferma l'audio** ferma quello che sta ancora suonando. Annota cosa succede sul tuo dispositivo, compreso se la voce si è fermata da sola mentre il pulsante restava attivo: in quel caso il sistema non ha avvisato la pagina |
+
+---
+
+## 7. Ricerca nelle tue cose (dalla 1.5.0)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 7.1 Scrivi nel diario una nota con una parola che non compare nei capitoli (per esempio il nome del tuo animale) e cercala | Compare la sezione **«Nelle tue cose»** con il risultato del diario, la data e l'estratto della nota con la parola in evidenza. Nessun risultato nei contenuti: quella parola lì non esiste |
+| ☐ | 7.2 Apri quel risultato | Si apre il diario con la voce in evidenza, anche se è più vecchia delle otto che la pagina mostra di solito |
+| ☐ | 7.3 Apri un esercizio, scrivi una nota in «Come è andata» e cercala | La nota compare in «Nelle tue cose»; aprendola si riapre l'esercizio con il cursore già nel campo della nota, e il testo è quello salvato |
+| ☐ | 7.4 Salva una scheda del pensiero con una parola riconoscibile e cercala | Il risultato apre la scheda in sola lettura, con situazione, pensiero, emozione e lettura alternativa |
+| ☐ | 7.5 Cerca una parola che sta in un capitolo e anche in una tua nota | Due sezioni distinte: «Nei contenuti» con capitoli, glossario ed esercizi; «Nelle tue cose» con la nota. Nessuna voce personale finisce fra i contenuti |
+
+## 8. Confronto a sette o trenta giorni (dalla 1.6.0)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 8.1 Apri il riepilogo e scegli «30 giorni» | Titolo e intestazioni dicono trenta, la scelta si vede dal pulsante acceso e i conteggi cambiano rispetto ai sette giorni |
+| ☐ | 8.2 Leggi la riga delle date sotto il titolo | Dice «dal … al …» per entrambi i periodi; cambiando periodo cambiano anche le date, non solo i numeri |
+| ☐ | 8.3 Premi «Stampa il confronto» e guarda l'anteprima | Il foglio ha titolo, date, tabella e la frase «traccia, non come prova»; non ci sono menù, pulsanti, la scelta del periodo né il collegamento per tornare alla home |
+
+## 9. Estratti e movimento ridotto (dalla 1.7.0)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 9.1 Cerca una parola che compare in un capitolo, per esempio «respiro» | Ogni risultato nei contenuti mostra, sotto il titolo, la frase in cui compare la parola, con la parola evidenziata: non solo il titolo e il tipo |
+| ☐ | 9.2 Scrivi nel diario una nota di due frasi, con una parola riconoscibile solo nella seconda, e cercala | L'estratto nelle tue cose è la seconda frase, intera; la prima non compare neanche parzialmente |
+| ☐ | 9.3 Attiva «Riduci il movimento» nelle impostazioni di accessibilità del sistema e riapri la home | L'orbita di Neura è ferma — niente respiro, niente anello che ruota — e i cambi pagina non hanno dissolvenze. Spegnendo l'impostazione l'animazione torna |
+
+## 10. Estratti senza titolo (dalla 1.7.1)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 10.1 Cerca `ansia` e guarda i risultati dei capitoli | Sotto il titolo del capitolo «Ansia: il corpo che suona l'allarme», e sotto ogni altro risultato, l'estratto è una frase intera che comincia da sé: non c'è il titolo incollato davanti alla prima parola («Ansia L'ansia è…»), né il titolo di una sezione sopra il paragrafo. La parola cercata resta evidenziata |
+
+## 11. Campi e scorrimento (dalla 1.7.2)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 11.1 Cerca una parola che sta solo nella «Situazione» di una scheda del pensiero | La scheda compare in «Nelle tue cose» con l'estratto limitato a quel campo: non porta dietro il pensiero, l'emozione o la lettura alternativa, e non ci sono «·» a incollarli in una riga sola |
+| ☐ | 11.2 Con «Riduci il movimento» attivo, apri Neura e invia un messaggio | La finestra della conversazione si porta in fondo di colpo, senza scorrimento morbido; l'orbita resta ferma come nella prova 9.3 |
+
+## 12. Voce naturale (dalla 1.7.3)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 12.1 Nel programma installato apri Neura → scheda Voce e premi **Installa Paola** | L'avanzamento sale fino al 99%, poi la scheda dice «Voci naturali pronte: Paola» e il pulsante diventa «Paola · femminile · 60 MB». La lettura parte con quella voce anche staccando la rete. Se il download si interrompe (prova con la rete spenta a metà) la scheda scrive il motivo e la voce resta da installare: non deve restare ferma al 100% |
+
+## 13. Aggiornamento del sito (dalla 1.7.4)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 13.1 Lascia aperta una scheda del sito mentre esce una versione nuova (si prova alla release successiva, oppure riaprendo una scheda rimasta aperta da prima dell'aggiornamento) | Compare la barra «C'è una versione nuova» con il pulsante **Aggiorna e ricarica**. Un clic ricarica la pagina una volta e la barra sparisce; in **Versioni e novità** la versione in uso è quella nuova. Non è possibile un secondo clic: il pulsante è sparito con la barra |
+| ☐ | 13.2 Su un browser pulito, alla prima apertura del sito | La barra non compare e la pagina non si ricarica da sola: non c'è nessuna versione precedente da sostituire |
+
+## 14. Protezione dello spazio (dalla 1.7.5)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 14.1 Apri **Licenze e progetto** in un browser che concede la protezione (Chrome o Edge usati da un po') | La scheda «Protezione dello spazio» dice che i dati sono protetti, e **non** c'è il pulsante del backup: non c'è urgenza da segnalare |
+| ☐ | 14.2 Apri **Licenze e progetto** in una finestra privata, o in un browser senza Storage API | La scheda dice che i dati non sono protetti (o che il browser non offre la protezione) e propone **Esporta backup**; il pulsante scarica `psicologo-digitale-backup.json`, senza cambiare pagina |
+
+## 15. Diario completo, modifica e schede (dalla 1.7.6)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 15.1 Con più di otto voci di diario, apri **Diario** | Sotto le ultime voci c'è **Vedi tutte le N voci**, con il numero vero. Il collegamento apre l'elenco completo, con tutte le voci in ordine di data; **Torna al diario** riporta alle ultime otto |
+| ☐ | 15.2 In una voce qualsiasi premi **Modifica**, cambia umore e nota e salva | La voce è quella di prima — stessa data, stesso posto nell'elenco — con i valori nuovi; il numero di voci non aumenta e il riepilogo usa i valori corretti |
+| ☐ | 15.3 Elimina una scheda del pensiero dal diario, e un'altra dalla scheda aperta con la ricerca | In entrambi i casi chiede conferma, la scheda scelta sparisce e le altre restano; il messaggio dice che è stata eliminata |
+
+## 16. Sinonimi della ricerca (dalla 1.7.7)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 16.1 Cerca «dormire» e poi «ansioso» | «Dormire» trova il capitolo **Sonno: la riparazione notturna** con «sonno» evidenziato nell'estratto; «ansioso» trova il capitolo sull'ansia, con «ansia» evidenziato. Il risultato non è un titolo senza spiegazione: la frase mostrata contiene la parola che lo ha fatto comparire |
+| ☐ | 16.2 Scrivi nel diario una nota con «ho dormito poco», poi cerca «sonno»; infine cerca «zanzara» | La nota compare in **Nelle tue cose** con «dormito» evidenziato; «zanzara», che non è nella tabella, non inventa parenti e dà gli stessi risultati di prima (nessuno, se non l'hai scritta) |
+
+## 17. Estratti della ricerca (dalla 1.7.8)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 17.1 Cerca «legittime» | Compare **Scegliere il professionista giusto** senza una riga che ripeta il titolo di sezione «Domande legittime»: il titolo serve a trovarlo, non a spiegarlo |
+| ☐ | 17.2 Cerca «pianificazione» e poi «padronanza» | «Pianificazione» trova **Attivazione comportamentale** senza «10 minuti di pianificazione» come estratto; «padronanza» trova lo stesso esercizio con la frase dei passi, parola evidenziata |
+| ☐ | 17.3 Cerca «reagisce» | L'estratto comincia prima del punto e virgola: si legge «… scegliere cosa fare; fuori, si reagisce», non solo la parte dopo |
+| ☐ | 17.4 Cerca «etichettamento» | L'estratto si ferma a una parola intera («… cancella il resto),») e non lascia una parola mozzata come «personalizzaz» |
+
+## 18. Uscita rapida (dalla 1.7.9)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 18.1 Apri **Sicurezza** e premi **Esci subito**, in cima alla pagina | Un tocco: compare una pagina bianca con «Nuova scheda», l'ora e la data. Testata, menu, piè di pagina e barra di stato spariscono, e il titolo della scheda non nomina il programma |
+| ☐ | 18.2 Dalla pagina neutra premi **Indietro**, poi apri la cronologia del browser | Si torna a Sicurezza con i dati intatti. La pagina neutra e quelle del programma sono ancora nella cronologia: il pulsante non cancella niente, e la scritta accanto lo diceva già |
+
+## 19. Piano di sicurezza personale (dalla 1.7.10)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 19.1 Apri **Sicurezza** → **Il mio piano di sicurezza** → **Apri il piano**. Compila i cinque campi e almeno un contatto, poi premi **Salva il piano** | Compare «Piano salvato». Ricaricando la pagina i valori sono ancora lì, compresi nome e numero; il piano non è stato mandato a nessuno |
+| ☐ | 19.2 Svuota i campi e premi **Stampa il piano** | L'anteprima di stampa mostra il foglio con i cinque titoli e le righe vuote da riempire a penna, senza frasi di consiglio già scritte. Sulla carta non compaiono testata, menu, modulo né pulsanti |
+| ☐ | 19.3 Con il piano compilato esporta un backup da **Licenze e progetto**; poi cancella tutti i dati e importa il file | Il piano torna com'era, contatti compresi. Prima di ripristinare, l'anteprima nomina anche **Piano di sicurezza**, così si sa che il file lo contiene |
+
+## 20. Cosa finisce nella relazione (dalla 1.7.11)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 20.1 Apri **Relazione** con diario, schede del pensiero e note già compilati. Le tre caselle sono tutte spuntate; togli la spunta a tutte | Il foglio perde il diario, le schede e le note personali, e le domande per il clinico restano. La numerazione non lascia buchi: senza le tre parti, le domande sono la sezione 8 |
+| ☐ | 20.2 Scarica il **PDF** con tutte e tre le caselle spuntate, poi riscaricalo dopo averle tolte | Il primo PDF contiene diario, schede e note; il secondo no. Entrambi contengono colloquio, punteggi, sicurezza, domande e firme |
+| ☐ | 20.3 Con le tre caselle tolte, premi **Stampa**; poi rimettile e controlla il foglio | La stampa rispetta la scelta, senza diario, schede o note personali. Rimettendo le spunte, le tre parti tornano sia a schermo sia nella stampa, perché le caselle non cancellano i dati |
+
+## 21. La scheda da portare (dalla 1.7.12)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 21.1 Apri **Relazione** → **Prepara la scheda**. Guarda il foglio e scarica il **PDF** senza toccare niente | La scheda parte con il motivo, tre aree, tre punteggi, l'ultima voce di diario, l'ultima scheda del pensiero e tre domande. Il PDF è di **una pagina sola**, con le stesse parti, l'avvertenza che non è una diagnosi e il 112 in fondo |
+| ☐ | 21.2 Togli un'area e una domanda, scegli un'altra voce di diario e un'altra scheda del pensiero; poi prova a spuntare una quarta area | Il foglio a schermo cambia subito. Con tre aree scelte la quarta casella è spenta: si accende togliendone una. Le domande si fermano a quattro. Il PDF riscaricato rispetta le scelte, e le parti tolte non compaiono |
+| ☐ | 21.3 Con un segnale di rischio emerso nel colloquio, apri la scheda e poi premi **Stampa** | Il segnale compare in cima, con «Da non rimandare», sia a schermo sia nel PDF sia sulla carta. Senza segnali la riga non c'è. La stampa esce su una pagina, senza testata, menu, caselle o pulsanti |
+
+## 22. Il taccuino delle domande (dalla 1.7.13)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 22.1 Apri un capitolo del **Manuale**, scrivi una domanda nel campo in fondo e premi **Aggiungi**. Poi apri **Neura**, scrivi un'altra domanda e aggiungila | La prima domanda resta nel taccuino senza ricaricare la pagina e il collegamento dice quante ce ne sono. La seconda entra nello stesso taccuino dalla pagina di Neura. I campi si svuotano, e in **Taccuino** compaiono entrambe, con la data |
+| ☐ | 22.2 Apri **Relazione** con almeno una domanda nel taccuino: trovi «Le domande che hai scritto», tutte spuntate. Togli una spunta, scarica il **PDF**, poi rimettila | La domanda tolta sparisce dal foglio, dalla stampa e dal PDF, ma resta nel taccuino. Rimettendo la spunta torna sotto «Le domande che ho scritto:», dopo quelle generate. Se togli tutte le domande scritte, l'etichetta sparisce e la sezione delle domande resta quella di sempre |
+| ☐ | 22.3 In **Taccuino** correggi una domanda e togli un'altra; poi esporta un **backup**, cancella i dati e reimportalo. Prova anche un backup vecchio, senza domande | La correzione resta dopo aver riaperto la pagina; «Togli» chiede conferma e toglie solo quella scelta. Il backup riporta le domande e il ripristino le rimette. Un file del formato precedente si importa lo stesso, con il taccuino vuoto: nessuna domanda inventata e nessun errore |
+
+## 23. Il backup protetto da password (dalla 1.7.14)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 23.1 Apri **Licenze**, scegli una password di almeno otto caratteri nel backup protetto e esporta. Prova prima con due password diverse e con una troppo corta | Con password diverse o troppo corta il file non viene scaricato e il messaggio dice perché. Con una password valida si scarica un file `.json` che, aperto con un editor di testo, mostra solo formato, algoritmo e parametri: nessun dato di diario, colloquio o taccuino è leggibile |
+| ☐ | 23.2 Da **Importa backup** scegli il file protetto. Scrivi prima una password sbagliata, poi quella giusta | Con la password sbagliata compare «Password errata o file danneggiato» e i dati attuali non cambiano. Con quella giusta l'app chiede conferma, importa colloquio, diario, questionari, note e taccuino, e chiude con «Backup importato» |
+| ☐ | 23.3 Controlla il **backup in chiaro** accanto a quello protetto; poi rileggi l'avviso del backup cifrato | Il pulsante in chiaro esporta ancora il solito JSON leggibile e si importa senza password. L'avviso dice, a parole, che una password persa è un file perso e che non c'è un recupero: il backup in chiaro resta la strada per chi non vuole usare una password |
+
+## 24. La scheda da portare, a schermo e sulla carta (dalla 1.7.15)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 24.1 Apri **Relazione** → **Prepara la scheda** a larghezza telefono, con la modalità discreta spenta. Poi premi **Stampa** e guarda l'anteprima | La barra «Modalità discreta attiva» non compare, né a schermo né nell'anteprima. La scheda resta leggibile, senza testo tagliato o sovrapposto, e la stampa esce su una pagina sola, senza testata, menu, caselle o pulsanti |
+| ☐ | 24.2 Con un segnale di rischio emerso, scarica il **PDF** della scheda e aprila | L'avviso «Da non rimandare» sta in cima dentro il suo riquadro, con il testo staccato dalla barra laterale e dal bordo. Il PDF è di una pagina sola e il piè di pagina resta in fondo, senza sovrapposizioni |
+
+## 25. Le domande scritte nella scheda (dalla 1.7.16)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 25.1 Apri **Relazione** → **Prepara la scheda**: scrivi una domanda nel campo sotto «Le domande che vuoi fare» e premi **Aggiungi** | La domanda entra nel taccuino e, se c'è posto, viene già spuntata nella scheda. Il testo è quello scritto, senza interpretazioni né invii, e compare anche nel PDF e nella stampa. Il campo si svuota e il collegamento al taccuino aggiorna il numero |
+| ☐ | 25.2 Con quattro domande già spuntate, scrivine un'altra dalla scheda; poi togli una spunta | La nuova domanda entra nel taccuino ma resta fuori dalla scheda finché non si libera un posto: il messaggio lo dice. Togliendo una spunta la nuova si può scegliere. Ricaricando la pagina la domanda resta nel taccuino, senza essere interpretata o inviata |
+
+## 26. I numeri utili nel piano (dalla 1.7.17)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 26.1 Apri **Sicurezza** → **Il mio piano di sicurezza**. Con i campi vuoti guarda il riquadro **Numeri utili** e premi **Stampa il piano** | A schermo ci sono sei numeri, con il 112 per primo, e ognuno apre il telefono. Sul foglio ci sono gli stessi sei numeri con il nome del servizio, insieme alle righe vuote da riempire a penna |
+| ☐ | 26.2 Con il tema scuro attivo, compila il piano e stampalo | Il foglio è nero su bianco anche partendo dal tema scuro: titoli, righe e numeri si leggono, e il piano sta su una pagina A4 |
+
+## Cosa fa già la suite nel browser
+
+Le prove delle sezioni 27–31 chiudono con **Suite:**, che dice cosa esegue già `npm test` con la suite nel browser vero (`tests/browser/`, nove scenari a larghezza telefono e computer; da sola si lancia con `npm run test:browser`). **sì**: coperta, se `npm test` è verde non si rifà a mano. **in parte** (e fra parentesi cosa resta): la suite ne guarda una metà. **no**: resta a mano.
+
+La suite non può sentire la voce, usare un lettore di schermo, toccare un telefono vero, guardare l'anteprima di stampa e l'A4, leggere la scheda Rete o interrogare Ollama: quelle prove restano «in parte» o «no».
+
+## 27. Il pulsante Cerca nella testata (dalla 1.7.18)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 27.1 Apri la home e premi la lente nella testata, accanto alla voce e al tema · **Suite:** in parte (la lente accesa) | L'indirizzo diventa `#/cerca` e si apre la pagina Cerca: la lente resta evidenziata, il cursore è già nel campo «Parole da cercare» e le parole scritte compaiono nei risultati senza altri clic. Con la finestra a 360 px la lente c'è ancora e la testata non crea scorrimento orizzontale |
+| ☐ | 27.2 Con la tastiera: premi Tab finché il contorno non è sulla lente, poi Invio; infine torna indietro con il pulsante Indietro del browser · **Suite:** no | Il contorno si ferma sulla lente — è un collegamento, non un disegno — e Invio apre la pagina Cerca; il lettore di schermo legge «Cerca nei contenuti». Indietro riporta alla pagina di prima e la lente non è più evidenziata |
+
+## 28. Provare un backup senza applicarlo (dalla 1.7.18)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 28.1 Esporta un backup in chiaro (Licenze → **Esporta backup in chiaro**), poi togli una voce dal Diario, così il file ne ha una in più. Torna in Licenze → **Prova un backup** e scegli quel file · **Suite:** in parte (nome del file e «Chiudi») | Compare un riquadro con il nome del file, «**Il file contiene:**» con il numero di voci, «**Rispetto ai dati di oggi cambierebbe:**» e la frase «Nessun dato è stato toccato». Il Diario ha ancora le voci di prima e nessuna finestra chiede conferma; **Chiudi l'anteprima** toglie il riquadro |
+| ☐ | 28.2 Esporta un backup protetto da password, poi Licenze → **Prova un backup** e scegli quel file: prima una password sbagliata, poi quella giusta · **Suite:** in parte (campo e Diario) | Con la password sbagliata compare «Password errata o file danneggiato.» e nessun riquadro di anteprima. Con quella giusta il riquadro compare come nella prova 28.1, il campo della password sparisce e il Diario resta com'è |
+| ☐ | 28.3 Apri un backup in chiaro con un editor di testo, cambia `"version": 3` in `"version": 9`, salvalo con un altro nome; scrivi poi in un file di testo `{ "ciao": "mondo" }`. Provali uno alla volta con **Prova un backup** · **Suite:** no | Il primo avvisa che il file viene da una versione più recente dell'app (formato 9) e non apre nessuna anteprima; il secondo che non sembra un backup valido. In nessuno dei due casi il Diario cambia |
+
+## 29. Il fascicolo unico (dalla 1.7.18)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 29.1 Scrivi una frase riconoscibile nel piano di sicurezza (per esempio «Prova del nove») e una domanda nel taccuino; poi Relazione → **Fascicolo completo** · **Suite:** in parte (la frase nel piano) | Cinque titoli: «Parte 1 — Relazione preliminare», «Parte 2 — Scheda da portare», «Parte 3 — Piano di sicurezza», «Parte 4 — Confronto dei periodi», «Parte 5 — Domande scelte per il colloquio». «Prova del nove» compare nel piano, la domanda in fondo, e un campo mai compilato dice «(da scrivere: questo campo è ancora vuoto)» |
+| ☐ | 29.2 Premi **Scarica il fascicolo PDF** e apri il file comparso tra i download · **Suite:** in parte (pagine e firme) | Un solo file `fascicolo-psicologo-digitale-AAAA-MM-GG.pdf`, di più pagine, con le cinque parti e le firme in fondo; il messaggio dice «Fascicolo generato.» e il Diario non cambia |
+| ☐ | 29.3 Premi **Stampa il fascicolo** e nell'anteprima guarda la prima e l'ultima pagina · **Suite:** in parte (titoli orfani e firme) | C'è solo il foglio del fascicolo: niente testata, menu, pulsanti o avvisi. Ogni titolo di parte ha il suo testo sotto — nessuno resta da solo in fondo alla pagina — e l'ultima pagina porta le firme |
+
+## 30. Niente rete (dalla 1.7.18)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 30.1 Apri gli strumenti di sviluppo (F12) → scheda **Rete**, spunta «Preserva log», svuota l'elenco, poi usa il programma: un colloquio, una voce di diario, una ricerca, la relazione, il fascicolo, l'esportazione di un backup · **Suite:** in parte (l'uso reale con F12) | Nella colonna del dominio ci sono solo l'indirizzo del programma e i suoi file; con Ollama scollegato nessuna riga porta a `127.0.0.1:11434` né a un sito esterno |
+| ☐ | 30.2 Se hai Ollama: **Installa l'app** → collega Ollama, poi chiedi una risposta a Neura con la scheda Rete aperta · **Suite:** no | Compaiono richieste solo a `127.0.0.1:11434` (`/api/tags`, `/api/generate`) e nessuna verso internet. Scollegandolo la barra di stato dice «IA locale: essenziale» e il programma funziona lo stesso |
+
+## 31. Le stesse cose in un browser vero (dalla 1.7.19)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 31.1 Sul computer, premi la lente nella testata · **Suite:** sì | Si apre la pagina Cerca e il cursore è **già nel campo**: si può scrivere senza toccare nient'altro. La lente resta accesa |
+| ☐ | 31.2 Con la finestra a 360 pixel e poi sotto i 380 (telefono stretto o finestra ridotta), guarda la testata e apri la ricerca · **Suite:** in parte (il tocco vicino ai pulsanti) | La lente c'è, si tocca senza colpire i pulsanti vicini e non compare lo scorrimento orizzontale. La pagina Cerca non sborda |
+| ☐ | 31.3 Licenze → «Tieni solo la più recente» fino a non avere copie, poi «Prova un backup» con un file in chiaro · **Suite:** sì | L'anteprima compare lo stesso, con il contenuto del file e cosa cambierebbe. Prima, senza copie automatiche, non compariva niente |
+| ☐ | 31.4 Apri l'anteprima di un backup in chiaro, poi scegli un file protetto da password · **Suite:** sì | L'anteprima del primo file sparisce e resta solo la richiesta di password: non si vedono due file insieme |
+| ☐ | 31.5 All'avvio, mentre Neura parla, chiudi il messaggio con la × · **Suite:** no | La voce si ferma e il pulsante «Ferma l'audio» in alto si spegne. Se hai Ollama, nessuna richiesta parte |
+| ☐ | 31.6 Fascicolo → «Stampa il fascicolo» e guarda l'anteprima di stampa (o salva in PDF dal browser) · **Suite:** in parte (A4 e parti intere) | Solo il foglio del fascicolo, su A4: niente testata, menu, barra di stato, pulsanti né avvisi. Le cinque parti sono intere e nessun titolo resta da solo in fondo alla pagina |
+
+## 32. Le novità della 1.7.20
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 32.1 Licenze → «Blocco automatico»: scegli 2 minuti, poi resta fermo senza toccare niente per due minuti · **Suite:** no | I contenuti si sfocano da soli e compare la barra «Contenuti coperti»; «Mostra i contenuti» li scopre, e la scelta resta 2 minuti anche dopo aver ricaricato. Scegliendo «spento» non succede più |
+| ☐ | 32.2 Con il blocco acceso, scrivi nel diario e aspetta due minuti · **Suite:** no | La copertura arriva solo dopo l'ultimo gesto, non mentre scrivi: ogni tocco o tasto fa ripartire il conto |
+| ☐ | 32.3 Strumenti di sviluppo → Application → Local Storage: metti in `psicologo-digitale:v1:diary` un testo che non è JSON, poi ricarica · **Suite:** no | Compare l'avviso «Alcuni dati non si leggono: Diario» e, se c'è una copia automatica, il pulsante «Ripristina la copia». Ripristinando, il diario torna quello della copia: il programma non riparte vuoto in silenzio |
+| ☐ | 32.4 Scrivi in Neura «pensieri di morte» e poi «voglio sparire» · **Suite:** no | Entrambe le risposte si aprono con «Mi fermo un momento su questo» e mostrano il 112 e i numeri utili: sono un avviso, non una spiegazione |
+| ☐ | 32.5 Apri Altro → «Il tuo percorso» · **Suite:** no | La pagina dice quante giornate hai annotato, quante schede e questionari hai fatto, quante pratiche hai portato a termine, e si stampa senza testata né menu. Senza dati dice che non c'è ancora niente da riassumere |
+| ☐ | 32.6 Chiedi a Neura «ho perso mia madre», «bevo troppo la sera» e «come preparo la scheda da portare» · **Suite:** no | Le risposte parlano di lutto, di alcol e della scheda da portare: nessuna finisce sulla privacy o su «non ho una risposta affidabile» |
+
+## 33. Su un telefono vero (protocollo della 1.7.20)
+
+Queste prove non si possono fare qui e non si possono simulare: servono un iPhone e un Android in mano. Si annotano una volta per versione, con sistema e browser, e si rifanno quando cambia qualcosa nella voce, nei backup o nell'installazione. La suite nel browser non li sostituisce: simula la voce e non ha un telefono.
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 33.1 iPhone, Safari: apri il sito, poi «Condividi» → «Aggiungi alla schermata Home» · **Suite:** no | L'icona compare, l'app si apre a schermo pieno e la barra di stato dice «PWA installata». Chiudendo e riaprendo senza rete i contenuti ci sono. Annota iOS e versione di Safari |
+| ☐ | 33.2 iPhone installato: scrivi una voce di diario, chiudi l'app dal selettore delle app, riapri · **Suite:** no | La voce c'è. Se non c'è, annota se il telefono era in risparmio energetico e se l'app era rimasta chiusa a lungo: iOS può liberare lo spazio dei siti non usati |
+| ☐ | 33.3 iPhone: Licenze → esporta un backup protetto da password, poi reimportalo dal file salvato in File · **Suite:** no | Il file si salva, l'import chiede la password, i dati tornano; con la password sbagliata non cambia niente e il messaggio lo dice |
+| ☐ | 33.4 Android Chrome: installa l'app, apri Neura e ascolta un capitolo · **Suite:** no | La voce parte in italiano e l'elenco mostra le voci del sistema. Annota se la lettura si interrompe bloccando lo schermo: dipende dal sistema, e va scritto com'è andata |
+| ☐ | 33.5 Telefono vero: stampa la scheda da portare e il piano di sicurezza · **Suite:** no | L'anteprima mostra una pagina sola per la scheda, con l'avviso di rischio in cima se c'è, e i sei numeri sul piano. Se il sistema offre «Salva come PDF», il file si apre e si legge |
+| ☐ | 33.6 Telefono con testo al 125% e modalità discreta accesa · **Suite:** no | Nessun testo esce dallo schermo in orizzontale, la barra della modalità discreta resta leggibile e i contenuti tornano coperti al cambio pagina |
+
+## 34. Archivio leggibile e metadati dei PDF (1.8.0)
+
+| ✓ | Prova | Risultato atteso |
+|---|---|---|
+| ☐ | 34.1 Con qualche voce di diario, una scheda del pensiero e un questionario compilato: Licenze → **Scarica l'archivio leggibile** · **Suite:** no | Si scarica `psicologo-digitale-archivio-AAAA-MM-GG.html`. Aprendolo con un doppio clic, anche con la rete staccata e senza aprire il programma, si legge diario, schede del pensiero, note degli esercizi, domande, punteggi e piano di sicurezza. Non c'è nessun pulsante che chieda di collegarsi a qualcosa |
+| ☐ | 34.2 Nello stesso file, confronta i conti con quello che hai scritto | Ci sono **tutte** le voci di diario, non solo le otto della schermata, e ogni scheda porta situazione, pensiero, emozione e l'altro punto di vista. I punteggi sono quelli registrati, con data, numero e massimo della scala |
+| ☐ | 34.3 Scrivi in una voce di diario una frase con `<`, `>` e `&`, poi scarica di nuovo l'archivio · **Suite:** no | La frase si legge com'è, caratteri compresi: non sparisce, non apre una finestra e non rompe la pagina |
+| ☐ | 34.4 Cancella tutti i dati, poi Licenze → **Scarica l'archivio leggibile** · **Suite:** no | Compare il messaggio «Non c'è ancora niente da archiviare» e non viene scaricato nessun file |
+| ☐ | 34.5 Apri `assets/pdf/Psicologo-Digitale-Scheda-rapida.pdf` dal computer, senza guardarlo nel programma · **Suite:** no | La finestra o la scheda del browser mostra «Psicologo Digitale - Scheda rapida», non il nome del file. In Anteprima (macOS) o Proprietà (Windows) l'autore è Danilo D'Auria e la lingua è italiano. Lo stesso per gli altri sei fogli |
+| ☐ | 34.6 Con un lettore PDF, usa «Leggi ad alta voce» su una pagina del vademecum · **Suite:** no | Legge in italiano, seguendo l'ordine del testo: titolo, paragrafo, paragrafo. Non salta parti e non legge il nome del file al posto del titolo |
+
+## Se qualcosa non torna
+
+Annota, senza correggere niente a mano: la versione (pagina **Versioni e novità**), il dispositivo e il browser, la prova (per esempio «3.3»), i passi e **cosa è successo invece** di quello atteso. Se il problema riguarda un file importato, allega il file di prova (`prova-1.4.0.json`), **mai un backup vero**: contiene dati personali.
+
+## Esito
+
+| Data | Dispositivo | Versione | Prove superate | Note |
+|---|---|---|---|---|
+|  |  | 1.8.0 | /117 |  |

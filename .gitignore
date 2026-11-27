@@ -20,3 +20,6 @@ desktop/node_modules/
 test-results/
 playwright-report/
 blob-report/
+
+# Copie di riserva per chi usa il programma (npm run backup)
+backup/

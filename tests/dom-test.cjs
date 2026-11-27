@@ -2658,6 +2658,84 @@ setTimeout(async function () {
 
   NP.app.ricarica = ricaricaVera;
 
+  /* ------------------------------------------------ Archivio leggibile */
+  // Il file deve reggersi da solo: nessuno script, nessuna risorsa da scaricare,
+  // e lo stesso numero di voci che c'è nel backup. I dati di prova contengono
+  // anche caratteri che romperebbero l'HTML se non fossero escapati.
+  const datiArchivio = {
+    app: "Psicologo Digitale",
+    exportedAt: "2026-02-03T10:00:00.000Z",
+    intake: { answers: { motivo: "ansia" } },
+    scales: { umore: { score: 7, doneAt: "2026-02-01T09:00:00.000Z" } },
+    diary: [
+      { id: "d1", date: "2026-02-01", mood: 6, anxiety: 4, sleep: 7, note: "Giornata <b>strana</b> & lunga" },
+      { id: "d2", date: "2026-01-31", mood: 5, anxiety: 6, sleep: 6, note: "" }
+    ],
+    thoughts: [{
+      id: "t1", date: "2026-02-02T09:00:00.000Z", situation: "Riunione", thought: "Non ce la farò",
+      emotion: "Ansia", intensity: 7, alternative: "Ho già gestito cose simili"
+    }],
+    course: { done: ["respiro-4-6"], notes: { "respiro-4-6": "Mi ha aiutato" } },
+    quizStats: { played: 0, best: 0, correct: 0, total: 0, byCat: {} },
+    reportNotes: { note: "Vorrei capire da dove viene", clinician: "" },
+    domandePersonali: [{ id: "q1", testo: "Che cosa mi consiglia?" }],
+    pianoSicurezza: { segnali: "Dormo male", contatti: [{ nome: "Anna", relazione: "sorella", tel: "333" }] },
+    version: NP.app.versioneBackup,
+    storicoPunteggi: { umore: [{ quando: "2026-02-01T09:00:00.000Z", punti: 7, massimo: 27, banda: "Lieve" }] }
+  };
+  const archivio = NP.app.archivioHTML(datiArchivio);
+  ok(/^<!doctype html>/i.test(archivio) && /<html lang="it">/.test(archivio),
+    "l'archivio è una pagina HTML completa e dichiarata in italiano");
+  ok(!/<script/i.test(archivio) && !/<link\b/i.test(archivio) && !/<img\b/i.test(archivio),
+    "e non ha script, fogli di stile esterni o immagini da scaricare");
+  ok(archivio.indexOf("Giornata &lt;b&gt;strana&lt;/b&gt; &amp; lunga") >= 0,
+    "quello che la persona ha scritto è escapato, non interpretato come HTML");
+  ok((archivio.match(/data-tipo="diario"/g) || []).length === 2,
+    "l'archivio porta tutte le voci di diario del backup, non solo le ultime");
+  ok((archivio.match(/data-tipo="pensiero"/g) || []).length === 1 &&
+    archivio.indexOf("Non ce la farò") >= 0 && archivio.indexOf("Ho già gestito cose simili") >= 0,
+    "e le schede del pensiero complete, compreso l'altro punto di vista");
+  ok((archivio.match(/data-tipo="nota"/g) || []).length === 1 && archivio.indexOf("Mi ha aiutato") >= 0,
+    "le note degli esercizi ci sono, con il titolo dell'esercizio invece dell'identificatore");
+  ok((archivio.match(/data-tipo="domanda"/g) || []).length === 1 && archivio.indexOf("Che cosa mi consiglia?") >= 0,
+    "e le domande scritte a mano");
+  ok(archivio.indexOf("Punteggi nel tempo") >= 0 && /<td>7\/27<\/td>/.test(archivio),
+    "i punteggi nel tempo riportano il numero registrato e il massimo della scala");
+  ok((archivio.match(/data-tipo="contatto"/g) || []).length === 1 && archivio.indexOf("Anna") >= 0,
+    "il piano di sicurezza porta i contatti");
+  ok(archivio.indexOf("Non contiene le conversazioni con Neura") >= 0,
+    "e dichiara che cosa non contiene");
+  ok(typeof NP.app.scaricaArchivio === "function", "l'archivio si scarica da un solo punto");
+  const senzaDati = NP.app.archivioHTML({ app: "Psicologo Digitale", diary: [], thoughts: [], scales: {}, domandePersonali: [] });
+  ok(senzaDati.indexOf("Ancora niente da archiviare") >= 0,
+    "senza dati il file si apre lo stesso e lo dice, invece di restare vuoto");
+
+  /* ------------------------------------------------ Anni di dati addosso */
+  // Soglie decise prima di misurare, con margine per una macchina lenta:
+  // l'archivio di duemila voci deve stare sotto i 2 secondi, le statistiche di
+  // trenta giorni sotto i 250 millisecondi. Se un giorno crescono, si vede qui.
+  const anniDiDiario = [];
+  for (let i = 0; i < 2000; i++) {
+    const giorno = new Date(Date.UTC(2021, 0, 1) + i * 86400000).toISOString().slice(0, 10);
+    anniDiDiario.push({ id: "d" + i, date: giorno, mood: 3 + (i % 7), anxiety: 1 + (i % 9), sleep: 5 + (i % 4), note: "Voce numero " + i + ": una giornata come le altre, con qualche parola in più." });
+  }
+  const anniDiPensieri = [];
+  for (let i = 0; i < 500; i++) {
+    anniDiPensieri.push({ id: "t" + i, date: new Date(Date.UTC(2021, 0, 1) + i * 86400000).toISOString(), situation: "Situazione " + i, thought: "Pensiero " + i, emotion: "Ansia", intensity: 5, alternative: "Alternativa " + i });
+  }
+  const datiAnni = Object.assign({}, datiArchivio, { diary: anniDiDiario, thoughts: anniDiPensieri, storicoPunteggi: {} });
+  const inizioStat = Date.now();
+  const periodo = NP.app.statistichePeriodo(30, 30);
+  const tempoStat = Date.now() - inizioStat;
+  ok(periodo && typeof periodo.giorni === "number", "con anni di dati le statistiche rispondono lo stesso");
+  ok(tempoStat < 250, "e in meno di 250 ms (" + tempoStat + " ms)");
+  const inizioArchivio = Date.now();
+  const archivioGrande = NP.app.archivioHTML(datiAnni);
+  const tempoArchivio = Date.now() - inizioArchivio;
+  ok((archivioGrande.match(/data-tipo="diario"/g) || []).length === 2000,
+    "l'archivio con duemila voci le porta tutte");
+  ok(tempoArchivio < 2000, "e si costruisce in meno di 2 secondi (" + tempoArchivio + " ms)");
+
   console.log("\n" + (fails === 0 ? "✓" : "✗") + " " + (checks - fails) + "/" + checks + " test superati");
   if (fails) {
     console.error("\n" + fails + " test falliti.");

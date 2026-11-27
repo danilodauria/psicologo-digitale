@@ -1,0 +1,51 @@
+{
+  "aggiornato": "2026-11-27",
+  "nota": "Lo stato delle migliorie in un posto solo, controllabile: «npm run migliorie». Un'idea segnata come fatta deve indicare il controllo che la tiene in piedi; un'idea aperta deve dire perché non è stata fatta. Nessuna idea sparisce senza una delle due cose.",
+  "idee": [
+    {
+      "id": "archivio-html",
+      "titolo": "Archivio leggibile senza il programma (diario, punteggi, note in un file HTML autonomo)",
+      "stato": "fatta",
+      "controllo": "tests/dom-test.cjs",
+      "nota": "Licenze → «Scarica l'archivio leggibile». Nessuno script nel file, testo escapato, stesse voci del backup; provato anche con duemila voci."
+    },
+    {
+      "id": "pdf-metadati",
+      "titolo": "PDF con titolo, autore, lingua italiana e titolo del documento in vista",
+      "stato": "fatta",
+      "controllo": "scripts/controlla-pdf.cjs",
+      "nota": "scripts/pdf_meta.py passa dopo i generatori. La struttura taggata PDF/UA resta fuori: il testo è già lineare e il tagging cambierebbe i generatori."
+    },
+    {
+      "id": "anni-di-dati",
+      "titolo": "Prova con anni di dati addosso (2.000 voci: statistiche e archivio)",
+      "stato": "fatta",
+      "controllo": "tests/dom-test.cjs",
+      "nota": "Soglie fissate prima di misurare: statistiche sotto 250 ms, archivio di 2.000 voci sotto 2 s."
+    },
+    {
+      "id": "prove-browser",
+      "titolo": "Prove nel browser su stampa, tastiera e ruoli (27.2, 28.3, 31.5, 31.6 del foglio)",
+      "stato": "aperta",
+      "motivo": "Gli scenari vanno scritti e devono girare: in questo ambiente mancano le librerie di sistema di Chromium, quindi girerebbero solo in CI. Rimandata a quando la suite nel browser si può eseguire anche qui, per non aggiungere prove che nessuno ha visto passare."
+    },
+    {
+      "id": "persona-cara",
+      "titolo": "Sezione «Se è una persona cara a stare male»",
+      "stato": "aperta",
+      "motivo": "È un tredicesimo capitolo: cambia i conteggi dichiarati in README, pagine, riepilogo di copertura e PDF rigenerati, e va scritto con la stessa cura clinica degli altri dodici. Richiede una revisione dei testi, non solo una modifica ai dati."
+    },
+    {
+      "id": "dati-esempio",
+      "titolo": "Dati di esempio per provare senza scrivere niente",
+      "stato": "aperta",
+      "motivo": "La regola c'è (fuori da backup, copie automatiche e riepilogo), ma applicarla significa separare i dati di esempio da quelli veri in ogni lettura dello stato: un lavoro strutturale che va fatto in una release sua, non di sfuggita."
+    },
+    {
+      "id": "telefono-vero",
+      "titolo": "Collaudo su un telefono vero (voce, offline, backup cifrato, app installata)",
+      "stato": "aperta",
+      "motivo": "Servono un iPhone e un Android in mano: in un ambiente senza dispositivi non si può fare, e simulare non serve a niente."
+    }
+  ]
+}

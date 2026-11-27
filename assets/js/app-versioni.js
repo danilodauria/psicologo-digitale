@@ -13,7 +13,7 @@
   // La versione in uso. Un test controlla che resti uguale a package.json:
   // una cronologia che annuncia la versione sbagliata è peggio di nessuna
   // cronologia, perché sembra una conferma.
-  const VERSIONE = "1.7.20";
+  const VERSIONE = "1.8.0";
   // La stessa versione serve anche a Licenze, che la confronta con quella
   // della copia offline: un solo numero, scritto in un solo posto.
   A.VERSIONE = VERSIONE;
@@ -21,6 +21,17 @@
   // Una voce per ogni release pubblicata, dalla più recente. I testi dicono
   // cosa è cambiato per chi usa il programma, non come è stato scritto.
   const NOVITA = [
+    {
+      v: "1.8.0",
+      data: "27 novembre 2026",
+      titolo: "Quello che hai scritto resta leggibile anche senza il programma",
+      punti: [
+        "In Licenze c'è «Scarica l'archivio leggibile»: un file solo, che si apre con un doppio clic anche fra dieci anni, senza il programma e senza connessione. Dentro ci sono diario, schede del pensiero, note, domande, punteggi e piano di sicurezza — tutte le voci, non solo le ultime otto della schermata.",
+        "L'archivio non è un backup e non aggiunge niente a quello che hai scritto: non contiene le conversazioni con Neura né le risposte del colloquio, e i punteggi restano quelli registrati, con la loro data. Per riportare i dati dentro al programma serve il backup.",
+        "I sette PDF ora dichiarano titolo, autore e lingua italiana: la scheda del browser mostra il titolo del documento invece del nome del file, e un lettore di schermo sa leggere in italiano.",
+        "Una prova con duemila voci di diario verifica che statistiche e archivio restino rapidi: le soglie sono fissate prima di misurare, non aggiustate dopo."
+      ]
+    },
     {
       v: "1.7.20",
       data: "26 novembre 2026",

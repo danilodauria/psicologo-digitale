@@ -844,6 +844,11 @@
         htmlAnteprime() +
       "</div>" +
 
+      '<div class="card mt-2" id="archivioLeggibile"><h2 class=h-sub>Un archivio che si apre senza il programma</h2>' +
+        '<p>Diario, schede del pensiero, note, domande, punteggi e piano di sicurezza in un solo file HTML: si apre con un doppio clic, anche fra dieci anni e su un computer senza questo programma. Non contiene niente che tu non abbia già scritto e non aggiunge interpretazioni.</p>' +
+        '<div class="btn-row"><button type="button" class="btn btn-soft btn-sm" id="archivioBtn">' + A.icon("download") + "Scarica l'archivio leggibile</button></div>" +
+        '<p class="text-small muted mt-1 mb-0">Non è un backup: da qui non si reimporta niente, e il file non contiene le conversazioni con Neura né le risposte del colloquio. Per riportare i dati dentro al programma serve il backup.</p></div>' +
+
       '<div class="card mt-2" id="backupCifrato"><h2 class=h-sub>Un backup protetto da password</h2>' +
         '<p>Se il file deve uscire dal computer, puoi cifrarlo qui, sul dispositivo, con AES-GCM. La password non viene salvata e non viene inviata a nessuno: senza di essa il file non si apre.</p>' +
         '<div class="callout warn"><p><strong>Una password persa è un file perso.</strong> Non c\'è un pulsante «recupera»: se la dimentichi, il file resta chiuso anche per noi. Il backup in chiaro resta disponibile qui sopra, senza password.</p></div>' +
@@ -1063,12 +1068,17 @@
         return '<li><a href="' + f.u + '" target="_blank" rel="noopener">' + esc(f.t) + "</a> — " + esc(f.n) + "</li>";
       }).join("") + "</ul></div>" +
 
-      '<p class="text-small muted mt-3">Versione 1.7.20 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
+      '<p class="text-small muted mt-3">Versione 1.8.0 · novembre 2026 · Codice MIT · Contenuti CC BY-NC-SA 4.0 · © Danilo D\'Auria. <a href="#/versioni">Cosa è cambiato, versione per versione</a></p>'
     );
 
     const backup = document.getElementById("backupBtn");
     if (backup) backup.addEventListener("click", function () {
       A.esportaBackup();
+    });
+
+    const archivio = document.getElementById("archivioBtn");
+    if (archivio) archivio.addEventListener("click", function () {
+      A.scaricaArchivio();
     });
 
     const testoScelta = document.getElementById("testoScelta");

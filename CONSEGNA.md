@@ -2,7 +2,7 @@
 
 Questo file è per chi riprende il repository senza la storia della chat: una persona al primo giorno o un'altra IA. Dice com'è fatto, che cosa non si può rompere, come si pubblica e che cosa i controlli automatici verificano davvero. Non ripete il README (che racconta il programma a chi lo usa): qui si parla a chi lo mantiene.
 
-Ultimo aggiornamento: versione **1.7.20**, 26 novembre 2026.
+Ultimo aggiornamento: versione **1.8.0**, 27 novembre 2026.
 
 ---
 
@@ -90,6 +90,9 @@ node scripts/export-data.cjs
 .venv/bin/python scripts/build_prove_a_mano_pdf.py
 .venv/bin/python scripts/build_vademecum.py
 .venv/bin/python scripts/build_vademecum_clinico.py
+#    Poi titolo, autore e lingua di ogni foglio: è l'ultimo passo, perché i
+#    generatori riscrivono i metadati da zero.
+.venv/bin/python scripts/pdf_meta.py
 
 # 3. Pacchetto desktop (allinea desktop/ alla versione corrente)
 node scripts/prepare-desktop.cjs
@@ -103,6 +106,9 @@ git commit -m "Release NEW.VER: <una frase su cosa cambia per chi usa il program
 git push https://github.com/danilodauria/psicologo-digitale.git HEAD:main
 git tag -a psd-vNEW.VER -m "Psicologo Digitale NEW.VER"
 git push https://github.com/danilodauria/psicologo-digitale.git psd-vNEW.VER
+
+# 6. Copia di riserva dell'ultima versione funzionante, con data e versione
+npm run backup        # backup/psicologo-digitale-NEW.VER-AAAA-MM-GG.zip
 ```
 
 Il push su `main` passa con «Bypassed rule violations» perché il check richiesto (*Pacchetto desktop: esito*) arriva dopo: è normale, non è un errore da correggere. Il tag fa partire il workflow **Pacchetti desktop**, che compila i tre pacchetti, calcola le impronte, allega i file alla release e pubblica il sito.
@@ -129,7 +135,7 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | Comando | Cosa verifica davvero |
 |---|---|
 | `tests/verify.cjs` | Coerenza dei dati: ogni scala ha punteggi e fasce coerenti, ogni capitolo ha sezioni non vuote, ogni esercizio citato esiste, i conteggi dichiarati nei testi corrispondono ai dati reali, `VERSIONE` = `package.json`, i due lockfile dichiarano la versione del proprio `package.json`, presenza dei file della release. Da questa versione chiede a Neura le cinquantacinque domande di `tests/neura-casi.json` e pretende la sezione giusta (o l'urgenza, per le frasi di rischio): una modifica ai sinonimi che sposta una domanda altrove diventa rossa, invece di scoprirsi da una persona |
-| `tests/dom-test.cjs` | L'interfaccia in jsdom: 808 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande, sua selezione nella relazione e nella scheda, campo per scriverne una direttamente nella scheda, primo accesso senza dati con benvenuto che non copre il campo e focus sulla domanda appena scritta, spunta automatica partendo da zero spunte, numeri utili sul piano a schermo e sul foglio, fascicolo unico (cinque parti in un PDF solo, senza aggiungere dati, con le domande una volta sola, i campi vuoti da scrivere e nessun titolo di parte orfano in fondo alla pagina), chiusura del benvenuto che ferma la voce e spegne «Ferma l'audio», versione in uso e copia offline (coincidono, diverse, assenti, e il pulsante che disregistra il service worker, cancella solo le cache dell'app e ricarica una volta sola), blocco automatico dello schermo (spento di partenza, tempi ammessi, copertura e scoperta, scelta che resta), diagnosi dei dati all'avvio (una chiave a metà o di forma sbagliata viene nominata, il piano di sicurezza vuoto non è un errore), pagina «Il tuo percorso» (conteggi veri e stato vuoto) |
+| `tests/dom-test.cjs` | L'interfaccia in jsdom: 856 verifiche su routing, salvataggi e loro ritentativo, copie e ripristino, backup e migrazione compreso l'import da file (input, FileReader e frase finale), backup cifrato con AES-GCM/PBKDF2 e password sbagliata, riepilogo dei periodi a sette e trenta giorni con la stampa del confronto, ricerca nei contenuti e nelle cose scritte (con la prova che i due indici restano separati), preferenze di lettura, modalità discreta, inviti, lettura ad alta voce, taccuino delle domande, sua selezione nella relazione e nella scheda, campo per scriverne una direttamente nella scheda, primo accesso senza dati con benvenuto che non copre il campo e focus sulla domanda appena scritta, spunta automatica partendo da zero spunte, numeri utili sul piano a schermo e sul foglio, fascicolo unico (cinque parti in un PDF solo, senza aggiungere dati, con le domande una volta sola, i campi vuoti da scrivere e nessun titolo di parte orfano in fondo alla pagina), chiusura del benvenuto che ferma la voce e spegne «Ferma l'audio», versione in uso e copia offline (coincidono, diverse, assenti, e il pulsante che disregistra il service worker, cancella solo le cache dell'app e ricarica una volta sola), blocco automatico dello schermo (spento di partenza, tempi ammessi, copertura e scoperta, scelta che resta), diagnosi dei dati all'avvio (una chiave a metà o di forma sbagliata viene nominata, il piano di sicurezza vuoto non è un errore), pagina «Il tuo percorso» (conteggi veri e stato vuoto), archivio leggibile (tutte le voci del backup, testo escapato, nessuno script o risorsa esterna nel file, nessun dato che non fosse già scritto) e la prova con duemila voci: statistiche sotto 250 ms e archivio sotto 2 s, con le soglie fissate prima di misurare |
 | `scripts/controlla-collegamenti.cjs` | Ogni `href` interno punta a una rotta che esiste; nessuna vista resta irraggiungibile |
 | `scripts/controlla-accessibilita.cjs` | Contrasto del testo nei due temi (minimo 4,64:1), gerarchia dei titoli, immagini con nome, **incluse** la pagina di risultato di un questionario e l'anteprima di un ripristino, aperte seminando dati veri |
 | `scripts/controlla-testi.cjs` | Refusi, doppi spazi, apostrofi sbagliati, ripetizioni di frasi tra pagine, conteggi in contraddizione; legge le stesse due schermate «nascoste» |
@@ -138,6 +144,8 @@ Se il runner macOS resta `queued` o viene annullato: `gh run rerun <id> --failed
 | `tests/browser/prove.spec.cjs` | Le prove del foglio a mano che si possono automatizzare, in Chromium vero e due volte: finestra da telefono (360 px) e da computer (1280). Nove scenari: la lente apre Cerca con il cursore già nel campo, e i risultati compaiono scrivendo; nessuno scorrimento orizzontale; l'anteprima di un backup compare anche senza copie automatiche e non tocca i dati; scegliendo un file cifrato l'anteprima precedente sparisce; password sbagliata e poi giusta; fascicolo a cinque parti e un solo PDF scaricato (testa `%PDF-`); stampa che mostra solo il foglio; nessuna richiesta fuori dal sito, con l'unica eccezione di Ollama su `127.0.0.1`. Serve `npx playwright install --with-deps chromium`. `tests/browser/esegui.cjs` avvia la suite: se il browser manca, `npm run test:browser` esce con un errore e il comando di installazione, mentre dentro `npm test` (`--consenti-salto`) il salto è ammesso ma dichiarato |
 | `scripts/controlla-impronte.cjs` | Le impronte SHA-256 dichiarate corrispondono ai file |
 | `scripts/controlla-peso.cjs` | Quello che il service worker mette in cache resta entro il budget dichiarato (1.100 kB in tutto, 150 kB per file, 140 kB per la pagina). L'elenco dei file si legge da `sw.js`: quello che si misura è quello che il browser salva davvero per l'uso offline |
+| `scripts/controlla-pdf.cjs` | I sette PDF hanno un titolo, l'autore Danilo D'Auria, la lingua italiana dichiarata e l'invito al lettore a mostrare il titolo del documento invece del nome del file. Legge i byte dei file, così non dipende da una libreria PDF; la struttura taggata resta fuori (dichiarato in §7) |
+| `scripts/prossimi-passi.cjs` | Le migliorie: un'idea segnata «fatta» in `scripts/migliorie.json` deve indicare un controllo che esiste ed è eseguito da `npm test`; una «aperta» deve dire perché. Stampa anche cosa resta, così una release non dimentica niente |
 | `scripts/controlla-archivi.cjs` | Gli archivi scaricabili si aprono e contengono quello che devono |
 | `scripts/controlla-dipendenze.cjs` | Nessuna dipendenza non dichiarata o non usata |
 | `scripts/riepilogo-copertura.cjs` | Scrive `artifacts/copertura/riepilogo.md`: quante viste, quante pagine di singoli elementi (30), quali controlli sono verdi |
@@ -176,6 +184,8 @@ Numeri aggiornati a ogni `npm test`: 23 viste, 30 pagine di singoli elementi, 3 
 - **L'avviso di versione nuova del sito** nei test automatici è simulato: jsdom non ha un service worker. La prova vera è la 13.1 del foglio, che richiede una pubblicazione mentre la scheda è aperta.
 - **La protezione dello spazio è una richiesta, non una garanzia**: decide il browser e può revocarla. I test simulano le tre risposte (concessa, rifiutata, API assente); la prova nei browser veri è la sezione 14 del foglio.
 - **Il blocco automatico copre lo schermo, non cifra i dati.** Dopo i minuti scelti i contenuti si sfocano e un pulsante li scopre; chi apre gli strumenti di sviluppo li vede lo stesso, come con la modalità discreta. Non chiude il programma e non chiede una password: una password dimenticata sarebbe una perdita di dati, non una protezione.
+- **L'archivio leggibile non è un backup.** Il file HTML porta diario, schede, note, domande, punteggi e piano di sicurezza in una forma che si apre da sola, ma da lì non si reimporta niente e non contiene le conversazioni con Neura né le risposte del colloquio. Per riportare i dati dentro serve il backup JSON.
+- **La struttura taggata dei PDF (PDF/UA) non c'è.** Titolo, autore, lingua e ordine di lettura lineare sì; il tagging vero cambierebbe i generatori, e il testo è già in ordine. Un lettore di schermo legge, ma non può saltare per tag.
 - **La diagnosi dei dati all'avvio riconosce una chiave illeggibile, non la ripara.** Se una parte è rotta e c'è una copia automatica, l'avviso la offre; se non c'è, resta il backup da importare a mano. Non ricostruisce un dato a metà e non fonde due copie.
 - **Il runner macOS di GitHub** a volte si blocca in coda: si rilancia il job fallito, non si cambia il codice per farlo passare.
 
@@ -185,19 +195,13 @@ Numeri aggiornati a ogni `npm test`: 23 viste, 30 pagine di singoli elementi, 3 
 
 Il riepilogo a 30 giorni è nella 1.6.0. I promemoria con notifiche di sistema restano fuori per scelta: quelli dell'app sono dentro l'app, senza permessi e senza cose che suonano di notte. La verifica visiva con screenshot di riferimento resta fuori: su macchine diverse produce rumore.
 
+Lo stato delle idee vive in **`scripts/migliorie.json`** e si legge con `npm run migliorie` (dentro `npm test`). Ogni voce dice se è **fatta** — e allora indica il controllo che la tiene in piedi — o **aperta** — e allora dice perché. Non c'è una tabella da tenere allineata a mano: se un controllo sparisce o smette di girare, il comando diventa rosso.
+
+**Fatte nella 1.8.0:** l'archivio leggibile che si apre senza il programma, i metadati dei PDF (titolo, autore, lingua italiana, titolo del documento in vista), la prova con duemila voci addosso con soglie fissate prima di misurare, e il processo delle migliorie stesso (`scripts/migliorie.json`, `npm run migliorie`, `npm run backup`).
+
 **Fatte nella 1.7.20** (e coperte da un controllo, non solo dal codice): il blocco automatico dello schermo, la diagnosi dei dati all'avvio con l'offerta della copia, le cinquantacinque domande di prova per Neura, la pagina «Il tuo percorso», il budget sul peso di quello che si scarica, e la correzione delle frasi di rischio che Neura non riconosceva («pensieri di morte», «voglio sparire»).
 
-**Restano**, in ordine di valore e con il verdetto di fattibilità:
-
-| Idea | A che punto è | Cosa manca per farla |
-|---|---|---|
-| **Collaudo su un telefono vero** (iOS Safari e Android Chrome: voce, uso offline, backup cifrato, app installata) | È il buco più grande dei controlli. Il protocollo sta nella sezione 33 del foglio prove, con le caselle da spuntare | Un iPhone e un Android in mano: in un ambiente senza dispositivi non si può fare, e simulare non serve a niente |
-| **Archivio leggibile senza l'app** (un file HTML autonomo con diario, punteggi e relazione, apribile con doppio clic anche fra dieci anni) | Fattibile: il generatore HTML esiste già per le pagine | Una funzione in Licenze e un test che confronti i conteggi con il backup; il file non deve contenere più dati di quelli che la persona ha scritto |
-| **Sezione «Se è una persona cara a stare male»** | Fattibile: è un capitolo in più nei dati | Aggiornare i conteggi dichiarati in README, testi e vademecum, e rigenerare i PDF: è il lavoro che costa, non la scrittura |
-| **PDF con titolo, lingua e ordine di lettura per i lettori di schermo** | Parzialmente fattibile: metadati e lingua sono un lavoro piccolo; una struttura taggata in un PDF 1.4 scritto a mano è un lavoro grande | Decidere se basta la lettura lineare (oggi il testo è già in ordine) o se serve il tagging vero, che cambia il generatore |
-| **Prove nel browser su stampa, tastiera e ruoli** (27.2, 28.3, 31.5, 31.6 del foglio) | Fattibile: Chromium in CI c'è già, e `emulateMedia` copre la stampa | Scrivere gli scenari e alzare il limite `sezioneSuite <= 31` in `verify.cjs`; ogni prova che passa da «a mano» a «sì» va segnata nel foglio |
-| **Dati di esempio** per provare senza scrivere niente | Fattibile, ma con una condizione | Vanno tenuti fuori da backup, copie automatiche e riepilogo, o inquinano i dati veri: prima si decide la regola, poi si scrive il pulsante |
-| **Prova con anni di dati addosso** (2.000 voci: quota, tempi, stampa) | Fattibile come test sintetico | Fissare la soglia prima di misurare, altrimenti è un test che si aggiusta da solo |
+**Restano aperte**, con il motivo scritto nel file: il collaudo su un telefono vero (servono i dispositivi), la sezione «Se è una persona cara a stare male» (è un tredicesimo capitolo: cambia i conteggi dichiarati e i PDF, e va scritto con la stessa cura degli altri), i dati di esempio (richiedono di separare i dati finti dai veri in ogni lettura dello stato), le prove nel browser su stampa, tastiera e ruoli (gli scenari vanno scritti e devono poter girare: qui mancano le librerie di Chromium).
 
 Una cosa che sembrava un passo e non lo è: **esportare la sola relazione** è già possibile, il pulsante «Scarica PDF» nella pagina Relazione esporta solo quella e le parti scelte, senza scheda, piano o fascicolo.
 

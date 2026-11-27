@@ -82,7 +82,7 @@ endobj
 endobj
 13 0 obj
 <<
-/Author (Danilo D'Auria) /CreationDate (D:20261126230718+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261126230718+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Danilo D'Auria) /CreationDate (D:20261127103115+00'00') /Creator (scripts/build_come_installare_pdf.py) /Keywords () /ModDate (D:20261127103115+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (Istruzioni di installazione per Windows, macOS e Linux) /Title (Psicologo Digitale \267 Come si installa) /Trapped /False
 >>
 endobj
@@ -93,7 +93,7 @@ endobj
 endobj
 15 0 obj
 <<
-/Length 8361
+/Length 8359
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -101,7 +101,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.20) Tj T* ET
+BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.8.0) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -132,7 +132,7 @@ q
 1 0 0 1 57.02362 634.7276 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (Il PDF \350 ricavato da questa stessa pagina a ogni versione: se il foglio dice 1.7.20, il sito dice lo stesso. Non \350 una) Tj T* (copia lasciata l\354 a invecchiare.) Tj T* ET
+BT 1 0 0 1 0 16 Tm /F1 9.2 Tf 12.6 TL (Il PDF \350 ricavato da questa stessa pagina a ogni versione: se il foglio dice 1.8.0, il sito dice lo stesso. Non \350 una copia) Tj T* (lasciata l\354 a invecchiare.) Tj T* ET
 Q
 Q
 q
@@ -387,7 +387,7 @@ endstream
 endobj
 16 0 obj
 <<
-/Length 9297
+/Length 9296
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -395,7 +395,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.20) Tj T* ET
+BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.8.0) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -693,7 +693,7 @@ endstream
 endobj
 17 0 obj
 <<
-/Length 9956
+/Length 9955
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -701,7 +701,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.20) Tj T* ET
+BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.8.0) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -1056,7 +1056,7 @@ endstream
 endobj
 18 0 obj
 <<
-/Length 3180
+/Length 3178
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1064,7 +1064,7 @@ q
 BT /F1 7.6 Tf 9.12 TL ET
 .356863 .392157 .447059 rg
 BT 1 0 0 1 51.02362 802.2047 Tm (Psicologo Digitale \267 Come si installa) Tj T* ET
-BT 1 0 0 1 489.9652 802.2047 Tm (versione=1.7.20) Tj T* ET
+BT 1 0 0 1 494.1908 802.2047 Tm (versione=1.8.0) Tj T* ET
 .788235 .768627 .721569 RG
 .5 w
 n 51.02362 796.5354 m 544.252 796.5354 l S
@@ -1141,7 +1141,7 @@ q
 1 0 0 1 57.02362 634.3276 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 3.4 Tm /F1 9.2 Tf 12.6 TL (Aggiornata alla versione 1.7.20 \267 novembre 2026 \267 Codice MIT \267 Contenuti CC BY-NC-SA 4.0 \267 \251 Danilo D'Auria.) Tj T* ET
+BT 1 0 0 1 0 3.4 Tm /F1 9.2 Tf 12.6 TL (Aggiornata alla versione 1.8.0 \267 novembre 2026 \267 Codice MIT \267 Contenuti CC BY-NC-SA 4.0 \267 \251 Danilo D'Auria.) Tj T* ET
 Q
 Q
 q
@@ -1180,13 +1180,13 @@ xref
 0000001669 00000 n 
 0000002038 00000 n 
 0000002118 00000 n 
-0000010531 00000 n 
-0000019880 00000 n 
-0000029888 00000 n 
+0000010529 00000 n 
+0000019877 00000 n 
+0000029884 00000 n 
 trailer
 <<
 /ID 
-[<e247bb2c07100da16365399cba017ab7><e247bb2c07100da16365399cba017ab7>]
+[<77177fad9511978c0839d32a7abbd586><77177fad9511978c0839d32a7abbd586>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 13 0 R
@@ -1194,5 +1194,26 @@ trailer
 /Size 19
 >>
 startxref
-33120
+33114
+%%EOF
+
+% Written by MuPDF 1.28.6
+
+12 0 obj
+<</Type/Catalog/PageMode/UseNone/Pages 14 0 R/Lang(it)/ViewerPreferences<</DisplayDocTitle true>>>>
+endobj
+
+13 0 obj
+<</Author(Danilo D'Auria)/CreationDate(D:20261127103115+00'00')/Creator(Psicologo Digitale)/Keywords(psicologia, salute mentale, autovalutazione, diario, relazione, PWA)/ModDate(D:20261127103115+00'00')/Producer(Psicologo Digitale)/Subject(Istruzioni per installare il programma su telefono e computer, anche senza connessione.)/Title(Come si installa Psicologo Digitale)/Trapped null>>
+endobj
+
+xref
+12 2
+0000033738 00000 n 
+0000033855 00000 n 
+
+trailer
+<</ID[<77177FAD9511978C0839D32A7ABBD586><37C1D6AA82BBDE5C67EA5CD5CD9EB4BC>]/Info 13 0 R/Root 12 0 R/Size 19/Prev 33114>>
+startxref
+34259
 %%EOF

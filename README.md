@@ -44,7 +44,7 @@ Il programma non prova a "fare lo psicologo". Prova a fare bene una cosa diversa
 | **Sicurezza** | 112, Telefono Amico, Samaritans, Telefono Azzurro, 1522, 114. Segnali d'allarme, cosa fare subito, indicazioni per minori e violenza. In cima c'è **Esci subito**: apre una pagina neutra senza contenuti del programma, e dice che non cancella la cronologia del browser. Più sotto, **Il mio piano di sicurezza**: un modulo da compilare e stampare con i tuoi segnali, i primi minuti, chi chiamare, i numeri utili, l'ambiente e una ragione per chiamare. |
 | **Nutrizione** | Alimentazione e umore: cinque principi, un piatto di riferimento, ritmo dei pasti, differenze tra dietista, dietologo e biologo nutrizionista, segnali dei disturbi alimentari, domande per il professionista. Nessuna dieta e nessuna prescrizione. |
 | **Installa** | Installazione come app su Android, iPhone e computer, uso offline e guida facoltativa a **Ollama**: riconosce sistema e memoria dichiarata dal browser, indica il pacchetto giusto e il modello adatto, verifica il collegamento locale. |
-| **Licenze** | Attribuzione, licenze, privacy, backup in chiaro o protetto da password, cancellazione dati, FAQ e fonti. |
+| **Licenze** | Attribuzione, licenze, privacy, backup in chiaro o protetto da password, archivio leggibile senza il programma, cancellazione dati, FAQ e fonti. |
 
 ## Neura, il consulente digitale
 
@@ -115,9 +115,10 @@ node scripts/export-data.cjs
 .venv/bin/python scripts/build_vademecum.py           # A5, A4 e libricino
 .venv/bin/python scripts/build_vademecum_clinico.py   # guida per il professionista
 # oppure, entrambi: npm run vademecum
+.venv/bin/python scripts/pdf_meta.py                  # titolo, autore e lingua di ogni foglio
 ```
 
-`scripts/export-data.cjs` estrae i dati dall'app (questionari, fasi, esercizi, sicurezza, nutrizione, fonti) in `assets/data/vademecum.json`; `scripts/build_vademecum.py` impagina A5 e A4 con `reportlab` e impone il libricino con `pymupdf`; `scripts/build_vademecum_clinico.py` riusa gli stessi stili per la guida del professionista. I PDF sono artefatti versionati: il sito li serve come file statici e non li genera a runtime.
+`scripts/export-data.cjs` estrae i dati dall'app (questionari, fasi, esercizi, sicurezza, nutrizione, fonti) in `assets/data/vademecum.json`; `scripts/build_vademecum.py` impagina A5 e A4 con `reportlab` e impone il libricino con `pymupdf`; `scripts/build_vademecum_clinico.py` riusa gli stessi stili per la guida del professionista. `scripts/pdf_meta.py` passa per ultimo e scrive in ogni foglio il titolo, l'autore, la lingua italiana e la richiesta di mostrare il titolo del documento invece del nome del file: un PDF senza lingua dichiarata un lettore di schermo lo legge con la pronuncia sbagliata. La struttura taggata (PDF/UA) resta fuori, perché il testo è già in ordine di lettura lineare. I PDF sono artefatti versionati: il sito li serve come file statici e non li genera a runtime, e `scripts/controlla-pdf.cjs` verifica a ogni `npm test` che i metadati ci siano davvero.
 
 ## Programmi installabili
 
@@ -298,6 +299,10 @@ scripts/controlla-accessibilita.cjs # contrasto, titoli, testo alternativo
 scripts/controlla-testi.cjs      # refusi, ripetizioni, conteggi che non tornano
 scripts/controlla-rete.cjs       # nessuna rete: solo Ollama su 127.0.0.1:11434
 scripts/controlla-impronte.cjs   # ogni file del pacchetto è identico al repository
+scripts/controlla-pdf.cjs        # titolo, autore e lingua dichiarati nei sette PDF
+scripts/pdf_meta.py              # scrive quei metadati dopo i generatori
+scripts/prossimi-passi.cjs       # legge scripts/migliorie.json: fatta = con un controllo
+scripts/backup.cjs               # copia ZIP dell'ultima versione, con data e versione
 scripts/controlla-archivi.cjs    # apre .deb e ZIP e confronta il contenuto
 scripts/controlla-dipendenze.cjs # confronta dipendenze e vulnerabilità col registro
 .github/workflows/pages.yml # test e pubblicazione automatica
@@ -418,6 +423,8 @@ Il backup dichiara il proprio formato (`version`, attualmente 3): `migraBackup()
 
 In **Licenze** il backup si può anche proteggere con una password. Il file viene cifrato sul dispositivo con **AES-GCM** e una chiave derivata con **PBKDF2-SHA-256** (250.000 iterazioni, sale e vettore casuali): nell'involucro JSON restano visibili solo formato, algoritmo e parametri, mentre colloquio, diario, questionari, note e taccuino sono nel blocchetto cifrato. La password non viene salvata e non viene inviata da nessuna parte. Il file protetto si sceglie dallo stesso «Importa backup»: l'app chiede la password e, se è sbagliata, non tocca i dati attuali. **Una password persa è un file perso**: non esiste un recupero. Per questo il backup in chiaro resta disponibile accanto, con un pulsante separato, e chi non vuole una password non è obbligato a usarla.
 
+Accanto al backup c'è **l'archivio leggibile**: un file HTML con diario, schede del pensiero, note degli esercizi, domande, punteggi e piano di sicurezza, che si apre con un doppio clic anche fra dieci anni, su un computer senza il programma e senza connessione. Dentro non c'è nessuno script e nessuna risorsa da scaricare, il testo della persona è escapato e non interpretato, e ci sono **tutte** le voci, non solo le ultime otto della schermata. Non è un backup: da lì non si reimporta niente, non contiene le conversazioni con Neura né le risposte del colloquio, e non aggiunge interpretazioni — i punteggi sono quelli registrati, con la loro data e il loro massimo. Per riportare i dati dentro al programma resta il backup JSON.
+
 ## Come si installa: la pagina pubblica
 
 `come-installare.html` è una pagina del sito, non una schermata del programma: si apre nel browser senza avviare nulla, e serve soprattutto a chi il programma non ce l'ha ancora o non riesce ad aprirlo. Contiene il file giusto per ogni sistema, i passaggi del primo avvio con le parole esatte degli avvisi di Windows e macOS, la verifica dell'impronta SHA-256 con il comando adatto a ciascun sistema, e il rimando al backup dei sorgenti.
@@ -434,7 +441,7 @@ La pagina si stampa. Il pulsante *Stampa o salva in PDF* apre la stampa del sist
 
 ## Prove a mano prima di una release
 
-I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.7.20 è [PROVE-A-MANO-1.7.20.md](PROVE-A-MANO-1.7.20.md): centoundici controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito, protezione dello spazio, piano di sicurezza personale con i numeri utili, parti da includere nella relazione, scheda da portare (controllata anche a schermo e in stampa), taccuino delle domande, domande scritte direttamente nella scheda, backup protetto da password, ricerca dalla testata, prova di un backup senza applicarlo, fascicolo unico e assenza di rete, le stesse cose ripetute in un browser vero a due larghezze, e per la 1.7.20 il blocco automatico dello schermo, i dati che non si leggono, le frasi di rischio di Neura, la pagina «Il tuo percorso» e il protocollo da seguire su un telefono vero, ognuno con il risultato atteso e una casella da spuntare.
+I test automatici non vedono la voce che parte davvero, un telefono stretto o un messaggio comparso nel momento sbagliato. Per questo ogni versione ha il suo foglio di prove manuali — per la 1.8.0 è [PROVE-A-MANO-1.8.0.md](PROVE-A-MANO-1.8.0.md): centodiciassette controlli su riepilogo dei periodi (sette e trenta giorni, stampa del confronto), estratti della ricerca e movimento ridotto, ricerca nei contenuti, nelle cose scritte e con i sinonimi, backup con migrazione, diario completo e schede del pensiero, dimensione del testo, modalità discreta, lettura ad alta voce, avviso di aggiornamento del sito, protezione dello spazio, piano di sicurezza personale con i numeri utili, parti da includere nella relazione, scheda da portare (controllata anche a schermo e in stampa), taccuino delle domande, domande scritte direttamente nella scheda, backup protetto da password, ricerca dalla testata, prova di un backup senza applicarlo, fascicolo unico e assenza di rete, le stesse cose ripetute in un browser vero a due larghezze, e per la 1.7.20 il blocco automatico dello schermo, i dati che non si leggono, le frasi di rischio di Neura, la pagina «Il tuo percorso» e il protocollo da seguire su un telefono vero, e per la 1.8.0 l'archivio leggibile e i metadati dei PDF, ognuno con il risultato atteso e una casella da spuntare.
 
 Lo stesso foglio esiste in **PDF A4**, per stamparlo e spuntarlo a penna: [assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf](assets/pdf/Psicologo-Digitale-Prove-a-mano.pdf), casella per ogni prova e tabella d'esito in fondo, con versione e provenienza nel piè di pagina. Non è una seconda copia del testo: `scripts/build_prove_a_mano_pdf.py` legge il markdown delle prove — il più recente per versione — e lo impagina con la stessa testata degli altri fogli, riusando l'impaginatore di `build_come_installare_pdf.py`. Il file è allegato alla release insieme agli altri PDF (`.github/workflows/foglio.yml`), e `tests/verify.cjs` confronta le prove del markdown con quelle stampate: una prova aggiunta e mai rigenerata diventa una build rossa.
 
@@ -492,4 +499,4 @@ Il personaggio di **Neura** e il marchio del progetto sono creazioni di Danilo D
 
 Ideato, scritto e sviluppato da **Danilo D'Auria**, tecnico IT e divulgatore digitale, autore di *Tecnologia Gentile: Informatica Sostenibile* e creatore di FeniceOS.
 
-Versione **1.7.20** · novembre 2026.
+Versione **1.8.0** · novembre 2026.

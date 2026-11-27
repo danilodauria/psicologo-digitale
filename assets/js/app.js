@@ -722,8 +722,9 @@ NP.app = (function () {
     };
   }
 
-  function scaricaJSON(data, nome) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  // Una sola strada per far uscire un file: la usano il backup e l'archivio,
+  // così il nome, il clic e la revoca dell'indirizzo non possono divergere.
+  function scaricaBlob(blob, nome) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -732,6 +733,190 @@ NP.app = (function () {
     a.click();
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 800);
+  }
+
+  function scaricaJSON(data, nome) {
+    scaricaBlob(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), nome);
+  }
+
+  /* --------------------------------------------- Archivio leggibile */
+
+  // Un file che si apre con un doppio clic anche fra dieci anni, senza il
+  // programma: solo testo e CSS dentro la pagina, nessuno script e nessuna
+  // risorsa da scaricare. Non è un backup — da qui non si reimporta niente —
+  // e non contiene più dati di quelli che la persona ha già scritto: legge
+  // `raccogliDati`, la stessa raccolta del backup, e ne rende leggibile una
+  // parte scelta. Niente interpretazioni, niente punteggi ricalcolati.
+  function dataLunga(testo) {
+    const t = String(testo || "").trim();
+    if (!t) return "senza data";
+    const iso = t.length === 10 ? t + "T12:00:00" : t;
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return t;
+    return d.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+  }
+
+  function archivioHTML(dati) {
+    const d = dati || raccogliDati();
+    const quando = new Date();
+    const parti = [];
+
+    const diario = (Array.isArray(d.diary) ? d.diary : [])
+      .filter(function (v) { return v && typeof v === "object"; })
+      .slice()
+      .sort(function (a, b) { return String(b.date || "").localeCompare(String(a.date || "")); });
+    if (diario.length) {
+      parti.push('<section id="diario"><h2>Diario <span class="conto">' + diario.length +
+        (diario.length === 1 ? " voce" : " voci") + '</span></h2>' +
+        diario.map(function (v) {
+          const misure = [];
+          if (v.mood != null && v.mood !== "") misure.push("Umore " + esc(v.mood) + "/10");
+          if (v.anxiety != null && v.anxiety !== "") misure.push("Ansia " + esc(v.anxiety) + "/10");
+          if (v.sleep != null && v.sleep !== "") misure.push("Sonno " + esc(v.sleep) + " h");
+          return '<article class="voce" data-tipo="diario"><h3>' + esc(dataLunga(v.date)) + "</h3>" +
+            (misure.length ? '<p class="meta">' + misure.join(" · ") + "</p>" : "") +
+            (v.note ? "<p>" + esc(v.note).replace(/\n/g, "<br>") + "</p>" : "") +
+            "</article>";
+        }).join("") + "</section>");
+    }
+
+    const pensieri = (Array.isArray(d.thoughts) ? d.thoughts : [])
+      .filter(function (v) { return v && typeof v === "object"; })
+      .slice()
+      .sort(function (a, b) { return String(b.date || "").localeCompare(String(a.date || "")); });
+    if (pensieri.length) {
+      parti.push('<section id="pensieri"><h2>Schede del pensiero <span class="conto">' + pensieri.length +
+        (pensieri.length === 1 ? " scheda" : " schede") + '</span></h2>' +
+        pensieri.map(function (v) {
+          const righe = [];
+          if (v.situation) righe.push(["Situazione", v.situation]);
+          if (v.thought) righe.push(["Pensiero", v.thought]);
+          if (v.emotion) righe.push(["Emozione", v.emotion + (v.intensity != null && v.intensity !== "" ? " (intensità " + v.intensity + "/10)" : "")]);
+          if (v.alternative) righe.push(["Un altro punto di vista", v.alternative]);
+          return '<article class="voce" data-tipo="pensiero"><h3>' + esc(dataLunga(v.date)) + "</h3>" +
+            '<dl>' + righe.map(function (r) {
+              return "<dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]).replace(/\n/g, "<br>") + "</dd>";
+            }).join("") + "</dl></article>";
+        }).join("") + "</section>");
+    }
+
+    const note = (d.course && d.course.notes) || {};
+    const titoliEsercizi = {};
+    const esercizi = (NP.data.percorso && NP.data.percorso.esercizi) || [];
+    esercizi.forEach(function (e) { if (e && e.id) titoliEsercizi[e.id] = e.titolo; });
+    const noteScritte = Object.keys(note).filter(function (k) { return String(note[k] || "").trim(); });
+    if (noteScritte.length) {
+      parti.push('<section id="esercizi"><h2>Note degli esercizi <span class="conto">' + noteScritte.length +
+        (noteScritte.length === 1 ? " nota" : " note") + '</span></h2>' +
+        noteScritte.map(function (k) {
+          return '<article class="voce" data-tipo="nota"><h3>' + esc(titoliEsercizi[k] || k) + "</h3><p>" +
+            esc(note[k]).replace(/\n/g, "<br>") + "</p></article>";
+        }).join("") + "</section>");
+    }
+
+    const domande = (Array.isArray(d.domandePersonali) ? d.domandePersonali : [])
+      .filter(function (v) { return v && String(v.testo || "").trim(); });
+    if (domande.length) {
+      parti.push('<section id="domande"><h2>Domande per il clinico <span class="conto">' + domande.length +
+        (domande.length === 1 ? " domanda" : " domande") + '</span></h2><ol>' +
+        domande.map(function (v) { return '<li data-tipo="domanda">' + esc(v.testo) + "</li>"; }).join("") +
+        "</ol></section>");
+    }
+
+    const scale = (NP.data.scales || []).filter(function (s) {
+      return (d.scales && d.scales[s.id]) || storicoDi(s.id).length;
+    });
+    if (scale.length) {
+      parti.push('<section id="punteggi"><h2>Punteggi nel tempo</h2>' +
+        '<p class="nota">Sono i numeri che il programma ha registrato quando hai completato un questionario. Non sono una diagnosi e qui non vengono interpretati.</p>' +
+        scale.map(function (s) {
+          const storico = storicoDi(s.id);
+          const rec = d.scales && d.scales[s.id];
+          const righe = storico.length ? storico.slice().reverse().map(function (r) {
+            return '<tr><td>' + esc(dataLunga(r.quando)) + "</td><td>" + esc(r.punti) + "/" +
+              esc(r.massimo || scaleMax(s)) + "</td><td>" + esc(r.banda || "—") + "</td></tr>";
+          }).join("") : '<tr><td>' + esc(dataLunga(rec && rec.doneAt)) + "</td><td>" + esc(rec && rec.score) +
+            "/" + esc(scaleMax(s)) + "</td><td>—</td></tr>";
+          return '<article class="voce" data-tipo="punteggio"><h3>' + esc(s.titolo) + " <span class=\"conto\">" + esc(s.sigla) +
+            '</span></h3><table><thead><tr><th>Data</th><th>Punteggio</th><th>Fascia</th></tr></thead><tbody>' +
+            righe + "</tbody></table></article>";
+        }).join("") + "</section>");
+    }
+
+    const piano = d.pianoSicurezza || {};
+    const contatti = (Array.isArray(piano.contatti) ? piano.contatti : []).filter(function (c) {
+      return c && (String(c.nome || "").trim() || String(c.tel || "").trim());
+    });
+    const campiPiano = [
+      ["I miei segnali", piano.segnali],
+      ["Cosa faccio nei primi minuti", piano.primiMinuti],
+      ["Come rendo l'ambiente più sicuro", piano.ambiente],
+      ["Una ragione per chiamare", piano.ragione]
+    ].filter(function (c) { return String(c[1] || "").trim(); });
+    if (campiPiano.length || contatti.length) {
+      parti.push('<section id="piano"><h2>Piano di sicurezza</h2>' +
+        (campiPiano.length ? '<dl>' + campiPiano.map(function (c) {
+          return "<dt>" + esc(c[0]) + "</dt><dd>" + esc(c[1]).replace(/\n/g, "<br>") + "</dd>";
+        }).join("") + "</dl>" : "") +
+        (contatti.length ? "<h3>Chi chiamo</h3><ul>" + contatti.map(function (c) {
+          return '<li data-tipo="contatto">' + esc(c.nome || "senza nome") +
+            (c.relazione ? " — " + esc(c.relazione) : "") + (c.tel ? " · " + esc(c.tel) : "") + "</li>";
+        }).join("") + "</ul>" : "") + "</section>");
+    }
+
+    const noteRelazione = d.reportNotes || {};
+    if (String(noteRelazione.note || "").trim() || String(noteRelazione.clinician || "").trim()) {
+      parti.push('<section id="relazione"><h2>Note della relazione</h2>' +
+        (String(noteRelazione.note || "").trim() ? '<h3>Cosa vuoi far sapere</h3><p>' +
+          esc(noteRelazione.note).replace(/\n/g, "<br>") + "</p>" : "") +
+        (String(noteRelazione.clinician || "").trim() ? '<h3>Spazio del professionista</h3><p>' +
+          esc(noteRelazione.clinician).replace(/\n/g, "<br>") + "</p>" : "") + "</section>");
+    }
+
+    if (!parti.length) {
+      parti.push('<section><h2>Ancora niente da archiviare</h2><p>Non ci sono voci di diario, schede, punteggi o note. Questo file è stato creato quando il programma non aveva ancora nulla da raccontare.</p></section>');
+    }
+
+    const versione = (NP.app && NP.app.VERSIONE) || "";
+    return '<!doctype html>\n<html lang="it">\n<head>\n<meta charset="utf-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+      "<title>Psicologo Digitale · archivio personale del " + esc(dataLunga(quando.toISOString())) + "</title>\n" +
+      "<style>" +
+      "body{font-family:Georgia,'Times New Roman',serif;line-height:1.6;color:#1d2330;background:#fbfaf7;max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem 4rem}" +
+      "header{border-bottom:3px solid #2f3a56;padding-bottom:1.25rem;margin-bottom:2rem}" +
+      ".eyebrow{font-family:system-ui,sans-serif;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#5d6b8a;margin:0 0 .4rem}" +
+      "h1{font-size:2rem;line-height:1.2;margin:0 0 .75rem}h2{font-size:1.3rem;margin:2.5rem 0 .75rem;border-bottom:1px solid #d9d5cb;padding-bottom:.35rem}" +
+      "h3{font-size:1.02rem;margin:1.4rem 0 .35rem}.conto{font-family:system-ui,sans-serif;font-size:.78rem;font-weight:400;color:#5d6b8a;margin-left:.35rem}" +
+      ".nota{font-family:system-ui,sans-serif;font-size:.85rem;color:#4b5568}" +
+      ".voce{border-left:2px solid #d9d5cb;padding:.1rem 0 .1rem 1rem;margin:1rem 0}" +
+      ".meta{font-family:system-ui,sans-serif;font-size:.82rem;color:#4b5568;margin:.15rem 0 .5rem}" +
+      "dl{margin:.25rem 0}dt{font-family:system-ui,sans-serif;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#5d6b8a;margin-top:.6rem}" +
+      "dd{margin:.1rem 0 .4rem}table{border-collapse:collapse;width:100%;font-family:system-ui,sans-serif;font-size:.88rem}" +
+      "th,td{text-align:left;border-bottom:1px solid #e4e0d7;padding:.35rem .45rem}th{color:#5d6b8a;font-weight:600}" +
+      "footer{margin-top:3rem;border-top:1px solid #d9d5cb;padding-top:1rem;font-family:system-ui,sans-serif;font-size:.8rem;color:#5d6b8a}" +
+      "@media print{body{background:#fff;max-width:none}.voce{break-inside:avoid}}" +
+      "</style>\n</head>\n<body>\n<header>" +
+      '<p class="eyebrow">Psicologo Digitale · La stanza d\'ascolto</p>' +
+      "<h1>Il tuo archivio</h1>" +
+      '<p class="lead">Quello che hai scritto nel programma, raccolto in un file che si apre da solo: diario, schede del pensiero, note, domande, punteggi e piano di sicurezza. Creato il ' +
+      esc(dataLunga(quando.toISOString())) + (versione ? " con la versione " + esc(versione) : "") + ".</p>" +
+      '<p class="nota">Non è un backup: da questo file non si reimporta niente nel programma, e non c\'è nulla che non fosse già scritto. Non contiene le conversazioni con Neura né le risposte del colloquio.</p>' +
+      "</header>" +
+      parti.join("\n") +
+      '<footer>Ideato, scritto e sviluppato da Danilo D\'Auria — un progetto FeniceOS. Contenuti CC BY-NC-SA 4.0. Un archivio di sola lettura: i dati restano tuoi e non escono dal dispositivo se non quando decidi tu di portarli.</footer>' +
+      "</body>\n</html>\n";
+  }
+
+  function scaricaArchivio() {
+    const dati = raccogliDati();
+    if (!haDati(dati)) {
+      toast("Non c'è ancora niente da archiviare: scrivi una voce o compila un questionario, poi torna qui.", 6000);
+      return false;
+    }
+    const nome = "psicologo-digitale-archivio-" + new Date().toISOString().slice(0, 10) + ".html";
+    scaricaBlob(new Blob([archivioHTML(dati)], { type: "text/html;charset=utf-8" }), nome);
+    toast("Archivio scaricato: si apre con un doppio clic, senza il programma.", 5000);
+    return true;
   }
 
   /* ------------------------------------------------ Backup protetto */
@@ -1879,6 +2064,8 @@ NP.app = (function () {
     saveChat: saveChat,
     esportaBackup: esportaBackup,
     esportaBackupCifrato: esportaBackupCifrato,
+    archivioHTML: archivioHTML,
+    scaricaArchivio: scaricaArchivio,
     cifraBackup: cifraBackup,
     decifraBackup: decifraBackup,
     isBackupCifrato: isBackupCifrato,
